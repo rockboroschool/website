@@ -74,3 +74,22 @@
 0000.792 (0) Dropbox quota usage: used=128.1 MB, total=2048 MB, available=1919.9 MB
 0000.795 (0) Dropbox: Attempt to upload: backup_2018-05-20-1902_Rockboro_Primary_School_b8fafc998d52-db.gz to: backup_2018-05-20-1902_Rockboro_Primary_School_b8fafc998d52-db.gz
 0001.443 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAABtvL_-cSxe3SA, 244571, 1024 KB)
+0002.559 (0) Recording as successfully uploaded: backup_2018-05-20-1902_Rockboro_Primary_School_b8fafc998d52-db.gz (56c3c3aaa88d48344942cfcf806111c6)
+0002.566 (0) Deleting local file: backup_2018-05-20-1902_Rockboro_Primary_School_b8fafc998d52-db.gz: OK
+0002.567 (0) Dropbox: File upload success (backup_2018-05-20-1902_Rockboro_Primary_School_b8fafc998d52-db.gz): 238 KB in 1s (134 KB/s)
+0002.572 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0002.575 (0) Number of backup sets in history: 1; groups (db): 1
+0002.575 (0) Examining (for databases) backup set with group_id=0, nonce=b8fafc998d52, datestamp=1526839366 (May 20 2018 18:02:46)
+0002.578 (0) This backup set is the backup set just made, so will not be deleted.
+0002.578 (0) Number of backup sets in history: 1; groups (files): 1
+0002.579 (0) Examining (for files) backup set with nonce=b8fafc998d52, datestamp=1526839366 (May 20 2018 18:02:46)
+0002.579 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0002.579 (0) Retain: saving new backup history (sets now: 1) and finishing retain operation
+0002.583 (0) Resume backup (b8fafc998d52, 0): finish run
+0002.587 (0) Decremented the semaphore (d) by 1
+0002.590 (0) Semaphore (d) unlocked
+0002.591 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0002.595 (0) Fetching RSS news feed
+0002.647 (0) Fetched RSS news feed; result is a: SimplePie
+0002.652 (0) Sending email ('Database only (files were not part of this particular schedule)') report (attachments: 0, size: 0 KB) to: user@...
+0002.658 (0) The backup apparently succeeded and is now complete
