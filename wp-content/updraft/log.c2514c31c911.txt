@@ -91,3 +91,26 @@
 0000.805 (0) Dropbox quota usage: used=37.8 MB, total=2048 MB, available=2010.2 MB
 0000.817 (0) Dropbox: Attempt to upload: backup_2018-05-20-1904_Rockboro_Primary_School_c2514c31c911-db.gz to: backup_2018-05-20-1904_Rockboro_Primary_School_c2514c31c911-db.gz
 0001.528 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAAB3glUNvPPAb5Q, 255648, 1024 KB)
+0002.581 (0) Recording as successfully uploaded: backup_2018-05-20-1904_Rockboro_Primary_School_c2514c31c911-db.gz (0f791c9f9d591111208bb0bdb47974c8)
+0002.586 (0) Deleting local file: backup_2018-05-20-1904_Rockboro_Primary_School_c2514c31c911-db.gz: OK
+0002.588 (0) Dropbox: File upload success (backup_2018-05-20-1904_Rockboro_Primary_School_c2514c31c911-db.gz): 249 KB in 1s (140 KB/s)
+0002.594 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0002.596 (0) Number of backup sets in history: 2; groups (db): 1
+0002.597 (0) Examining (for databases) backup set with group_id=0, nonce=c2514c31c911, datestamp=1526839450 (May 20 2018 18:04:10)
+0002.598 (0) This backup set is the backup set just made, so will not be deleted.
+0002.598 (0) Examining (for databases) backup set with group_id=0, nonce=b8fafc998d52, datestamp=1526839366 (May 20 2018 18:02:46)
+0002.598 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0002.600 (0) Number of backup sets in history: 2; groups (files): 1
+0002.601 (0) Examining (for files) backup set with nonce=c2514c31c911, datestamp=1526839450 (May 20 2018 18:04:10)
+0002.601 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0002.602 (0) Examining (for files) backup set with nonce=b8fafc998d52, datestamp=1526839366 (May 20 2018 18:02:46)
+0002.602 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0002.602 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0002.606 (0) Resume backup (c2514c31c911, 0): finish run
+0002.609 (0) Decremented the semaphore (fd) by 1
+0002.612 (0) Semaphore (fd) unlocked
+0002.613 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0002.618 (0) Fetching RSS news feed
+0002.621 (0) Fetched RSS news feed; result is a: SimplePie
+0002.624 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0002.628 (0) The backup apparently succeeded and is now complete
