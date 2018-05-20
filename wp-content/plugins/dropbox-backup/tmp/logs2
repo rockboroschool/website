@@ -1,0 +1,16 @@
+2018-05-20 17:53:51		Testing of ZIP under shell was finished successfully
+2018-05-20 17:53:51		Testing of TarGz was finished successfully
+2018-05-20 17:53:51		Create Unique Id wpadm_method__local_backup__5b01b62fc20a3
+2018-05-20 17:53:51		Start Backup process...
+2018-05-20 17:53:51		Creating Database Dump
+2018-05-20 17:53:51		Optimization of database tables was started
+2018-05-20 17:53:51		Database table optimization of `wp_commentmeta` was successfully
+2018-05-20 17:53:51		Database table optimization of `wp_comments` was successfully
+2018-05-20 17:53:51		Database table optimization of `wp_gglcptch_whitelist` was successfully
+2018-05-20 17:53:51		Database table optimization of `wp_links` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_options` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_postmeta` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_posts` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_term_relationships` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_term_taxonomy` was successfully
+2018-05-20 17:53:52		Database table optimization of `wp_termmeta` was successfully
