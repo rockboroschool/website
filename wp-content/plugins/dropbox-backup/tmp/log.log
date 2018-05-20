@@ -33,3 +33,295 @@
 2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_postmeta LIMIT 400, 200
 2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_postmeta LIMIT 600, 200
 2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_postmeta LIMIT 800, 200
+2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_postmeta LIMIT 1000, 200
+2018-05-20 17:53:53		Add table "wp_posts" to the database dump
+2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_posts LIMIT 0, 200
+2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_posts LIMIT 200, 200
+2018-05-20 17:53:53		Add table "wp_term_relationships" to the database dump
+2018-05-20 17:53:53		Performing of database query: SELECT * FROM wp_term_relationships LIMIT 0, 200
+2018-05-20 17:53:54		Add table "wp_term_taxonomy" to the database dump
+2018-05-20 17:53:54		Performing of database query: SELECT * FROM wp_term_taxonomy LIMIT 0, 200
+2018-05-20 17:53:54		Add table "wp_termmeta" to the database dump
+2018-05-20 17:53:54		Add table "wp_terms" to the database dump
+2018-05-20 17:53:54		Performing of database query: SELECT * FROM wp_terms LIMIT 0, 200
+2018-05-20 17:53:54		Add table "wp_usermeta" to the database dump
+2018-05-20 17:53:54		Performing of database query: SELECT * FROM wp_usermeta LIMIT 0, 200
+2018-05-20 17:53:54		Add table "wp_users" to the database dump
+2018-05-20 17:53:54		Performing of database query: SELECT * FROM wp_users LIMIT 0, 200
+2018-05-20 17:53:54		Creating of MySQL database dump was finished
+2018-05-20 17:53:54		Database Dump was successfully created ( 1.41 Mb) : /opt/bitnami/apps/wordpress/htdocs/wp-content/Dropbox_Backup/mysqldump.sql
+2018-05-20 17:53:54		Skip of Backup-Folder /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/dropbox-backup
+2018-05-20 17:53:54		Skip of Backup-Folder /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/wpcom-test-backup
+2018-05-20 17:53:54		Skip of Cache-Folder /opt/bitnami/apps/wordpress/htdocs/wp-includes/SimplePie/Cache
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-1938x500.png Size 1.87Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-1024x857.png Size 1.83Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/A3-PosterMSND-new-logo.jpg Size 4.91Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub.png Size 5.98Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-1110x444.png Size 1.06Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-768x643.png Size 1.08Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-1110x500.png Size 1.19Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/2018/05/corkgolfclub-1110x624.png Size 1.47Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/bws-custom-code/bws-custom-code.css Size 0b (0644)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/bws-custom-code/index.php Size 0b (0644)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/uploads/bws-custom-code/bws-custom-code.js Size 0b (0644)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/modules/shortcodes/css/rtl/slideshow-shortcode-rtl.css Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-admin-jitm-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-icons-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-admin.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-banners.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-admin-jitm.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-admin-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-idc-admin-bar-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-icons.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-idc-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/dashboard-widget.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-idc-admin-bar.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-banners-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/dashboard-widget-rtl.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/css/jetpack-idc.css.min.map Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/jetpack/_inc/build/admin.js Size 1.69Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/google-analytics-for-wordpress/includes/admin/welcome.php Size 0b (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/plugins/google-analytics-for-wordpress/assets/js/vendors.js Size 1.42Mb (0664)
+2018-05-20 17:53:54		File /opt/bitnami/apps/wordpress/htdocs/wp-content/Dropbox_Backup/mysqldump.sql Size 1.41Mb (0644)
+2018-05-20 17:53:54		List of backup files was successfully created
+2018-05-20 17:53:54		Backup of files was started
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-1.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-2.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-3.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-4.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-5.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-6.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-7.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-8.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:54		Create part rockboroschool_ie-full-2018_05_20_18_53-9.tar.gz
+2018-05-20 17:53:54		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-10.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-11.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-12.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-13.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-14.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-15.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-16.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:55		Create part rockboroschool_ie-full-2018_05_20_18_53-17.tar.gz
+2018-05-20 17:53:55		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-18.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-19.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-20.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-21.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-22.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-23.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-24.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-25.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:56		Create part rockboroschool_ie-full-2018_05_20_18_53-26.tar.gz
+2018-05-20 17:53:56		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-27.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-28.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-29.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-30.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-31.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-32.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-33.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-34.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-35.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-36.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:57		Create part rockboroschool_ie-full-2018_05_20_18_53-37.tar.gz
+2018-05-20 17:53:57		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-38.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-39.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-40.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-41.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-42.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-43.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-44.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-45.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-46.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-47.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:58		Create part rockboroschool_ie-full-2018_05_20_18_53-48.tar.gz
+2018-05-20 17:53:58		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-49.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-50.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-51.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-52.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-53.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-54.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:53:59		Create part rockboroschool_ie-full-2018_05_20_18_53-55.tar.gz
+2018-05-20 17:53:59		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:00		Create part rockboroschool_ie-full-2018_05_20_18_53-56.tar.gz
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:00		Create part rockboroschool_ie-full-2018_05_20_18_53-57.tar.gz
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:00		Create part rockboroschool_ie-full-2018_05_20_18_53-58.tar.gz
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:00		Create part rockboroschool_ie-full-2018_05_20_18_53-59.tar.gz
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:00		Create part rockboroschool_ie-full-2018_05_20_18_53-60.tar.gz
+2018-05-20 17:54:00		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:01		Create part rockboroschool_ie-full-2018_05_20_18_53-61.tar.gz
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:01		Create part rockboroschool_ie-full-2018_05_20_18_53-62.tar.gz
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:01		Create part rockboroschool_ie-full-2018_05_20_18_53-63.tar.gz
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:01		Create part rockboroschool_ie-full-2018_05_20_18_53-64.tar.gz
+2018-05-20 17:54:01		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:02		Create part rockboroschool_ie-full-2018_05_20_18_53-65.tar.gz
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:02		Create part rockboroschool_ie-full-2018_05_20_18_53-66.tar.gz
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:02		Create part rockboroschool_ie-full-2018_05_20_18_53-67.tar.gz
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:02		Create part rockboroschool_ie-full-2018_05_20_18_53-68.tar.gz
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:02		Create part rockboroschool_ie-full-2018_05_20_18_53-69.tar.gz
+2018-05-20 17:54:02		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:03		Create part rockboroschool_ie-full-2018_05_20_18_53-70.tar.gz
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:03		Create part rockboroschool_ie-full-2018_05_20_18_53-71.tar.gz
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:03		Create part rockboroschool_ie-full-2018_05_20_18_53-72.tar.gz
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:03		Create part rockboroschool_ie-full-2018_05_20_18_53-73.tar.gz
+2018-05-20 17:54:03		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-74.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-75.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-76.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-77.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-78.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:04		Create part rockboroschool_ie-full-2018_05_20_18_53-79.tar.gz
+2018-05-20 17:54:04		Trying to add files to archive using Tar shell or tar class
+2018-05-20 17:54:05		Trying to add files to archive using Tar shell or tar class was successful
+2018-05-20 17:54:05		Backup of files was finished
+2018-05-20 17:54:05		Backup size 90.54Mb
+2018-05-20 17:54:05		Backup creation was complete successfully!
