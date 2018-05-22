@@ -5,7 +5,7 @@ Tags: history, log, changes, changelog, audit, trail, pages, attachments, users,
 Requires at least: 4.5.1
 Tested up to: 4.9
 Requires PHP: 5.3
-Stable tag: 2.21.1
+Stable tag: 2.22
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -163,9 +163,24 @@ A simple way to see any uncommon activity, for example an increased number of lo
 
 ## Changelog
 
+= 2.22 (May 2018) =
+
+- IP addresses are now anonymized by default. This is mainly done because of the [General Data Protection Regulation](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) (GDPR)
+Both IPv4 and IPv6 addresses will be anonymized and the IP addresses are anonymized to their network ID.
+So for example the IPv4 address `192.168.123.124` is anonymized to `192.168.123.0` and
+the IPv6 address `2a03:2880:2110:df07:face:b00c::1` is anonymized by default to `2610:28:3090:3001::`.
+
+- Added filter `simple_history/privacy/anonymize_ip_address` than can be used to disable ip address anonymization.
+
+- Added function `sh_error_log()` to easily log variables to the error log. Probably only of interest to developers.
+
+- Fixed logging for [plugin Redirection](https://wordpress.org/plugins/redirection/). The logging of URL redirects and so on stopped working some while back because the Redirection plugin started using the WP REST API. But now it's working again!
+
+
 = 2.21.1 (May 2018) =
 
 - Make sure support for Advanced Custom Fields is activated for all users – and not only for the developer of the plugin ;)
+
 
 = 2.21 (May 2018) =
 
