@@ -2127,9 +2127,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 		 * @return string
 		 */
 		function do_multi_input( $args ) {
-			// @codingStandardsIgnoreStart
-			extract( $args );
-			// @codingStandardsIgnoreEnd
+			$options = $args['options'];
+			$value = $args['value'];
+			$name = $args['name'];
+			$attr = $args['attr'];
+
 			$buf1 = '';
 			$type = $options['type'];
 
@@ -2206,9 +2208,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 		 */
 		function get_option_html( $args ) {
 			static $n = 0;
-			// @codingStandardsIgnoreStart
-			extract( $args );
-			// @codingStandardsIgnoreEnd
+
+			$options = $args['options'];
+			$value = $args['value'];
+			$name = $args['name'];
+			$attr = $args['attr'];
+			$prefix = isset( $args['prefix'] ) ? $args['prefix'] : '';
 
 			if ( $options['type'] == 'custom' ) {
 				return apply_filters( "{$prefix}output_option", '', $args );
