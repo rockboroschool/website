@@ -1,0 +1,100 @@
+0000.001 (0) Opened log file at time: Sun, 08 Jul 2018 18:05:16 +0000 on https://rockboroschool.ie
+0000.003 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.14.11 WP: 4.9.6 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1062-aws #71-Ubuntu SMP Fri Jun 15 10:07:39 UTC 2018 x86_64) MySQL: 5.7.21 WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 268435456 (used: 5.8M | 2M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.006 (0) Free space on disk containing Updraft's temporary directory: 6263.8 MB
+0000.009 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB:  (schedule: weekly)
+0000.010 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.022 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1530468308, seconds_ago=604808)
+0000.030 (0) Set semaphore last lock (fd) time to 2018-07-08 18:05:17
+0000.032 (0) Semaphore lock (fd) complete
+0000.037 (0) Backup run: resumption=0, nonce=297701634581, begun at=1531073116 (1s ago), job type=backup
+0000.040 (0) Scheduling a resumption (1) after 300 seconds (1531073417) in case this run gets aborted
+0000.057 (0) Checking if we have a zip executable available
+0000.059 (0) Testing: /usr/bin/zip
+0000.068 (0) Output: zip warning: binziptest/test.zip not found or empty
+0000.071 (0) Output: adding: binziptest/subdir1/	(in=0) (out=0) (stored 0%)
+0000.073 (0) Output: adding: binziptest/subdir1/subdir2/	(in=0) (out=0) (stored 0%)
+0000.074 (0) Output: adding: binziptest/subdir1/subdir2/test.html	(in=131) (out=107) (deflated 18%)
+0000.077 (0) Output: total bytes=131, compressed=107 -> 18% savings
+0000.081 (0) Output: adding: binziptest/subdir1/subdir2/test2.html	(in=138) (out=113) (deflated 18%)
+0000.084 (0) Output: total bytes=269, compressed=220 -> 18% savings
+0000.099 (0) Working binary zip found: /usr/bin/zip
+0000.104 (0) Zip engine: found/will use a binary zip: /usr/bin/zip
+0000.105 (0) Creation of backups of directories: beginning
+0000.108 (0) No backup of plugins: excluded by user's options
+0000.109 (0) No backup of themes: excluded by user's options
+0000.110 (0) No backup of uploads: excluded by user's options
+0000.113 (0) No backup of others: excluded by user's options
+0000.119 (0) Saving backup status to database (elements: 0)
+0000.122 (0) Beginning creation of database dump (WordPress DB)
+0000.147 (0) Table wp_options: Total expected rows (approximate): 348
+0000.176 (0) Table wp_options: Total rows added: 344 in 0.03 seconds
+0000.179 (0) Table wp_options: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_options.table.gz - 32.5 KB)
+0000.189 (0) Table wp_users: Total expected rows (approximate): 3
+0000.191 (0) Table wp_users: Total rows added: 3 in 0.00 seconds
+0000.193 (0) Table wp_users: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_users.table.gz - 0.8 KB)
+0000.199 (0) Table wp_usermeta: Total expected rows (approximate): 75
+0000.204 (0) Table wp_usermeta: Total rows added: 75 in 0.00 seconds
+0000.206 (0) Table wp_usermeta: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_usermeta.table.gz - 2.4 KB)
+0000.213 (0) Table wp_commentmeta: Total expected rows (approximate): 0
+0000.215 (0) Table wp_commentmeta: Total rows added: 0 in 0.00 seconds
+0000.218 (0) Table wp_commentmeta: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_commentmeta.table.gz - 0.4 KB)
+0000.223 (0) Table wp_comments: Total expected rows (approximate): 1
+0000.226 (0) Table wp_comments: Total rows added: 0 in 0.00 seconds
+0000.229 (0) Table wp_comments: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_comments.table.gz - 0.5 KB)
+0000.245 (0) Table wp_links: Total expected rows (approximate): 0
+0000.248 (0) Table wp_links: Total rows added: 0 in 0.00 seconds
+0000.251 (0) Table wp_links: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_links.table.gz - 0.4 KB)
+0000.258 (0) Table wp_postmeta: Total expected rows (approximate): 1162
+0000.277 (0) Table wp_postmeta: Total rows added: 1060 in 0.02 seconds
+0000.280 (0) Table wp_postmeta: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_postmeta.table.gz - 19.1 KB)
+0000.286 (0) Table wp_posts: Total expected rows (approximate): 282
+0000.322 (0) Table wp_posts: Total rows added: 303 in 0.03 seconds
+0000.324 (0) Table wp_posts: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_posts.table.gz - 55 KB)
+0000.329 (0) Table wp_term_relationships: Total expected rows (approximate): 82
+0000.331 (0) Table wp_term_relationships: Total rows added: 82 in 0.00 seconds
+0000.334 (0) Table wp_term_relationships: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_term_relationships.table.gz - 0.6 KB)
+0000.338 (0) Table wp_term_taxonomy: Total expected rows (approximate): 24
+0000.342 (0) Table wp_term_taxonomy: Total rows added: 25 in 0.00 seconds
+0000.344 (0) Table wp_term_taxonomy: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_term_taxonomy.table.gz - 0.7 KB)
+0000.349 (0) Table wp_termmeta: Total expected rows (approximate): 0
+0000.352 (0) Table wp_termmeta: Total rows added: 0 in 0.00 seconds
+0000.354 (0) Table wp_termmeta: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_termmeta.table.gz - 0.4 KB)
+0000.361 (0) Table wp_terms: Total expected rows (approximate): 24
+0000.362 (0) Table wp_terms: Total rows added: 25 in 0.00 seconds
+0000.365 (0) Table wp_terms: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_terms.table.gz - 0.7 KB)
+0000.370 (0) Table wp_gglcptch_whitelist: Total expected rows (approximate): 0
+0000.374 (0) Table wp_gglcptch_whitelist: Total rows added: 0 in 0.00 seconds
+0000.376 (0) Table wp_gglcptch_whitelist: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_gglcptch_whitelist.table.gz - 0.3 KB)
+0000.381 (0) Table wp_simple_history: Total expected rows (approximate): 113
+0000.385 (0) Table wp_simple_history: Total rows added: 122 in 0.00 seconds
+0000.388 (0) Table wp_simple_history: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_simple_history.table.gz - 3.7 KB)
+0000.394 (0) Table wp_simple_history_contexts: Total expected rows (approximate): 1106
+0000.410 (0) Table wp_simple_history_contexts: Total rows added: 1124 in 0.01 seconds
+0000.413 (0) Table wp_simple_history_contexts: finishing file (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_simple_history_contexts.table.gz - 14.9 KB)
+0000.417 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_options.table.gz (1/15): adding to final database dump
+0000.433 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_users.table.gz (2/15): adding to final database dump
+0000.435 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_usermeta.table.gz (3/15): adding to final database dump
+0000.439 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_commentmeta.table.gz (4/15): adding to final database dump
+0000.441 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_comments.table.gz (5/15): adding to final database dump
+0000.442 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_links.table.gz (6/15): adding to final database dump
+0000.444 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_postmeta.table.gz (7/15): adding to final database dump
+0000.457 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_posts.table.gz (8/15): adding to final database dump
+0000.491 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_term_relationships.table.gz (9/15): adding to final database dump
+0000.499 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_term_taxonomy.table.gz (10/15): adding to final database dump
+0000.502 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_termmeta.table.gz (11/15): adding to final database dump
+0000.505 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_terms.table.gz (12/15): adding to final database dump
+0000.506 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_gglcptch_whitelist.table.gz (13/15): adding to final database dump
+0000.509 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_simple_history.table.gz (14/15): adding to final database dump
+0000.511 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db-table-wp_simple_history_contexts.table.gz (15/15): adding to final database dump
+0000.521 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db.gz: finished writing out complete database file (128 KB)
+0000.533 (0) Total database tables backed up: 15 (backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db.gz, size: 132489, sha256)
+0000.542 (0) backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db.gz: db: This file has not yet been successfully uploaded: will queue
+0000.544 (0) Saving backup history. Total backup size: 129.4 KB
+0000.548 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0000.553 (0) Cloud backup selection (1/1): dropbox with instance (1/1) (last)
+0000.554 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
+0000.556 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
+0000.570 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0001.021 (0) Dropbox quota usage: used=37.8 MB, total=2048 MB, available=2010.2 MB
+0001.024 (0) Dropbox: Attempt to upload: backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db.gz to: backup_2018-07-08-1905_Rockboro_Primary_School_297701634581-db.gz
+0002.315 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAACZ0Jb8Q_bmF_g, 132489, 1024 KB)
