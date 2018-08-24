@@ -180,6 +180,14 @@ function czr_fn_site_identity_option_map( $get_default = null ) {
                             'dst_height'  => false,
                             //'notice'    => __( "Uncheck this option to keep your original logo dimensions." , 'customizr')
           ),
+          'tc_title_next_logo'  => array(
+                            'default'   =>  czr_fn_user_started_before_version( '4.1.10' , '2.1.7') ? 0 : 1,
+                            'label'     =>  __( 'Display the site title next to the logo' , 'customizr' ),
+                            'control'   =>  'CZR_controls' ,
+                            'section'   =>  'title_tagline' ,
+                            'type'        => 'checkbox' ,
+                            'priority'  => 13,
+          ),
           //force logo resize 250 * 85
           'tc_logo_resize'  => array(
                             'default'   =>  1,
@@ -1097,7 +1105,7 @@ function czr_fn_front_page_option_map( $get_default = null ) {
 
           //select slider
           'tc_front_slider' => array(
-                            'default'     => 'tc_posts_slider' ,
+                            'default'     => CZR_IS_PRO || czr_fn_user_started_before_version( '4.1.8' , '2.0.0', 'free' ) ? 'tc_posts_slider' : '0',
                             'control'     => 'CZR_controls' ,
                             'title'       => __( 'Slider options' , 'customizr' ),
                             'label'       => __( 'Select front page slider' , 'customizr' ),
@@ -1257,7 +1265,7 @@ function czr_fn_front_page_option_map( $get_default = null ) {
 
           //Front page widget area
           'tc_show_featured_pages'  => array(
-                            'default'       => 1,
+                            'default'     => CZR_IS_PRO || czr_fn_user_started_before_version( '4.1.8' , '2.0.0', 'free' ) ? 1 : 0,
                             'control'   => 'CZR_controls' ,
                             'title'       => __( 'Featured pages options' , 'customizr' ),
                             'label'       => __( 'Display home featured pages area' , 'customizr' ),
@@ -2533,6 +2541,7 @@ function czr_fn_popul_section_map( $_sections ) {
                         //'description' =>  __( 'Set up the font global settings' , 'customizr' ),
                         'panel'   => 'tc-global-panel'
     ),
+    // Since March 2018, this section is registered dynamically
     // 'socials_sec'        => array(
     //                     'title'     =>  __( 'Social links' , 'customizr' ),
     //                     'priority'    =>  $_is_wp_version_before_4_0 ? 9 : 20,
