@@ -274,7 +274,9 @@ class SimplePostLogger extends SimpleLogger {
 	}
 
 	/**
-	 * Called when a post is deleted from the trash
+	 * Fired immediately before a post is deleted from the database.
+	 *
+	 * @param int $postid Post ID.
 	 */
 	function on_delete_post( $post_id ) {
 
@@ -288,7 +290,25 @@ class SimplePostLogger extends SimpleLogger {
 			return;
 		}
 
-		if ( 'nav_menu_item' == get_post_type( $post ) ) {
+		$ok_to_log = true;
+
+		if ( ! $this->ok_to_log_post_posttype( $post ) ) {
+			$ok_to_log = false;
+		}
+
+		/**
+		 * Filter to control logging.
+		 *
+		 * @param bool $ok_to_log If this post deletion should be logged.
+		 * @param int $post_id
+		 *
+		 * @return bool True to log, false to not log.
+		 *
+		 * @since 2.21
+		 */
+		$ok_to_log = apply_filters( 'simple_history/post_logger/post_deleted/ok_to_log', $ok_to_log, $post_id );
+
+		if ( ! $ok_to_log ) {
 			return;
 		}
 
@@ -349,6 +369,9 @@ class SimplePostLogger extends SimpleLogger {
 
 	/**
 	 * Check if post type is ok to log by logger
+	 *
+	 * @param Int or WP_Post $post Post the check.
+	 *
 	 * @return bool
 	 */
 	public function ok_to_log_post_posttype( $post ) {
@@ -422,6 +445,7 @@ class SimplePostLogger extends SimpleLogger {
 		From pending to trash
 		From something to publish = post published
 		if not from & to = same, then user has changed something
+		From draft to publish in future: status = "future"
 		*/
 		$context = array(
 			'post_id' => $post->ID,
@@ -788,7 +812,6 @@ class SimplePostLogger extends SimpleLogger {
 			$diff_table_output = '';
 			$has_diff_values = false;
 
-			// @TODO: this is silly. why loop if we know what we're looking for?
 			foreach ( $context as $key => $val ) {
 
 				if ( strpos( $key, 'post_prev_' ) !== false ) {
@@ -802,7 +825,6 @@ class SimplePostLogger extends SimpleLogger {
 
 						$post_old_value = $context[ $key ];
 						$post_new_value = $context[ $key_for_new_val ];
-
 						if ( $post_old_value != $post_new_value ) {
 
 							// Different diffs for different keys.
@@ -822,17 +844,19 @@ class SimplePostLogger extends SimpleLogger {
 								// Risks to fill the visual output.
 								// Maybe solution: use own diff function, that uses none or few context lines.
 								$has_diff_values = true;
+								$key_text_diff = simple_history_text_diff( $post_old_value, $post_new_value );
 
-								$diff_table_output .= sprintf(
-									'<tr><td>%1$s</td><td>%2$s</td></tr>',
-									__( 'Content', 'simple-history' ),
-									simple_history_text_diff( $post_old_value, $post_new_value )
-								);
+								if ( $key_text_diff ) {
+									$diff_table_output .= sprintf(
+										'<tr><td>%1$s</td><td>%2$s</td></tr>',
+										__( 'Content', 'simple-history' ),
+										$key_text_diff
+									);
+								}
 
 							} elseif ( 'post_status' == $key_to_diff ) {
 
 								$has_diff_values = true;
-
 								$diff_table_output .= sprintf(
 									'<tr>
 										<td>%1$s</td>

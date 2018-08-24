@@ -67,7 +67,7 @@ class UpdraftPlus {
 	 * Class constructor
 	 */
 	public function __construct() {
-
+		global $pagenow;
 		// Initialisation actions - takes place on plugin load
 
 		if ($fp = fopen(UPDRAFTPLUS_DIR.'/updraftplus.php', 'r')) {
@@ -83,6 +83,13 @@ class UpdraftPlus {
 			'UpdraftPlus_Encryption' => 'includes/class-updraftplus-encryption.php',
 			'UpdraftPlus_Manipulation_Functions' => 'includes/class-manipulation-functions.php'
 		);
+
+		if (defined('UPDRAFTPLUS_THIS_IS_CLONE') && UPDRAFTPLUS_THIS_IS_CLONE) {
+			$load_classes['UpdraftPlus_Temporary_Clone_Dash_Notice'] = 'includes/updraftplus-temporary-clone-dash-notice.php';
+			$load_classes['UpdraftPlus_Temporary_Clone_User_Notice'] = 'includes/updraftplus-temporary-clone-user-notice.php';
+			$load_classes['UpdraftPlus_Temporary_Clone_Commands'] = 'includes/updraftplus-temporary-clone-commands.php';
+			$load_classes['UpdraftPlus_Temporary_Clone_Restore'] = 'includes/updraftplus-temporary-clone-restore.php';
+		}
 		
 		foreach ($load_classes as $class => $relative_path) {
 			if (!class_exists($class)) include_once(UPDRAFTPLUS_DIR.'/'.$relative_path);
@@ -128,7 +135,12 @@ class UpdraftPlus {
 		if (!empty($_POST) && !empty($_GET['udm_action']) && 'vault_disconnect' == $_GET['udm_action'] && !empty($_POST['udrpc_message']) && !empty($_POST['reset_hash'])) {
 			add_action('wp_loaded', array($this, 'wp_loaded_vault_disconnect'), 1);
 		}
-
+		
+		// Remove the notice on the Updates page that confuses users who already have backups installed
+		if ('update-core.php' == $pagenow) {
+			// added filter here instead of admin.php because the  jetpack_just_in_time_msgs filter applied in init hook
+			add_filter('jetpack_just_in_time_msgs', '__return_false', 20);
+		}
 	}
 
 	
@@ -704,13 +716,31 @@ class UpdraftPlus {
 			@define('APP_GCAL_DISABLE', true);
 		}
 		
+		add_filter('updraftplus_remotecontrol_command_classes', array($this, 'updraftplus_remotecontrol_command_classes'));
+		add_action('updraftcentral_command_class_wanted', array($this, 'updraftcentral_command_class_wanted'));
+		add_action('updraftcentral_listener_pre_udrpc_action', array($this, 'updraftcentral_listener_pre_udrpc_action'));
+		add_action('updraftcentral_listener_post_udrpc_action', array($this, 'updraftcentral_listener_post_udrpc_action'));
+
 		if (file_exists(UPDRAFTPLUS_DIR.'/central/bootstrap.php')) {
-			add_filter('updraftplus_remotecontrol_command_classes', array($this, 'updraftplus_remotecontrol_command_classes'));
-			add_action('updraftcentral_command_class_wanted', array($this, 'updraftcentral_command_class_wanted'));
 			include_once(UPDRAFTPLUS_DIR.'/central/bootstrap.php');
 		}
 		
 	}
+	
+	/**
+	 * Runs upon the action updraftcentral_listener_pre_udrpc_action
+	 */
+	public function updraftcentral_listener_pre_udrpc_action() {
+		$this->register_wp_http_option_hooks();
+	}
+	
+	/**
+	 * Runs upon the action updraftcentral_listener_post_udrpc_action
+	 */
+	public function updraftcentral_listener_post_udrpc_action() {
+		$this->register_wp_http_option_hooks(false);
+	}
+
 	
 	/**
 	 * Register our class. WP filter updraftplus_remotecontrol_command_classes.
@@ -1951,6 +1981,12 @@ class UpdraftPlus {
 		return $this->error_reporting_stop_when_logged;
 	}
 
+	/**
+	 * Proceed with a backup; before calling this, at least all the initial job data must be set up
+	 *
+	 * @param Integer $resumption_no - which resumption this is; from 0 upwards
+	 * @param String  $bnonce		 - the backup job identifier
+	 */
 	public function backup_resume($resumption_no, $bnonce) {
 
 		set_error_handler(array($this, 'php_error'), E_ALL & ~E_STRICT);
@@ -1971,8 +2007,10 @@ class UpdraftPlus {
 		$last_successful_resumption = -1;
 		$job_type = 'backup';
 
-		if ($resumption_no > 0) {
-
+		if (0 == $resumption_no) {
+			$label = $this->jobdata_get('label');
+			if ($label) $resumption_extralog = ", label=$label";
+		} else {
 			$this->file_nonce = apply_filters('updraftplus_incremental_backup_file_nonce', $bnonce);
 			$this->nonce = $bnonce;
 			$this->backup_time = $this->jobdata_get('backup_time');
@@ -2039,9 +2077,6 @@ class UpdraftPlus {
 				die;
 			}
 
-		} else {
-			$label = $this->jobdata_get('label');
-			if ($label) $resumption_extralog = ", label=$label";
 		}
 
 		$this->last_successful_resumption = $last_successful_resumption;
@@ -2336,8 +2371,12 @@ class UpdraftPlus {
 					} else {
 						$this->log("$file: $key: This file was already queued for upload (this condition should never be seen)");
 					}
+				} elseif ('incremental' == $job_type && 'db' == substr($key, 0, 2)) {
+					// Here we check if this is an incremental backup and if so then mark the db files as already uploaded as db files are not part of incremental file backups
+					$this->log("$file: $key: This is an incremental backup; this file will be marked as successfully uploaded.");
+					$this->uploaded_file($file, true);
 				} else {
-					$this->log("$file: $key: Note: This file was not marked as successfully uploaded, but does not exist on the local filesystem ($updraft_dir/$file)");
+					$this->log("$file: $key: Note: This file was not marked as successfully uploaded, but does not exist on the local filesystem; now marking as uploaded ($updraft_dir/$file)");
 					$this->uploaded_file($file, true);
 				}
 			}
@@ -2381,22 +2420,7 @@ class UpdraftPlus {
 
 		$this->log("Requesting upload of the files that have not yet been successfully uploaded (".count($undone_files).")");
 		// Catch fatal errors through try/catch blocks around the  upload to remote storage
-		try {
-			$updraftplus_backup->cloud_backup($undone_files);
-		} catch (Exception $e) {
-			$log_message = 'Exception ('.get_class($e).') occurred during files backup: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
-			$this->log($log_message);
-			error_log($log_message);
-			$this->log(sprintf(__('A PHP exception (%s) has occurred: %s', 'updraftplus'), get_class($e), $e->getMessage()), 'error');
-			die();
-		// @codingStandardsIgnoreLine
-		} catch (Error $e) {
-			$log_message = 'PHP Fatal error ('.get_class($e).') has occurred. Error Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
-			$this->log($log_message);
-			error_log($log_message);
-			$this->log(sprintf(__('A PHP fatal error (%s) has occurred: %s', 'updraftplus'), get_class($e), $e->getMessage()), 'error');
-			die();
-		}
+		$updraftplus_backup->cloud_backup($undone_files);
 		
 		$this->log("Resume backup ($bnonce, $resumption_no): finish run");
 		if (is_array($our_files)) $this->save_last_backup($our_files);
@@ -2434,6 +2458,7 @@ class UpdraftPlus {
 
 	/**
 	 * This works with any amount of settings, but we provide also a jobdata_set for efficiency as normally there's only one setting
+	 * You can list the keys/values (keys must be strings) as consecutive/alternating parameters, or send them all in as an array (with no other parameters)
 	 *
 	 * @return null
 	 */
@@ -2441,13 +2466,21 @@ class UpdraftPlus {
 		if (!is_array($this->jobdata)) $this->jobdata = array();
 
 		$args = func_num_args();
+		
+		if (1 == $args && is_array(func_get_arg(0))) {
+			foreach (func_get_arg(0) as $key => $value) {
+				$this->jobdata[$key] = $value;
+			}
+		} else {
 
-		for ($i=1; $i<=$args/2; $i++) {
-			$key = func_get_arg($i*2-2);
-			$value = func_get_arg($i*2-1);
-			$this->jobdata[$key] = $value;
+			for ($i=1; $i<=$args/2; $i++) {
+				$key = func_get_arg($i*2-2);
+				$value = func_get_arg($i*2-1);
+				$this->jobdata[$key] = $value;
+			}
+			
 		}
-		if (!empty($this->nonce)) update_site_option("updraft_jobdata_".$this->nonce, $this->jobdata);
+		if (!empty($this->nonce)) update_site_option('updraft_jobdata_'.$this->nonce, $this->jobdata);
 	}
 
 	public function jobdata_set($key, $value) {
@@ -2487,6 +2520,119 @@ class UpdraftPlus {
 
 	public function jobdata_reset() {
 		$this->jobdata = null;
+	}
+
+	/**
+	 * Gets an instance of the "UpdraftPlus_Clone" class which will be
+	 * used to login the user to UpdraftPlus.com
+	 *
+	 * @return object
+	 */
+	public function get_updraftplus_clone() {
+		if (!class_exists('UpdraftPlus_Clone')) include_once(UPDRAFTPLUS_DIR.'/includes/updraftplus-clone.php');
+		return new UpdraftPlus_Clone();
+	}
+
+	/**
+	 * This function will add data to the backup options that is needed for the clone backup job
+	 *
+	 * @param array $options - the backup options array
+	 * @param array $request - the extra data we want to add to the backup options
+	 *
+	 * @return array         - the backup options array with the extra data added
+	 */
+	public function updraftplus_clone_backup_options($options, $request) {
+		if (!is_array($options)) return $options;
+
+		if (!empty($request['clone_id']) && !empty($request['secret_token'])) {
+			$options['clone_id'] = $request['clone_id'];
+			$options['secret_token'] = $request['secret_token'];
+		}
+
+		if (isset($request['clone_url'])) $options['clone_url'] = $request['clone_url'];
+		if (isset($request['key'])) $options['key'] = $request['key'];
+
+		return $options;
+	}
+
+	/**
+	 * This function will set up the backup job data for when we are starting a clone backup job. It changes the initial jobdata so that UpdraftPlus knows it's a clone job and adds the needed information for to lookup the clone and if we have it the URL and migration key for the clone.
+	 *
+	 * @param array $jobdata - the initial job data that we want to change
+	 * @param array $options - options sent from the front end includes the clone id, secret token and maybe clone url and migration key
+	 *
+	 * @return array         - the modified jobdata
+	 */
+	public function updraftplus_clone_backup_jobdata($jobdata, $options) {
+		global $updraftplus;
+
+		if (!is_array($jobdata)) return $jobdata;
+
+		if (!isset($options['clone_id']) && !isset($options['secret_token']) && !isset($options['clone_url']) && !isset($options['key'])) return $jobdata;
+
+		$service_key = array_search('service', $jobdata) + 1;
+		$jobdata[$service_key] = array('remotesend');
+		$jobdata[] = 'clone_job';
+		$jobdata[] = true;
+		$jobdata[] = 'clone_id';
+		$jobdata[] = $options['clone_id'];
+		$jobdata[] = 'secret_token';
+		$jobdata[] = $options['secret_token'];
+		$jobdata[] = 'clone_url';
+		$jobdata[] = $options['clone_url'];
+		$jobdata[] = 'clone_key';
+		$jobdata[] = $options['key'];
+		$jobdata[] = 'remotesend_info';
+		$jobdata[] = array('url' => $options['clone_url']);
+
+		return $jobdata;
+	}
+
+	/**
+	 * This function will update the database backup jobdata and set each entity to finished or encrypted to prevent that entity from being backed up again. This will also return the blog name that the database backup belongs to, just in case it's from another site.
+	 *
+	 * @param array $db_backups - the database backup jobdata
+	 * @param array $backup     - the backup history for this backup
+	 *
+	 * @return array            - an array that contains the updated database backup jobdata and the blog name
+	 */
+	public function update_database_jobdata($db_backups, $backup) {
+		
+		$backup_database_info = array(
+			'blog_name' => '',
+			'db_backups' => $db_backups
+		);
+
+		/*
+			We need to tweak the database array here by setting each database entity to finished or encrypted if it's an encrypted archive.
+			I also grab the backups blog name here ready to be used later, just in case this backup set is from another site.
+		*/
+		foreach ($db_backups as $key => $db_info) {
+			$status = 'finished';
+			$db_index = ('wp' == $key) ? 0 : $key;
+
+			if (isset($backup['db'][$db_index])) {
+				$db_backup_name = $backup['db'][$db_index];
+				
+				if (preg_match('/^backup_([\-0-9]{15})_(.*)_([0-9a-f]{12})-[\-a-z]+([0-9]+)?+(\.(zip|gz|gz\.crypt))?$/i', $db_backup_name, $matches)) {
+					$backup_database_info['blog_name'] = $matches[2];
+				}
+
+				if (UpdraftPlus_Encryption::is_file_encrypted($db_backup_name)) $status = 'encrypted';
+
+				if (is_array($db_info) && isset($db_info['status'])) {
+					$db_backups[$key]['status'] = $status;
+				} else {
+					$db_backups[$key] = $status;
+				}
+			} else {
+				unset($db_backups[$key]);
+			}
+		}
+
+		$backup_database_info['db_backups'] = $db_backups;
+
+		return $backup_database_info;
 	}
 
 	private function ensure_semaphore_exists($semaphore) {
@@ -2639,7 +2785,7 @@ class UpdraftPlus {
 	 * @return string       - the backup nonce
 	 */
 	public function incremental_backup_file_nonce($nonce) {
-		if (!empty($this->file_nonce)) return $this->file_nonce;
+		if (apply_filters('updraftplus_incremental_addon_installed', false) && !empty($this->file_nonce)) return $this->file_nonce;
 		return $nonce;
 	}
 
@@ -2737,8 +2883,13 @@ class UpdraftPlus {
 			$this->log("Backup aborted (via filter)");
 			return false;
 		}
-
-		if (!is_string($service) && !is_array($service)) $service = UpdraftPlus_Options::get_updraft_option('updraft_service');
+	
+		if (!is_string($service) && !is_array($service)) {
+			$all_services = UpdraftPlus_Options::get_updraft_option('updraft_service');
+			if (is_string($all_services))  $all_services = (array) $all_services;
+			$enabled_storage_objects_and_ids = $this->get_enabled_storage_objects_and_ids($all_services);
+			$service = array_keys($enabled_storage_objects_and_ids);
+		}
 		$service = $this->just_one($service);
 		if (is_string($service)) $service = array($service);
 		if (!is_array($service)) $service = array('none');
@@ -2849,13 +3000,15 @@ class UpdraftPlus {
 				}
 			}
 		} else {
-			$dbs = "no";
+			$dbs = 'no';
 		}
 
 		array_push($initial_jobdata, 'backup_database', $dbs);
 		array_push($initial_jobdata, 'backup_files', (($backup_files) ? 'begun' : 'no'));
 
 		if (is_array($options) && !empty($options['label'])) array_push($initial_jobdata, 'label', $options['label']);
+		
+		if (!empty($options['always_keep'])) array_push($initial_jobdata, 'always_keep', true);
 
 		try {
 			// Use of jobdata_set_multi saves around 200ms
@@ -2893,10 +3046,18 @@ class UpdraftPlus {
 	}
 	
 	private function backup_finish($cancel_event, $do_cleanup, $allow_email, $resumption_no, $force_abort = false) {
+		global $updraftplus_admin;
 
 		if (!empty($this->semaphore)) $this->semaphore->unlock();
 
 		$delete_jobdata = false;
+
+		$clone_job = $this->jobdata_get('clone_job');
+
+		if (!empty($clone_job)) {
+			$clone_id = $this->jobdata_get('clone_id');
+			$secret_token = $this->jobdata_get('secret_token');
+		}
 
 		// The valid use of $do_cleanup is to indicate if in fact anything exists to clean up (if no job really started, then there may be nothing)
 
@@ -2950,6 +3111,7 @@ class UpdraftPlus {
 		if ($force_abort) {
 			$send_an_email = true;
 			$final_message = __('The backup was aborted by the user', 'updraftplus');
+			if (!empty($clone_job)) $this->get_updraftplus_clone()->clone_failed_delete(array('clone_id' => $clone_id, 'secret_token' => $secret_token));
 		} elseif (0 == $this->error_count()) {
 			$send_an_email = true;
 			$service = $this->jobdata_get('service');
@@ -2966,11 +3128,15 @@ class UpdraftPlus {
 					$this->log('The backup apparently succeeded (with warnings) and is now complete');
 				}
 			}
-			if ($remote_sent && !$force_abort) $final_message .= '. '.__('To complete your migration/clone, you should now log in to the remote site and restore the backup set.', 'updraftplus');
+			if ($remote_sent && !$force_abort) {
+				$final_message .= '. '.__('To complete your migration/clone, you should now log in to the remote site and restore the backup set.', 'updraftplus');
+				do_action('updraftplus_remotesend_upload_complete');
+			}
 			if ($do_cleanup) $delete_jobdata = apply_filters('updraftplus_backup_complete', $delete_jobdata);
 		} elseif (false == $this->newresumption_scheduled) {
 			$send_an_email = true;
 			$final_message = __('The backup attempt has finished, apparently unsuccessfully', 'updraftplus');
+			if (!empty($clone_job)) $this->get_updraftplus_clone()->clone_failed_delete(array('clone_id' => $clone_id, 'secret_token' => $secret_token));
 		} else {
 			// There are errors, but a resumption will be attempted
 			$final_message = __('The backup has not finished; a resumption is scheduled', 'updraftplus');
@@ -3140,23 +3306,22 @@ class UpdraftPlus {
 		$instance_id = empty($updraftplus_backup->current_instance) ? '' : $updraftplus_backup->current_instance;
 		$shash = $service.(('' == $service) ? '' : '-').$instance_id.(('' == $instance_id) ? '' : '-').md5($file);
 
-		$this->jobdata_set("uploaded_".$shash, 'yes');
-	
 		if ($force || !empty($updraftplus_backup->last_service)) {
-			$hash = md5($file);
-			$this->log("Recording as successfully uploaded: $file ($hash)");
-			$this->jobdata_set('uploaded_lastreset', $this->current_resumption);
-			$this->jobdata_set("uploaded_".$hash, 'yes');
+			$this->log("Recording as successfully uploaded: $file");
+			$new_jobdata = $this->get_uploaded_jobdata_items($file, $service, $instance_id);
 		} else {
+			$new_jobdata = array('uploaded_'.$shash => 'yes');
 			$this->log("Recording as successfully uploaded: $file (".$updraftplus_backup->current_service.", more services to follow)");
 		}
 
 		$upload_status = $this->jobdata_get('uploading_substatus');
 		if (is_array($upload_status) && isset($upload_status['i'])) {
 			$upload_status['i']++;
-			$upload_status['p'] =0;
-			$this->jobdata_set('uploading_substatus', $upload_status);
+			$upload_status['p'] = 0;
+			$new_jobdata['uploading_substatus'] = $upload_status;
 		}
+		
+		$this->jobdata_set_multi($new_jobdata);
 
 		// Really, we could do this immediately when we realise the DB has gone away. This is just for the probably-impossible case that a DB write really can still succeed. But, we must abort before calling delete_local(), as the removal of the local file can cause it to be recreated if the DB is out of sync with the fact that it really is already uploaded
 		if (false === $db_connected) {
@@ -3173,6 +3338,25 @@ class UpdraftPlus {
 	}
 
 	/**
+	 * Gets the jobdata items to be added to mark a file as uploaded
+	 *
+	 * @param String $file		  - the file (basename)
+	 * @param String $service	  - service identifier
+	 * @param String $instance_id - instance identifier
+	 *
+	 * @return Array - jobdata items
+	 */
+	public function get_uploaded_jobdata_items($file, $service = '', $instance_id = '') {
+		$hash = md5($file);
+		$shash = $service.(('' == $service) ? '' : '-').$instance_id.(('' == $instance_id) ? '' : '-').md5($file);
+		return array(
+			'uploaded_lastreset' => $this->current_resumption,
+			'uploaded_'.$hash => 'yes',
+			'uploaded_'.$shash =>'yes'
+		);
+	}
+	
+	/**
 	 * Return whether a particular file has been uploaded to a particular remote service
 	 *
 	 * @param String $file	      - the filename (basename)
@@ -3183,7 +3367,7 @@ class UpdraftPlus {
 	 */
 	public function is_uploaded($file, $service = '', $instance_id = '') {
 		$hash = $service.(('' == $service) ? '' : '-').$instance_id.(('' == $instance_id) ? '' : '-').md5($file);
-		return ($this->jobdata_get("uploaded_$hash") === "yes") ? true : false;
+		return ('yes' === $this->jobdata_get("uploaded_$hash")) ? true : false;
 	}
 
 	private function delete_local($file) {
@@ -3223,14 +3407,20 @@ class UpdraftPlus {
 		}
 	}
 
+	/**
+	 * Reschedule the next resumption for the specified amount of time in the future
+	 *
+	 * @param Integer $how_far_ahead - a number of seconds
+	 */
 	public function reschedule($how_far_ahead) {
 		// Reschedule - remove presently scheduled event
 		$next_resumption = $this->current_resumption + 1;
 		wp_clear_scheduled_hook('updraft_backup_resume', array($next_resumption, $this->nonce));
 		// Add new event
 		// This next line may be too cautious; but until 14-Aug-2014, it was 300.
-		// Update 20-Mar-2015 - lowered from 180
-		if ($how_far_ahead < 120) $how_far_ahead = 120;
+		// Update 20-Mar-2015 - lowered from 180 to 120
+		// Update 03-Aug-2018 - lowered from 120 to 100
+		if ($how_far_ahead < 100) $how_far_ahead = 100;
 		$schedule_for = time() + $how_far_ahead;
 		$this->log("Rescheduling resumption $next_resumption: moving to $how_far_ahead seconds from now ($schedule_for)");
 		wp_schedule_single_event($schedule_for, 'updraft_backup_resume', array($next_resumption, $this->nonce));
@@ -3368,7 +3558,7 @@ class UpdraftPlus {
 		$dirlist = array();
 		$added = 0;
 
-		$this->log('Looking for candidates to back up in: '.$backup_from_inside_dir);
+		$this->log('Looking for candidates to backup in: '.$backup_from_inside_dir);
 		$updraft_dir = $this->backups_dir_location();
 
 		if (is_file($backup_from_inside_dir)) {
@@ -3438,9 +3628,11 @@ class UpdraftPlus {
 			$backup_array['nonce'] = $this->nonce;
 			$backup_array['service'] = $this->jobdata_get('service');
 			$backup_array['service_instance_ids'] = array();
+			$backup_array['always_keep'] = $this->jobdata_get('always_keep', false);
+			$backup_array['files_enumerated_at'] = $this->jobdata_get('files_enumerated_at');
 			
 			// N.B. Though the saved 'service' option can have various forms (especially if upgrading from (very) old versions), in the jobdata, it is always an array.
-			$storage_objects_and_ids = $this->get_storage_objects_and_ids($backup_array['service']);
+			$storage_objects_and_ids = $this->get_enabled_storage_objects_and_ids($backup_array['service']);
 			
 			// N.B. On PHP 5.5+, we'd use array_column()
 			foreach ($storage_objects_and_ids as $method => $method_information) {
@@ -3455,7 +3647,7 @@ class UpdraftPlus {
 			if (is_array($remotesend_info) && !empty($remotesend_info['url'])) $backup_array['remotesend_url'] = $remotesend_info['url'];
 			if (false != ($autobackup = $this->jobdata_get('is_autobackup', false))) $backup_array['autobackup'] = true;
 			
-			UpdraftPlus_Backup_History::save_backup($this->backup_time, $backup_array);
+			UpdraftPlus_Backup_History::save_backup(apply_filters('updraftplus_backup_timestamp', $this->backup_time), $backup_array);
 			
 		} else {
 			$this->log('Could not save backup history because we have no backup array. Backup probably failed.');
@@ -3570,16 +3762,23 @@ class UpdraftPlus {
 	 * @return Array					- returns an array, with a key equal to only enabled service member of the $services list passed in. The corresponding value is then an array with keys 'object', 'instance_settings'. The value for 'object' is an UpdraftPlus_BackupModule instance. The value for 'instance_settings' is an array keyed by associated enabled instance IDs, with the values being the associated settings for the enabled instance ID.
 	 */
 	public function get_enabled_storage_objects_and_ids($services) {
+		
 		$storage_objects_and_ids = $this->get_storage_objects_and_ids($services);
+		
 		foreach ($storage_objects_and_ids as $method => $method_information) {
+
+			if (!$method_information['object']->supports_feature('multi_options')) continue;
+			
 			foreach ($method_information['instance_settings'] as $instance_id => $instance_information) {
 				if (!isset($instance_information['instance_enabled'])) $instance_information['instance_enabled'] = 1;
 				if (empty($instance_information['instance_enabled'])) {
 					unset($storage_objects_and_ids[$method]['instance_settings'][$instance_id]);
 				}
 			}
+			
 			if (empty($storage_objects_and_ids[$method]['instance_settings'])) unset($storage_objects_and_ids[$method]);
 		}
+		
 		return $storage_objects_and_ids;
 	}
 	
@@ -3643,7 +3842,7 @@ class UpdraftPlus {
 		$this->log("Terminate: ".basename($file)." exists with activity within the last 30 seconds (time_mod=$time_mod, time_now=$time_now, diff=".(floor($time_now-$time_mod)).", size=$file_size). This likely means that another UpdraftPlus run is at work; so we will exit.");
 		$increase_by = ($increase_resumption) ? 120 : 0;
 		$this->increase_resume_and_reschedule($increase_by, true);
-		if (!defined('UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY') || true != UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY) die;
+		if (!defined('UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY') || !UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY) die;
 	}
 
 	 /**
@@ -4060,6 +4259,15 @@ class UpdraftPlus {
 		return $x;
 	}
 
+	/**
+	 * Filter the values down to just one (subject to being filtered)
+	 *
+	 * @param Array|String	 $input  - input
+	 * @param String		 $filter - filter suffix to use
+	 * @param Boolean|String $rinput - a 'preferred' value (unless false) if no filtering is done
+	 *
+	 * @return Array|String - output, after filtering
+	 */
 	public function just_one($input, $filter = 'savestorage', $rinput = false) {
 		$oinput = $input;
 		if (false === $rinput) $rinput = is_array($input) ? array_pop($input) : $input;
@@ -4273,7 +4481,7 @@ class UpdraftPlus {
 							} else {
 								// For completely different site migration
 								$info['same_url'] = false;
-								$warn[] = apply_filters('updraftplus_dbscan_urlchange', '<a href="https://updraftplus.com/shop/migrator/">'.__('This backup set is from a different site - this is not a restoration, but a migration. You need the Migrator add-on in order to make this work.', 'updraftplus').'</a>', $old_siteurl, $res);
+								$warn[] = apply_filters('updraftplus_dbscan_urlchange', '<a href="https://updraftplus.com/shop/migrator/">'.sprintf(__('This backup set is from a different site (%s) - this is not a restoration, but a migration. You need the Migrator add-on in order to make this work.', 'updraftplus'), htmlspecialchars($old_siteurl.' / '.untrailingslashit(site_url()))).'</a>', $old_siteurl, $res);
 							}
 							if (!class_exists('UpdraftPlus_Addons_Migrator')) {
 								$warn[] .= '<strong><a href="'.apply_filters('updraftplus_com_link', "https://updraftplus.com/faqs/tell-me-more-about-the-search-and-replace-site-location-in-the-database-option/").'">'.__('You can search and replace your database (for migrating a website to a new location/URL) with the Migrator add-on - follow this link for more information', 'updraftplus').'</a></strong>';
@@ -4291,9 +4499,9 @@ class UpdraftPlus {
 				} elseif ('' == $old_home && preg_match('/^\# Home URL: (http(.*))$/', $buffer, $matches)) {
 					$old_home = untrailingslashit($matches[1]);
 					// Check for should-be migration
-					if (!$migration_warning && home_url() != $old_home) {
+					if (!$migration_warning && UpdraftPlus_Manipulation_Functions::normalise_url(home_url()) != UpdraftPlus_Manipulation_Functions::normalise_url($old_home)) {
 						$migration_warning = true;
-						$powarn = apply_filters('updraftplus_dbscan_urlchange', '<a href="https://updraftplus.com/shop/migrator/">'.__('This backup set is from a different site - this is not a restoration, but a migration. You need the Migrator add-on in order to make this work.', 'updraftplus').'</a>', $old_home, $res);
+						$powarn = apply_filters('updraftplus_dbscan_urlchange', '<a href="https://updraftplus.com/shop/migrator/">'.sprintf(__('This backup set is from a different site (%s) - this is not a restoration, but a migration. You need the Migrator add-on in order to make this work.', 'updraftplus'), htmlspecialchars($old_home.' / '.home_url())).'</a>', $old_home, $res);
 						if (!empty($powarn)) $warn[] = $powarn;
 					}
 				} elseif (!isset($info['created_by_version']) && preg_match('/^\# Created by UpdraftPlus version ([\d\.]+)/', $buffer, $matches)) {
@@ -4352,6 +4560,8 @@ class UpdraftPlus {
 					$skipped_tables = explode(',', $matches[1]);
 				}
 
+			} elseif (preg_match('#/\*\!40\d+ SET NAMES (.*)\*\/#i', $buffer, $smatches)) {
+				$db_charsets_found[] = rtrim($smatches[1]);
 			} elseif (preg_match('/^\s*create table \`?([^\`\(]*)\`?\s*\(/i', $buffer, $matches)) {
 				$table = $matches[1];
 				$tables_found[] = $table;
@@ -4482,6 +4692,7 @@ class UpdraftPlus {
 
 				$collate_select_html = '<label>'.__('Your chosen replacement collation', 'updraftplus').':</label>';
 				$collate_select_html .= '<select name="updraft_restorer_collate" id="updraft_restorer_collate">';
+				$db_charsets_found_unique = array_unique($db_charsets_found);
 				foreach ($db_supported_collations as $collate => $collate_info_obj) {
 					$option_other_attr = array();
 					if ($db_charset_forbidden && isset($collate_info_obj->Charset)) {
@@ -4489,8 +4700,20 @@ class UpdraftPlus {
 						if ($similar_type_charset != $collate_info_obj->Charset) {
 							$option_other_attr[] = 'style="display:none;"';
 						}
+					} else {
+						if (1 == count($db_charsets_found_unique)) {
+							if (!in_array($collate_info_obj->Charset, $db_charsets_found_unique)) {
+								$option_other_attr[] = 'style="display:none;"';
+							}
+						} else {
+							$option_other_attr[] = 'style="display:none;"';
+						}
 					}
 					$collate_select_html .= '<option value="'.esc_attr($collate).'" '.selected($collate, $similar_type_collate, $echo = false).' '.implode(' ', $option_other_attr).'>'.esc_html($collate).'</option>';
+				}
+				
+				if (count($db_charsets_found_unique) > 1 && !$db_charset_forbidden) {
+					$collate_select_html .= '<option value="choose_a_default_for_each_table" selected="selected">'.__('Choose a default for each table', 'updraftplus').'</option>';
 				}
 				$collate_select_html .= '</select>';
 				
@@ -4620,6 +4843,27 @@ class UpdraftPlus {
 		return $similar_type_collate;
 	}
 
+	/**
+	 * Retrieves current clean url for anchor link where href attribute value is not url (for ex. #div) or empty
+	 *
+	 * @return String - current clean url
+	 */
+	public static function get_current_clean_url() {
+	
+		// Within an UpdraftCentral context, there should be no prefix on the anchor link
+		if (defined('UPDRAFTCENTRAL_COMMAND') && UPDRAFTCENTRAL_COMMAND) return '';
+		
+		if (defined('DOING_AJAX') && DOING_AJAX) {
+			$current_url = $_SERVER["HTTP_REFERER"];
+		} else {
+			$url_prefix = is_ssl() ? 'https' : 'http';
+			$current_url = $url_prefix."://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		}
+		$remove_query_args = array('state', 'action', 'oauth_verifier', 'nonce', 'updraftplus_instance', 'access_token', 'user_id', 'updraftplus_googledriveauth');
+		
+		return UpdraftPlus_Manipulation_Functions::wp_unslash(remove_query_arg($remove_query_args, $current_url));
+	}
+	
 	private function gzopen_for_read($file, &$warn, &$err) {
 		if (!function_exists('gzopen') || !function_exists('gzread')) {
 			$missing = '';
@@ -4807,7 +5051,7 @@ class UpdraftPlus {
 
 		foreach ($dbsinfo as $key => $value) {
 			if ('wp' == $key) {
-				// The table prefix after being filtered - i.e. what filters what we'll actually back up
+				// The table prefix after being filtered - i.e. what filters what we'll actually backup
 				$table_prefix = $this->get_table_prefix(true);
 				// The unfiltered table prefix - i.e. the real prefix that things are relative to
 				$table_prefix_raw = $this->get_table_prefix(false);

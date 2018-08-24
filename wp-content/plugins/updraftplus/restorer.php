@@ -47,6 +47,8 @@ class Updraft_Restorer extends WP_Upgrader {
 	
 	private $use_wpdb = null;
 	
+	private $import_table_prefix = null;
+	
 	// Constants for use with the move_backup_in method
 	// These can't be arbitrarily changed; there is legacy code doing bitwise operations and numerical comparisons, and possibly legacy code still using the values directly.
 	const MOVEIN_OVERWRITE_NO_BACKUP = 0;
@@ -287,6 +289,8 @@ class Updraft_Restorer extends WP_Upgrader {
 		
 		$backupable_entities = $updraftplus->get_backupable_file_entities(true, true);
 		
+		$remove_zip = isset($restore_options['delete_during_restore']) ? $restore_options['delete_during_restore'] : false;
+		
 		// Allow add-ons to adjust the restore directory (but only in the case of restore - otherwise, they could just use the filter built into UpdraftPlus::get_backupable_file_entities)
 		$backupable_entities = apply_filters('updraft_backupable_file_entities_on_restore', $backupable_entities, $restore_options, $backup_set);
 
@@ -360,6 +364,9 @@ class Updraft_Restorer extends WP_Upgrader {
 					}
 				} elseif (false === $restore_result) {
 					return false;
+				} elseif ($restore_result && $remove_zip) {
+					$deleted = unlink($updraftplus->backups_dir_location().'/'.$file);
+					$updraftplus->log("Delete zip during restore active; removing backup file: $file: ".($deleted ? 'OK' : 'Failed'));
 				}
 				
 				unset($files[$fkey]);
@@ -377,6 +384,9 @@ class Updraft_Restorer extends WP_Upgrader {
 			$updraftplus->jobdata_set('second_loop_entities', $second_loop);
 			$updraftplus->jobdata_set('backup_timestamp', $timestamp);
 		}
+		
+		// If the database was restored, then check active plugins and make sure they all exist otherwise the site may go down
+		if (null !== $this->import_table_prefix) $this->check_active_plugins($this->import_table_prefix);
 
 		return true;
 	}
@@ -437,15 +447,32 @@ class Updraft_Restorer extends WP_Upgrader {
 			$rtime = microtime(true)-$updraftplus->job_time_ms;
 			fwrite($logfile_handle, sprintf("%08.03f", round($rtime, 3))." (R) ".'['.$level.'] '.$line."\n");
 		}
-		
-		if ('warning' == $destination || 'error' == $destination || $uniq_id) {
-			$line = '<strong>'.htmlspecialchars($line).'</strong>';
+		if (defined('WP_CLI') && WP_CLI) {
+			switch ($level) {
+				case 'error':
+				case 'warning':
+					// WP_CLI::error() displays message with the prefix "Error: ", We don't like message which are double prefixed like the "Error: Error: ".
+					if (0 === stripos($line, 'Error: ')) {
+						$log_line = substr($line, 7);
+					} else {
+						$log_line = $line;
+					}
+					WP_CLI::error($log_line, false);
+					break;
+				case 'notice':
+				default:
+					WP_CLI::log($line, false);
+					break;
+			}
 		} else {
-			$line = htmlspecialchars($line);
+			if ('warning' == $destination || 'error' == $destination || $uniq_id) {
+				$line = '<strong>'.htmlspecialchars($line).'</strong>';
+			} else {
+				$line = htmlspecialchars($line);
+			}
+	
+			echo $line.'<br>';
 		}
-
-		echo $line.'<br>';
-
 		return false;
 	}
 	
@@ -1168,6 +1195,8 @@ class Updraft_Restorer extends WP_Upgrader {
 		// The filter allows you to restore to a completely different prefix - i.e. don't replace this site; possibly useful for testing the restore process (but not yet tested)
 		$import_table_prefix = apply_filters('updraftplus_restore_table_prefix', $updraftplus->get_table_prefix(false));
 
+		$this->import_table_prefix = $import_table_prefix;
+		
 		$now_done = apply_filters('updraftplus_pre_restore_move_in', false, $type, $working_dir, $info, $this->ud_backup_info, $this, $wp_filesystem_dir);
 		if (is_wp_error($now_done)) return $now_done;
 
@@ -2309,7 +2338,7 @@ ENDHERE;
 						}
 					} else {
 						$engine_change_message = sprintf(__('Requested table engine (%s) is not present - changing to MyISAM.', 'updraftplus'), $engine)."<br>";
-						$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("ENGINE=$eng_match", "ENGINE=MyISAM", $sql_line);
+						$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("ENGINE=$engine", "ENGINE=MyISAM", $sql_line);
 						// Remove (M)aria options
 						if ('maria' == strtolower($engine) || 'aria' == strtolower($engine)) {
 							$sql_line = preg_replace('/PAGE_CHECKSUM=\d\s?/', '', $sql_line, 1);
@@ -2336,7 +2365,11 @@ ENDHERE;
 					$collate = $collate_match[1];
 					if (!isset($supported_collations[$collate])) {
 						$unsupported_collates_in_sql_line[] = $collate;
-						$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("COLLATE=$collate", "COLLATE=".$updraft_restorer_collate, $sql_line, false);
+						if ('choose_a_default_for_each_table' == $updraft_restorer_collate) {
+							$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("COLLATE=$collate", "", $sql_line, false);
+						} else {
+							$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("COLLATE=$collate", "COLLATE=".$updraft_restorer_collate, $sql_line, false);
+						}
 					}
 				}
 				if (!empty($updraft_restorer_collate) && preg_match_all('/ COLLATE ([a-zA-Z0-9._-]+) /i', $sql_line, $collate_matches)) {
@@ -2344,7 +2377,11 @@ ENDHERE;
 					foreach ($collates as $collate) {
 						if (!isset($supported_collations[$collate])) {
 							$unsupported_collates_in_sql_line[] = $collate;
-							$sql_line = str_ireplace("COLLATE $collate ", "COLLATE ".$updraft_restorer_collate." ", $sql_line);
+							if ('choose_a_default_for_each_table' == $updraft_restorer_collate) {
+								$sql_line = str_ireplace("COLLATE $collate ", "", $sql_line);
+							} else {
+								$sql_line = str_ireplace("COLLATE $collate ", "COLLATE ".$updraft_restorer_collate." ", $sql_line);
+							}
 						}
 					}
 				}
@@ -2353,7 +2390,11 @@ ENDHERE;
 					foreach ($collates as $collate) {
 						if (!isset($supported_collations[$collate])) {
 							$unsupported_collates_in_sql_line[] = $collate;
-							$sql_line = str_ireplace("COLLATE $collate,", "COLLATE ".$updraft_restorer_collate.",", $sql_line);
+							if ('choose_a_default_for_each_table' == $updraft_restorer_collate) {
+								$sql_line = str_ireplace("COLLATE $collate,", ",", $sql_line);
+							} else {
+								$sql_line = str_ireplace("COLLATE $collate,", "COLLATE ".$updraft_restorer_collate.",", $sql_line);
+							}
 						}
 					}
 				}
@@ -2396,9 +2437,14 @@ ENDHERE;
 			} elseif (preg_match('/^use /i', $sql_line)) {
 				// WPB2D produces these, as do some phpMyAdmin dumps
 				$sql_type = 7;
-			} elseif (preg_match('#/\*\!40\d+ SET NAMES (.*)\*\/#', $sql_line, $smatches)) {
+			} elseif (preg_match('#/\*\!40\d+ (SET NAMES) (.*)\*\/#i', $sql_line, $smatches)) {
 				$sql_type = 8;
-				$this->set_names = rtrim($smatches[1]);
+				$charset = rtrim($smatches[2]);
+				$this->set_names = $charset;
+				if (!isset($supported_charsets[$charset])) {
+					$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace($smatches[1]." ".$charset, "SET NAMES ".$this->restore_options['updraft_restorer_charset'], $sql_line);
+					$updraftplus->log('SET NAMES: '.sprintf(__('Requested character set (%s) is not present - changing to %s.', 'updraftplus'), esc_html($charset), esc_html($this->restore_options['updraft_restorer_charset'])), 'notice-restore');
+				}
 			} else {
 				// Prevent the previous value of $sql_type being retained for an unknown type
 				$sql_type = 0;
@@ -2487,7 +2533,7 @@ ENDHERE;
 			$req = mysql_unbuffered_query("UNLOCK TABLES;");
 		}
 	}
-	
+
 	/**
 	 * Save configuration bundle, ready to restore it once the options table has been restored
 	 */
@@ -2901,6 +2947,78 @@ ENDHERE;
 		if ($log_message) {
 			$updraftplus->log($log_message, 'warning-restore');
 		}
+	}
+
+	/**
+	 * This function will loop through all the sites available and get their active plugins and ensure any missing plugins are removed from the active list to prevent crashes.
+	 *
+	 * @param string $import_table_prefix - the table prefix
+	 *
+	 * @return void
+	 */
+	private function check_active_plugins($import_table_prefix) {
+		global $wpdb;
+
+		if ($this->is_multisite) {
+			// Get the site wide active plugins
+			$plugins = $wpdb->get_row("SELECT meta_value FROM ${import_table_prefix}sitemeta WHERE meta_key = 'active_sitewide_plugins'");
+			if (!empty($plugins->meta_value)) {
+				$plugins = $this->deactivate_missing_plugins($plugins->meta_value);
+				$wpdb->query($wpdb->prepare("UPDATE ${import_table_prefix}sitemeta SET meta_value=%s WHERE meta_key='active_sitewide_plugins'", $plugins));
+			}
+			
+			$offset = 0;
+			$limit = 250;
+
+			while (true) {
+				// Loop over and get each sites active plugins
+				$blogs = $wpdb->get_results("SELECT blog_id FROM {$wpdb->blogs} LIMIT ${offset}, ${limit}", ARRAY_A);
+
+				if (empty($blogs)) break;
+				
+				foreach ($blogs as $row) {
+					if (!apply_filters('updraftplus_restore_this_site', true, $row['blog_id'], '', $this->restore_options)) continue;
+					$plugins = $wpdb->get_row("SELECT option_value FROM ".$wpdb->get_blog_prefix($row['blog_id'])."options WHERE option_name = 'active_plugins'");
+					if (empty($plugins->option_value)) continue;
+					$plugins = $this->deactivate_missing_plugins($plugins->option_value);
+					$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->get_blog_prefix($row['blog_id'])."options SET option_value=%s WHERE option_name='active_plugins'", $plugins));
+				}
+
+				$offset += $limit;
+			}
+
+		} else {
+			$plugins = $wpdb->get_row("SELECT option_value FROM ${import_table_prefix}options WHERE option_name = 'active_plugins'");
+			if (empty($plugins->option_value)) return;
+			$plugins = $this->deactivate_missing_plugins($plugins->option_value);
+			$wpdb->query($wpdb->prepare("UPDATE ${import_table_prefix}options SET option_value=%s WHERE option_name='active_plugins'", $plugins));
+		}
+	}
+
+	/**
+	 * This function will check the list of active plugins and ensure they are still installed, if any are missing it will deactivate them to prevent the site from crashing.
+	 *
+	 * @param String $plugins - serialized active plugins
+	 *
+	 * @return String - filtered results
+	 */
+	private function deactivate_missing_plugins($plugins) {
+		global $updraftplus;
+
+		if (!function_exists('get_plugins')) include_once(ABSPATH.'wp-admin/includes/plugin.php');
+		$installed_plugins = array_keys(get_plugins());
+		$plugins = maybe_unserialize($plugins);
+		
+		foreach ($plugins as $key => $path) {
+			if (!in_array($path, $installed_plugins)) {
+				$updraftplus->log_e('Plugin path %s not found: de-activating.', $path);
+				unset($plugins[$key]);
+			}
+		}
+
+		$plugins = serialize($plugins);
+
+		return $plugins;
 	}
 }
 
