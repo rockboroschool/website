@@ -502,7 +502,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 						if ( is_object( $v ) ) {
 							$v = (Array) $v;
 						}
-						$buf .= "\t<tr><td><a href='#' title='$k' class='aiosp_delete_url'></a> {$k}</td><td>{$v['prio']}</td><td>{$v['freq']}</td><td>{$v['mod']}</td></tr>\n";
+						$buf .= "\t<tr><td><a href='#' title='$k' class='aiosp_delete aiosp_delete_url'></a> {$k}</td><td>{$v['prio']}</td><td>{$v['freq']}</td><td>{$v['mod']}</td></tr>\n";
 					}
 					$buf .= "</table>\n";
 				}
@@ -1136,7 +1136,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 * Set up hooks for rewrite rules for dynamic sitemap generation.
 		 */
 		function setup_rewrites() {
-			add_action( 'rewrite_rules_array', array( $this, 'rewrite_hook' ) );
+			add_filter( 'rewrite_rules_array', array( $this, 'rewrite_hook' ) );
 			add_filter( 'query_vars', array( $this, 'query_var_hook' ) );
 			add_action( 'parse_query', array( $this, 'sitemap_output_hook' ) );
 			if ( ! get_transient( "{$this->prefix}rules_flushed" ) ) {

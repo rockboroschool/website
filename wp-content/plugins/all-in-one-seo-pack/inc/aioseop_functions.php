@@ -925,11 +925,11 @@ if ( ! function_exists( 'fnmatch' ) ) {
 }
 
 if ( ! function_exists( 'aiosp_log' ) ) {
-	function aiosp_log( $log ) {
+	function aiosp_log( $log, $force = false ) {
 
 		global $aioseop_options;
 
-		if ( ! empty( $aioseop_options ) && isset( $aioseop_options['aiosp_do_log'] ) && $aioseop_options['aiosp_do_log'] ) {
+		if ( ( ! empty( $aioseop_options ) && isset( $aioseop_options['aiosp_do_log'] ) && $aioseop_options['aiosp_do_log'] ) || $force || defined( 'AIOSEOP_DO_LOG' ) ) {
 
 			if ( is_array( $log ) || is_object( $log ) ) {
 				error_log( print_r( $log, true ) );
