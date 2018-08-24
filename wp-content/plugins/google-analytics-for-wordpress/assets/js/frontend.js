@@ -167,9 +167,9 @@ var MonsterInsights = function(){
 		/* Enable window.monsterinsights_experimental_mode at your own risk. We might eventually remove it. Also you may/can/will burn through GA quota for your property quickly. */
 		} else if ( hostname && window.monsterinsights_experimental_mode && hostname.length > 0 && document.domain.length > 0 && hostname !== document.domain ) { /* If it's a cross-hostname link */
 			type = "cross-hostname";
-		} 
+		}
 
-		if ( extension && type === 'unknown' && download_extensions.length > 0 && extension.length > 0 ) { /* If it's a download */
+		if ( extension && ( type === 'unknown' || 'external' === type ) && download_extensions.length > 0 && extension.length > 0 ) { /* If it's a download */
 			for ( index = 0, len = download_extensions.length; index < len; ++index ) {
 				if ( download_extensions[ index ].length > 0 && ( link.endsWith( download_extensions[ index ] ) || download_extensions[ index ]  == extension ) ) {
 					type = "download";
@@ -281,7 +281,11 @@ var MonsterInsights = function(){
 					valuesArray.exit = 'internal-as-outbound';
 					__gaTrackerNotSend( valuesArray );
 				};
-				
+				var __gaTrackerNoRedirectCrossHostname = function() {
+					valuesArray.exit = 'cross-hostname';
+					__gaTrackerNotSend( valuesArray );
+				};
+
 				if ( target || type == 'mailto' || type == 'tel' ) { /* If target opens a new window then just track */
 					if ( type == 'download' ) {
 						if ( track_download_as == 'pageview' ) {
@@ -289,7 +293,7 @@ var MonsterInsights = function(){
 								hitType : 'pageview',
 								page    : link,
 							};
-							
+
 							__gaTrackerSend( valuesArray, fieldsArray );
 						} else {
 							fieldsArray = {
@@ -462,12 +466,14 @@ var MonsterInsights = function(){
 						__gaTrackerNotSend( valuesArray );
 					}
 
-					if ( type != 'external' && type != 'internal-as-outbound' ) {
+					if ( type != 'external' && type != 'cross-hostname' && type != 'internal-as-outbound' ) {
 						/* Run hitCallback again if GA takes longer than 1 second */
 						setTimeout( __gaTrackerHitBack, 1000 );
 					} else {
 						if ( type == 'external' ) {
 							setTimeout( __gaTrackerNoRedirectExternal, 1100 );
+						} else if ( type == 'cross-hostname' ) {
+							setTimeout( __gaTrackerNoRedirectCrossHostname, 1100 );
 						} else {
 							setTimeout( __gaTrackerNoRedirectInboundAsExternal, 1100 );
 						}

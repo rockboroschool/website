@@ -186,7 +186,6 @@ class MonsterInsights_Tracking_Analytics extends MonsterInsights_Tracking_Abstra
 		$ua         	= monsterinsights_get_ua();
 		$output     	= '';
 		$reason     	= '';
-		$cookie_notice  = class_exists( 'Cookie_Notice' );
 		$attributes     = apply_filters( 'monsterinsights_tracking_analytics_script_attributes', array( 'type' => "text/javascript", 'data-cfasync' => 'false'  ) );
 		$attr_string    = '';
 		if ( ! empty( $attributes ) ) {
@@ -216,6 +215,7 @@ class MonsterInsights_Tracking_Analytics extends MonsterInsights_Tracking_Abstra
 } ?>
 <?php if ( $ua ) { ?>
 <script<?php echo $attr_string;?>>
+	var mi_version         = '<?php echo MONSTERINSIGHTS_VERSION; ?>';
 	var mi_track_user      = <?php echo ( $track_user ? 'true' : 'false' ); ?>;
 	var mi_no_track_reason = <?php echo ( $reason ? "'" . esc_js( $reason)  . "'": "''" ); ?>;
 	<?php do_action( 'monsterinsights_tracking_analytics_frontend_output_after_mi_track_user' ); ?>

@@ -58,7 +58,8 @@ class Jetpack {
 		'wordads',
 		'eu-cookie-law-style',
 		'flickr-widget-style',
-		'jetpack-search-widget'
+		'jetpack-search-widget',
+		'jetpack-simple-payments-widget-style',
 	);
 
 	/**
@@ -178,12 +179,14 @@ class Jetpack {
 			'WordPress SEO Premium by Yoast'       => 'wordpress-seo-premium/wp-seo-premium.php',
 			'All in One SEO Pack'                  => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
 			'All in One SEO Pack Pro'              => 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php',
+			'The SEO Framework'                    => 'autodescription/autodescription.php',
 		),
 		'verification-tools' => array(
 			'WordPress SEO by Yoast'               => 'wordpress-seo/wp-seo.php',
 			'WordPress SEO Premium by Yoast'       => 'wordpress-seo-premium/wp-seo-premium.php',
 			'All in One SEO Pack'                  => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
 			'All in One SEO Pack Pro'              => 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php',
+			'The SEO Framework'                    => 'autodescription/autodescription.php',
 		),
 		'widget-visibility' => array(
 			'Widget Logic'                         => 'widget-logic/widget_logic.php',
@@ -199,6 +202,7 @@ class Jetpack {
 			'WordPress SEO Premium by Yoast'       => 'wordpress-seo-premium/wp-seo-premium.php',
 			'All in One SEO Pack'                  => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
 			'All in One SEO Pack Pro'              => 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php',
+			'The SEO Framework'                    => 'autodescription/autodescription.php',
 			'Sitemap'                              => 'sitemap/sitemap.php',
 			'Simple Wp Sitemap'                    => 'simple-wp-sitemap/simple-wp-sitemap.php',
 			'Simple Sitemap'                       => 'simple-sitemap/simple-sitemap.php',
@@ -226,7 +230,6 @@ class Jetpack {
 		                                                         // 2 Click Social Media Buttons
 		'add-link-to-facebook/add-link-to-facebook.php',         // Add Link to Facebook
 		'add-meta-tags/add-meta-tags.php',                       // Add Meta Tags
-		'autodescription/autodescription.php',                   // The SEO Framework
 		'easy-facebook-share-thumbnails/esft.php',               // Easy Facebook Share Thumbnail
 		'heateor-open-graph-meta-tags/heateor-open-graph-meta-tags.php',
 		                                                         // Open Graph Meta Tags by Heateor
@@ -580,8 +583,10 @@ class Jetpack {
 
 		if ( Jetpack::is_active() ) {
 			Jetpack_Heartbeat::init();
-			require_once JETPACK__PLUGIN_DIR . '_inc/lib/class.jetpack-search-performance-logger.php';
-			Jetpack_Search_Performance_Logger::init();
+			if ( Jetpack::is_module_active( 'stats' ) && Jetpack::is_module_active( 'search' ) ) {
+				require_once JETPACK__PLUGIN_DIR . '_inc/lib/class.jetpack-search-performance-logger.php';
+				Jetpack_Search_Performance_Logger::init();
+			}
 		}
 
 		add_filter( 'determine_current_user', array( $this, 'wp_rest_authenticate' ) );
@@ -622,6 +627,9 @@ class Jetpack {
 		add_action( 'customize_controls_enqueue_scripts', array( $this, 'devicepx' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'devicepx' ) );
 
+		// gutenberg locale
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_locale' ) );
+
 		add_action( 'plugins_loaded', array( $this, 'extra_oembed_providers' ), 100 );
 
 		/**
@@ -660,7 +668,7 @@ class Jetpack {
 		add_action( 'jetpack_heartbeat', array( $this, 'refresh_active_plan_from_wpcom' ) );
 
 		/**
-		 * This is the hack to concatinate all css files into one.
+		 * This is the hack to concatenate all css files into one.
 		 * For description and reasoning see the implode_frontend_css method
 		 *
 		 * Super late priority so we catch all the registered styles
@@ -1088,7 +1096,7 @@ class Jetpack {
 	 * This improves the resolution of gravatars and wordpress.com uploads on hi-res and zoomed browsers.
 	 */
 	function devicepx() {
-		if ( Jetpack::is_active() ) {
+		if ( Jetpack::is_active() && ! Jetpack_AMP_Support::is_amp_request() ) {
 			wp_enqueue_script( 'devicepx', 'https://s0.wp.com/wp-content/js/devicepx-jetpack.js', array(), gmdate( 'oW' ), true );
 		}
 	}
@@ -1482,6 +1490,7 @@ class Jetpack {
 			'jetpack_personal',
 			'jetpack_personal_monthly',
 			'personal-bundle',
+			'personal-bundle-2y',
 		);
 
 		if ( in_array( $plan['product_slug'], $personal_plans ) ) {
@@ -1495,10 +1504,12 @@ class Jetpack {
 			'jetpack_premium',
 			'jetpack_premium_monthly',
 			'value_bundle',
+			'value_bundle-2y',
 		);
 
 		if ( in_array( $plan['product_slug'], $premium_plans ) ) {
 			$supports[] = 'akismet';
+			$supports[] = 'simple-payments';
 			$supports[] = 'vaultpress';
 			$plan['class'] = 'premium';
 		}
@@ -1508,11 +1519,13 @@ class Jetpack {
 			'jetpack_business',
 			'jetpack_business_monthly',
 			'business-bundle',
+			'business-bundle-2y',
 			'vip',
 		);
 
 		if ( in_array( $plan['product_slug'], $business_plans ) ) {
 			$supports[] = 'akismet';
+			$supports[] = 'simple-payments';
 			$supports[] = 'vaultpress';
 			$plan['class'] = 'business';
 		}
@@ -2586,6 +2599,30 @@ class Jetpack {
 	 */
 	public static function translate_module_tag( $tag ) {
 		return jetpack_get_module_i18n_tag( $tag );
+	}
+
+	/**
+	 * Get i18n strings as a JSON-encoded string
+	 *
+	 * @return string The locale as JSON
+	 */
+	public static function get_i18n_data_json() {
+		$i18n_json = JETPACK__PLUGIN_DIR . 'languages/json/jetpack-' . jetpack_get_user_locale() . '.json';
+
+		if ( is_file( $i18n_json ) && is_readable( $i18n_json ) ) {
+			$locale_data = @file_get_contents( $i18n_json );
+			if ( $locale_data ) {
+				return $locale_data;
+			}
+		}
+
+		// Return valid empty Jed locale
+		return json_encode( array(
+			'' => array(
+				'domain' => 'jetpack',
+				'lang'   => is_admin() ? get_user_locale() : get_locale(),
+			),
+		) );
 	}
 
 	/**
@@ -3816,6 +3853,13 @@ p {
 		return true;
 	}
 
+	function enqueue_gutenberg_locale() {
+		wp_add_inline_script(
+			'wp-i18n',
+			'wp.i18n.setLocaleData( ' . self::get_i18n_data_json() . ', \'jetpack\' );'
+		);
+	}
+
 	function jetpack_menu_order( $menu_order ) {
 		$jp_menu_order = array();
 
@@ -4922,7 +4966,7 @@ p {
 	 */
 	public static function validate_onboarding_token_action( $token, $action ) {
 		// Compare tokens, bail if tokens do not match
-		if ( ! hash_equals( $token, Jetpack_Options::get_option( 'onboarding' ) ) ) {
+		if ( ! hash_equals( $token, Jetpack_Options::get_option( 'onboarding' ) ) ) { // phpcs:ignore PHPCompatibility -- skipping since `hash_equals` is part of WP core
 			return false;
 		}
 
@@ -5392,7 +5436,7 @@ p {
 		}
 
 		$token_check = "$token_key.";
-		if ( ! hash_equals( substr( $token->secret, 0, strlen( $token_check ) ), $token_check ) ) {
+		if ( ! hash_equals( substr( $token->secret, 0, strlen( $token_check ) ), $token_check ) ) { // phpcs:ignore PHPCompatibility -- skipping since `hash_equals` is part of WP core
 			return false;
 		}
 
@@ -5432,7 +5476,7 @@ p {
 			return false;
 		} else if ( is_wp_error( $signature ) ) {
 			return $signature;
-		} else if ( ! hash_equals( $signature, $_GET['signature'] ) ) {
+		} else if ( ! hash_equals( $signature, $_GET['signature'] ) ) { // phpcs:ignore PHPCompatibility -- skipping since `hash_equals` is part of WP core
 			return false;
 		}
 
@@ -6056,11 +6100,11 @@ p {
 			wp_die( $die_error );
 		} else if ( is_wp_error( $signature ) ) {
 			wp_die( $die_error );
-		} else if ( ! hash_equals( $signature, $environment['signature'] ) ) {
+		} else if ( ! hash_equals( $signature, $environment['signature'] ) ) { // phpcs:ignore PHPCompatibility -- skipping since `hash_equals` is part of WP core
 			if ( is_ssl() ) {
 				// If we signed an HTTP request on the Jetpack Servers, but got redirected to HTTPS by the local blog, check the HTTP signature as well
 				$signature = $jetpack_signature->sign_current_request( array( 'scheme' => 'http', 'body' => null, 'method' => 'GET' ) );
-				if ( ! $signature || is_wp_error( $signature ) || ! hash_equals( $signature, $environment['signature'] ) ) {
+				if ( ! $signature || is_wp_error( $signature ) || ! hash_equals( $signature, $environment['signature'] ) ) { // phpcs:ignore PHPCompatibility -- skipping since `hash_equals` is part of WP core
 					wp_die( $die_error );
 				}
 			} else {
@@ -6588,6 +6632,7 @@ p {
 			'jetpack_holiday_snowing'                                => null,
 			'jetpack_sso_auth_cookie_expirtation'                    => 'jetpack_sso_auth_cookie_expiration',
 			'jetpack_cache_plans'                                    => null,
+			'jetpack_updated_theme'                                  => 'jetpack_updated_themes',
 		);
 
 		// This is a silly loop depth. Better way?
@@ -7064,13 +7109,13 @@ p {
 
 	/**
 	 * Checks if Akismet is active and working.
-	 * 
+	 *
 	 * We dropped support for Akismet 3.0 with Jetpack 6.1.1 while introducing a check for an Akismet valid key
 	 * that implied usage of methods present since more recent version.
 	 * See https://github.com/Automattic/jetpack/pull/9585
 	 *
 	 * @since  5.1.0
-	 * 
+	 *
 	 * @return bool True = Akismet available. False = Aksimet not available.
 	 */
 	public static function is_akismet_active() {
@@ -7079,11 +7124,20 @@ p {
 			if ( ! $akismet_key ) {
 				return false;
 			}
-			$akismet_key_state = Akismet::verify_key( $akismet_key );
-			if ( 'invalid' === $akismet_key_state || 'failed' === $akismet_key_state ) {
-				return false;
+			$cached_key_verification = get_transient( 'jetpack_akismet_key_is_valid' );
+
+			// We cache the result of the Akismet key verification for ten minutes.
+			if ( in_array( $cached_key_verification, array( 'valid', 'invalid' ) ) ) {
+				$akismet_key_state = $cached_key_verification;
+			} else {
+				$akismet_key_state = Akismet::verify_key( $akismet_key );
+				if ( 'failed' === $akismet_key_state ) {
+					return false;
+				}
+				set_transient( 'jetpack_akismet_key_is_valid', $akismet_key_state, 10 * MINUTE_IN_SECONDS );
 			}
-			return true;
+
+			return ( 'valid' === $akismet_key_state );
 		}
 		return false;
 	}
@@ -7096,7 +7150,7 @@ p {
 	 * @return bool
 	 */
 	public static function is_function_in_backtrace( $names ) {
-		$backtrace = debug_backtrace( false );
+		$backtrace = debug_backtrace( false ); // phpcs:ignore PHPCompatibility
 		if ( ! is_array( $names ) ) {
 			$names = array( $names );
 		}
@@ -7104,7 +7158,7 @@ p {
 
 		//Do check in constant O(1) time for PHP5.5+
 		if ( function_exists( 'array_column' ) ) {
-			$backtrace_functions = array_column( $backtrace, 'function' );
+			$backtrace_functions = array_column( $backtrace, 'function' ); // phpcs:ignore PHPCompatibility
 			$backtrace_functions_as_keys = array_flip( $backtrace_functions );
 			$intersection = array_intersect_key( $backtrace_functions_as_keys, $names_as_keys );
 			return ! empty ( $intersection );

@@ -1,7 +1,7 @@
 === Jetpack by WordPress.com ===
-Contributors: automattic, adamkheckler, aduth, akirk, allendav, alternatekev, andy, annezazu, apeatling, azaozz, batmoo, barry, beaulebens, blobaugh, cainm, cena, cfinke, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, davoraltman, daniloercoli, designsimply, dllh, drawmyface, dsmart, dzver, ebinnion, eliorivero, enej, eoigal, erania-pinnera, ethitter, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, jblz, jeherve, jenhooks, jenia, jgs, jkudish, jmdodd, Joen, johnjamesjacoby, jshreve, koke, kraftbj, lancewillett, lschuyler, macmanx, martinremy, matt, matveb, mattwiebe, maverick3x6, mcsf, mdawaffe, michael-arestad, migueluy, mikeyarce, mkaz, nancythanki, nickmomrik, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, ryancowles, richardmuscat, richardmtl, roccotripaldi, samhotchkiss, scarstocea, sdquirk, stephdau, tmoorewp, tyxla, Viper007Bond, westi, yoavf, zinigor
+Contributors: automattic, adamkheckler, aduth, akirk, allendav, alternatekev, andy, annezazu, apeatling, azaozz, batmoo, barry, beaulebens, blobaugh, cainm, cena, cfinke, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, davoraltman, daniloercoli, designsimply, dllh, drawmyface, dsmart, dzver, ebinnion, eliorivero, enej, eoigal, erania-pinnera, ethitter, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, jblz, jasmussen, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, keoshi, koke, kraftbj, lancewillett, lschuyler, macmanx, martinremy, matt, matveb, mattwiebe, maverick3x6, mcsf, mdawaffe, MichaelArestad, migueluy, mikeyarce, mkaz, nancythanki, nickmomrik, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, ryancowles, richardmuscat, richardmtl, roccotripaldi, samhotchkiss, scarstocea, sdquirk, stephdau, tmoorewp, tyxla, Viper007Bond, westi, yoavf, zinigor
 Tags: Jetpack, WordPress.com, backup, security, related posts, CDN, speed, anti-spam, social sharing, SEO, video, stats
-Stable tag: 6.1.1
+Stable tag: 6.4.2
 Requires at least: 4.7
 Tested up to: 4.9
 
@@ -21,7 +21,7 @@ Create and customize your WordPress site from start to finish. Jetpack helps you
 * Integration with the official WordPress mobile apps
 
 = Marketing Services =
-Measure, promote, and earn moment from your site. Jetpack helps you with:
+Measure, promote, and earn money from your site. Jetpack helps you with:
 
 * Site stats and analytics
 * Automated social media posting and scheduling in advance
@@ -98,25 +98,53 @@ There are opportunities for developers at all levels to contribute. [Learn more 
 
 == Changelog ==
 
-= 6.1.1 =
+= 6.4.2 =
 
-* Release date: May 22, 2018
-* Release post: https://wp.me/p1moTy-85t
-
-**Enhancements**
-
-* Ads: Added new setting for Banner consent expiration. Added new filter jetpack_disable_eu_cookie_law_widget, which can be used to disable the banner.
-* Ads: Added a new personalized-ads-consent cookie for ads-enabled sites.
-* Ads: Added requirement and notice, and button-click opt-in for ads module users.
-* Ads: When a user site has a Privacy Policy page set (introduced in 4.9.6), we now default to using that privacy policy as a custom policy URL.
-* GDPR: A new warning is displayed while configuring an instance of the EU Cookie Law widget: "Caution: The default policy URL only covers cookies set by Jetpack. If you're running other plugins, custom cookies, or third-party tracking technologies, you should create and link to your own cookie statement."
-* GDPR: Added Feedback data (i.e., Contact Form Submissions) to the Personal Data exported and/or erased by the latest version of WordPress core.
+* Release date: August 10, 2018
+* Release post: https://wp.me/p1moTy-9pL
 
 **Bug fixes**
 
-* Ads: We updated Ads behaviour to not show unless the visitor is on the main query within the loop.
-* General: We fixed a bug that resulted in an alert box showing for sites set to languages deriving from main ones.
-* Lazy Images: Fixed a bug where images would disappear when scrolling.
-* Sharing: make sure JS files can be loaded on development sites.
-* Sharing: Added check for validating Akismet key before allowing sharing by email.
-* WooCommerce Analytics: Fixed PHP warning when attemping to get a list of plugins.
+Comments: We fixed an error that broke functionality of Social Login for comments.
+
+= 6.4.1 =
+
+* Release date: August 8, 2018
+* Release post: https://wp.me/p1moTy-9pc
+
+**Bug fixes**
+
+Comments: We fixed an error that broke functionality of nested comments.
+
+= 6.4 =
+
+* Release date: August 7, 2018
+* Release post: https://wp.me/p1moTy-9md
+
+**Enhancements**
+
+* Connection: Updated connect splash screen with new content.
+* Docs: Added documentation for retrieving provision status of a site.
+* Shortcodes: Added oEmbed support for flat.io.
+* Widgets: Added `jetpack_top_posts_widget_layout` filter that allows you to create a custom display layout for the Top posts widget.
+* Privacy tools: Identify the data export/erasure callbacks for Feedback posts using associative keys, to better match the convention in Core.
+* Privacy tools: Added the `grunion_contact_form_delete_feedback_post` filter hook to allow specific Feedback posts to be bypassed during data erasure requests, similar to the `wp_anonymize_comment` filter in Core.
+* Contact Form: Disabled random table optimizations on core tables.
+
+**Improved compatibility**
+
+* AMP: Improved AMP compatibility for Comments iframe.
+* General: The SEO Framework is no longer a conflicting Open Graph plugin and is now better compatible with Jetpack.
+
+**Bug fixes**
+
+* Shortcodes: Removed extra black bars from YouTube embeds as controls are inside the container now.
+* Simple Payments: Fixed the custom post type bug that affected Simple Payments widget for 2 year subscriptions.
+* Simple Payments: Fixed site failure which happens on Multisite installation with Simple Payments widget.
+* Simple Payments: Fixed syntax and misc compatibility issues with Simple Payments widget on PHP 5.2.
+* Simple Payments: Added warning for admin users if Simple Payments is not enabled but there are products published on pages/posts as a widget.
+* Lazy Images: Fixed an issue with images not loading while updating quantity in WooCommerce shopping cart.
+* Lazy Images: Fixed centered images that do not crop properly when no JavaScript is enabled.
+* General: Fixed auto scrolling to top when following the Quick Tour buttons.
+* General: Removed ability to set custom name for Site Identity section.
+* General: Added advanced control capabilities to image extraction from posts.
