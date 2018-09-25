@@ -768,7 +768,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 		global $updraftplus;
 	
 		// Get the current options (and possibly update them to the new format)
-		$opts = $updraftplus->update_remote_storage_options_format('googledrive');
+		$opts = UpdraftPlus_Storage_Methods_Interface::update_remote_storage_options_format('googledrive');
 		
 		if (is_wp_error($opts)) {
 			if ('recursion' !== $opts->get_error_code()) {
@@ -1182,7 +1182,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 		?>
 			<tr class="<?php echo $classes . ' ' . 'googledrive_pre_config_container';?>">
 				<td colspan="2">
-					<img src="https://developers.google.com/drive/images/drive_logo.png" alt="<?php _e('Google Drive', 'updraftplus');?>">
+					<img src="<?php echo UPDRAFTPLUS_URL;?>/images/googledrive_logo.png" alt="<?php _e('Google Drive', 'updraftplus');?>">
 					{{#unless use_master}}
 					<br>
 					<?php
