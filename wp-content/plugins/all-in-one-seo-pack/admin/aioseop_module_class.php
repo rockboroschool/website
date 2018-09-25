@@ -2507,6 +2507,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 						case 'filename':
 							$this->options[ $k ] = sanitize_file_name( $this->options[ $k ] );
 							break;
+						case 'url':
+							// fall through.
 						case 'text':
 							$this->options[ $k ] = wp_kses_post( $this->options[ $k ] );
 							// fall through.

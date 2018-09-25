@@ -129,4 +129,45 @@ class aiosp_common {
 		return $url;
 	}
 
+	/**
+	 * Check whether a url is relative (does not contain a . before the first /) or absolute and makes it a valid url.
+	 *
+	 * @param string $url URL to check.
+	 *
+	 * @return string
+	 */
+	static function make_url_valid_smartly( $url ) {
+		$scheme = parse_url( home_url(), PHP_URL_SCHEME );
+		if ( 0 !== strpos( $url, 'http' ) ) {
+			if ( 0 === strpos( $url, '//' ) ) {
+				// for //<host>/resource type urls.
+				$url    = $scheme . ':' . $url;
+			} elseif ( strpos( $url, '.' ) !== false && strpos( $url, '/' ) !== false && strpos( $url, '.' ) < strpos( $url, '/' ) ) {
+				// if the . comes before the first / then this is absolute.
+				$url    = $scheme . '://' . $url;
+			} else {
+				// for /resource type urls.
+				$url = home_url( $url );
+			}
+		} else if ( strpos( $url, 'http://' ) === false ) {
+			if ( 0 === strpos( $url, 'http:/' ) ) {
+				$url	= $scheme . '://' .  str_replace( 'http:/', '', $url );
+			} else if ( 0 === strpos( $url, 'http:' ) ) {
+				$url	= $scheme . '://' . str_replace( 'http:', '', $url );
+			}
+		}
+		return $url;
+	}
+
+	/**
+	 * Check whether a url is valid.
+	 *
+	 * @param string $url URL to check.
+	 *
+	 * @return bool
+	 */
+	public static function is_url_valid( $url ) {
+		return filter_var( filter_var( $url, FILTER_SANITIZE_URL ), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED ) !== false;
+	}
+
 }

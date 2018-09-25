@@ -774,8 +774,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 							);
 					}
 
+					// #1308 - we want to make sure we are ignoring php version only in the admin area while editing the post, so that it does not impact #932.
+					$screen = get_current_screen();
+					$ignore_php_version = is_admin() && isset( $screen->id ) && 'post' == $screen->id;
+
 					// Add filters
-					$description = apply_filters( 'aioseop_description', $description );
+					$description = apply_filters( 'aioseop_description', $description, false, $ignore_php_version );
 					// Add placholders
 					$settings[ "{$prefix}title" ]['placeholder'] = apply_filters( 'aioseop_opengraph_placeholder', $title );
 					$settings[ "{$prefix}desc" ]['placeholder']  = apply_filters( 'aioseop_opengraph_placeholder', $description );

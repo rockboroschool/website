@@ -157,7 +157,7 @@ div.aioseop_tip_icon:before {
 	border: 1px solid #e1e1e1;
 }
 
-.aioseop input[type="text"] {
+.aioseop input[type="text"], .aioseop input[type="url"]  {
 	color: #515151;
 	height: 35px;
 	padding: 10px 0 10px 10px;

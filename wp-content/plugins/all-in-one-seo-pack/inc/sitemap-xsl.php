@@ -139,6 +139,16 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		</table>
 	</xsl:template>
 	<xsl:template name="sitemapTable">
+		<xsl:variable name="sitemapType">
+			<xsl:for-each select="/*/namespace::*">
+				<xsl:if test="name()='video'">
+					<xsl:choose>
+						<xsl:when test="name()='video'">video</xsl:when>
+					</xsl:choose>
+				</xsl:if>
+			</xsl:for-each>
+		</xsl:variable>
+
 		<table cellpadding="3">
 			<thead>
 			<tr>
@@ -149,6 +159,16 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 				<th>Images</th>
 				<?php
 				}
+				?>
+				<?php
+					if ( AIOSEOPPRO ) {
+				?>				
+				<xsl:if test="$sitemapType='video'">
+					<th>Videos</th>
+					<th>Video Thumbnails</th>
+				</xsl:if>
+				<?php
+					}
 				?>
 				<th>Priority</th>
 				<th>Change Frequency</th>
@@ -170,17 +190,6 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 						<a href="{$itemURL}">
 							<xsl:value-of select="sitemap:loc"/>
 						</a>
-						<xsl:for-each select="video:video">
-							<xsl:variable name="thumbURL">
-								<xsl:value-of select="video:thumbnail_loc"/>
-							</xsl:variable>
-							<xsl:variable name="playURL">
-								<xsl:value-of select="video:player_loc"/>
-							</xsl:variable>
-							<xsl:if test="$thumbURL != ''">
-								<a href="{$playURL}"><img src="{$thumbURL}" style="max-width:60px;float:right;"/></a>
-							</xsl:if>
-						</xsl:for-each>
 					</td>
 					<?php
 					if ( aiosp_include_images() ) {
@@ -190,6 +199,34 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 					</td>
 					<?php
 					}
+					?>
+					<?php
+						if ( AIOSEOPPRO ) {
+					?>
+					<xsl:if test="$sitemapType='video'">
+						<td>
+							<xsl:value-of select="count(video:video)"/>
+						</td>
+						<td>
+							<xsl:if test="$sitemapType='video'">
+								<xsl:for-each select="video:video">
+									<xsl:variable name="thumbURL">
+										<xsl:value-of select="video:thumbnail_loc"/>
+									</xsl:variable>
+									<xsl:variable name="playURL">
+										<xsl:value-of select="video:player_loc"/>
+									</xsl:variable>
+									<xsl:if test="$thumbURL != ''">
+										<div style="float: left; width:60px;">
+											<a href="{$playURL}" target="_new"><img src="{$thumbURL}"/></a>
+										</div>
+									</xsl:if>
+								</xsl:for-each>
+							</xsl:if>
+						</td>
+					</xsl:if>
+					<?php
+						}
 					?>
 					<td>
 						<xsl:if test="string(number(sitemap:priority))!='NaN'">
