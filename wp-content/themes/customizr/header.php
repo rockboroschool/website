@@ -46,7 +46,6 @@ if ( apply_filters( 'czr_ms', false ) ) {
   				//CZR_header_main::$instance->tc_logo_title_display(), CZR_header_main::$instance->czr_fn_tagline_display(), CZR_header_main::$instance->czr_fn_navbar_display()
   				do_action( '__header' );
   			?>
-			<meta name="google-site-verification" content="cD4aH3OjXL2HbK8LDyHKGHQxRz0JXvOglMGAvK9PHCs" />
   		</header>
   		<?php
   		 	//This hook is used for the slider : CZR_slider::$instance->czr_fn_slider_display()
