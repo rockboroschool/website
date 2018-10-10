@@ -549,17 +549,40 @@ function czr_fn_header_design_option_map( $get_default = null ) {
           'tc_header_custom_fg_color'  =>  array(
                             'default'       => '#313131',
                             'control'       => 'CZR_controls' ,
-                            'label'         => __( "Header foreground color", 'customizr'),
+                            'label'         => __( 'Header foreground color', 'customizr'),
                             'type'          =>  'color',
                             'sanitize_callback'    => 'czr_fn_sanitize_hex_color',
                             'sanitize_js_callback' => 'maybe_hash_hex_color',
                             'section'       => 'header_layout_sec' ,
                             'priority'      => 8,
           ),
+
+          'tc_header_transparent_home'  =>  array(
+                            'default'       => 0,
+                            'control'       => 'CZR_controls' ,
+                            'label'         => __( 'Apply a transparent background to your header on home.', 'customizr'),
+                            'section'       => 'header_layout_sec' ,
+                            'type'          => 'checkbox',
+                            'priority'      => 8,
+                            'notice'    => __( 'This option can be used to nicely display your header elements ( site title, menu ) on top of a slider for example.' , 'customizr')
+          ),
+          'tc_home_header_skin'  =>  array(
+                            'default'       => 'dark',
+                            'control'       => 'CZR_controls' ,
+                            'label'         => __( 'Header style for home', 'customizr'),
+                            'choices'       => array(
+                                  'dark'   => __( 'Light text' , 'customizr' ),
+                                  'light'  => __( 'Dark text' , 'customizr'),
+                            ),
+                            'section'       => 'header_layout_sec' ,
+                            'type'          => 'select' ,
+                            'priority'      => 8,
+          ),
+
           'tc_header_show_topbar'  =>  array(
                             'default'       => 'none',
                             'control'       => 'CZR_controls' ,
-                            'label'         => __( "Display a topbar" , "customizr" ),
+                            'label'         => __( 'Display a topbar', 'customizr' ),
                             'section'       => 'header_layout_sec' ,
                             'type'          => 'select' ,
                             'choices'       => array(

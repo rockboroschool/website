@@ -228,10 +228,13 @@ class CZR_header_model_class extends CZR_Model {
       $_mobile_navbar_class[] = 'mobile-sticky';
     }
 
-
+    /* Header transparent in home*/
+    if ( czr_fn_is_home_and_header_transparent_set() ) {
+      $element_class[] = 'header-transparent';
+    }
 
     /* TOP BORDER */
-    if ( 1 == esc_attr( czr_fn_opt( 'tc_top_border') ) ) {
+    if ( 1 == esc_attr( czr_fn_opt( 'tc_top_border' ) ) ) {
       $element_class[] = 'border-top';
     }
 
