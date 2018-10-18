@@ -1112,9 +1112,10 @@ function czr_fn_maybe_register_nimble_location() {
 /* ------------------------------------------------------------------------- *
  *  Loads Required Plugin Class and Setup
 /* ------------------------------------------------------------------------- */
-if ( is_admin() && ! czr_fn_is_customizing() && ! czr_fn_user_started_with_current_version() && ! czr_fn_is_pro() ) {
+if ( is_admin() && ! czr_fn_is_customizing() && ! czr_fn_is_pro() && ! czr_fn_is_plugin_active('nimble-builder/nimble-builder.php') ) {
     /**
-    * Include the TGM_Plugin_Activation class.
+    * Include the CZR_Plugin_Activation class.
+    * prefixed CZR_Plugin_Activation because of the possible issue : https://github.com/presscustomizr/customizr/issues/1603
     */
     load_template( get_template_directory() . '/core/class-tgm-plugin-activation.php' );
     add_action( 'tgmpa_register', 'czr_fn_register_required_plugins');
@@ -1130,7 +1131,7 @@ if ( is_admin() && ! czr_fn_is_customizing() && ! czr_fn_user_started_with_curre
  * arrays.
  *
  * This function is hooked into tgmpa_init, which is fired within the
- * TGM_Plugin_Activation class constructor.
+ * CZR_Plugin_Activation class constructor.
  */
 function czr_fn_register_required_plugins() {
 
