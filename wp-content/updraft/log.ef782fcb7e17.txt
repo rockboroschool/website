@@ -102,3 +102,37 @@
 0001.004 (0) PHP event: code E_NOTICE: Undefined index: instance_label (line 659, wp-content/plugins/updraftplus/methods/backup-module.php)
 0001.007 (0) Dropbox: Attempt to upload: backup_2018-11-11-1806_Rockboro_Primary_School_ef782fcb7e17-db.gz to: backup_2018-11-11-1806_Rockboro_Primary_School_ef782fcb7e17-db.gz
 0001.816 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAADnbIEJvnoaHfw, 134436, 1024 KB)
+0002.861 (0) Recording as successfully uploaded: backup_2018-11-11-1806_Rockboro_Primary_School_ef782fcb7e17-db.gz
+0002.872 (0) Deleting local file: backup_2018-11-11-1806_Rockboro_Primary_School_ef782fcb7e17-db.gz: OK
+0002.875 (0) PHP event: code E_NOTICE: Undefined index: instance_label (line 659, wp-content/plugins/updraftplus/methods/backup-module.php)
+0002.876 (0) Dropbox: File upload success (backup_2018-11-11-1806_Rockboro_Primary_School_ef782fcb7e17-db.gz): 131 KB in 1s (70 KB/s)
+0002.884 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0002.887 (0) Number of backup sets in history: 3; groups (db): 1
+0002.888 (0) Examining (for databases) backup set with group_id=0, nonce=ef782fcb7e17, datestamp=1541959586 (Nov 11 2018 18:06:26)
+0002.889 (0) This backup set is the backup set just made, so will not be deleted.
+0002.889 (0) Examining (for databases) backup set with group_id=0, nonce=7f017af8662b, datestamp=1541354710 (Nov 04 2018 18:05:10)
+0002.889 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0002.892 (0) Examining (for databases) backup set with group_id=0, nonce=fe16483be637, datestamp=1540749939 (Oct 28 2018 18:05:39)
+0002.892 (0) 1540749939: db: this set includes a database (backup_2018-10-28-1805_Rockboro_Primary_School_fe16483be637-db.gz); db count is now 2
+0002.892 (0) 1540749939: db: over retain limit (2); will delete this database
+0002.892 (0) Delete file: backup_2018-10-28-1805_Rockboro_Primary_School_fe16483be637-db.gz, service=dropbox
+0002.894 (0) PHP event: code E_NOTICE: Undefined index: instance_label (line 659, wp-content/plugins/updraftplus/methods/backup-module.php)
+0002.895 (0) Dropbox: request deletion: backup_2018-10-28-1805_Rockboro_Primary_School_fe16483be637-db.gz
+0003.646 (0) PHP event: code E_NOTICE: Undefined index: instance_label (line 659, wp-content/plugins/updraftplus/methods/backup-module.php)
+0003.649 (0) Dropbox: delete succeeded
+0003.652 (0) This backup set is now empty; will remove from history
+0003.653 (0) Deleting log file (log.fe16483be637.txt)
+0003.655 (0) Number of backup sets in history: 2; groups (files): 1
+0003.656 (0) Examining (for files) backup set with nonce=ef782fcb7e17, datestamp=1541959586 (Nov 11 2018 18:06:26)
+0003.656 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0003.659 (0) Examining (for files) backup set with nonce=7f017af8662b, datestamp=1541354710 (Nov 04 2018 18:05:10)
+0003.659 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0003.659 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0003.664 (0) Resume backup (ef782fcb7e17, 0): finish run
+0003.668 (0) Decremented the semaphore (fd) by 1
+0003.671 (0) Semaphore (fd) unlocked
+0003.672 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0003.680 (0) Fetching RSS news feed
+0003.896 (0) Fetched RSS news feed; result is a: SimplePie
+0003.908 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0003.981 (0) The backup apparently succeeded and is now complete
