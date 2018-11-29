@@ -51,6 +51,8 @@ if ( ! class_exists( 'CZR_resources_styles' ) ) :
               $_ver        = $this->_resouces_version;
               $_ext        = $this->_is_css_minified ? '.min.css' : '.css';
 
+              if ( czr_fn_is_full_nimble_tmpl() )
+                return;
               //wp_enqueue_style( 'customizr-flickity'       , czr_fn_get_theme_file_url( "{$_path}flickity{$_ext}" ), array(), $_ver, 'all' );
               //wp_enqueue_style( 'customizr-magnific'       , czr_fn_get_theme_file_url( "{$_path}magnific-popup{$_ext}" ), array(), $_ver, 'all' );
               //wp_enqueue_style( 'customizr-scrollbar'      , czr_fn_get_theme_file_url( "{$_path}jquery.mCustomScrollbar.min.css" ), array(), $_ver, 'all' );
@@ -686,7 +688,7 @@ if ( ! class_exists( 'CZR_resources_styles' ) ) :
                //Add some rules from sm up
                //add padding
                $css_container[]        = sprintf( '@media (min-width: %1$spx){ %2$s{ padding-right: %3$spx; padding-left:  %3$spx; } }',
-                           $css_container_widths[ 'sm' ],
+                           $css_mq_breakpoints[ 'sm' ],
                            $container_selector,
                            $additional_width
                );
