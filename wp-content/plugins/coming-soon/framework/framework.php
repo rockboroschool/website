@@ -43,6 +43,14 @@ class SEED_CSP4_ADMIN
             add_action( 'admin_init', array( &$this, 'create_settings' ) );
             add_filter( 'plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2 );
             add_filter( 'tmp_grunion_allow_editor_view', '__return_false' );
+            if(version_compare(phpversion(), '5.3.3', '>=')){
+                add_action( 'wpms_tgmpa_register', 'coming_soon_init_recommendations' );
+            }
+        }
+
+        if (defined( 'DOING_AJAX' )){
+            // Background API Ajax
+            add_action( 'wp_ajax_seed_csp4_backgrounds', array(&$this,'backgrounds'));
         }
     }
 
@@ -64,6 +72,61 @@ class SEED_CSP4_ADMIN
     }
 
     /**
+     * backgrounds api
+     *
+     */
+    function backgrounds( )
+    {
+        if(check_ajax_referer('seed_csp4_backgrounds')){
+           
+           $r = array();
+            $page = '';
+            if(isset($_REQUEST['page'])){
+                $page = $_REQUEST['page'];
+                $page = '?page='.$page;
+                $r['page'] = $_REQUEST['page'];
+            }
+            $query = '';
+            if(isset($_REQUEST['query'])){
+                $query = $_REQUEST['query'];
+                $query = '?query='.$query;
+                $r['query'] = $_REQUEST['query'];
+            }
+            
+            if ( false === ( get_transient( 'seed_csp4_backgrounds_page_'.$query.$page ) ) ) {
+            //f(1){
+                //echo 'miss';
+
+                $bg_api = 'https://api.seedprod.com/v3/free_background_search';
+
+                $url = $bg_api.'?'.http_build_query($r); 
+                $response = wp_remote_get( $url );
+                //var_dump($url);
+                if ( is_wp_error( $response ) ) {
+                    $error_message = $response->get_error_message();
+                    echo "Something went wrong: $error_message";
+                }else{
+                    $response_code = wp_remote_retrieve_response_code( $response );
+                    if($response_code == '200'){
+                        set_transient('seed_csp4_backgrounds_page_'.$query.$page,$response['body'],604800);
+                        echo $response['body'];
+                    }else{
+                        echo 'There was an issue loading the stock images. Please try again later.';
+                    }
+                    
+                }
+            }else{
+                //echo 'hit';
+                echo get_transient( 'seed_csp4_backgrounds_page_'.$query.$page );
+            }
+                    
+
+
+            exit();
+        }
+    }
+
+    /**
      * Reset the settings page. Reset works per settings id.
      *
      */
@@ -79,6 +142,7 @@ class SEED_CSP4_ADMIN
         }
     }
 
+
     /**
      * Properly enqueue styles and scripts for our theme options page.
      *
@@ -89,19 +153,22 @@ class SEED_CSP4_ADMIN
      */
     function admin_enqueue_scripts( $hook_suffix )
     {
-        if ( $hook_suffix != $this->plugin_screen_hook_suffix )
+        if (strpos($hook_suffix, 'seed_csp4') === false )
             return;
 
         wp_enqueue_script( 'media-upload' );
         wp_enqueue_script( 'jquery-ui-sortable' );
         wp_enqueue_script( 'wp-lists' );
         wp_enqueue_script( 'seed_csp4-framework-js', SEED_CSP4_PLUGIN_URL . 'framework/settings-scripts.js', array( 'jquery' ), $this->plugin_version );
+        wp_enqueue_script( 'seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/jquery.magnific-popup.min.js', array( 'jquery' ), $this->plugin_version );
         wp_enqueue_script( 'theme-preview' );
         wp_enqueue_style( 'thickbox' );
         wp_enqueue_style( 'media-upload' );
         wp_enqueue_style( 'wp-color-picker' );
         wp_enqueue_style( 'seed_csp4-framework-css', SEED_CSP4_PLUGIN_URL . 'framework/settings-style.css', false, $this->plugin_version );
-        wp_enqueue_style( 'font-awesome', SEED_CSP4_PLUGIN_URL . 'framework/css/font-awesome.css', false, $this->plugin_version, false, $this->plugin_version );
+        wp_enqueue_style( 'font-awesome-solid', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/solid.min.css', false, $this->plugin_version, false, $this->plugin_version );
+        wp_enqueue_style( 'font-awesome', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/fontawesome.min.css', false, $this->plugin_version, false, $this->plugin_version );
+        wp_enqueue_style( 'seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/magnific-popup.css', false, $this->plugin_version, false, $this->plugin_version );
     }
 
     /**
@@ -113,14 +180,79 @@ class SEED_CSP4_ADMIN
      */
     function create_menus( )
     {
-      $this->plugin_screen_hook_suffix = add_options_page(
-            __( "Coming Soon Page & Maintenance Mode", 'coming-soon' ),
-            __( "Coming Soon Page & Maintenance Mode", 'coming-soon' ),
+        add_menu_page(
+            __( "SeedProd", 'coming-soon' ),
+            __( "SeedProd", 'coming-soon' ),
+            'manage_options',
+            'seed_csp4',
+            array( &$this , 'option_page' ),
+            SEED_CSP4_PLUGIN_URL . 'public/images/menu-logo.png',
+            200
+            );
+
+        add_submenu_page(
+            'seed_csp4',
+            __( "Settings", 'coming-soon' ),
+            __( "Settings", 'coming-soon' ),
             'manage_options',
             'seed_csp4',
             array( &$this , 'option_page' )
             );
+
+        add_submenu_page(
+            'seed_csp4',
+            __( "Themes", 'coming-soon' ),
+            __( "Themes", 'coming-soon' ),
+            'manage_options',
+            'seed_csp4_themes',
+            array( &$this , 'themes_page' )
+        );
+        
+        add_submenu_page(
+            'seed_csp4',
+            __( "Free Stock Images", 'coming-soon' ),
+            __( "Free Stock Images", 'coming-soon' ),
+            'manage_options',
+            'seed_csp4_stockimages',
+            array( &$this , 'stockimages_page' )
+        );
+            
+        add_submenu_page(
+                'seed_csp4',
+                __( "Subscribers", 'coming-soon' ),
+                __( "Subscribers", 'coming-soon' ),
+                'manage_options',
+                'seed_csp4_subscribers',
+                array( &$this , 'subscribers_page' )
+                );
+        
+        add_submenu_page(
+            'seed_csp4',
+            __( "Addons", 'coming-soon' ),
+            __( "<span style='color:#ff9a4b'>Addons</span>", 'coming-soon' ),
+            'manage_options',
+            'seed_csp4_addons',
+            array( &$this , 'addons_page' )
+            );
     }
+
+    function themes_page(){
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/themes.php';
+    }
+
+    function stockimages_page(){
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/stockimages.php';
+    }
+
+    function subscribers_page(){
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/subscribers.php';
+    }
+
+    function addons_page(){
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/addons.php';
+    }
+
+
 
     /**
      * Display settings link on plugin page
@@ -130,7 +262,7 @@ class SEED_CSP4_ADMIN
         $plugin_file = SEED_CSP4_SLUG;
 
         if ( $file == $plugin_file ) {
-            $settings_link = '<a href="options-general.php?page=seed_csp4">Settings</a>';
+            $settings_link = '<a href="admin.php?page=seed_csp4">Settings</a>';
             array_unshift( $links, $settings_link );
         }
         return $links;
@@ -171,25 +303,33 @@ class SEED_CSP4_ADMIN
                         } elseif ( $c == 1 ) {
                             $active = 'nav-tab-active';
                         }
-                        echo '<a class="nav-tab ' . $active . '" href="?page=' . $menu_slug . '&tab=' . $v[ 'id' ] . '">';  
+                        if($v[ 'id' ] == 'seed_csp4_subscribers'){
+                            echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="admin.php?page=seed_csp4_subscribers">';
+                        }else{
+                            echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="?page=' . $menu_slug . '&tab=' . $v[ 'id' ] . '">';  
+                        }
+                        
                         if($v[ 'id' ] == 'seed_csp4_setting'){
-                            echo '<i class="fa fa-edit"></i> ';
+                            echo '<i class="fas fa-edit"></i> ';
                         }
                         if($v[ 'id' ] == 'seed_csp4_design'){
-                            echo '<i class="fa fa-image"></i> ';
+                            echo '<i class="fas fa-image"></i> ';
+                        }
+                        if($v[ 'id' ] == 'seed_csp4_subscribers'){
+                            echo '<i class="fas fa-users"></i> ';
                         }
                          if($v[ 'id' ] == 'seed_csp4_advanced'){
-                            echo '<i class="fa fa-code"></i> ';
+                            echo '<i class="fas fa-code"></i> ';
                         }
                         echo $v[ 'label' ] . '</a>';
                         $c++;
                     }
             }
-            echo '<a class="nav-tab seed_csp4-preview thickbox-preview" target="_blank" href="'.home_url().'?cs_preview=true&TB_iframe=true&width=640&height=632" title="'.__('&larr; Close Window','coming-soon').'"><i class="fa fa-external-link"></i> '.__('Live Preview','coming-soon').'</a>';
-            if(defined('SEED_CSP_API_KEY') === false){
-                echo '<a class="nav-tab seed_csp4-support" style="background-color: #444;color: #fff" href="https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-link-in-plugin" target="_blank"><i class="fa fa-bolt"></i> '.__('Upgrade to Pro for More Features','coming-soon').'</a>';
-                //echo '<a class="nav-tab seed_csp4-support" style="background-color: #444;color: #fff" href="http://testdrive.seedprod.com?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-link-in-plugin" target="_blank"><i class="fa fa-bolt"></i> '.__('Try the Pro Version for Free','coming-soon').'</a>';
-            }
+            echo '<a class="nav-tab seed_csp4-preview thickbox-preview" target="_blank" href="'.home_url().'?cs_preview=true" title="'.__('&larr; Close Window','coming-soon').'"><i class="fas fa-external-link-alt"></i> '.__('Live Preview','coming-soon').'</a>';
+           
+            echo '<a class="nav-tab seed_csp4-support seed-csp4-cta" style="background-color: #04be5b;color: #fff" href="'.seed_csp4_admin_upgrade_link( 'upgrade-tab' ).'" target="_blank" rel="noopener noreferrer"><i class="fas fa-star"></i> '.__('Upgrade to Pro for More Features','coming-soon').'</a>';
+
+            
             echo '</h2>';
 
         }
@@ -228,11 +368,22 @@ class SEED_CSP4_ADMIN
         $page   = $_REQUEST[ 'page' ];
         $layout = $this->get_page_layout();
         ?>
+
+
         <div class="wrap columns-2 seed-csp4">
-        
-            <h2><?php echo $this->plugin_name; ?> <span class="seed_csp4-version"> <?php echo SEED_CSP4_VERSION; ?></span></h2>
-            <?php //settings_errors() ?>
+        <div id="seed_csp4_header">
+<h1>
+	<img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;" src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png"> 
+	 Coming Soon Page and Maintenance Mode Lite
+	<span class="seed_csp4_version" style="font-size: 10px;"> Version <?php echo SEED_CSP4_VERSION; ?></span>
+</h1>
+
+
+
             <?php $this->plugin_options_tabs(); ?>
+            </div>
+        
+           <div class="seed-wrap">
             <?php if ( $layout == '2-col' ): ?>
             <div id="poststuff">
                 <div id="post-body" class="metabox-holder columns-2">
@@ -306,7 +457,7 @@ class SEED_CSP4_ADMIN
 
                          <!--     <div class="postbox ">
                                 <div class="handlediv" title="Click to toggle"><br /></div>
-                                <h3 class="hndle"><span><i class="fa fa-rocket"></i>&nbsp;&nbsp;<?php _e('Getting Started Video - 60 sec', 'coming-soon') ?></span></h3>
+                                <h3 class="hndle"><span><i class="fas fa-rocket"></i>&nbsp;&nbsp;<?php _e('Getting Started Video - 60 sec', 'coming-soon') ?></span></h3>
                                 <div class="inside">
                                     <div class="">
                                         <iframe width="250" height="188" src="https://www.youtube.com/embed/hcY0M0IYcAE" frameborder="0" allowfullscreen></iframe>
@@ -319,36 +470,36 @@ class SEED_CSP4_ADMIN
                             <br><br>
 
                            
-                            <a  style="border:1px solid #ddd;display:inline-block;" href="https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-banner-in-plugin" target="_blank"><img src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/coming-soon-pro-sidebar.png" /></a>
+                            <a  style="border:1px solid #ddd;display:inline-block;" href="<?php echo seed_csp4_admin_upgrade_link( 'sidebar-banner' )?>" target="_blank" rel="noopener noreferrer" class="seed-csp4-cta"><img src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/coming-soon-pro-sidebar.png" /></a>
                             <br><br>
 
 
                  <!--            <div class="postbox " style="background-color:#FAE6A4;color:#333 !important; border-color:#333 !important">
                                 <div class="handlediv" title="Click to toggle"><br /></div>
-                                <h3 class="hndle" style="color:#fff !important;border-color:#333 !important; background-color:#333"><span><i class="fa fa-star"></i>&nbsp;&nbsp;<?php _e('Yo-Yo-Yo, Why Go Pro?', 'coming-soon') ?></span></h3>
+                                <h3 class="hndle" style="color:#fff !important;border-color:#333 !important; background-color:#333"><span><i class="fas fa-star"></i>&nbsp;&nbsp;<?php _e('Yo-Yo-Yo, Why Go Pro?', 'coming-soon') ?></span></h3>
                                 <div class="inside">
                                     <div class="support-widget">
                                     
                                         <ul>
 
-                                            <li><i class="fa fa-check"></i> <strong>Realtime Page Customizer</strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>More Design Controls and Widgets</strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>Pre Made Themes</strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>1000's of Free Stock Images</strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>Collect Emails (MailChimp, Database and other integrations)
+                                            <li><i class="fas fa-check"></i> <strong>Realtime Page Customizer</strong></li>
+                                            <li><i class="fas fa-check"></i> <strong>More Design Controls and Widgets</strong></li>
+                                            <li><i class="fas fa-check"></i> <strong>Pre Made Themes</strong></li>
+                                            <li><i class="fas fa-check"></i> <strong>1000's of Free Stock Images</strong></li>
+                                            <li><i class="fas fa-check"></i> <strong>Collect Emails (MailChimp, Database and other integrations)
                                             </strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>Go Viral with Social Media Integrations
+                                            <li><i class="fas fa-check"></i> <strong>Go Viral with Social Media Integrations
                                             </strong></li>
-                                            <li><i class="fa fa-check"></i> <strong>Shortcode Support, Google Font Support, Background Slideshow and Videos
+                                            <li><i class="fas fa-check"></i> <strong>Shortcode Support, Google Font Support, Background Slideshow and Videos
                                             </strong></li>
                                             
-                                             <li><i class="fa fa-check"></i> <strong>Give clients Instant Access with a Bypass Link
+                                             <li><i class="fas fa-check"></i> <strong>Give clients Instant Access with a Bypass Link
                                             </strong></li>
                                             <li><hr style=" border-top: 1px solid #333; border-bottom: none"></li>
                                             <li><strong>Plus lots more!</strong></li>
                                         </ul>
                                         <p>
-                                        <a class="button-primary" style="background-color:#05AE0E; border-color:#05AE0E; box-shadow:none; text-shadow: none; width:100%; text-align:center;" href="https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-banner-in-plugin" target="_blank">See What's In The Pro Version</a>
+                                        <a class="button-primary" style="background-color:#05AE0E; border-color:#05AE0E; box-shadow:none; text-shadow: none; width:100%; text-align:center;" href="<?php echo seed_csp4_admin_upgrade_link( 'sidebar' ); ?>" target="_blank" rel="noopener noreferrer">See What's In The Pro Version</a>
                                         </p>
 
                                     </div>
@@ -361,12 +512,12 @@ class SEED_CSP4_ADMIN
                                 <div class="inside">
                                     <div class="support-widget">
                                      
-                                 <p style="text-align: center;margin-bottom:0"><a href="https://wordpress.org/support/plugin/coming-soon" target="_blank"><?php _e('Got a Support Question', 'coming-soon') ?></a> <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                 <p style="text-align: center;margin-bottom:0"><a href="https://wordpress.org/support/plugin/coming-soon" target="_blank"><?php _e('Got a Support Question', 'coming-soon') ?></a> <i class="fas fa-question-circle"></i>
                                           <!--   <li>&raquo; <a href="http://support.seedprod.com/article/83-how-to-clear-wp-super-caches-cache" target="_blank"><?php _e('Common Caching Issues Resolutions', 'coming-soon') ?></a></li> -->
                                         </p>
                                             <!--   <p style="text-align: center; margin-top:0">
 
-                                            <a style="display:inline-block" href="https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post">Please Rate this Plugin to show your Support!</a> <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p> -->
+                                            <a style="display:inline-block" href="https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post">Please Rate this Plugin to show your Support!</a> <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></p> -->
                                             
 
                                    
@@ -375,20 +526,20 @@ class SEED_CSP4_ADMIN
                                 </div>
                             </div>
 
-                            <form id="seed-bg-form" style="display:none" action="https://www.getdrip.com/forms/39621858/submissions" method="post" data-drip-embedded-form="39621858" target="_blank">
+                            <form id="seed-bg-form" style="display:none" action="https://www.getdrip.com/forms/247721848/submissions" method="post"  target="_blank">
                                 <div>
                                     <label for="drip-email">Email Address</label><br />
                                     <input type="email" id="drip-email" name="fields[email]" value="" />
                                 </div>
                               <div>
-                                <input id="drip-submit" type="submit" name="submit" value="Sign Up" data-drip-attribute="sign-up-button" />
+                                <input id="drip-submit" type="submit" name="submit" value="Sign Up"  />
                               </div>
                             </form>
 
                            
                                <!-- <div class="postbox like-postbox">
                                     <div class="handlediv" title="Click to toggle"><br /></div>
-                                    <h3 class="hndle"><span><i class="fa fa-heart"></i>&nbsp;&nbsp;<?php _e('Show Some Love', 'coming-soon') ?></span></h3>
+                                    <h3 class="hndle"><span><i class="fas fa-heart"></i>&nbsp;&nbsp;<?php _e('Show Some Love', 'coming-soon') ?></span></h3>
                                     <div class="inside">
                                         <div class="like-widget">
                                             <p><?php _e('Like this plugin? Show your support by:', 'coming-soon')?></p>
@@ -406,7 +557,7 @@ class SEED_CSP4_ADMIN
 
                        <!--          <div class="postbox rss-postbox">
     											<div class="handlediv" title="Click to toggle"><br /></div>
-    											<h3 class="hndle"><span><i class="fa fa-wordpress"></i>&nbsp;&nbsp;<?php _e('SeedProd Blog', 'ultimate-coming-soon-page') ?></span></h3>
+    											<h3 class="hndle"><span><i class="fab fa-wordpress"></i>&nbsp;&nbsp;<?php _e('SeedProd Blog', 'ultimate-coming-soon-page') ?></span></h3>
     											<div class="inside">
 
     												<div class="rss-widget">
@@ -434,7 +585,16 @@ class SEED_CSP4_ADMIN
 
             </div> <!-- #poststuff -->
             <?php endif; ?>
-        </div> <!-- .wrap -->
+        </div> <!-- .wrap --></div>
+
+        <?php
+        if(!empty($_GET['tab']) && $_GET['tab'] == 'seed_csp4_design'){
+        ?>
+
+
+        <?php
+        }
+        ?>
 
         <!-- JS login to confirm setting resets. -->
         <script>
@@ -445,6 +605,17 @@ class SEED_CSP4_ADMIN
                     }
                 });
             });
+        </script>
+
+
+        <?php include SEED_CSP4_PLUGIN_PATH.'resources/views/exit-pop.php';?>
+
+        <script>
+        jQuery( document ).ready(function($) {
+            $( ".seed-csp4-cta" ).click(function(e) {
+                jQuery('.exit-popup-link').magnificPopup('open');
+            });
+        });
         </script>
         <?php
     }
@@ -675,3 +846,5 @@ function seed_csp4_set_user_settings() {
               update_user_option( $user_id, 'user-settings-time', time(), false );
   }
 }
+
+

@@ -4,22 +4,24 @@
 add_action( 'admin_footer_text', 'seed_csp4_admin_footer' );
 
 function seed_csp4_admin_footer( $text ) {
+	
   global $current_screen;
-  $review = get_option( 'seed_csp4_review' );
-  if ( isset( $review['dismissed'] ) &&  $review['dismissed']){
-  	return $text;
-  }
+//   $review = get_option( 'seed_csp4_review' );
+//   if ( isset( $review['dismissed'] ) &&  $review['dismissed']){
+//   	return $text;
+//   }
 
-  if ( !empty( $current_screen->id ) && strpos( $current_screen->id, 'settings_page_seed_csp4' ) !== false ) {
+
+  if ( !empty( $current_screen->id ) && strpos( $current_screen->id, 'seed_csp4' ) !== false ) {
 
     $url  = 'https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post';
-    $text = sprintf( __( 'Please rate <strong>Coming Soon Page & Maintenance Mode by SeedProd</strong> <a href="%s" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a> on <a href="%s" target="_blank">WordPress.org</a> to help us spread the word. Thank you from the SeedProd team!', 'coming-soon' ), $url, $url );
+    $text = sprintf( __( 'Please rate <strong>SeedProd</strong> <a href="%s" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a> on <a href="%s" target="_blank">WordPress.org</a> to help us spread the word. Thank you from the SeedProd team!', 'coming-soon' ), $url, $url );
   }
   return $text;
 }
 
 if(!empty($_GET['page']) && $_GET['page'] == 'seed_csp4'){
-add_action( 'admin_notices', 'seed_csp4_review' );
+//add_action( 'admin_notices', 'seed_csp4_review' );
 }
 function seed_csp4_review() {
 
@@ -69,8 +71,8 @@ function seed_csp4_review() {
 	// We have a candidate! Output a review message.
 	?>
 	<div class="notice notice-info is-dismissible seed-csp4-review-notice">
-		<p><?php printf(__( 'Hey %s, <br><br>I just want to say "Thank you" using this free plugin. If you have any questions  post it to our <a href="https://wordpress.org/support/plugin/coming-soon">support forums</a>.<br><br>Also check out the &#8594; <a href="https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=coming-soon-plugin&utm_medium=link&utm_campaign=coming-soon-special-offer">special upgrade offer</a> we have going on right now for the Pro Verison.<br><br>Hope you have a great %s! Cheers', 'coming-soon' ),ucfirst($fname), date('l') ); ?></p>
-		<p><strong><?php _e( '--<br> John Turner<br><a href="https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=coming-soon-plugin&utm_medium=link&utm_campaign=coming-soon-special-offer-brand">SeedProd.com</a>', 'coming-soon' ); ?></strong></p>
+		<p><?php printf(__( 'Hey %s, <br><br>I just want to say "Thank you" using this free plugin. If you have any questions  post it to our <a href="https://wordpress.org/support/plugin/coming-soon">support forums</a>.<br><br>Also check out the &#8594; <a href="%s" target="blank" rel="noopener noreferrer">special upgrade offer</a> we have going on right now for the Pro Verison.<br><br>Hope you have a great %s! Cheers', 'coming-soon' ),ucfirst($fname),seed_csp4_admin_upgrade_link( 'special-offer' ), date('l') ); ?></p>
+		<p><strong><?php _e( '--<br> John Turner<br><a href="'.seed_csp4_admin_upgrade_link( 'special-offer' ).'" target="blank" rel="noopener noreferrer">SeedProd.com</a>', 'coming-soon' ); ?></strong></p>
 		<p>
 			<!-- <a href="https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post" class="seed-csp4-dismiss-review-notice seed-csp4-review-out" target="_blank" rel="noopener"><?php _e( 'Ok, you deserve it', 'coming-soon' ); ?></a><br> -->
 			<a href="#" class="seed-csp4-dismiss-review-notice" target="_blank" rel="noopener"><?php _e( 'Dismiss Notice', 'coming-soon' ); ?></a><br>

@@ -211,9 +211,8 @@ function seed_csp4_head() {
 	if ( empty( $enable_wp_head_footer ) ) {
 		$output .= '<script src="'.$include_url.'js/jquery/jquery.js"></script>'."\n";
 	}
-	$output .= '<script src="'.SEED_CSP4_PLUGIN_URL.'themes/default/bootstrap/js/bootstrap.js"></script>'."\n";
+	$output .= '<script src="'.SEED_CSP4_PLUGIN_URL.'themes/default/bootstrap/js/bootstrap.min.js"></script>'."\n";
 
-	$output .= '<script src="'.SEED_CSP4_PLUGIN_URL.'themes/default/js/script.js"></script>'."\n";
 
 
 	// Header Scripts
@@ -228,9 +227,6 @@ function seed_csp4_head() {
 		$output .= $ga_analytics;
 	}
 
-	// Modernizr
-	$output .= "<!-- Modernizr -->\n";
-	$output .= '<script src="'.SEED_CSP4_PLUGIN_URL.'themes/default/js/modernizr.min.js"></script>'."\n";
 
 	return $output;
 }
@@ -333,3 +329,4 @@ function seed_csp4_credit() {
 
 	return  $output;
 }
+

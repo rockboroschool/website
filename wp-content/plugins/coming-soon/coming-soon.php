@@ -3,15 +3,14 @@
  * Plugin Name:       Coming Soon Page & Maintenance Mode by SeedProd
  * Plugin URI:        http://www.seedprod.com
  * Description:       The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPress.
- * Version:           5.0.20
+ * Version:           5.0.23
  * Author:            SeedProd
  * Author URI:        http://www.seedprod.com
  * Text Domain:       coming-soon
- * Domain Path:		  /languages
+ * Domain Path:		    /languages
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Domain Path:       /languages
- * Copyright 2012  John Turner (email : john@seedprod.com, twitter : @johnturner)
+ * Copyright 2012      John Turner (email : john@seedprod.com, twitter : @johnturner)
  */
 
 /**
@@ -21,7 +20,7 @@ define( 'SEED_CSP4_SHORTNAME', 'seed_csp4' ); // Used to reference namespace fun
 define( 'SEED_CSP4_SLUG', 'coming-soon/coming-soon.php' ); // Used for settings link.
 define( 'SEED_CSP4_TEXTDOMAIN', 'coming-soon' ); // Your textdomain
 define( 'SEED_CSP4_PLUGIN_NAME', __( 'Coming Soon Page & Maintenance Mode by SeedProd', 'coming-soon' ) ); // Plugin Name shows up on the admin settings screen.
-define( 'SEED_CSP4_VERSION', '5.0.20'); // Plugin Version Number. Recommend you use Semantic Versioning http://semver.org/
+define( 'SEED_CSP4_VERSION', '5.0.23'); // Plugin Version Number. Recommend you use Semantic Versioning http://semver.org/
 define( 'SEED_CSP4_PLUGIN_PATH', plugin_dir_path( __FILE__ ) ); // Example output: /Applications/MAMP/htdocs/wordpress/wp-content/plugins/seed_csp4/
 define( 'SEED_CSP4_PLUGIN_URL', plugin_dir_url( __FILE__ ) ); // Example output: http://localhost:8888/wordpress/wp-content/plugins/seed_csp4/
 define( 'SEED_CSP4_TABLENAME', 'seed_csp4_subscribers' );
@@ -42,6 +41,17 @@ add_action('plugins_loaded', 'seed_csp4_load_textdomain');
  * @since 0.1.0
  */
 function seed_csp4_activation(){
+  // Store the plugin version when initial install occurred.
+  $has_seed_csp4_settings_content =  get_option('seed_csp4_settings_content');
+  if(!empty($has_seed_csp4_settings_content)){
+    add_option( 'seed_csp4_initial_version', 0, '', false );
+  }else{
+    add_option( 'seed_csp4_initial_version', SEED_CSP4_VERSION, '', false );
+  }
+  
+
+  // Store the plugin version activated to reference with upgrades.
+  update_option( 'seed_csp4_version', SEED_CSP4_VERSION, false );
 	require_once( 'inc/default-settings.php' );
 	add_option('seed_csp4_settings_content',unserialize($seed_csp4_settings_deafults['seed_csp4_settings_content']));
 	add_option('seed_csp4_settings_design',unserialize($seed_csp4_settings_deafults['seed_csp4_settings_design']));
@@ -75,7 +85,7 @@ function seed_csp4_welcome_screen_do_activation_redirect() {
   }
 
   // Redirect to bbPress about page
-  wp_safe_redirect( add_query_arg( array( 'page' => 'seed_csp4' ), admin_url( 'options-general.php' ) ) );
+  wp_safe_redirect( add_query_arg( array( 'page' => 'seed_csp4' ), admin_url( 'admin.php' ) ) );
 }
 
 
@@ -98,6 +108,10 @@ if( is_admin() ) {
     require_once( SEED_CSP4_PLUGIN_PATH.'framework/framework.php' );
     add_action( 'plugins_loaded', array( 'SEED_CSP4_ADMIN', 'get_instance' ) );
     require_once( SEED_CSP4_PLUGIN_PATH.'framework/review.php' );
+    if(version_compare(phpversion(), '5.3.3', '>=')){
+      require_once( SEED_CSP4_PLUGIN_PATH.'lib/setup_tgmpa.php' );
+      require_once( SEED_CSP4_PLUGIN_PATH.'lib/TGMPA.php' );
+    }
 } else {
 // Public only
 
@@ -144,6 +158,10 @@ function seed_csp4_clear_known_caches($o,$n){
       }
     }
   } catch (Exception $e) {}
+}
+
+function seed_csp4_admin_upgrade_link( $medium = 'link' ) {
+	return apply_filters( 'seed_csp4_upgrade_link', 'https://www.seedprod.com/ultimate-coming-soon-page-vs-coming-soon-pro/?utm_source=WordPress&utm_medium=' . sanitize_key( apply_filters( 'seed_csp4_upgrade_link_medium', $medium ) ) . '&utm_campaign=liteplugin' );
 }
 
 

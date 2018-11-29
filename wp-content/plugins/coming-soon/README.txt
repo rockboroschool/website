@@ -1,10 +1,10 @@
 === Plugin Name ===
-Contributors: seedprod
+Contributors: seedprod, smub
 Donate link: http://www.seedprod.com
 Tags: maintenance mode, coming soon page, coming soon, under construction, launch page, launch, maintenance, construction, offline, unavailable, under construction page, landing page
 Requires at least: 3.5.1
-Tested up to: 4.9.5
-Stable tag: 5.0.20
+Tested up to: 4.9.8
+Stable tag: 5.0.23
 Text Domain: coming-soon
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -16,6 +16,7 @@ The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPr
 Create a simple Coming Soon Page or Maintenance Mode Page. Work on your site in private while visitors see a "Coming Soon" or "Maintenance Mode" page.
 
 *   [Upgrade to Coming Soon Page Pro to Unlock All the Features	! &raquo;](http://www.seedprod.com?utm_source=wordpress.org&utm_medium=link&utm_campaign=coming-soon-pro-from-wordpress.org "Coming Soon Page Pro Version")
+*   [View a Coming Soon Page Live Demo &raquo;](http://demo.seedprod.com/coming-soon-pro/ "Coming Soon Page Demo")
 
 ### Benefits, Features and Options:
 
@@ -114,6 +115,15 @@ This is always a caching issue. Go to the caching plugin's setting page and clea
 4. Design Page
 
 == Changelog ==
+= 5.0.23 =
+* Tweak - Typos 
+
+= 5.0.22 =
+* Fixed - Bug with old php versions
+
+= 5.0.21 =
+* Added - Themes, Stock Images, Subscribers and Addons Previews
+
 = 5.0.20 =
 * Tweak - Autoclear popular caches.
 
@@ -210,6 +220,15 @@ This is always a caching issue. Go to the caching plugin's setting page and clea
 * Initial Commit
 
 == Upgrade Notice ==
+= 5.0.23 =
+* Tweak - Typos 
+
+= 5.0.22 =
+* Fixed - Bug with old php versions
+
+= 5.0.21 =
+* Added - Themes, Stock Images, Subscribers and Addons Previews
+
 = 5.0.20 =
 * Tweak - Autoclear popular caches.
 
