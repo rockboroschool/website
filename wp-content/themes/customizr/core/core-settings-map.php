@@ -163,23 +163,6 @@ function czr_fn_popul_setting_control_map( $_map, $get_default = null ) {
 function czr_fn_site_identity_option_map( $get_default = null ) {
   global $wp_version;
   return array(
-          'tc_logo_upload'  => array(
-                            'control'   =>  version_compare( $wp_version, '4.3', '>=' ) ? 'CZR_Customize_Cropped_Image_Control' : 'CZR_Customize_Upload_Control',
-                            'label'     =>  __( 'Logo Upload (supported formats : .jpg, .png, .gif, svg, svgz)' , 'customizr' ),
-                            'title'     => __( 'LOGO' , 'customizr'),
-                            'section'   => 'title_tagline',
-                            'sanitize_callback' => 'czr_fn_sanitize_number',
-                            'priority'  => 12,
-                    //we can define suggested cropping area and allow it to be flexible (def 150x150 and not flexible)
-                            'width'     => 250,
-                            'height'    => 100,
-                            'flex_width' => true,
-                            'flex_height' => true,
-                            //to keep the selected cropped size
-                            'dst_width'  => false,
-                            'dst_height'  => false,
-                            //'notice'    => __( "Uncheck this option to keep your original logo dimensions." , 'customizr')
-          ),
           'tc_title_next_logo'  => array(
                             'default'   =>  czr_fn_user_started_before_version( '4.1.10' , '2.1.7') ? 0 : 1,
                             'label'     =>  __( 'Display the site title next to the logo' , 'customizr' ),
@@ -2774,14 +2757,14 @@ function czr_fn_popul_section_map( $_sections ) {
         -> SECTION : GO-PRO
         ----------------------------------------------------------------------------------------------*/
         'go_pro_sec'   => array(
-                            'title'         => esc_html__( 'Upgrade to Customizr Pro', 'customizr' ),
-                            'pro_subtitle'  => esc_html__( 'Discover the features and benefits' , 'customizr'),
-                            'pro_doc_url'   => sprintf('%scustomizr-pro/?ref=a', CZR_WEBSITE ),
-                            'pro_text'      => esc_html__( 'Go Pro', 'customizr' ),
-                            'pro_url'       => sprintf('%scustomizr-pro/', CZR_WEBSITE ),
-                            'priority'      => 0,
-                            'section_class' => 'CZR_Customize_Section_Pro',
-                            'active_callback' => 'czr_fn_pro_section_active_cb'
+            'title'         => esc_html__( 'Upgrade to Customizr Pro', 'customizr' ),
+            'pro_subtitle'  => esc_html__( 'Discover the features and benefits' , 'customizr'),
+            'pro_doc_url'   => sprintf('%scustomizr-pro/?ref=a&utm_source=usersite&utm_medium=link&utm_campaign=customizr-customizer-btn', CZR_WEBSITE ),
+            'pro_text'      => esc_html__( 'Go Pro', 'customizr' ),
+            'pro_url'       => sprintf('%scustomizr-pro/?ref=a&utm_source=usersite&utm_medium=link&utm_campaign=customizr-customizer-btn', CZR_WEBSITE ),
+            'priority'      => 0,
+            'section_class' => 'CZR_Customize_Section_Pro',
+            'active_callback' => 'czr_fn_pro_section_active_cb'
         ),
     ) );
   }

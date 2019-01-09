@@ -316,6 +316,14 @@ if ( ! class_exists( 'CZR_BASE' ) ) :
             $post_formats   = apply_filters( 'tc_post_formats', array( 'aside' , 'gallery' , 'link' , 'image' , 'quote' , 'status' , 'video' , 'audio' , 'chat' ) );
             add_theme_support( 'post-formats' , $post_formats );
 
+            // Add theme support for Custom Logo.
+            add_theme_support( 'custom-logo', array(
+              'width'       => 250,
+              'height'      => 100,
+              'flex-width'  => true,
+              'flex-height' => true,
+            ) );
+
             /* support for page excerpt (added in v3.0.15) */
             add_post_type_support( 'page', 'excerpt' );
 
@@ -1200,7 +1208,7 @@ function czr_fn_filter_model_map_when_nimble_template_set( $map ) {
         $tmpl_name = \Nimble\sek_get_locale_template();
         // when using the full nimble template, we don't need to load any Customizr model
         // when using the mixed Nimble template ( header and footer from theme, content from Nimble), we don't need the main_content model
-        if ( 'nimble_full_tmpl_ghf.php' === $tmpl_name ) {
+        if ( czr_fn_is_full_nimble_tmpl() ) {
             $map = array();
         } else if ( !empty( $tmpl_name ) ) {
             $new_map = array();

@@ -22,7 +22,8 @@ if ( ! class_exists( 'CZR_admin_init' ) ) :
 
       //Load the editor-style specific (post formats and RTL), the user style.css, the active skin
       //add user defined fonts in the editor style (@see the query args add_editor_style below)
-      add_action( 'after_setup_theme'     , array( $this, 'czr_fn_add_editor_style') );
+      //The hook used to be after_setup_theme, but, don't know from whic WP version, is_rtl() always returns false at that stage.
+      add_action( 'init'                  , array( $this, 'czr_fn_add_editor_style') );
 
       add_filter( 'tiny_mce_before_init'  , array( $this, 'czr_fn_user_defined_tinymce_css') );
       //refresh the post / CPT / page thumbnail on save. Since v3.3.2.
@@ -220,7 +221,10 @@ if ( ! class_exists( 'CZR_admin_init' ) ) :
       //b) no check on the file existence will be made (producing the rtl error, for instance : https://github.com/presscustomizr/customizr/issues/926)
 
       //as of v4.0.10 the editor-style.css is for classic
-      $_stylesheets = czr_fn_is_ms() ? array() : array( CZR_ASSETS_PREFIX . 'back/css/editor-style.css' );
+      //4.1.23 block editor style introduced for the modern style only
+      $_style_suffix = CZR_DEBUG_MODE || CZR_DEV_MODE ? '.css' : '.min.css' ;
+      $_stylesheets = czr_fn_is_ms() ? array( CZR_ASSETS_PREFIX . 'back/css/block-editor-style' . $_style_suffix ) : array( CZR_ASSETS_PREFIX . 'back/css/editor-style' . $_style_suffix );
+
       $_stylesheets[] = 'style.css';
       if ( ! czr_fn_is_ms() ) {
         $_stylesheets[] = 'inc/assets/css/' . esc_attr( czr_fn_opt( 'tc_skin' ) );
@@ -229,6 +233,7 @@ if ( ! class_exists( 'CZR_admin_init' ) ) :
       if ( apply_filters( 'czr_add_custom_fonts_to_editor' , false != $this -> czr_fn_maybe_add_gfonts_to_editor() ) )
         $_stylesheets = array_merge( $_stylesheets , $this -> czr_fn_maybe_add_gfonts_to_editor() );
       add_editor_style( $_stylesheets );
+
     }
 
 
@@ -393,7 +398,7 @@ if ( ! class_exists( 'CZR_admin_init' ) ) :
                 CZR_WEBSITE . "category/customizr-releases/",
                 __( "Read the latest release notes" , "customizr" ),
                 ! CZR_IS_PRO ? sprintf( '<p style="position: absolute;right: 7px;top: 4px;"><a class="button button-primary upgrade-to-pro" href="%1$s" title="%2$s" target="_blank">%2$s &raquo;</a></p>',
-                  esc_url('presscustomizr.com/customizr-pro?ref=a'),
+                  esc_url('presscustomizr.com/customizr-pro?ref=a&utm_source=usersite&utm_medium=link&utm_campaign=customizr-update-notice'),
                   __( "Upgrade to Customizr Pro", "customizr" )
                 ) : ''
               )
@@ -618,7 +623,7 @@ if ( ! class_exists( 'CZR_admin_page' ) ) :
 
                   <div class="last-feature col">
                     <h3 style="font-size:1.3em;"><?php _e( 'Follow us','customizr' ); ?></h3>
-                    <p class="tc-follow"><a href="<?php echo esc_url( CZR_WEBSITE . 'blog' ); ?>" target="_blank"><img style="border:none" src="<?php echo CZR_BASE_URL . CZR_ASSETS_PREFIX.'back/img/pc.png' ?>" alt="Press Customizr" /></a></p>
+                    <p class="tc-follow"><a href="<?php echo esc_url( CZR_WEBSITE . 'blog' ); ?>" target="_blank"><img style="border:none;width:auto;" src="<?php echo CZR_BASE_URL . CZR_ASSETS_PREFIX.'back/img/pc.png' ?>" alt="Press Customizr" /></a></p>
                     <!-- Place this tag where you want the widget to render. -->
 
                   </div><!-- .feature-section -->
@@ -629,15 +634,19 @@ if ( ! class_exists( 'CZR_admin_page' ) ) :
             <div id="extend" class="changelog">
               <h3 style="text-align:left;font-size:1.3em;"><?php _e("Go Customizr Pro" ,'customizr') ?></h3>
 
-              <div class="feature-section images-stagger-right">
-                <a class="" title="Go Pro" href="<?php echo esc_url( CZR_WEBSITE . 'customizr-pro?ref=a' ); ?>" target="_blank"><img style="border:none;" alt="Customizr Pro" src="<?php echo CZR_BASE_URL . CZR_ASSETS_PREFIX.'back/img/customizr-pro.png?'.CUSTOMIZR_VER ?>" class=""></a>
-                <h4 style="text-align: left;max-width:inherit"><?php _e('Easily take your web design one step further' ,'customizr') ?></h4></br>
+              <div class="feature-section two-col images-stagger-right">
+                <div class="col" style="float:right">
+                  <a class="" title="Go Pro" href="<?php echo esc_url( CZR_WEBSITE . 'customizr-pro?ref=a&utm_source=usersite&utm_medium=link&utm_campaign=customizr-admin-page' ); ?>" target="_blank"><img style="border:none;width:auto;" alt="Customizr Pro" src="<?php echo CZR_BASE_URL . CZR_ASSETS_PREFIX.'back/img/customizr-pro.png?'.CUSTOMIZR_VER ?>" class=""></a>
+                </div>
+                <div class="col" style="float:left">
+                  <h4 style="text-align: left;"><?php _e('Easily take your web design one step further' ,'customizr') ?></h4></br>
 
-                <p style="text-align: lef;max-width:inherit"><?php _e("The Customizr Pro WordPress theme allows anyone to create a beautiful, professional and mobile friendly website in a few minutes. In the Pro version, you'll get all features included in the free version plus many conversion oriented ones, to help you attract and retain more visitors on your websites." , 'customizr') ?>
-                </p>
-                <p style="text-align:left;max-width:inherit">
-                    <a class="button-primary review-customizr hu-go-pro-btn" title="<?php _e("Discover Customizr Pro",'customizr') ?>" href="<?php echo esc_url( CZR_WEBSITE . 'customizr-pro?ref=a' ); ?>" target="_blank"><?php _e("Discover Customizr Pro",'customizr') ?> &raquo;</a>
-                </p>
+                  <p style="text-align: left;"><?php _e("The Customizr Pro WordPress theme allows anyone to create a beautiful, professional and mobile friendly website in a few minutes. In the Pro version, you'll get all features included in the free version plus many conversion oriented ones, to help you attract and retain more visitors on your websites." , 'customizr') ?>
+                  </p>
+                  <p style="text-align:left;">
+                      <a class="button-primary review-customizr hu-go-pro-btn" title="<?php _e("Discover Customizr Pro",'customizr') ?>" href="<?php echo esc_url( CZR_WEBSITE . 'customizr-pro?ref=a&utm_source=usersite&utm_medium=link&utm_campaign=customizr-admin-page' ); ?>" target="_blank"><?php _e("Discover Customizr Pro",'customizr') ?> &raquo;</a>
+                  </p>
+                </div>
               </div>
             </div>
           <?php endif; //end if ! is_pro ?>
@@ -3110,6 +3119,8 @@ if ( ! class_exists( 'CZR_meta_boxes' ) ) :
             'content_after'  => '',
             'choices'        => array(),
             'selected'       => '',
+            'wrapper_tag'   => 'div',
+            'wrapper_class' => 'meta-box-item-content',
          );
 
          $args = wp_parse_args( $args, $defaults );
@@ -3168,7 +3179,9 @@ if ( ! class_exists( 'CZR_meta_boxes' ) ) :
          'echo'          => 1,
          'boxed'         => 1,
          'content_before' => '',
-         'content_after'  => ''
+         'content_after'  => '',
+         'wrapper_tag'   => 'div',
+         'wrapper_class' => 'meta-box-item-content',
         );
 
         $args = wp_parse_args( $args, $defaults );
@@ -3220,7 +3233,9 @@ if ( ! class_exists( 'CZR_meta_boxes' ) ) :
          'content_before' => '',
          'content_after'  => '',
          'rows'          => '5',
-         'cols'          => '40'
+         'cols'          => '40',
+         'wrapper_tag'   => 'div',
+         'wrapper_class' => 'meta-box-item-content',
         );
 
         $args = wp_parse_args( $args, $defaults );
