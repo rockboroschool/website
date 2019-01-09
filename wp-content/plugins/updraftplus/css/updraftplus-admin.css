@@ -247,13 +247,13 @@ span.tokens-number {
 
 .updraft_migrate_widget_temporary_clone_stage0_box {
 	margin-right: 20px;
-	height: 100%;
 	width: 100%;
 	-ms-flex-preferred-size: 100%;
 	    flex-basis: 100%;
 }
 
-.updraft_migrate_widget_temporary_clone_stage0_box iframe {
+.updraft_migrate_widget_temporary_clone_stage0_box iframe,
+.updraft_migrate_widget_temporary_clone_stage0_box a.udp-replace-with-iframe--js {
 	float: none;
 }
 
@@ -271,7 +271,8 @@ span.tokens-number {
 		    flex-basis: 45%;
 	}
 
-	.updraft_migrate_widget_temporary_clone_stage0_box iframe {
+	.updraft_migrate_widget_temporary_clone_stage0_box iframe,
+	.updraft_migrate_widget_temporary_clone_stage0_box a.udp-replace-with-iframe--js {
 		float: right;
 	}
 
@@ -536,12 +537,24 @@ jquery UI Accordion module
 .updraft_backup_btn_wrapper {
 	text-align: center;
 	border-left: 1px solid #F1F1F1;
-	display: -ms-flexbox;
-	display: flex;
 	-ms-flex-pack: center;
 	    justify-content: center;
 	-ms-flex-align: center;
 	    align-items: center;
+}
+
+.incremental-backups-only {
+	display: none;
+}
+
+.incremental-free-only {
+	display: none;
+}
+
+.incremental-free-only p {
+	padding: 5px;
+	background: rgba(255, 0, 0, 0.06);
+	border: 1px solid #BFBFBF;
 }
 
 #updraft-delete-waitwarning span.spinner {
@@ -818,7 +831,7 @@ span#updraft_lastlogcontainer {
 	clear: right;
 }
 
-.existing-backups-table .backup_date_label > div {
+.existing-backups-table .backup_date_label > div, .existing-backups-table .backup_date_label span > div {
 	font-weight: bold;
 }
 
@@ -2963,7 +2976,7 @@ div#updraft-wrap a {
 		min-width: 100%;
 	}*/
 
-	.existing-backups-table .backup_date_label > div {
+	.existing-backups-table .backup_date_label > div, .existing-backups-table .backup_date_label span > div {
 		font-weight: normal;
 	}
 

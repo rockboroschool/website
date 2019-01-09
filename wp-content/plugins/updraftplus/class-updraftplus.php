@@ -83,7 +83,8 @@ class UpdraftPlus {
 			'UpdraftPlus_Encryption' => 'includes/class-updraftplus-encryption.php',
 			'UpdraftPlus_Manipulation_Functions' => 'includes/class-manipulation-functions.php',
 			'UpdraftPlus_Filesystem_Functions' => 'includes/class-filesystem-functions.php',
-			'UpdraftPlus_Storage_Methods_Interface' => 'includes/class-storage-methods-interface.php'
+			'UpdraftPlus_Storage_Methods_Interface' => 'includes/class-storage-methods-interface.php',
+			'UpdraftPlus_Job_Scheduler' => 'includes/class-job-scheduler.php'
 		);
 		
 		foreach ($load_classes as $class => $relative_path) {
@@ -170,7 +171,7 @@ class UpdraftPlus {
 	 *
 	 * @return String - filtered value
 	 */
-	public function upgrader_source_selection($source, $remote_source, $upgrader_object, $hook_extra = array()) {
+	public function upgrader_source_selection($source, $remote_source, $upgrader_object, $hook_extra = array()) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Filter use
 
 		static $been_here_already = false;
 	
@@ -197,7 +198,7 @@ class UpdraftPlus {
 	 *
 	 * @return Boolean - filtered value
 	 */
-	public function itsec_scheduled_external_backup($x) {
+	public function itsec_scheduled_external_backup($x) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Filter use
 		return wp_next_scheduled('updraft_backup') ? true : false;
 	}
 	
@@ -208,7 +209,7 @@ class UpdraftPlus {
 	 *
 	 * @return String - filtered value
 	 */
-	public function itsec_external_backup_link($x) {
+	public function itsec_external_backup_link($x) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Filter use
 			return UpdraftPlus_Options::admin_page_url().'?page=updraftplus';
 	}
 
@@ -1081,7 +1082,7 @@ class UpdraftPlus {
 		if ($file_path) touch($file_path);
 
 		// What this means in effect is that at least one of the files touched during the run must reach this percentage (so lapping round from 100 is OK)
-		if ($percent > 0.7 * ($this->current_resumption - max($this->jobdata_get('uploaded_lastreset'), 9))) $this->something_useful_happened();
+		if ($percent > 0.7 * ($this->current_resumption - max($this->jobdata_get('uploaded_lastreset'), 9))) UpdraftPlus_Job_Scheduler::something_useful_happened();
 
 		// Log it
 		global $updraftplus_backup;
@@ -1641,61 +1642,6 @@ class UpdraftPlus {
 		@rmdir($updraft_dir.'/binziptest');
 	}
 
-	/**
-	 * This function is purely for timing - we just want to know the maximum run-time; not whether we have achieved anything during it
-	 */
-	public function record_still_alive() {
-		// Update the record of maximum detected runtime on each run
-		$time_passed = $this->jobdata_get('run_times');
-		if (!is_array($time_passed)) $time_passed = array();
-
-		$time_this_run = microtime(true)-$this->opened_log_time;
-		$time_passed[$this->current_resumption] = $time_this_run;
-		$this->jobdata_set('run_times', $time_passed);
-
-		$resume_interval = $this->jobdata_get('resume_interval');
-		if ($time_this_run + 30 > $resume_interval) {
-			$new_interval = ceil($time_this_run + 30);
-			set_site_transient('updraft_initial_resume_interval', (int) $new_interval, 8*86400);
-			$this->log("The time we have been running (".round($time_this_run, 1).") is approaching the resumption interval ($resume_interval) - increasing resumption interval to $new_interval");
-			$this->jobdata_set('resume_interval', $new_interval);
-		}
-
-	}
-
-	public function something_useful_happened() {
-
-		$this->record_still_alive();
-
-		if (!$this->something_useful_happened) {
-			$useful_checkin = $this->jobdata_get('useful_checkin');
-			if (empty($useful_checkin) || $this->current_resumption > $useful_checkin) $this->jobdata_set('useful_checkin', $this->current_resumption);
-		}
-
-		$this->something_useful_happened = true;
-
-		$updraft_dir = $this->backups_dir_location();
-		if (file_exists($updraft_dir.'/deleteflag-'.$this->nonce.'.txt')) {
-			$this->log("User request for abort: backup job will be immediately halted");
-			@unlink($updraft_dir.'/deleteflag-'.$this->nonce.'.txt');
-			$this->backup_finish($this->current_resumption + 1, true, true, $this->current_resumption, true);
-			die;
-		}
-		
-		if ($this->current_resumption >= 9 && false == $this->newresumption_scheduled) {
-			$this->log("This is resumption ".$this->current_resumption.", but meaningful activity is still taking place; so a new one will be scheduled");
-			// We just use max here to make sure we get a number at all
-			$resume_interval = max($this->jobdata_get('resume_interval'), 75);
-			// Don't consult the minimum here
-			// if (!is_numeric($resume_interval) || $resume_interval<300) { $resume_interval = 300; }
-			$schedule_for = time()+$resume_interval;
-			$this->newresumption_scheduled = $schedule_for;
-			wp_schedule_single_event($schedule_for, 'updraft_backup_resume', array($this->current_resumption + 1, $this->nonce));
-		} else {
-			$this->reschedule_if_needed();
-		}
-	}
-
 	public function option_filter_get($which) {
 		global $wpdb;
 		$row = $wpdb->get_row($wpdb->prepare("SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", $which));
@@ -1965,15 +1911,16 @@ class UpdraftPlus {
 			$label = $this->jobdata_get('label');
 			if ($label) $resumption_extralog = ", label=$label";
 		} else {
-			$this->file_nonce = apply_filters('updraftplus_incremental_backup_file_nonce', $bnonce);
 			$this->nonce = $bnonce;
+			$file_nonce = $this->jobdata_get('file_nonce');
+			$this->file_nonce = $file_nonce ? $file_nonce : $bnonce;
 			$this->backup_time = $this->jobdata_get('backup_time');
 			$this->job_time_ms = $this->jobdata_get('job_time_ms');
 			
 			// Get the warnings before opening the log file, as opening the log file may generate new ones (which then leads to $this->errors having duplicate entries when they are copied over below)
 			$warnings = $this->jobdata_get('warnings');
 			
-			$this->logfile_open($bnonce);
+			$this->logfile_open($this->file_nonce);
 			
 			// Import existing warnings. The purpose of this is so that when save_backup_to_history() is called, it has a complete set - because job data expires quickly, whilst the warnings of the last backup run need to persist
 			if (is_array($warnings)) {
@@ -1996,7 +1943,7 @@ class UpdraftPlus {
 					} else {
 						$increase_resumption = true;
 					}
-					$this->terminate_due_to_activity('check-in', round($time_now, 1), round($runs_started[$run] + $time_passed[$run], 1), $increase_resumption);
+					UpdraftPlus_Job_Scheduler::terminate_due_to_activity('check-in', round($time_now, 1), round($runs_started[$run] + $time_passed[$run], 1), $increase_resumption);
 				}
 			}
 
@@ -2021,7 +1968,7 @@ class UpdraftPlus {
 						// The value of 1000 seconds here is somewhat arbitrary; but allows for the problem to occur in ~ the first 15 minutes. In practice, the problem is extremely rare; if this does not catch it, we can tweak the algorithm.
 						if (time() - $first_opened < 1000) {
 							$this->log("This backup task (".$this->nonce.") failed to load its job data (possible database server malfunction), but appears to be only recently started: scheduling a fresh resumption in order to try again, and then ending this resumption ($time_now, ".$this->backup_time.") (existing jobdata keys: ".implode(', ', array_keys($this->jobdata)).")");
-							$this->reschedule(120);
+							UpdraftPlus_Job_Scheduler::reschedule(120);
 							die;
 						}
 					}
@@ -2052,7 +1999,7 @@ class UpdraftPlus {
 
 		$time_ago = time()-$btime;
 
-		$this->log("Backup run: resumption=$resumption_no, nonce=$bnonce, begun at=$btime (${time_ago}s ago), job type=$job_type".$resumption_extralog);
+		$this->log("Backup run: resumption=$resumption_no, nonce=$bnonce, file_nonce=".$this->file_nonce." begun at=$btime (${time_ago}s ago), job type=$job_type".$resumption_extralog);
 
 		// This works round a bizarre bug seen in one WP install, where delete_transient and wp_clear_scheduled_hook both took no effect, and upon 'resumption' the entire backup would repeat.
 		// Argh. In fact, this has limited effect, as apparently (at least on another install seen), the saving of the updated transient via jobdata_set() also took no effect. Still, it does not hurt.
@@ -2368,8 +2315,8 @@ class UpdraftPlus {
 		// This is intended for one-shot backups, where we do want a resumption if it's only for uploading
 		if (empty($this->newresumption_scheduled) && 0 == $resumption_no && 0 == $this->error_count_before_cloud_backup && true === $this->jobdata_get('reschedule_before_upload')) {
 			$this->log("Cloud backup stage reached on one-shot backup: scheduling resumption for the cloud upload");
-			$this->reschedule(60);
-			$this->record_still_alive();
+			UpdraftPlus_Job_Scheduler::reschedule(60);
+			UpdraftPlus_Job_Scheduler::record_still_alive();
 		}
 
 		$this->log("Requesting upload of the files that have not yet been successfully uploaded (".count($undone_files).")");
@@ -2384,8 +2331,15 @@ class UpdraftPlus {
 
 	}
 
-	public function jobdata_getarray($non) {
-		return get_site_option("updraft_jobdata_".$non, array());
+	/**
+	 * Get all the job data in a single array
+	 *
+	 * @param String $job_id - the job identifier (nonce) for the job whose data is to be retrieved
+	 *
+	 * @return Array
+	 */
+	public function jobdata_getarray($job_id) {
+		return get_site_option('updraft_jobdata_'.$job_id, array());
 	}
 
 	public function jobdata_set_from_array($array) {
@@ -2421,13 +2375,21 @@ class UpdraftPlus {
 		if (!empty($this->nonce)) update_site_option('updraft_jobdata_'.$this->nonce, $this->jobdata);
 	}
 
+	/**
+	 * Set a job-data key/value pair for the current job
+	 *
+	 * @param String $key	- the key
+	 * @param Mixed	 $value	- needs to be serializable
+	 *
+	 * @uses update_site_option()
+	 */
 	public function jobdata_set($key, $value) {
 		if (empty($this->jobdata)) {
-			$this->jobdata = empty($this->nonce) ? array() : get_site_option("updraft_jobdata_".$this->nonce);
+			$this->jobdata = empty($this->nonce) ? array() : get_site_option('updraft_jobdata_'.$this->nonce);
 			if (!is_array($this->jobdata)) $this->jobdata = array();
 		}
 		$this->jobdata[$key] = $value;
-		if ($this->nonce) update_site_option("updraft_jobdata_".$this->nonce, $this->jobdata);
+		if ($this->nonce) update_site_option('updraft_jobdata_'.$this->nonce, $this->jobdata);
 	}
 
 	public function jobdata_delete($key) {
@@ -2442,7 +2404,7 @@ class UpdraftPlus {
 	public function get_job_option($opt) {
 		// These are meant to be read-only
 		if (empty($this->jobdata['option_cache']) || !is_array($this->jobdata['option_cache'])) {
-			if (!is_array($this->jobdata)) $this->jobdata = get_site_option("updraft_jobdata_".$this->nonce, array());
+			if (!is_array($this->jobdata) && $this->nonce) $this->jobdata = get_site_option("updraft_jobdata_".$this->nonce, array());
 			$this->jobdata['option_cache'] = array();
 		}
 		return isset($this->jobdata['option_cache'][$opt]) ? $this->jobdata['option_cache'][$opt] : UpdraftPlus_Options::get_updraft_option($opt);
@@ -2456,6 +2418,9 @@ class UpdraftPlus {
 		return isset($this->jobdata[$key]) ? $this->jobdata[$key] : $default;
 	}
 
+	/**
+	 * Reset the job data for the currently active job
+	 */
 	public function jobdata_reset() {
 		$this->jobdata = null;
 	}
@@ -2546,6 +2511,8 @@ class UpdraftPlus {
 			'blog_name' => '',
 			'db_backups' => $db_backups
 		);
+
+		if (!is_array($db_backups)) return $backup_database_info;
 
 		/*
 			We need to tweak the database array here by setting each database entity to finished or encrypted if it's an encrypted archive.
@@ -2722,12 +2689,12 @@ class UpdraftPlus {
 
 		if (false === $restrict_files_to_override && isset($options['restrict_files_to_override'])) $restrict_files_to_override = $options['restrict_files_to_override'];
 		// Generate backup information
-		$use_nonce = (empty($options['use_nonce'])) ? false : $options['use_nonce'];
-		$use_timestamp = (empty($options['use_timestamp'])) ? false : $options['use_timestamp'];
+		$use_nonce = empty($options['use_nonce']) ? false : $options['use_nonce'];
+		$use_timestamp = empty($options['use_timestamp']) ? false : $options['use_timestamp'];
 		$this->backup_time_nonce($use_nonce, $use_timestamp);
 		// The current_resumption is consulted within logfile_open()
 		$this->current_resumption = 0;
-		$this->logfile_open($this->nonce);
+		$this->logfile_open($this->file_nonce);
 
 		if (!is_file($this->logfile_name)) {
 			$this->log('Failed to open log file ('.$this->logfile_name.') - you need to check your UpdraftPlus settings (your chosen directory for creating files in is not writable, or you ran out of disk space). Backup aborted.');
@@ -2808,7 +2775,7 @@ class UpdraftPlus {
 		if (is_string($service)) $service = array($service);
 		if (!is_array($service)) $service = array('none');
 
-		if (!empty($options['extradata']) && preg_match('#services=remotesend/(\d+)#', $options['extradata'])) {
+		if (!empty($options['extradata']) && !empty($options['extradata']['services']) && preg_match('#remotesend/(\d+)#', $options['extradata']['services'])) {
 			if (array('none') === $service) $service = array();
 			$service[] = 'remotesend';
 		}
@@ -2903,8 +2870,10 @@ class UpdraftPlus {
 
 		if ($one_shot) update_site_option('updraft_oneshotnonce', $this->nonce);
 
-		if (!empty($options['extradata']) && 'autobackup' == $options['extradata']) array_push($initial_jobdata, 'is_autobackup', true);
-
+		if ($this->file_nonce && $this->file_nonce != $this->nonce) array_push($initial_jobdata, 'file_nonce', $this->file_nonce);
+		
+		// 'autobackup' == $options['extradata'] might be set from another plugin so keeping here to keep support
+		if (!empty($options['extradata']) && (!empty($options['extradata']['autobackup']) || 'autobackup' === $options['extradata'])) array_push($initial_jobdata, 'is_autobackup', true);
 		// Save what *should* be done, to make it resumable from this point on
 		if ($backup_database) {
 			$dbs = apply_filters('updraft_backup_databases', array('wp' => 'begun'));
@@ -2928,7 +2897,7 @@ class UpdraftPlus {
 			// Use of jobdata_set_multi saves around 200ms
 			call_user_func_array(array($this, 'jobdata_set_multi'), apply_filters('updraftplus_initial_jobdata', $initial_jobdata, $options, $split_every));
 		} catch (Exception $e) {
-			$this->log($e->getMessage());
+			$this->log("Exception when calling jobdata_set_multi: ".$e->getMessage().' ('.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')');
 			return false;
 		}
 
@@ -2995,7 +2964,7 @@ class UpdraftPlus {
 			// If there were no errors before moving to the upload stage, on the first run, then bring the resumption back very close. Since this is only attempted on the first run, it is really only an efficiency thing for a quicker finish if there was an unexpected networking event. We don't want to do it straight away every time, as it may be that the cloud service is down - and might be up in 5 minutes time. This was added after seeing a case where resumption 0 got to run for 10 hours... and the resumption 7 that should have picked up the uploading of 1 archive that failed never occurred.
 			if (isset($this->error_count_before_cloud_backup) && 0 === $this->error_count_before_cloud_backup) {
 				if (0 == $resumption_no) {
-					$this->reschedule(60);
+					UpdraftPlus_Job_Scheduler::reschedule(60);
 				} else {
 					// Added 27/Feb/2016 - though the cloud service seems to be down, we still don't want to wait too long
 					$resume_interval = $this->jobdata_get('resume_interval');
@@ -3003,7 +2972,7 @@ class UpdraftPlus {
 					// 15 minutes + 2 for each resumption (a modest back-off)
 					$max_interval = 900 + $resumption_no * 120;
 					if ($resume_interval > $max_interval) {
-						$this->reschedule($max_interval);
+						UpdraftPlus_Job_Scheduler::reschedule($max_interval);
 					}
 				}
 			}
@@ -3191,7 +3160,7 @@ class UpdraftPlus {
 				if (!$handle->check_connection(false)) {
 					if ($logit) $this->log("The database went away, and could not be reconnected to");
 					// Almost certainly a no-op
-					if ($reschedule) $this->reschedule(60);
+					if ($reschedule) UpdraftPlus_Job_Scheduler::reschedule(60);
 					$db_connected = false;
 				} else {
 					$db_connected = true;
@@ -3239,7 +3208,7 @@ class UpdraftPlus {
 
 		// Really, we could do this immediately when we realise the DB has gone away. This is just for the probably-impossible case that a DB write really can still succeed. But, we must abort before calling delete_local(), as the removal of the local file can cause it to be recreated if the DB is out of sync with the fact that it really is already uploaded
 		if (false === $db_connected) {
-			$this->record_still_alive();
+			UpdraftPlus_Job_Scheduler::record_still_alive();
 			die;
 		}
 
@@ -3302,86 +3271,16 @@ class UpdraftPlus {
 	}
 
 	/**
-	 * This function is not needed for backup success, according to the design, but it helps with efficient scheduling
-	 *
-	 * @return null
-	 */
-	private function reschedule_if_needed() {
-		// If nothing is scheduled, then return
-		if (empty($this->newresumption_scheduled)) return;
-		$time_now = time();
-		$time_away = $this->newresumption_scheduled - $time_now;
-		// 45 is chosen because it is 15 seconds more than what is used to detect recent activity on files (file mod times). (If we use exactly the same, then it's more possible to slightly miss each other)
-		if ($time_away >1 && $time_away <= 45) {
-			$this->log('The scheduled resumption is within 45 seconds - will reschedule');
-			// Push 45 seconds into the future
-			 // $this->reschedule(60);
-			// Increase interval generally by 45 seconds, on the assumption that our prior estimates were innaccurate (i.e. not just 45 seconds *this* time)
-			$this->increase_resume_and_reschedule(45);
-		}
-	}
-
-	/**
-	 * Reschedule the next resumption for the specified amount of time in the future
-	 *
-	 * @param Integer $how_far_ahead - a number of seconds
-	 */
-	public function reschedule($how_far_ahead) {
-		// Reschedule - remove presently scheduled event
-		$next_resumption = $this->current_resumption + 1;
-		wp_clear_scheduled_hook('updraft_backup_resume', array($next_resumption, $this->nonce));
-		// Add new event
-		// This next line may be too cautious; but until 14-Aug-2014, it was 300.
-		// Update 20-Mar-2015 - lowered from 180 to 120
-		// Update 03-Aug-2018 - lowered from 120 to 100
-		if ($how_far_ahead < 100) $how_far_ahead = 100;
-		$schedule_for = time() + $how_far_ahead;
-		$this->log("Rescheduling resumption $next_resumption: moving to $how_far_ahead seconds from now ($schedule_for)");
-		wp_schedule_single_event($schedule_for, 'updraft_backup_resume', array($next_resumption, $this->nonce));
-		$this->newresumption_scheduled = $schedule_for;
-	}
-
-	private function increase_resume_and_reschedule($howmuch = 120, $force_schedule = false) {
-
-		$resume_interval = max(intval($this->jobdata_get('resume_interval')), (0 === $howmuch) ? 120 : 300);
-
-		if (empty($this->newresumption_scheduled) && $force_schedule) {
-			$this->log("A new resumption will be scheduled to prevent the job ending");
-		}
-
-		$new_resume = $resume_interval + $howmuch;
-		// It may be that we're increasing for the second (or more) time during a run, and that we already know that the new value will be insufficient, and can be increased
-		if ($this->opened_log_time > 100 && microtime(true)-$this->opened_log_time > $new_resume) {
-			$new_resume = ceil(microtime(true)-$this->opened_log_time)+45;
-			$howmuch = $new_resume-$resume_interval;
-		}
-
-		// This used to be always $new_resume, until 14-Aug-2014. However, people who have very long-running processes can end up with very long times between resumptions as a result.
-		// Actually, let's not try this yet. I think it is safe, but think there is a more conservative solution available.
-		// $how_far_ahead = min($new_resume, 600);
-		$how_far_ahead = $new_resume;
-		// If it is very long-running, then that would normally be known soon.
-		// If the interval is already 12 minutes or more, then try the next resumption 10 minutes from now (i.e. sooner than it would have been). Thus, we are guaranteed to get at least 24 minutes of processing in the first 34.
-		if ($this->current_resumption <= 1 && $new_resume > 720) $how_far_ahead = 600;
-
-		if (!empty($this->newresumption_scheduled) || $force_schedule) $this->reschedule($how_far_ahead);
-		$this->jobdata_set('resume_interval', $new_resume);
-
-		$this->log("To decrease the likelihood of overlaps, increasing resumption interval to: $resume_interval + $howmuch = $new_resume");
-	}
-
-	/**
 	 * For detecting another run, and aborting if one was found
 	 *
-	 * @param  String $file - full file path
-	 * @return Void
+	 * @param  String $file - full file path of the file to check
 	 */
 	public function check_recent_modification($file) {
 		if (file_exists($file)) {
 			$time_mod = (int) @filemtime($file);
 			$time_now = time();
-			if ($time_mod>100 && ($time_now-$time_mod)<30) {
-				$this->terminate_due_to_activity($file, $time_now, $time_mod);
+			if ($time_mod > 100 && ($time_now - $time_mod) < 30) {
+				UpdraftPlus_Job_Scheduler::terminate_due_to_activity($file, $time_now, $time_mod);
 			}
 		}
 	}
@@ -3532,11 +3431,13 @@ class UpdraftPlus {
 			$this->log(__('Could not save backup history because we have no backup array. Backup probably failed.', 'updraftplus'), 'error');
 			return;
 		}
+
+		$job_type = $this->jobdata_get('job_type');
 		
 		$backup_array['nonce'] = $this->file_nonce;
 		$backup_array['service'] = $this->jobdata_get('service');
 		$backup_array['service_instance_ids'] = array();
-		$backup_array['always_keep'] = $this->jobdata_get('always_keep', false);
+		if ('incremental' != $job_type) $backup_array['always_keep'] = $this->jobdata_get('always_keep', false);
 		$backup_array['files_enumerated_at'] = $this->jobdata_get('files_enumerated_at');
 		
 		// N.B. Though the saved 'service' option can have various forms (especially if upgrading from (very) old versions), in the jobdata, it is always an array.
@@ -3548,8 +3449,9 @@ class UpdraftPlus {
 			$backup_array['service_instance_ids'][$method] = array_keys($method_information['instance_settings']);
 		}
 		
-		if ('' != ($label = $this->jobdata_get('label', ''))) $backup_array['label'] = $label;
-		$backup_array['created_by_version'] = $this->version;
+		if ('incremental' != $job_type && '' != ($label = $this->jobdata_get('label', ''))) $backup_array['label'] = $label;
+		if (!isset($backup_array['created_by_version'])) $backup_array['created_by_version'] = $this->version;
+		$backup_array['last_saved_by_version'] = $this->version;
 		$backup_array['is_multisite'] = is_multisite() ? true : false;
 		$remotesend_info = $this->jobdata_get('remotesend_info');
 		if (is_array($remotesend_info) && !empty($remotesend_info['url'])) $backup_array['remotesend_url'] = $remotesend_info['url'];
@@ -3558,19 +3460,9 @@ class UpdraftPlus {
 		if (false != ($morefiles_linked_indexes = $this->jobdata_get('morefiles_linked_indexes', false))) $backup_array['morefiles_linked_indexes'] = $morefiles_linked_indexes;
 		if (false != ($morefiles_more_locations = $this->jobdata_get('morefiles_more_locations', false))) $backup_array['morefiles_more_locations'] = $morefiles_more_locations;
 		
-		UpdraftPlus_Backup_History::save_backup(apply_filters('updraftplus_backup_timestamp', $this->backup_time), $backup_array);
+		UpdraftPlus_Backup_History::save_backup(apply_filters('updraftplus_save_backup_history_timestamp', $this->backup_time), $backup_array);
 	}
 	
-	public function terminate_due_to_activity($file, $time_now, $time_mod, $increase_resumption = true) {
-		// We check-in, to avoid 'no check in last time!' detectors firing
-		$this->record_still_alive();
-		$file_size = file_exists($file) ? round(filesize($file)/1024, 1). 'KB' : 'n/a';
-		$this->log("Terminate: ".basename($file)." exists with activity within the last 30 seconds (time_mod=$time_mod, time_now=$time_now, diff=".(floor($time_now-$time_mod)).", size=$file_size). This likely means that another UpdraftPlus run is at work; so we will exit.");
-		$increase_by = ($increase_resumption) ? 120 : 0;
-		$this->increase_resume_and_reschedule($increase_by, true);
-		if (!defined('UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY') || !UPDRAFTPLUS_ALLOW_RECENT_ACTIVITY) die;
-	}
-
 	 /**
 	  * If files + db are on different schedules but are scheduled for the same time,
 	  * then combine them $event = (object) array('hook' => $hook, 'timestamp' => $timestamp, 'schedule' => $recurrence, 'args' => $args, 'interval' => $schedules[$recurrence]['interval']);
@@ -3767,7 +3659,7 @@ class UpdraftPlus {
 		@set_time_limit(900);
 
 		if (!file_exists($fullpath) || filesize($fullpath) < 1) {
-			echo __('File not found', 'updraftplus');
+			_e('File not found', 'updraftplus');
 			return;
 		}
 
@@ -4674,6 +4566,9 @@ class UpdraftPlus {
 				break;
 			case 'shop':
 				return apply_filters('updraftplus_com_shop', 'https://updraftplus.com/shop/');
+				break;
+			case 'premium':
+				return apply_filters('updraftplus_com_premium', 'https://updraftplus.com/shop/updraftplus-premium/');
 				break;
 			case 'buy-tokens':
 				return apply_filters('updraftplus_com_updraftclone_tokens', 'https://updraftplus.com/shop/updraftclone-tokens/');
