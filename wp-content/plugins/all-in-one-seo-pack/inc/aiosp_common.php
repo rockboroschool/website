@@ -170,4 +170,16 @@ class aiosp_common {
 		return filter_var( filter_var( $url, FILTER_SANITIZE_URL ), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED ) !== false;
 	}
 
+	/**
+	 * Renders the value XML safe.
+	 */
+	public static function make_xml_safe( $tag, $value ) {
+		if ( in_array( $tag, array( 'guid', 'link', 'loc', 'image:loc' ) ) ) {
+			$value = esc_url( $value );
+		} else if( ! is_array( $value ) ) {
+			$value = htmlspecialchars( $value, ENT_QUOTES );
+		}
+		return $value;
+	}
+
 }
