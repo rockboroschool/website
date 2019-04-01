@@ -694,11 +694,14 @@ if ( ! class_exists( 'CZR_BASE' ) ) :
         */
         function czr_fn_set_early_hooks() {
             //Filter home/blog postsa (priority 9 is to make it act before the grid hook for expanded post)
-            add_action ( 'pre_get_posts'         , array( $this , 'czr_fn_filter_home_blog_posts_by_tax' ), 9);
+            add_action ( 'pre_get_posts'                , array( $this , 'czr_fn_filter_home_blog_posts_by_tax' ), 9);
+            // Make sure the infinite scroll query object is filtered as well
+            // Fix for https://github.com/presscustomizr/customizr-pro/issues/46
+            add_filter ( 'infinite_scroll_query_object' , array( $this , 'czr_fn_filter_home_blog_infinite_posts_by_tax' ) );
             //Include attachments in search results
-            add_action ( 'pre_get_posts'         , array( $this , 'czr_fn_include_attachments_in_search' ));
+            add_action ( 'pre_get_posts'                , array( $this , 'czr_fn_include_attachments_in_search' ));
             //Include all post types in archive pages
-            add_action ( 'pre_get_posts'         , array( $this , 'czr_fn_include_cpt_in_lists' ));
+            add_action ( 'pre_get_posts'                , array( $this , 'czr_fn_include_cpt_in_lists' ));
         }
 
 
@@ -711,18 +714,36 @@ if ( ! class_exists( 'CZR_BASE' ) ) :
         * @since Customizr 3.4.10
         */
         function czr_fn_filter_home_blog_posts_by_tax( $query ) {
+          $this->_czr_fn_filter_home_blog_posts_by_tax( $query );
+        }
+
+
+        /**
+        * hook : infinite_scroll_query_object
+        * Filter home/blog posts by tax: cat
+        * @return modified query object
+        * @package Customizr
+        */
+        function czr_fn_filter_home_blog_infinite_posts_by_tax( $query ) {
+          return $this->_czr_fn_filter_home_blog_posts_by_tax( $query, $reset_cat_category_name = true );
+        }
+
+        // this method was implemented to fix https://github.com/presscustomizr/customizr-pro/issues/46
+        private function _czr_fn_filter_home_blog_posts_by_tax( $query, $reset_cat_category_name = false ) {
             // when we have to filter?
             // in home and blog page
-            if ( ! $query->is_main_query()
+            if ( is_admin() || ! $query->is_main_query()
               || ! ( ( is_home() && 'posts' == get_option('show_on_front') ) || $query->is_posts_page )
-            )
-              return;
+            ) {
+                return $query;
+            }
 
             //temp: do not filter in classic style when classic grid enabled and infinite scroll enabled in home/blog
             if ( ! CZR_IS_MODERN_STYLE &&
               'grid'== esc_attr( czr_fn_opt( 'tc_post_list_grid' ) ) &&
-               class_exists( 'PC_init_infinite' ) && esc_attr( czr_fn_opt( 'tc_infinite_scroll' ) ) && esc_attr( czr_fn_opt( 'tc_infinite_scroll_in_home' ) ) )
-            return;
+               class_exists( 'PC_init_infinite' ) && esc_attr( czr_fn_opt( 'tc_infinite_scroll' ) ) && esc_attr( czr_fn_opt( 'tc_infinite_scroll_in_home' ) ) ) {
+                return $query;
+            }
 
             // categories
             // we have to ignore sticky posts (do not prepend them)
@@ -731,11 +752,27 @@ if ( ! class_exists( 'CZR_BASE' ) ) :
             $cats = array_filter( $cats, 'czr_fn_category_id_exists' );
 
             if ( is_array( $cats ) && ! empty( $cats ) ){
-               $query->set('category__in', $cats );
-               $query->set('ignore_sticky_posts', 1 );
-               add_filter('tc_grid_expand_featured', '__return_false');
+              // Fix for https://github.com/presscustomizr/customizr-pro/issues/46
+              // Basically when we filter the blog with more than one category
+              // "infinite posts" are filtered by the category with the smaller ID defined in $cats.
+              // The reason is that the infinite scroll query takes as arguments the query vars of the
+              // "first page" query, that are localized and then sent back in the ajax request, and
+              // when we apply the category__in 'filter' to the blog page, for some reason, the main wp_query
+              // vars "cat" and "category_name" are set as the ID and the name of the smaller ID defined in $cats.
+              // With the if block below we avoid this unwanted behavior.
+              if ( $reset_cat_category_name ) {
+                $query->set( 'cat', '' );
+                $query->set( 'category_name', '' );
+              }
+
+              $query->set('category__in', $cats );
+              $query->set('ignore_sticky_posts', 1 );
+              add_filter('tc_grid_expand_featured', '__return_false');
             }
+            return $query;
         }
+
+
 
 
         /**
@@ -1098,11 +1135,36 @@ require_once( get_template_directory() . ( czr_fn_is_ms() ? '/core/init.php' : '
 add_action( 'init', 'czr_fn_maybe_register_nimble_location');
 function czr_fn_maybe_register_nimble_location() {
     if ( function_exists('nimble_register_location') ) {
-        nimble_register_location('__after_header', array( 'priority' => PHP_INT_MAX ) );
-        nimble_register_location('__before_main_wrapper', array( 'priority' => PHP_INT_MAX ) );
+        nimble_register_location('__after_header', array( 'priority' => PHP_INT_MAX ) );// fired in templates/parts/header.php
+        nimble_register_location('__before_main_wrapper', array( 'priority' => PHP_INT_MAX ) );// fired in templates/index-no-model.php
+        //nimble_register_location('__after_main_wrapper', array( 'priority' => PHP_INT_MAX ) ); // fired in /wp-content/themes/customizr/templates/parts/footer.php
+        nimble_register_location('__before_footer', array( 'priority' => PHP_INT_MAX ) ); // fired in templates/parts/footer.php
     }
 }
-
+// added to fix the problem of locations not rendered when using Nimble templates for content and / or header and footer
+// see https://github.com/presscustomizr/nimble-builder/issues/369
+foreach( array( 'after_nimble_header', 'nimble_template_before_content_sections', 'before_nimble_footer' ) as $nimble_hook ) {
+    add_action( $nimble_hook, 'czr_fn_render_locations_when_using_nimble_templates' );
+}
+function czr_fn_render_locations_when_using_nimble_templates() {
+    if ( !function_exists('Nimble\Nimble_Manager') )
+      return;
+    $location = '';
+    switch( current_filter() ) {
+        case 'after_nimble_header' :
+            $location = '__after_header';
+        break;
+        case 'nimble_template_before_content_sections' :
+            $location = '__before_main_wrapper';
+        break;
+        case 'before_nimble_footer' :
+            $location = '__before_footer';
+        break;
+    }
+    if ( ! empty( $location ) ) {
+        \Nimble\Nimble_Manager()->render_nimble_locations( $location );
+    }
+}
 
 /* ------------------------------------------------------------------------- *
  *  Loads Required Plugin Class and Setup

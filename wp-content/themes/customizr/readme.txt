@@ -2,8 +2,8 @@
 Contributors: nikeo, d4z_c0nf
 Tags: one-column, two-columns, three-columns, left-sidebar, right-sidebar, buddypress, custom-menu, custom-colors, featured-images, full-width-template, theme-options, threaded-comments, translation-ready, sticky-post, post-formats, rtl-language-support, editor-style
 Requires at least: 4.6
-Tested up to: 5.0
-Stable tag: 4.1.25
+Tested up to: 5.1.0
+Stable tag: 4.1.34
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,10 +13,52 @@ Customizr is a simple and fast WordPress theme designed to help you attract and 
 Customizr is a simple and fast WordPress theme designed to help you attract and engage more visitors. Provides a perfect user experience on smartphones. Powers more than 100K active sites around the world. Hundreds of 5-stars reviews received on WordPress.org.
 
 == Upgrade Notice ==
-= 4.1.25 =
-Added support for rtl to the new block editor.
+= 4.1.34 =
+Bug dispaying related posts in pages.
 
 == Changelog ==
+= 4.1.34 March 22nd, 2019 =
+* Fix: bug leading to related posts displayed in pages
+
+= 4.1.33 March 21st, 2019 =
+* fixed : WooCommerce product image issue
+
+= 4.1.32 March 21st, 2019 =
+* fixed : WooCommerce product image on top of the page disabled by default. because of https://github.com/presscustomizr/customizr/issues/1708#issuecomment-475151976
+
+= 4.1.31 March 20th, 2019 =
+* fixed : compatibility issue with the Event Tickets plugin. fixes #1700
+* fixed : php syntax, ensure that the delimiter param is always passed to the explode PHP function. fixes #1709
+* improved : new option to allow the WooCommerce featured image to be displayed before the main wrapper in full width. fixes #1708
+
+= 4.1.30 February 28th, 2019 =
+* fixed : PHP error when using PHP < 5.4 because of the use of the short array syntax. fixes #1697
+
+= 4.1.29 February 27th, 2019 =
+* fixed : make sure registered locations in the Customizr theme are always rendered when using the Nimble template and the Nimble header and footer
+* improved : hide main slider nav arrows in mobile with CSS only. fixes #1680
+* improved : "You May Also Like" smaller
+* improved : post list pagination is larger
+* added : a simple template tag parser, to be used with the filter 'czr_parse_template_tags'
+
+= 4.1.28 February 14th, 2019 =
+* fixed : removed unwanted lines displayed around the images of the featured pages on chrome
+* fixed : assigned width and height attributes to placehoder images. fixes #1684
+* improved : compatibility with the Social Media Share Buttons & Social Sharing Icons plugin. fixes #1683
+    
+= 4.1.27 February 2nd, 2019 =
+* fixed : the absolute positioned header should be displayed only when on home AND on first paginated page of the blog. fixes #1665
+* fixed : WooCommerce cart style issue when using several variations. fixes #1667
+* fixed : reset margin-top when a p html elemnt is a child of a li html element. fixes #1400
+* improved : extend anchor smooth scroll range of action. fixes #1662
+
+= 4.1.26 January 16th, 2019 =
+* fixed : wrong html5 shiv file path. fixes #1657
+* improved : remove unused iphone checkboxes assets. fixes #1627
+* added : an option to remove the various transparent header borders. fixes #1624
+* added : compatibility with the Q2W3 plugin
+* added : registered a new Nimble builder location above the footer. fixes #1664
+
 = 4.1.25 December 22nd, 2018 =
 * improved : add block editor style rtl, and make sure it is loaded when is_rtl(). fixes #1651
 

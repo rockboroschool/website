@@ -103,14 +103,6 @@ See templates/index.php for rendering flow.
 /**
 * Fires the theme : constants definition, core classes loading
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        4.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR___' ) ) :
 
@@ -189,7 +181,7 @@ if ( ! class_exists( 'CZR___' ) ) :
             // control the display of the update notification for a list of versions
             // typically useful when several versions are released in a short time interval
             // to avoid hammering the wp admin dashboard with a new admin notice each time
-            $this -> _hide_update_notification_for_versions = array();
+            $this -> _hide_update_notification_for_versions = array('4.1.33');
             if( ! defined( 'DISPLAY_UPDATE_NOTIFICATION' ) ) {
                 define( 'DISPLAY_UPDATE_NOTIFICATION' , ! in_array( CUSTOMIZR_VER, $this -> _hide_update_notification_for_versions ) );
             }

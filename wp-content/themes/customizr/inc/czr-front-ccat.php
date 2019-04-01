@@ -2,14 +2,6 @@
 /**
 * Header actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_header_main' ) ) :
 	class CZR_header_main {
@@ -44,8 +36,6 @@ if ( ! class_exists( 'CZR_header_main' ) ) :
 		* @since Customizr 3.2.6
 		*/
     function czr_fn_set_header_hooks() {
-    	//html > head actions
-      add_action ( '__before_body'	  , array( $this , 'czr_fn_head_display' ));
 
       //The WP favicon (introduced in WP 4.3) will be used in priority
       add_action ( 'wp_head'     		  , array( $this , 'czr_fn_favicon_display' ));
@@ -103,39 +93,6 @@ if ( ! class_exists( 'CZR_header_main' ) ) :
     /***************************
     * VIEWS
     ****************************/
-	  /**
-		* Displays what is inside the head html tag. Includes the wp_head() hook.
-		*
-		*
-		* @package Customizr
-		* @since Customizr 3.0
-		*/
-		function czr_fn_head_display() {
-			ob_start();
-				?>
-				<head>
-				    <meta charset="<?php bloginfo( 'charset' ); ?>" />
-				    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-            <?php if ( ! function_exists( '_wp_render_title_tag' ) ) :?>
-				      <title><?php wp_title( '|' , true, 'right' ); ?></title>
-            <?php endif; ?>
-				    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <link rel="profile"  href="https://gmpg.org/xfn/11" />
-				    <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
-
-				   <!-- html5shiv for IE8 and less  -->
-				    <!--[if lt IE 9]>
-				      <script src="<?php echo TC_BASE_URL ?>inc/assets/js/html5.js"></script>
-				    <![endif]-->
-				    <?php wp_head(); ?>
-				</head>
-				<?php
-			$html = ob_get_contents();
-		    if ($html) ob_end_clean();
-		    echo apply_filters( 'tc_head_display', $html );
-		}
-
-
 
 
 		/**
@@ -693,13 +650,6 @@ endif;
 * Menu action
 *
 *
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_menu' ) ) :
   class CZR_menu {
@@ -1509,10 +1459,6 @@ endif;
 * Used for the user created main menus, not for : default menu and widget menus
 * Walker_Nav_Menu is located in /wp-includes/nav-menu-template.php
 * Walker is located in wp-includes/class-wp-walker.php
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_nav_walker' ) ) :
   class CZR_nav_walker extends Walker_Nav_Menu {
@@ -1682,14 +1628,6 @@ endif;
 /**
 * 404 content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_404' ) ) :
   class CZR_404 {
@@ -1731,14 +1669,6 @@ endif;
 /**
 * Attachments content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_attachment' ) ) :
     class CZR_attachment {
@@ -1886,16 +1816,6 @@ endif;
 /**
 * Breadcrumb for Customizr
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @uses 		Breadcrumb Trail - A breadcrumb menu script for WordPress.
-* @author    	Justin Tadlock <justin@justintadlock.com>
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
 class CZR_breadcrumb {
@@ -2944,13 +2864,6 @@ class CZR_breadcrumb {
 * Comments actions
 *
 *
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_comments' ) ) :
   class CZR_comments {
@@ -3463,14 +3376,6 @@ endif;
 /**
 * Featured pages actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_featured_pages' ) ) :
   class CZR_featured_pages {
@@ -3770,14 +3675,6 @@ endif;
 /**
 * Gallery content filters
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_gallery' ) ) :
   class CZR_gallery {
@@ -3862,14 +3759,6 @@ endif;
 /**
 * Headings actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.1.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_headings' ) ) :
   class CZR_headings {
@@ -4395,14 +4284,6 @@ endif;
 /**
 * No results content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_no_results' ) ) :
   class CZR_no_results {
@@ -4439,14 +4320,6 @@ endif;
 /**
 * Pages content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_page' ) ) :
   class CZR_page {
@@ -4702,14 +4575,6 @@ endif;
 /**
 * Single post content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post' ) ) :
   class CZR_post {
@@ -5020,14 +4885,6 @@ endif;
 /**
 * Posts content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post_list' ) ) :
 class CZR_post_list {
@@ -5491,14 +5348,6 @@ endif;
 /**
 * Post lists grid content actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.2.11
-* @author       Rocco Aliberti <rocco@presscustomizr.com>, Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2015, Rocco Aliberti, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post_list_grid' ) ) :
     class CZR_post_list_grid {
@@ -6490,13 +6339,6 @@ endif;
 * Post metas content actions
 * Since 3.1.20, displays all levels of any hierarchical taxinomies by default and for all types of post (including hierarchical CPT). This feature can be disabled with a the filter : tc_display_taxonomies_in_breadcrumb (set to true by default). In the case of hierarchical post types (like page or hierarchical CPT), the taxonomy trail is only displayed for the higher parent.
 *
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post_metas' ) ) :
     class CZR_post_metas {
@@ -7146,14 +6988,6 @@ function czr_fn_get_the_tags() {
 /**
 * Navigation action
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post_navigation' ) ) :
   class CZR_post_navigation {
@@ -7388,14 +7222,6 @@ endif;
 /**
 * Posts thumbnails actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0.5
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_post_thumbnails' ) ) :
 class CZR_post_thumbnails {
@@ -7741,14 +7567,6 @@ endif;
 * CZR_utils::$inst -> footer_widgets for the footer
 * The widget area are then fired in class-fire-widgets.php
 * You can modify those default widgets with 3 filters : tc_default_widgets, tc_footer_widgets, tc_sidebar_widgets
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_sidebar' ) ) :
   class CZR_sidebar {
@@ -7908,14 +7726,6 @@ endif;
 /**
 * Slider Model / Views / Helpers Class
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013 - 2015 , Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_slider' ) ) :
 class CZR_slider {
@@ -9259,14 +9069,6 @@ endif;
 /**
 * Footer actions
 *
-*
-* @package      Customizr
-* @subpackage   classes
-* @since        3.0
-* @author       Nicolas GUILLAUME <nicolas@presscustomizr.com>
-* @copyright    Copyright (c) 2013-2015, Nicolas GUILLAUME
-* @link         http://presscustomizr.com/customizr
-* @license      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 if ( ! class_exists( 'CZR_footer_main' ) ) :
 	class CZR_footer_main {

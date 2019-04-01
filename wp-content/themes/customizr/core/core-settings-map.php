@@ -11,8 +11,6 @@
 * Defines sections, settings and function of customizer and return and array
 * Also used to get the default options array, in this case $get_default = true and we DISABLE the __get_option (=>infinite loop)
 *
-* @package Customizr
-* @since Customizr 3.0
 */
 function czr_fn_get_customizer_map( $get_default = null,  $what = null ) {
     if ( ! ( defined( 'CZR_IS_MODERN_STYLE' ) && CZR_IS_MODERN_STYLE ) ) {
@@ -127,7 +125,10 @@ function czr_fn_popul_setting_control_map( $_map, $get_default = null ) {
     'czr_fn_placeholders_notice_map',
     'czr_fn_external_resources_option_map',
     'czr_fn_responsive_option_map',
-    'czr_fn_style_option_map'
+    'czr_fn_style_option_map',
+
+    //WOOCOMMERCE OPTIONS
+    'czr_fn_woocommerce_option_map'
   );
 
   $_settings_groups = apply_filters( 'czr_settings_sections', $_settings_groups );
@@ -561,7 +562,14 @@ function czr_fn_header_design_option_map( $get_default = null ) {
                             'type'          => 'select' ,
                             'priority'      => 8,
           ),
-
+          'tc_header_no_borders'  =>  array(
+                            'default'       => czr_fn_user_started_before_version( '4.1.26', '2.1.16' ) ? false : true,
+                            'control'       => 'CZR_controls' ,
+                            'label'         => __( 'Remove header borders', 'customizr' ),
+                            'section'       => 'header_layout_sec' ,
+                            'type'          => 'checkbox',
+                            'priority'      => 8,
+          ),
           'tc_header_show_topbar'  =>  array(
                             'default'       => 'none',
                             'control'       => 'CZR_controls' ,
@@ -2370,6 +2378,28 @@ function czr_fn_style_option_map( $get_default = null ) {
 
   );
 }
+
+/******************************************************************************************************
+*******************************************************************************************************
+* PANEL : WOOCOMMERCE
+*******************************************************************************************************
+******************************************************************************************************/
+function czr_fn_woocommerce_option_map( $get_default = null ) {
+    return array(
+          'tc_woocommerce_display_product_thumb_before_mw' => array(
+                            // disabled by default because https://github.com/presscustomizr/customizr/issues/1708#issuecomment-475151976
+                            'default'     => 0,
+                            'control'     => 'CZR_controls' ,
+                            'label'         => __( 'Display the product featured image' , 'customizr' ),
+                            'title'         => __( 'Featured Image' , 'customizr' ),
+                            'section'       => 'woocommerce_product_images' ,
+                            'type'      =>  'checkbox',
+                            'priority'      => 10,
+                            'active_callback' => apply_filters( 'tc_woocommerce_options_enabled', '__return_false' )
+          )
+    );
+}
+
 
 
 /***************************************************************
