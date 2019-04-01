@@ -1,9 +1,9 @@
 === Jetpack by WordPress.com ===
 Contributors: automattic, adamkheckler, aduth, akirk, allendav, alternatekev, andy, annezazu, apeatling, azaozz, batmoo, barry, beaulebens, blobaugh, cainm, cena, cfinke, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, davoraltman, daniloercoli, designsimply, dllh, drawmyface, dsmart, dzver, ebinnion, eliorivero, enej, eoigal, erania-pinnera, ethitter, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, jblz, jasmussen, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, keoshi, koke, kraftbj, lancewillett, lschuyler, macmanx, martinremy, matt, matveb, mattwiebe, maverick3x6, mcsf, mdawaffe, MichaelArestad, migueluy, mikeyarce, mkaz, nancythanki, nickmomrik, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, ryancowles, richardmuscat, richardmtl, roccotripaldi, samhotchkiss, scarstocea, sdquirk, stephdau, tmoorewp, tyxla, Viper007Bond, westi, yoavf, zinigor
 Tags: Jetpack, WordPress.com, backup, security, related posts, CDN, speed, anti-spam, social sharing, SEO, video, stats
-Stable tag: 6.9
-Requires at least: 4.8
-Tested up to: 5.0
+Stable tag: 7.1.1
+Requires at least: 4.9
+Tested up to: 5.1
 
 The ideal plugin for stats, related posts, search engine optimization, social sharing, protection, backups, security, and more.
 
@@ -100,59 +100,80 @@ There are opportunities for developers at all levels to contribute. [Learn more 
 
 == Changelog ==
 
-= 6.9 =
+= 7.1.1 =
 
-* Release date: January 10, 2018
-* Release post: https://wp.me/p1moTy-cEZ
-
-**Major Enhancements**
-
-* Block Editor: this release introduces new blocks: a Subcription form block, a Tiled Gallery block, and a Related Posts block.
-
-**Enhancements**
-
-* Admin Page: several changes to improve navigation and connection flows for new and existing Jetpack site owners.
-* Admin Page: make the Jetpack dashboard wider on large screens for a better experience.
-* Affiliate tools: offer options for affiliate partners to manage affiliation links on their site.
-* Carousel: add support for the new Tiled Gallery block.
-* Contact Form: use the comment blacklist to filter contact form submissions.
-* Dashboard notices: automatically dismiss notices once a feature has been activated.
-* Dashboard notices: fix styling to work better with the Hello Dolly plugin.
-* Internationalization: add new locales, ensure existing ones are up to date.
-* REST API: new endpoint to expose Gutenberg block and plugin availabilty.
-* Search: add hook to get_filters() to allow the use of custom filters.
-* Shortcodes: add new Mailchimp shortcode to insert Mailchimp subscription forms anywhere in your posts and pages.
-* SSO: offer message introducing the feature to new users.
-* Stats: improve the design of the Stats dashboard widget.
-* Widgets: add filter to set DoNotTrack in Twitter Timeline widget.
-* WordPress.com REST API: add new option to set sites to private.
-
-**Improved compatibility**
-
-* AMP: ensure that all Jetpack features are compatible with the latest version of the AMP plugin. Solves issues previously encountered with sharing buttons and stats.
-* Images: ensure that images inserted with new block editor can be used in Open Graph Meta tags, Related Posts, and Publicized posts.
-* PHP 7.3: avoid PHP warnings so the plugin can be fully compatible with the latest version of PHP.
-* Sharing: do not add Jetpack's Twitter Meta Tags when the WP To Twitter plugin is active.
-* Twenty Nineteen: additional style adjustments to make sure all Jetpack widgets look good with the theme.
-* WooCommerce: do not include product reviews in comment counts in the WordPress.com REST API.
+* Release date: March 06, 2019
+* Release post: https://wp.me/p1moTy-foJ
 
 **Bug fixes**
 
-* Admin Page: update feature limits mentioned when disconnecting Jetpack from WordPress.com
-* Block Editor: fix loading of translations in the editor when Jetpack's Site Accelerator feature is active.
-* Carousel: ensure that Carousel works well with the Gallery block in the new block editor.
-* Carousel: do not open modal when clicking on a link in a caption
-* Publicize: improve synchronization of sharing settings with WordPress.com.
-* Publicize: only display Gutenberg Publicize UI to users with the correct permissions.
-* Responsive videos: don't load if theme supports core responsive embeds.
-* Search: fix fatal error when the Search Widget is enabled while the site is in Development Mode.
-* Sharing: update Tumblr official sharing button.
-* Shortcodes: update YouTube shortcode to support more video link formats.
-* Shortlinks: add the option to view shortlinks in the Block editor.
-* Simple Payments: only register block when all needed data is available.
-* Widgets: only load Social Icons widget scripts and styles when necessary.
-* WooCommerce Analytics: avoid Fatal Errors in some specific site setups.
-* WooCommerce Analytics: improve performance by avoiding unnecessary calls to the feature when it is not needed.
+* General: avoid conflicting with other plugins when suggesting Jetpack features on the Plugins screen.
+* Publicize: avoid errors when the feature is not active on a site.
+* Widgets: improve performance of the Top Posts and the Blog Stats widgets on high-traffic sites.
+* Subscriptions: fix an issue that prevented displaying subscribers count in the subscription forms.
+* Tiled Galleries / Slideshows: ensure they can be displayed properly in Internet Explorer 11.
+
+= 7.1 =
+
+* Release date: March 05, 2019
+* Release post: https://wp.me/p1moTy-e9x
+
+**Major Enhancements**
+
+* Block Editor: this release introduces 6 new blocks:
+	- the Ads block allows you to insert different ads from [our WordAds program](https://jetpack.com/support/ads/) within your posts and pages.
+	- the Mailchimp block allows your readers to easily subscribe to your Mailchimp newsletter.
+	- the Video block supports VideoPress videos if you've purchased our Premium or Professional plan.
+	- the Slideshow block allows you to insert beautiful slideshows in your posts and pages.
+	- The Business Hours blocks is useful for companies who want to display their business's Opening Hours on their site.
+	- The Contact Info block is useful for any business who may want to display useful information on a post or page.
+
+**Enhancements**
+
+* Admin Page: move Carousel settings from Performance to Writing section.
+* Ads: include search results pages under the `Archive` toggle.
+* Block Editor: improve block registration structure for better management of block availability.
+* General: remove IE8 support fallbacks.
+* General: add feature suggestions to the plugin search screen.
+* Image CDN: add new mode that disables the creation of resized images, thus saving disk space.
+* Instagram: update embed to support Instagram TV URLs.
+* Post Images detection: add support for alt text.
+* Plans: clarify upgrade prompts in the Jetpack dashboard's Plans page.
+* Publicize: remove the Google+ interface as the Social Network is now deprecated.
+* Related Posts: update block to allow for up to 6 related posts.
+* Social Menus & Icons: add Discord Support.
+* Support: add additional tests to check when Jetpack isn't working as expected and ensures all current debugging platforms use the same testing list.
+* Simple Payments: add generic currency fallback symbol.
+* Sync: further performance improvements in PHP 7+ environments.
+* Woocommerce Analytics: include product type with analytics data.
+
+**Improved compatibility**
+
+* General: replace all .dev TLD references by .test as the .dev TLD will soon become available for registration.
+* PHP 7.3: introduce automated testing for PHP 7.3.
+* Site Accelerator: ensure compatibility with the AMP plugin.
+* Twenty Nineteen: fix Top Posts and Pages Widget image list margins.
+* WordPress 5.1 Compatibility: update usage of `wp_schedule_single_event` to match changes in WordPress.
+
+**Bug fixes**
+
+* Copy Post: ensure the feature can be used when using non-standard post formats.
+* Infinite Scroll: fix vertical spacing for new posts loaded with Infinite Scroll.
+* Internationalization: fix minor problem affecting translations in the block editor.
+* Mobile Theme: fix PHP notices when trying to display gallery images.
+* Mobile Theme: fix redirection issues when clicking on the "Desktop version" links.
+* Photon: add paypalobjects.com to the list of banned domains, as this domain already relies on a CDN.
+* Publicize / Subscriptions: do not show message at the top of the editor when creating a private post.
+* Spelling / Grammar: fix error when spellchecking the contents of a Classic block in the block editor.
+* Top Posts: allow fetching posts from a long timeframe when using the `jetpack_top_posts_days` filter.
+* Related Posts: avoid display a dulplicated set of related posts when using the Related Posts block.
+* REST API: fix a bug causing Likes settings on a post to sometimes be flipped.
+* Security: avoid bypassing Protect's Math Fallback challenge.
+* Security: fix an XSS vulnerability in the "My Community" widget.
+* Site Stats: do not show the Jetpack logo in the Stats dashboard widget title in the Screen Options tab.
+* Theme Tools: support alternative Pinterest domain extensions in the Social Menus tool.
+* Widgets: support alternative Pinterest domain extensions in the Social Icons Widget.
+* Widgets: update the Cookies & Consents Banner to be fully accessible on mobile devices.
 
 --------
 

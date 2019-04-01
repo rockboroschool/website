@@ -2,31 +2,20 @@
 
 if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed');
 
-// @codingStandardsIgnoreStart
-/*
-do_bootstrap($possible_options_array, $connect = true) # Return a WP_Error object if something goes wrong
-do_upload($file) # Return true/false
-do_listfiles($match)
-do_delete($file) - return true/false
-do_download($file, $fullpath, $start_offset) - return true/false
-do_config_print()
-do_config_javascript()
-get_credentials_test_required_parameters() - return an array: keys = required _POST parameters; values = description of each
-do_credentials_test($testfile) - return true/false
-do_credentials_test_deletefile($testfile)
-*/
-// @codingStandardsIgnoreEnd
-
-// TODO: Need to deal with the issue of squillions of downloaders showing in a restore operation. Best way would be to never open the downloaders at all - make an AJAX call to see which are actually needed. (Failing that, a back-off mechanism).
-
 if (!class_exists('UpdraftPlus_RemoteStorage_Addons_Base_v2')) require_once(UPDRAFTPLUS_DIR.'/methods/addon-base-v2.php');
+
 class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStorage_Addons_Base_v2 {
 
 	private $default_chunk_size;
 
+	private $remotesend_use_chunk_size;
+	
+	private $remotesend_chunked_wp_error;
+	
+	/**
+	 * Class constructor
+	 */
 	public function __construct() {
-		// 2MB. After being b64-encoded twice, this is ~ 3.7MB = 113 seconds on 32KB/s uplink
-		$this->default_chunk_size = (defined('UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES') && is_numeric(UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES) && UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES >= 16384) ? UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES : 2097152;
 
 		add_filter('updraftplus_clone_remotesend_options', array($this, 'updraftplus_clone_remotesend_options'), 10, 1);
 		add_action('updraftplus_remotesend_upload_complete', array($this, 'upload_complete'));
@@ -35,10 +24,23 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		parent::__construct('remotesend', 'Remote send', false, false);
 	}
 	
+	/**
+	 * Supplies the list of keys for options to be saved in the backup job.
+	 *
+	 * @return Array
+	 */
 	public function get_credentials() {
 		return array('updraft_ssl_disableverify', 'updraft_ssl_nossl', 'updraft_ssl_useservercerts');
 	}
 
+	/**
+	 * Upload a single file
+	 *
+	 * @param String $file - the basename of the file to upload
+	 * @param String $from - the full path of the file
+	 *
+	 * @return Boolean - success status. Failures can also be thrown as exceptions.
+	 */
 	public function do_upload($file, $from) {
 
 		global $updraftplus;
@@ -50,8 +52,8 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 			if (!is_object($storage)) throw new Exception("RPC service error");
 		} catch (Exception $e) {
 			$message = $e->getMessage().' ('.get_class($e).') (line: '.$e->getLine().', file: '.$e->getFile().')';
-			$updraftplus->log("RPC service error: ".$message);
-			$updraftplus->log($message, 'error');
+			$this->log("RPC service error: ".$message);
+			$this->log($message, 'error');
 			return false;
 		}
 		
@@ -85,20 +87,33 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 			$remote_status = $get_remote_size['data']['status'];
 		}
 
-		$updraftplus->log("$file: existing size: ".$remote_size);
+		$this->log("$file: existing size: ".$remote_size);
 		
 		// Perhaps it already exists? (if we didn't get the final confirmation)
 		if ($remote_size >= $filesize && $remote_status) {
-			$updraftplus->log("$file: already uploaded");
+			$this->log("$file: already uploaded");
 			return true;
 		}
 
 		// Length = 44 (max = 45)
 		$this->remote_sent_defchunk_transient = 'ud_rsenddck_'.md5($opts['name_indicator']);
 
+		if (empty($this->default_chunk_size)) {
+		
+			$clone_would_like = $updraftplus->verify_free_memory(4194304*2) ? 4194304 : 2097152;
+		
+			// Default is 2MB. After being b64-encoded twice, this is ~ 3.7MB = 113 seconds on 32KB/s uplink
+			$default_chunk_size = $updraftplus->jobdata_get('clone_job') ? 4194304 : 2097152;
+			
+			if (defined('UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES') && UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES >= 16384) $default_chunk_size = UPDRAFTPLUS_REMOTESEND_DEFAULT_CHUNK_BYTES;
+			
+			$this->default_chunk_size = $default_chunk_size;
+		
+		}
+		
 		$default_chunk_size = $this->default_chunk_size;
 
-		if (false !== ($saved_default_chunk_size = get_transient($this->remote_sent_defchunk_transient)) && is_numeric($saved_default_chunk_size) && $saved_default_chunk_size > 16384) {
+		if (false !== ($saved_default_chunk_size = get_transient($this->remote_sent_defchunk_transient)) && $saved_default_chunk_size > 16384) {
 			// Don't go lower than 256KB for the *default*. (The job size can go lower).
 			$default_chunk_size = max($saved_default_chunk_size, 262144);
 		}
@@ -107,7 +122,7 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 
 		if (0 == $remote_size && $this->remotesend_use_chunk_size == $this->default_chunk_size && $updraftplus->current_resumption - max($updraftplus->jobdata_get('uploaded_lastreset'), 1) > 1) {
 			$new_chunk_size = floor($this->remotesend_use_chunk_size / 2);
-			$updraftplus->log("No uploading activity has been detected for a while; reducing chunk size in case a timeout was occurring. New chunk size: ".$new_chunk_size);
+			$this->log("No uploading activity has been detected for a while; reducing chunk size in case a timeout was occurring. New chunk size: ".$new_chunk_size);
 			$this->remotesend_set_new_chunk_size($new_chunk_size);
 		}
 
@@ -124,9 +139,9 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 				throw new Exception("Failed to open file for reading: $from");
 			}
 		} catch (Exception $e) {
-			$updraftplus->log($this->description." upload: error (".get_class($e)."): ($file) (".$e->getMessage().") (line: ".$e->getLine().', file: '.$e->getFile().')');
+			$this->log("upload: error (".get_class($e)."): ($file) (".$e->getMessage().") (line: ".$e->getLine().', file: '.$e->getFile().')');
 			if (!empty($this->remotesend_chunked_wp_error) && is_wp_error($this->remotesend_chunked_wp_error)) {
-				$updraftplus->log("Exception data: ".base64_encode(serialize($this->remotesend_chunked_wp_error->get_error_data())));
+				$this->log("Exception data: ".base64_encode(serialize($this->remotesend_chunked_wp_error->get_error_data())));
 			}
 			return false;
 		}
@@ -137,14 +152,14 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 	/**
 	 * Chunked upload
 	 *
-	 * @param string   $file 		 Specific file to be used in chunked upload
-	 * @param resource $fp 		     Location of File
-	 * @param integer  $chunk_index  The index of the chunked data
-	 * @param integer  $upload_size  Size of the upload
-	 * @param integer  $upload_start String the upload starts on
-	 * @param integer  $upload_end   String the upload ends on
+	 * @param String   $file 		 Specific file to be used in chunked upload
+	 * @param Resource $fp 		     File handle
+	 * @param Integer  $chunk_index  The index of the chunked data
+	 * @param Integer  $upload_size  Size of the upload
+	 * @param Integer  $upload_start String the upload starts on
+	 * @param Integer  $upload_end   String the upload ends on
 	 *
-	 * @return boolean|(integer) Result (N.B> (int)1 means the same as true, but also indicates "don't log it")
+	 * @return Boolean|Integer Result (N.B> (int)1 means the same as true, but additionally indicates "don't log it")
 	 */
 	public function chunked_upload($file, $fp, $chunk_index, $upload_size, $upload_start, $upload_end) {
 
@@ -159,7 +174,7 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		$chunk = fread($fp, $upload_size);
 
 		if (false === $chunk) {
-			$updraftplus->log($this->description." upload: $file: fread failure ($upload_start)");
+			$this->log("upload: $file: fread failure ($upload_start)");
 			return false;
 		}
 
@@ -180,7 +195,7 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		}
 
 		if ($try_again || is_wp_error($put_chunk)) {
-			// 413 - Request entity too large
+			// 413 = Request entity too large
 			// Don't go lower than 64KB chunks (i.e. 128KB/2)
 			// Note that mod_security can be configured to 'helpfully' decides to replace HTTP error codes + messages with a simple serving up of the site home page, which means that we need to also guess about other reasons this condition may have occurred other than detecting via the direct 413 code. Of course, our search for wp-includes|wp-content|WordPress|/themes/ would be thwarted by someone who tries to hide their WP. The /themes/ is pretty hard to hide, as the theme directory is always <wp-content-dir>/themes - even if you moved your wp-content. The point though is just a 'best effort' - this doesn't have to be infallible.
 			if (is_wp_error($put_chunk)) {
@@ -192,23 +207,25 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 						|| (is_array($error_data) && !empty($error_data['response']['code']) && 413 == $error_data['response']['code'])
 					)
 				);
+				
+				$is_timeout = ('http_request_failed' == $put_chunk->get_error_code() && false !== strpos($put_chunk->get_error_message(), 'timed out'));
 			
-				if ($this->remotesend_use_chunk_size >= 131072 && ($is_413 || ('response_not_understood' == $put_chunk->get_error_code() && (strpos($error_data, 'wp-includes') !== false || strpos($error_data, 'wp-content') !== false || strpos($error_data, 'WordPress') !== false || strpos($put_chunk->get_error_data(), '/themes/') !== false)))) {
+				if ($this->remotesend_use_chunk_size >= 131072 && ($is_413 || $is_timeout || ('response_not_understood' == $put_chunk->get_error_code() && (false !== strpos($error_data, 'wp-includes') || false !== strpos($error_data, 'wp-content') || false !== strpos($error_data, 'WordPress') || false !== strpos($put_chunk->get_error_data(), '/themes/'))))) {
 					if (1 == $chunk_index) {
 						$new_chunk_size = floor($this->remotesend_use_chunk_size / 2);
 						$this->remotesend_set_new_chunk_size($new_chunk_size);
 						$log_msg = "Returned WP_Error: code=".$put_chunk->get_error_code();
 						if ('unexpected_http_code' == $put_chunk->get_error_code()) $log_msg .= ' ('.$error_data.')';
 						$log_msg .= " - reducing chunk size to: ".$new_chunk_size;
-						$updraftplus->log($log_msg);
+						$this->log($log_msg);
 						return new WP_Error('reduce_chunk_size', 'HTTP 413 or possibly equivalent condition on first chunk - should reduce chunk size', $new_chunk_size);
 					} elseif ($this->remotesend_use_chunk_size >= 131072 && $is_413) {
 						// In this limited case, where we got a 413 but the chunk is not number 1, our algorithm/architecture doesn't allow us to just resume immediately with a new chunk size. However, we can just have UD reduce the chunk size on its next resumption.
 						$new_chunk_size = floor($this->remotesend_use_chunk_size / 2);
 						$this->remotesend_set_new_chunk_size($new_chunk_size);
-						$log_msg = "Returned WP_Error: code=".$put_chunk->get_error_code();
+						$log_msg = "Returned WP_Error: code=".$put_chunk->get_error_code().", message=".$put_chunk->get_error_message();
 						$log_msg .= " - reducing chunk size to: ".$new_chunk_size." and then scheduling resumption/aborting";
-						$updraftplus->log($log_msg);
+						$this->log($log_msg);
 						UpdraftPlus_Job_Scheduler::reschedule(50);
 						UpdraftPlus_Job_Scheduler::record_still_alive();
 						die;
@@ -246,7 +263,7 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 
 		// Possible statuses: 0=temporary file (or not present), 1=file
 		if (empty($put_chunk['data']) || !is_array($put_chunk['data'])) {
-			$updraftplus->log("Unexpected response when putting chunk $chunk_index: ".serialize($put_chunk));
+			$this->log("Unexpected response when putting chunk $chunk_index: ".serialize($put_chunk));
 			return false;
 		} else {
 			$remote_size = (int) $put_chunk['data']['size'];
@@ -274,8 +291,8 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		$this->options = $this->get_options();
 
 		if (!$this->options_exist($this->options)) {
-			$updraftplus->log('No '.$this->method.' settings were found');
-			$updraftplus->log(sprintf(__('No %s settings were found', 'updraftplus'), $this->description), 'error');
+			$this->log('No '.$this->method.' settings were found');
+			$this->log(sprintf(__('No %s settings were found', 'updraftplus'), $this->description), 'error');
 			return false;
 		}
 
@@ -295,7 +312,7 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		if ('error' == $response['response']) {
 			$msg = $response['data'];
 			// Could interpret the codes to get more interesting messages directly to the user
-			throw new Exception(__('Error:', 'updraftplus').' '.$msg);
+			throw new Exception(__('Error', 'updraftplus').': '.$msg);
 		}
 	}
 
@@ -313,14 +330,14 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 		if (is_array($response) && !empty($response['data']) && is_array($response['data']) && !empty($response['data']['php_events']) && !empty($response['data']['previous_data'])) {
 			global $updraftplus;
 			foreach ($response['data']['php_events'] as $logline) {
-				$updraftplus->log("From remote side: ".$logline);
+				$this->log("From remote side: ".$logline);
 			}
 			$response['data'] = $response['data']['previous_data'];
 		}
 		return $response;
 	}
 
-	public function do_bootstrap($opts, $connect = true) {
+	public function do_bootstrap($opts, $connect = true) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 	
 		global $updraftplus;
 	
@@ -361,11 +378,14 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 	/**
 	 * This function will check the options we have for the remote send and if it's a clone job and there are missing settings it will call the mothership to get this information.
 	 *
-	 * @param array $opts - an array of remote send options
+	 * @param Array $opts - an array of remote send options
 	 *
-	 * @return array      - an array of options
+	 * @return Array - an array of options
 	 */
 	public function updraftplus_clone_remotesend_options($opts) {
+	
+		// Don't call self::log() - this then requests options (to get the label), causing an infinite loop.
+	
 		global $updraftplus;
 		if (empty($updraftplus_admin)) include_once(UPDRAFTPLUS_DIR.'/admin.php');
 		
@@ -429,6 +449,9 @@ class UpdraftPlus_Addons_RemoteStorage_remotesend extends UpdraftPlus_RemoteStor
 }
 
 class UpdraftPlus_BackupModule_remotesend extends UpdraftPlus_Addons_RemoteStorage_remotesend {
+	/**
+	 * Class constructor
+	 */
 	public function __construct() {
 		parent::__construct('remotesend', 'Remote send', '5.2.4');
 	}

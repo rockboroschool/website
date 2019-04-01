@@ -8,6 +8,9 @@ abstract class UpdraftPlus_RemoteSend {
 
 	protected $php_events = array();
 
+	/**
+	 * Class constructor
+	 */
 	public function __construct() {
 		add_action('updraft_migrate_newdestination', array($this, 'updraft_migrate_newdestination'));
 		add_action('updraft_remote_ping_test', array($this, 'updraft_remote_ping_test'));
@@ -19,6 +22,9 @@ abstract class UpdraftPlus_RemoteSend {
 		add_action('plugins_loaded', array($this, 'plugins_loaded'));
 	}
 
+	/**
+	 * Runs upon the WP action plugins_loaded
+	 */
 	public function plugins_loaded() {
 
 		global $updraftplus;
@@ -77,7 +83,7 @@ abstract class UpdraftPlus_RemoteSend {
 		return $msg;
 	}
 
-	public function updraftplus_logline($line, $nonce, $level, $uniq_id) {
+	public function updraftplus_logline($line, $nonce, $level, $uniq_id) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		if ('notice' === $level && 'php_event' === $uniq_id) {
 			$this->php_events[] = $line;
 		}
@@ -209,7 +215,7 @@ abstract class UpdraftPlus_RemoteSend {
 	 *
 	 * @return array                 - the array response
 	 */
-	public function udrpc_command_upload_complete($response, $data, $name_indicator) {
+	public function udrpc_command_upload_complete($response, $data, $name_indicator) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		if (!preg_match('/^([a-f0-9]+)\.migrator.updraftplus.com$/', $name_indicator, $matches)) return $response;
 		
 		if (defined('UPDRAFTPLUS_THIS_IS_CLONE')) {
@@ -239,7 +245,8 @@ abstract class UpdraftPlus_RemoteSend {
 			array_push($initial_jobdata, 'remotesend_info', $remotesites[$site_id]);
 
 			// Reduce to 100MB if it was above. Since the user isn't expected to directly manipulate these zip files, the potentially higher number of zip files doesn't matter.
-			if ($split_every > 100) array_push($initial_jobdata, 'split_every', 100);
+			$split_every_key = array_search('split_every', $initial_jobdata) + 1;
+			if ($split_every > 100) $initial_jobdata[$split_every_key] = 100;
 
 		}
 
@@ -311,7 +318,7 @@ abstract class UpdraftPlus_RemoteSend {
 				}
 
 				// We got several support requests from people who didn't seem to be aware of other methods
-				$msg_try_other_method = '<p>'.__('If sending directly from site to site does not work for you, then there are three other methods - please try one of these instead.', 'updraftplus').'<a href="https://updraftplus.com/faqs/how-do-i-migrate-to-a-new-site-location/#importing">'.__('For longer help, including screenshots, follow this link.', 'updraftplus').'</a></p>';
+				$msg_try_other_method = '<p>'.__('If sending directly from site to site does not work for you, then there are three other methods - please try one of these instead.', 'updraftplus').'<a href="https://updraftplus.com/faqs/how-do-i-migrate-to-a-new-site-location/#importing" target="_blank">'.__('For longer help, including screenshots, follow this link.', 'updraftplus').'</a></p>';
 
 				$res['moreinfo'] = isset($res['moreinfo']) ? $res['moreinfo'].$msg_try_other_method : $msg_try_other_method;
 
@@ -393,7 +400,7 @@ abstract class UpdraftPlus_RemoteSend {
 	 *
 	 * @return string        - the RSA remote key
 	 */
-	public function updraft_migrate_key_create_return($string, $data) {
+	public function updraft_migrate_key_create_return($string, $data) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		return $this->updraft_migrate_key_create($data);
 	}
 
@@ -441,6 +448,15 @@ abstract class UpdraftPlus_RemoteSend {
 			));
 			die;
 		}
+
+		if (extension_loaded('mbstring')) {
+			// phpcs:ignore  PHPCompatibility.IniDirectives.RemovedIniDirectives.mbstring_func_overloadDeprecated -- Commented out as this flags as not compatible with PHP 5.2
+			if (ini_get('mbstring.func_overload') & 2) {
+				echo json_encode(array('e' => 1, 'r' => __('Error:', 'updraftplus').' '.sprintf(__('The setting %s is turned on in your PHP settings. It is deprecated, causes encryption to malfunction, and should be turned off.', 'updraftplus'), 'mbstring.func_overload')));
+				die;
+			}
+		}
+
 		echo json_encode(array('e' => 1));
 		die;
 	}

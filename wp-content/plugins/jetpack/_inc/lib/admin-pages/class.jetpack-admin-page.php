@@ -64,7 +64,7 @@ abstract class Jetpack_Admin_Page {
 		}
 		// If someone just activated Jetpack, let's show them a fullscreen connection banner.
 		if (
-			( 'admin.php' === $pagenow && 'jetpack' === $_GET['page'] )
+			( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'jetpack' === $_GET['page'] )
 			&& ! Jetpack::is_active()
 			&& current_user_can( 'jetpack_connect' )
 			&& ! Jetpack::is_development_mode()
@@ -244,7 +244,7 @@ abstract class Jetpack_Admin_Page {
 				padding-left: 0 !important;
 			}
 			#wpbody-content {
-				background-color: #f3f6f8;
+				background-color: #f6f6f6;
 			}
 
 			#jp-plugin-container .wrap {
@@ -254,6 +254,9 @@ abstract class Jetpack_Admin_Page {
 			}
 			#jp-plugin-container.is-wide .wrap {
 				max-width: 1040px;
+			}
+			#jp-plugin-container .wrap .jetpack-wrap-container {
+				margin-top: 1em;
 			}
 			.wp-admin #dolly {
 			    float: none;
