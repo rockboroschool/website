@@ -352,6 +352,10 @@ function monsterinsights_string_ends_with( $string, $ending ) {
 }
 
 function monsterinsights_string_starts_with( $string, $start ) {
+	if ( ! is_string( $string ) || ! is_string( $start ) ) {
+		return false;
+	}
+
 	return substr( $string, 0, strlen( $start ) ) === $start;
 }
 

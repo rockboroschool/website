@@ -4,7 +4,7 @@ Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, google analytics dashboard, google analytics widget, WooCommerce stats, analytics dashboard, universal google analytics, statistics, tracking, stats, google, google analytics by yoast, ga, monster insights, monsterinsights, universal analytics, web stats, ecommerce, ecommerce tracking
 Requires at least: 3.8.0
 Tested up to: 5.0
-Stable tag: 7.4.0
+Stable tag: 7.4.2
 License: GPL v3
 
 The best Google Analytics plugin for WordPress. See how visitors find and use your website, so you can keep them coming back.
@@ -273,7 +273,15 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
-= 7.4.0: January 15, 2018 =
+= 7.4.2: January 29, 2019 =
+- Tweak: Added a filter to set the default value of events_mode and tracking_mode for compatibility with other plugins since we no longer use these options.
+- Tweak: Improved the Manual UA field for better feedback and compatibility.
+- Fixed: Missing image file added.
+
+= 7.4.1: January 16, 2019 =
+- Fixed: WordPress Core currently has a bug (18857) that affects a super small percentage of our userbase (under 3%) that we've patched our plugin for until WordPress can get a fix shipped in a release.
+
+= 7.4.0: January 15, 2019 =
 - New: Brand new settings panel written in VueJS! The new panel has been designed to simplify the process of setting up MonsterInsights and make MonsterInsights's powerful features more user friendly to use.
 - New: Brand new onboarding wizard that walks you through setting up MonsterInsights and automatically configures your MonsterInsights settings based on your website needs in just a few minutes.
 - New: Users using the affiliate link tracking feature will find they can now define a custom label for each link they want to track, and it's all validated in a new custom repeater field.
@@ -546,7 +554,7 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 * New: Tracking is now enabled for the WordPress admin login page (wp-login.php).
 * Tweak: The Google class in the admin now only checks for blocking when the reauth is attempted. Expect to save a ton of external calls in the admin, and maybe a performance boost.
 * Tweak: The GA client object is now lazyloaded on the frontend, so it's loaded only when something (like another plugin) attempts to use it. In plain English, this will make a alot of sites load times significantly improve.
-* Tweak: The analytics.js output has been tweaked to be slightly more asthetically pleasing (its aligned correctly). We realize no one probably cares but we look at this code for every user we support, so it help us.
+* Tweak: The analytics.js output has been tweaked to be slightly more aesthetically pleasing (its aligned correctly). We realize no one probably cares but we look at this code for every user we support, so it help us.
 * Tweak: The config expired notice has been updated to reflect that it can also be shown if the server is blocking MonsterInsights's ability to connect to Google Analytics.
 * Tweak: The cron jobs for opt-in tracking and statistics have been combined into a single cron.
 * Tweak: Various performance improvements in the frontend output class.

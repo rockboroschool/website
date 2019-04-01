@@ -22,35 +22,32 @@ class SEED_CSP4_ADMIN
      */
     protected static $instance = null;
 
-   /**
-     * Slug of the plugin screen.
-     *
-     * @since    1.0.0
-     *
-     * @var      string
-     */
+    /**
+      * Slug of the plugin screen.
+      *
+      * @since    1.0.0
+      *
+      * @var      string
+      */
     protected $plugin_screen_hook_suffix = null;
 
     /**
      * Load Hooks
      */
-    function __construct( )
+    public function __construct()
     {
-        if ( is_admin() && ( !defined( 'DOING_AJAX' ) || !DOING_AJAX ) ){
-            add_action( 'admin_enqueue_scripts', array( &$this, 'admin_enqueue_scripts'  ) );
-            add_action( 'admin_menu', array( &$this, 'create_menus'  ) );
-            add_action( 'admin_init', array( &$this, 'reset_defaults' ) );
-            add_action( 'admin_init', array( &$this, 'create_settings' ) );
-            add_filter( 'plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2 );
-            add_filter( 'tmp_grunion_allow_editor_view', '__return_false' );
-            if(version_compare(phpversion(), '5.3.3', '>=')){
-                add_action( 'wpms_tgmpa_register', 'coming_soon_init_recommendations' );
-            }
+        if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
+            add_action('admin_enqueue_scripts', array( &$this, 'admin_enqueue_scripts'  ));
+            add_action('admin_menu', array( &$this, 'create_menus'  ));
+            add_action('admin_init', array( &$this, 'reset_defaults' ));
+            add_action('admin_init', array( &$this, 'create_settings' ));
+            add_filter('plugin_action_links', array( &$this, 'plugin_action_links' ), 10, 2);
+            add_filter('tmp_grunion_allow_editor_view', '__return_false');
         }
 
-        if (defined( 'DOING_AJAX' )){
+        if (defined('DOING_AJAX')) {
             // Background API Ajax
-            add_action( 'wp_ajax_seed_csp4_backgrounds', array(&$this,'backgrounds'));
+            add_action('wp_ajax_seed_csp4_backgrounds', array(&$this,'backgrounds'));
         }
     }
 
@@ -61,10 +58,11 @@ class SEED_CSP4_ADMIN
      *
      * @return    object    A single instance of this class.
      */
-    public static function get_instance() {
+    public static function get_instance()
+    {
 
         // If the single instance hasn't been set, set it now.
-        if ( null == self::$instance ) {
+        if (null == self::$instance) {
             self::$instance = new self;
         }
 
@@ -75,49 +73,47 @@ class SEED_CSP4_ADMIN
      * backgrounds api
      *
      */
-    function backgrounds( )
+    public function backgrounds()
     {
-        if(check_ajax_referer('seed_csp4_backgrounds')){
-           
-           $r = array();
+        if (check_ajax_referer('seed_csp4_backgrounds')) {
+            $r = array();
             $page = '';
-            if(isset($_REQUEST['page'])){
+            if (isset($_REQUEST['page'])) {
                 $page = $_REQUEST['page'];
                 $page = '?page='.$page;
                 $r['page'] = $_REQUEST['page'];
             }
             $query = '';
-            if(isset($_REQUEST['query'])){
+            if (isset($_REQUEST['query'])) {
                 $query = $_REQUEST['query'];
                 $query = '?query='.$query;
                 $r['query'] = $_REQUEST['query'];
             }
             
-            if ( false === ( get_transient( 'seed_csp4_backgrounds_page_'.$query.$page ) ) ) {
-            //f(1){
+            if (false === (get_transient('seed_csp4_backgrounds_page_'.$query.$page))) {
+                //f(1){
                 //echo 'miss';
 
                 $bg_api = 'https://api.seedprod.com/v3/free_background_search';
 
-                $url = $bg_api.'?'.http_build_query($r); 
-                $response = wp_remote_get( $url );
+                $url = $bg_api.'?'.http_build_query($r);
+                $response = wp_remote_get($url);
                 //var_dump($url);
-                if ( is_wp_error( $response ) ) {
+                if (is_wp_error($response)) {
                     $error_message = $response->get_error_message();
                     echo "Something went wrong: $error_message";
-                }else{
-                    $response_code = wp_remote_retrieve_response_code( $response );
-                    if($response_code == '200'){
-                        set_transient('seed_csp4_backgrounds_page_'.$query.$page,$response['body'],604800);
+                } else {
+                    $response_code = wp_remote_retrieve_response_code($response);
+                    if ($response_code == '200') {
+                        set_transient('seed_csp4_backgrounds_page_'.$query.$page, $response['body'], 604800);
                         echo $response['body'];
-                    }else{
+                    } else {
                         echo 'There was an issue loading the stock images. Please try again later.';
                     }
-                    
                 }
-            }else{
+            } else {
                 //echo 'hit';
-                echo get_transient( 'seed_csp4_backgrounds_page_'.$query.$page );
+                echo get_transient('seed_csp4_backgrounds_page_'.$query.$page);
             }
                     
 
@@ -130,15 +126,15 @@ class SEED_CSP4_ADMIN
      * Reset the settings page. Reset works per settings id.
      *
      */
-    function reset_defaults( )
+    public function reset_defaults()
     {
-        if ( isset( $_POST[ 'seed_csp4_reset' ] ) ) {
+        if (isset($_POST[ 'seed_csp4_reset' ])) {
             $option_page = $_POST[ 'option_page' ];
-            check_admin_referer( $option_page . '-options' );
+            check_admin_referer($option_page . '-options');
             require_once(SEED_CSP4_PLUGIN_PATH.'inc/default-settings.php');
 
             $_POST[ $_POST[ 'option_page' ] ] = $seed_csp4_settings_deafults[$_POST[ 'option_page' ]];
-            add_settings_error( 'general', 'seed_csp4-settings-reset', __( "Settings reset." ), 'updated' );
+            add_settings_error('general', 'seed_csp4-settings-reset', __("Settings reset."), 'updated');
         }
     }
 
@@ -151,24 +147,25 @@ class SEED_CSP4_ADMIN
      * @since  0.1.0
      * @param string $hook_suffix The name of the current page we are on.
      */
-    function admin_enqueue_scripts( $hook_suffix )
+    public function admin_enqueue_scripts($hook_suffix)
     {
-        if (strpos($hook_suffix, 'seed_csp4') === false )
+        if (strpos($hook_suffix, 'seed_csp4') === false) {
             return;
+        }
 
-        wp_enqueue_script( 'media-upload' );
-        wp_enqueue_script( 'jquery-ui-sortable' );
-        wp_enqueue_script( 'wp-lists' );
-        wp_enqueue_script( 'seed_csp4-framework-js', SEED_CSP4_PLUGIN_URL . 'framework/settings-scripts.js', array( 'jquery' ), $this->plugin_version );
-        wp_enqueue_script( 'seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/jquery.magnific-popup.min.js', array( 'jquery' ), $this->plugin_version );
-        wp_enqueue_script( 'theme-preview' );
-        wp_enqueue_style( 'thickbox' );
-        wp_enqueue_style( 'media-upload' );
-        wp_enqueue_style( 'wp-color-picker' );
-        wp_enqueue_style( 'seed_csp4-framework-css', SEED_CSP4_PLUGIN_URL . 'framework/settings-style.css', false, $this->plugin_version );
-        wp_enqueue_style( 'font-awesome-solid', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/solid.min.css', false, $this->plugin_version, false, $this->plugin_version );
-        wp_enqueue_style( 'font-awesome', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/fontawesome.min.css', false, $this->plugin_version, false, $this->plugin_version );
-        wp_enqueue_style( 'seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/magnific-popup.css', false, $this->plugin_version, false, $this->plugin_version );
+        wp_enqueue_script('media-upload');
+        wp_enqueue_script('jquery-ui-sortable');
+        wp_enqueue_script('wp-lists');
+        wp_enqueue_script('seed_csp4-framework-js', SEED_CSP4_PLUGIN_URL . 'framework/settings-scripts.js', array( 'jquery' ), $this->plugin_version);
+        wp_enqueue_script('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/jquery.magnific-popup.min.js', array( 'jquery' ), $this->plugin_version);
+        wp_enqueue_script('theme-preview');
+        wp_enqueue_style('thickbox');
+        wp_enqueue_style('media-upload');
+        wp_enqueue_style('wp-color-picker');
+        wp_enqueue_style('seed_csp4-framework-css', SEED_CSP4_PLUGIN_URL . 'framework/settings-style.css', false, $this->plugin_version);
+        wp_enqueue_style('font-awesome-solid', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/solid.min.css', false, $this->plugin_version, false, $this->plugin_version);
+        wp_enqueue_style('font-awesome', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/fontawesome.min.css', false, $this->plugin_version, false, $this->plugin_version);
+        wp_enqueue_style('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/magnific-popup.css', false, $this->plugin_version, false, $this->plugin_version);
     }
 
     /**
@@ -178,11 +175,11 @@ class SEED_CSP4_ADMIN
      *
      * @since 0.1.0
      */
-    function create_menus( )
+    public function create_menus()
     {
         add_menu_page(
-            __( "SeedProd", 'coming-soon' ),
-            __( "SeedProd", 'coming-soon' ),
+            __("SeedProd", 'coming-soon'),
+            __("SeedProd", 'coming-soon'),
             'manage_options',
             'seed_csp4',
             array( &$this , 'option_page' ),
@@ -192,8 +189,8 @@ class SEED_CSP4_ADMIN
 
         add_submenu_page(
             'seed_csp4',
-            __( "Settings", 'coming-soon' ),
-            __( "Settings", 'coming-soon' ),
+            __("Settings", 'coming-soon'),
+            __("Settings", 'coming-soon'),
             'manage_options',
             'seed_csp4',
             array( &$this , 'option_page' )
@@ -201,8 +198,8 @@ class SEED_CSP4_ADMIN
 
         add_submenu_page(
             'seed_csp4',
-            __( "Themes", 'coming-soon' ),
-            __( "Themes", 'coming-soon' ),
+            __("Themes", 'coming-soon'),
+            __("Themes", 'coming-soon'),
             'manage_options',
             'seed_csp4_themes',
             array( &$this , 'themes_page' )
@@ -210,8 +207,8 @@ class SEED_CSP4_ADMIN
         
         add_submenu_page(
             'seed_csp4',
-            __( "Free Stock Images", 'coming-soon' ),
-            __( "Free Stock Images", 'coming-soon' ),
+            __("Free Stock Images", 'coming-soon'),
+            __("Free Stock Images", 'coming-soon'),
             'manage_options',
             'seed_csp4_stockimages',
             array( &$this , 'stockimages_page' )
@@ -219,8 +216,8 @@ class SEED_CSP4_ADMIN
             
         add_submenu_page(
                 'seed_csp4',
-                __( "Subscribers", 'coming-soon' ),
-                __( "Subscribers", 'coming-soon' ),
+                __("Subscribers", 'coming-soon'),
+                __("Subscribers", 'coming-soon'),
                 'manage_options',
                 'seed_csp4_subscribers',
                 array( &$this , 'subscribers_page' )
@@ -228,27 +225,31 @@ class SEED_CSP4_ADMIN
         
         add_submenu_page(
             'seed_csp4',
-            __( "Addons", 'coming-soon' ),
-            __( "<span style='color:#ff9a4b'>Addons</span>", 'coming-soon' ),
+            __("Addons", 'coming-soon'),
+            __("<span style='color:#ff9a4b'>Addons</span>", 'coming-soon'),
             'manage_options',
             'seed_csp4_addons',
             array( &$this , 'addons_page' )
             );
     }
 
-    function themes_page(){
+    public function themes_page()
+    {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/themes.php';
     }
 
-    function stockimages_page(){
+    public function stockimages_page()
+    {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/stockimages.php';
     }
 
-    function subscribers_page(){
+    public function subscribers_page()
+    {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/subscribers.php';
     }
 
-    function addons_page(){
+    public function addons_page()
+    {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/addons.php';
     }
 
@@ -257,13 +258,13 @@ class SEED_CSP4_ADMIN
     /**
      * Display settings link on plugin page
      */
-    function plugin_action_links( $links, $file )
+    public function plugin_action_links($links, $file)
     {
         $plugin_file = SEED_CSP4_SLUG;
 
-        if ( $file == $plugin_file ) {
+        if ($file == $plugin_file) {
             $settings_link = '<a href="admin.php?page=seed_csp4">Settings</a>';
-            array_unshift( $links, $settings_link );
+            array_unshift($links, $settings_link);
         }
         return $links;
     }
@@ -273,65 +274,64 @@ class SEED_CSP4_ADMIN
      * Allow Tabs on the Settings Page
      *
      */
-    function plugin_options_tabs( )
+    public function plugin_options_tabs()
     {
         $menu_slug   = null;
         $page        = $_REQUEST[ 'page' ];
         $uses_tabs   = false;
-        $current_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : false;
+        $current_tab = isset($_GET[ 'tab' ]) ? $_GET[ 'tab' ] : false;
 
         //Check if this config uses tabs
-        foreach ( seed_csp4_get_options() as $v ) {
-            if ( $v[ 'type' ] == 'tab' ) {
+        foreach (seed_csp4_get_options() as $v) {
+            if ($v[ 'type' ] == 'tab') {
                 $uses_tabs = true;
                 break;
             }
         }
 
         // If uses tabs then generate the tabs
-        if ( $uses_tabs ) {
+        if ($uses_tabs) {
             echo '<h2 class="nav-tab-wrapper" style="padding-left:20px">';
             $c = 1;
-            foreach ( seed_csp4_get_options() as $v ) {
-                    if ( isset( $v[ 'menu_slug' ] ) ) {
-                        $menu_slug = $v[ 'menu_slug' ];
+            foreach (seed_csp4_get_options() as $v) {
+                if (isset($v[ 'menu_slug' ])) {
+                    $menu_slug = $v[ 'menu_slug' ];
+                }
+                if ($menu_slug == $page && $v[ 'type' ] == 'tab') {
+                    $active = '';
+                    if ($current_tab) {
+                        $active = $current_tab == $v[ 'id' ] ? 'nav-tab-active' : '';
+                    } elseif ($c == 1) {
+                        $active = 'nav-tab-active';
                     }
-                    if ( $menu_slug == $page && $v[ 'type' ] == 'tab' ) {
-                        $active = '';
-                        if ( $current_tab ) {
-                            $active = $current_tab == $v[ 'id' ] ? 'nav-tab-active' : '';
-                        } elseif ( $c == 1 ) {
-                            $active = 'nav-tab-active';
-                        }
-                        if($v[ 'id' ] == 'seed_csp4_subscribers'){
-                            echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="admin.php?page=seed_csp4_subscribers">';
-                        }else{
-                            echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="?page=' . $menu_slug . '&tab=' . $v[ 'id' ] . '">';  
-                        }
+                    if ($v[ 'id' ] == 'seed_csp4_subscribers') {
+                        echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="admin.php?page=seed_csp4_subscribers">';
+                    } else {
+                        echo '<a id="'.$v[ 'id' ].'" class="nav-tab ' . $active . '" href="?page=' . $menu_slug . '&tab=' . $v[ 'id' ] . '">';
+                    }
                         
-                        if($v[ 'id' ] == 'seed_csp4_setting'){
-                            echo '<i class="fas fa-edit"></i> ';
-                        }
-                        if($v[ 'id' ] == 'seed_csp4_design'){
-                            echo '<i class="fas fa-image"></i> ';
-                        }
-                        if($v[ 'id' ] == 'seed_csp4_subscribers'){
-                            echo '<i class="fas fa-users"></i> ';
-                        }
-                         if($v[ 'id' ] == 'seed_csp4_advanced'){
-                            echo '<i class="fas fa-code"></i> ';
-                        }
-                        echo $v[ 'label' ] . '</a>';
-                        $c++;
+                    if ($v[ 'id' ] == 'seed_csp4_setting') {
+                        echo '<i class="fas fa-edit"></i> ';
                     }
+                    if ($v[ 'id' ] == 'seed_csp4_design') {
+                        echo '<i class="fas fa-image"></i> ';
+                    }
+                    if ($v[ 'id' ] == 'seed_csp4_subscribers') {
+                        echo '<i class="fas fa-users"></i> ';
+                    }
+                    if ($v[ 'id' ] == 'seed_csp4_advanced') {
+                        echo '<i class="fas fa-code"></i> ';
+                    }
+                    echo $v[ 'label' ] . '</a>';
+                    $c++;
+                }
             }
-            echo '<a class="nav-tab seed_csp4-preview thickbox-preview" target="_blank" href="'.home_url().'?cs_preview=true" title="'.__('&larr; Close Window','coming-soon').'"><i class="fas fa-external-link-alt"></i> '.__('Live Preview','coming-soon').'</a>';
+            echo '<a class="nav-tab seed_csp4-preview thickbox-preview" target="_blank" href="'.home_url().'?cs_preview=true" title="'.__('&larr; Close Window', 'coming-soon').'"><i class="fas fa-external-link-alt"></i> '.__('Live Preview', 'coming-soon').'</a>';
            
-            echo '<a class="nav-tab seed_csp4-support seed-csp4-cta" style="background-color: #04be5b;color: #fff" href="'.seed_csp4_admin_upgrade_link( 'upgrade-tab' ).'" target="_blank" rel="noopener noreferrer"><i class="fas fa-star"></i> '.__('Upgrade to Pro for More Features','coming-soon').'</a>';
+            echo '<a class="nav-tab seed_csp4-support seed-csp4-cta" style="background-color: #04be5b;color: #fff" href="'.seed_csp4_admin_upgrade_link('upgrade-tab').'" target="_blank" rel="noopener noreferrer"><i class="fas fa-star"></i> '.__('Upgrade to Pro for More Features', 'coming-soon').'</a>';
 
             
             echo '</h2>';
-
         }
     }
 
@@ -339,15 +339,15 @@ class SEED_CSP4_ADMIN
      * Get the layout for the page. classic|2-col
      *
      */
-    function get_page_layout( )
+    public function get_page_layout()
     {
         $layout = 'classic';
-        foreach ( seed_csp4_get_options() as $v ) {
-            switch ( $v[ 'type' ] ) {
-                case 'menu';
+        foreach (seed_csp4_get_options() as $v) {
+            switch ($v[ 'type' ]) {
+                case 'menu':
                     $page = $_REQUEST[ 'page' ];
-                    if ( $page == $v[ 'menu_slug' ] ) {
-                        if ( isset( $v[ 'layout' ] ) ) {
+                    if ($page == $v[ 'menu_slug' ]) {
+                        if (isset($v[ 'layout' ])) {
                             $layout = $v[ 'layout' ];
                         }
                     }
@@ -362,100 +362,100 @@ class SEED_CSP4_ADMIN
      *
      * @since 0.1.0
      */
-    function option_page( )
+    public function option_page()
     {
         $menu_slug = null;
         $page   = $_REQUEST[ 'page' ];
-        $layout = $this->get_page_layout();
-        ?>
+        $layout = $this->get_page_layout(); ?>
 
 
-        <div class="wrap columns-2 seed-csp4">
-        <div id="seed_csp4_header">
-<h1>
-	<img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;" src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png"> 
-	 Coming Soon Page and Maintenance Mode Lite
-	<span class="seed_csp4_version" style="font-size: 10px;"> Version <?php echo SEED_CSP4_VERSION; ?></span>
-</h1>
+<div class="wrap columns-2 seed-csp4">
+    <div id="seed_csp4_header">
+        <h1>
+            <img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;"
+                src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png">
+            Coming Soon Page and Maintenance Mode Lite
+            <span class="seed_csp4_version" style="font-size: 10px;"> Version <?php echo SEED_CSP4_VERSION; ?></span>
+        </h1>
 
 
 
-            <?php $this->plugin_options_tabs(); ?>
-            </div>
-        
-           <div class="seed-wrap">
-            <?php if ( $layout == '2-col' ): ?>
-            <div id="poststuff">
-                <div id="post-body" class="metabox-holder columns-2">
-                    <div id="post-body-content" >
-            <?php endif; ?>
-                    <?php if(!empty($_GET['tab']))
-                            do_action( 'seed_csp4_render_page', array('tab'=>$_GET['tab']));
-                    ?>
+        <?php $this->plugin_options_tabs(); ?>
+    </div>
+
+    <div class="seed-wrap">
+        <?php if ($layout == '2-col'): ?>
+        <div id="poststuff">
+            <div id="post-body" class="metabox-holder columns-2">
+                <div id="post-body-content">
+                    <?php endif; ?>
+                    <?php if (!empty($_GET['tab'])) {
+            do_action('seed_csp4_render_page', array('tab'=>$_GET['tab']));
+        } ?>
                     <form action="options.php" method="post">
 
-                    <!-- <input name="submit" type="submit" value="<?php _e( 'Save All Changes', 'coming-soon' ); ?>" class="button-primary"/> -->
-                    <?php if(!empty($_GET['tab']) && $_GET['tab'] != 'seed_csp4_tab_3') { ?>
-                    <!-- <input id="reset" name="reset" type="submit" value="<?php _e( 'Reset Settings', 'coming-soon' ); ?>" class="button-secondary"/>     -->
-                    <?php } ?>
+                        <!-- <input name="submit" type="submit" value="<?php _e('Save All Changes', 'coming-soon'); ?>" class="button-primary"/> -->
+                        <?php if (!empty($_GET['tab']) && $_GET['tab'] != 'seed_csp4_tab_3') {
+            ?>
+                        <!-- <input id="reset" name="reset" type="submit" value="<?php _e('Reset Settings', 'coming-soon'); ?>" class="button-secondary"/>     -->
+                        <?php
+        } ?>
 
-                            <?php
+                        <?php
                             $show_submit = false;
-                            foreach ( seed_csp4_get_options() as $v ) {
-                                if ( isset( $v[ 'menu_slug' ] ) ) {
-                                    $menu_slug = $v[ 'menu_slug' ];
-                                }
-                                    if ( $menu_slug == $page ) {
-                                        switch ( $v[ 'type' ] ) {
-                                            case 'menu';
+        foreach (seed_csp4_get_options() as $v) {
+            if (isset($v[ 'menu_slug' ])) {
+                $menu_slug = $v[ 'menu_slug' ];
+            }
+            if ($menu_slug == $page) {
+                switch ($v[ 'type' ]) {
+                                            case 'menu':
                                                 break;
-                                            case 'tab';
+                                            case 'tab':
                                                 $tab = $v;
-                                                if ( empty( $default_tab ) )
+                                                if (empty($default_tab)) {
                                                     $default_tab = $v[ 'id' ];
+                                                }
                                                 break;
                                             case 'setting':
-                                                $current_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : $default_tab;
-                                                if ( $current_tab == $tab[ 'id' ] ) {
-                                                    settings_fields( $v[ 'id' ] );
+                                                $current_tab = isset($_GET[ 'tab' ]) ? $_GET[ 'tab' ] : $default_tab;
+                                                if ($current_tab == $tab[ 'id' ]) {
+                                                    settings_fields($v[ 'id' ]);
                                                     $show_submit = true;
                                                 }
 
                                                 break;
                                             case 'section':
-                                                $current_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : $default_tab;
-                                                if ( $current_tab == $tab[ 'id' ] or $current_tab === false ) {
-                                                    if ( $layout == '2-col' ) {
+                                                $current_tab = isset($_GET[ 'tab' ]) ? $_GET[ 'tab' ] : $default_tab;
+                                                if ($current_tab == $tab[ 'id' ] or $current_tab === false) {
+                                                    if ($layout == '2-col') {
                                                         echo '<div id="'.$v[ 'id' ].'" class="postbox seedprod-postbox">';
-                                                        $this->do_settings_sections( $v[ 'id' ],$show_submit );
+                                                        $this->do_settings_sections($v[ 'id' ], $show_submit);
                                                         echo '</div>';
                                                     } else {
-                                                        do_settings_sections( $v[ 'id' ] );
+                                                        do_settings_sections($v[ 'id' ]);
                                                     }
-
                                                 }
                                                 break;
 
                                         }
-
-                                }
-                            }
-                        ?>
-                    <?php if($show_submit): ?>
-                    <p>
-                    <!-- <input name="submit" type="submit" value="<?php _e( 'Save All Changes', 'coming-soon' ); ?>" class="button-primary"/> -->
-                    <!-- <input id="reset" name="reset" type="submit" value="<?php _e( 'Reset Settings', 'coming-soon' ); ?>" class="button-secondary"/> -->
-                    </p>
-                    <?php endif; ?>
+            }
+        } ?>
+                        <?php if ($show_submit): ?>
+                        <p>
+                            <!-- <input name="submit" type="submit" value="<?php _e('Save All Changes', 'coming-soon'); ?>" class="button-primary"/> -->
+                            <!-- <input id="reset" name="reset" type="submit" value="<?php _e('Reset Settings', 'coming-soon'); ?>" class="button-secondary"/> -->
+                        </p>
+                        <?php endif; ?>
                     </form>
 
-                    <?php if ( $layout == '2-col' ): ?>
-                    </div> <!-- #post-body-content -->
+                    <?php if ($layout == '2-col'): ?>
+                </div> <!-- #post-body-content -->
 
-                    <div id="postbox-container-1" class="postbox-container">
-                        <div id="side-sortables" class="meta-box-sortables ui-sortable">
+                <div id="postbox-container-1" class="postbox-container">
+                    <div id="side-sortables" class="meta-box-sortables ui-sortable">
 
-                         <!--     <div class="postbox ">
+                        <!--     <div class="postbox ">
                                 <div class="handlediv" title="Click to toggle"><br /></div>
                                 <h3 class="hndle"><span><i class="fas fa-rocket"></i>&nbsp;&nbsp;<?php _e('Getting Started Video - 60 sec', 'coming-soon') ?></span></h3>
                                 <div class="inside">
@@ -465,16 +465,22 @@ class SEED_CSP4_ADMIN
                                 </div>
                             </div> -->
 
-                            
-                            <a style="border:1px solid #ddd;display:inline-block;" href="https://www.seedprod.com/landing/coming-soon-page-getting-started-video/?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-banner-in-plugin" target="_blank"><img src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/getting-started-banner.png" /></a>
-                            <br><br>
 
-                           
-                            <a  style="border:1px solid #ddd;display:inline-block;" href="<?php echo seed_csp4_admin_upgrade_link( 'sidebar-banner' )?>" target="_blank" rel="noopener noreferrer" class="seed-csp4-cta"><img src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/coming-soon-pro-sidebar.png" /></a>
-                            <br><br>
+                        <a style="border:1px solid #ddd;display:inline-block;"
+                            href="https://www.seedprod.com/landing/coming-soon-page-getting-started-video/?utm_source=coming-soon-plugin&utm_medium=banner&utm_campaign=coming-soon-banner-in-plugin"
+                            target="_blank"><img
+                                src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/getting-started-banner.png" /></a>
+                        <br><br>
 
 
-                 <!--            <div class="postbox " style="background-color:#FAE6A4;color:#333 !important; border-color:#333 !important">
+                        <a style="border:1px solid #ddd;display:inline-block;"
+                            href="<?php echo seed_csp4_admin_upgrade_link('sidebar-banner')?>" target="_blank"
+                            rel="noopener noreferrer" class="seed-csp4-cta"><img
+                                src="<?php echo SEED_CSP4_PLUGIN_URL; ?>framework/coming-soon-pro-sidebar.png" /></a>
+                        <br><br>
+
+
+                        <!--            <div class="postbox " style="background-color:#FAE6A4;color:#333 !important; border-color:#333 !important">
                                 <div class="handlediv" title="Click to toggle"><br /></div>
                                 <h3 class="hndle" style="color:#fff !important;border-color:#333 !important; background-color:#333"><span><i class="fas fa-star"></i>&nbsp;&nbsp;<?php _e('Yo-Yo-Yo, Why Go Pro?', 'coming-soon') ?></span></h3>
                                 <div class="inside">
@@ -499,45 +505,49 @@ class SEED_CSP4_ADMIN
                                             <li><strong>Plus lots more!</strong></li>
                                         </ul>
                                         <p>
-                                        <a class="button-primary" style="background-color:#05AE0E; border-color:#05AE0E; box-shadow:none; text-shadow: none; width:100%; text-align:center;" href="<?php echo seed_csp4_admin_upgrade_link( 'sidebar' ); ?>" target="_blank" rel="noopener noreferrer">See What's In The Pro Version</a>
+                                        <a class="button-primary" style="background-color:#05AE0E; border-color:#05AE0E; box-shadow:none; text-shadow: none; width:100%; text-align:center;" href="<?php echo seed_csp4_admin_upgrade_link('sidebar'); ?>" target="_blank" rel="noopener noreferrer">See What's In The Pro Version</a>
                                         </p>
 
                                     </div>
                                 </div>
                             </div> -->
 
-                            <div class="postbox ">
-                                <div class="handlediv" title="Click to toggle"><br /></div>
-                            
-                                <div class="inside">
-                                    <div class="support-widget">
-                                     
-                                 <p style="text-align: center;margin-bottom:0"><a href="https://wordpress.org/support/plugin/coming-soon" target="_blank"><?php _e('Got a Support Question', 'coming-soon') ?></a> <i class="fas fa-question-circle"></i>
-                                          <!--   <li>&raquo; <a href="http://support.seedprod.com/article/83-how-to-clear-wp-super-caches-cache" target="_blank"><?php _e('Common Caching Issues Resolutions', 'coming-soon') ?></a></li> -->
-                                        </p>
-                                            <!--   <p style="text-align: center; margin-top:0">
+                        <div class="postbox ">
+                            <div class="handlediv" title="Click to toggle"><br /></div>
+
+                            <div class="inside">
+                                <div class="support-widget">
+
+                                    <p style="text-align: center;margin-bottom:0"><a
+                                            href="https://wordpress.org/support/plugin/coming-soon"
+                                            target="_blank"><?php _e('Got a Support Question', 'coming-soon') ?></a> <i
+                                            class="fas fa-question-circle"></i>
+                                        <!--   <li>&raquo; <a href="http://support.seedprod.com/article/83-how-to-clear-wp-super-caches-cache" target="_blank"><?php _e('Common Caching Issues Resolutions', 'coming-soon') ?></a></li> -->
+                                    </p>
+                                    <!--   <p style="text-align: center; margin-top:0">
 
                                             <a style="display:inline-block" href="https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post">Please Rate this Plugin to show your Support!</a> <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></p> -->
-                                            
 
-                                   
 
-                                    </div>
+
+
                                 </div>
                             </div>
+                        </div>
 
-                            <form id="seed-bg-form" style="display:none" action="https://www.getdrip.com/forms/247721848/submissions" method="post"  target="_blank">
-                                <div>
-                                    <label for="drip-email">Email Address</label><br />
-                                    <input type="email" id="drip-email" name="fields[email]" value="" />
-                                </div>
-                              <div>
-                                <input id="drip-submit" type="submit" name="submit" value="Sign Up"  />
-                              </div>
-                            </form>
+                        <form id="seed-bg-form" style="display:none"
+                            action="https://www.getdrip.com/forms/247721848/submissions" method="post" target="_blank">
+                            <div>
+                                <label for="drip-email">Email Address</label><br />
+                                <input type="email" id="drip-email" name="fields[email]" value="" />
+                            </div>
+                            <div>
+                                <input id="drip-submit" type="submit" name="submit" value="Sign Up" />
+                            </div>
+                        </form>
 
-                           
-                               <!-- <div class="postbox like-postbox">
+
+                        <!-- <div class="postbox like-postbox">
                                     <div class="handlediv" title="Click to toggle"><br /></div>
                                     <h3 class="hndle"><span><i class="fas fa-heart"></i>&nbsp;&nbsp;<?php _e('Show Some Love', 'coming-soon') ?></span></h3>
                                     <div class="inside">
@@ -552,25 +562,24 @@ class SEED_CSP4_ADMIN
                                         </div>
                                     </div>
                                 </div> -->
-                            
 
 
-                       <!--          <div class="postbox rss-postbox">
+
+                        <!--          <div class="postbox rss-postbox">
     											<div class="handlediv" title="Click to toggle"><br /></div>
     											<h3 class="hndle"><span><i class="fab fa-wordpress"></i>&nbsp;&nbsp;<?php _e('SeedProd Blog', 'ultimate-coming-soon-page') ?></span></h3>
     											<div class="inside">
 
     												<div class="rss-widget">
     													<?php
-    													wp_widget_rss_output(array(
-    													'url' => 'http://feeds.feedburner.com/seedprod/',
-    													'title' => 'SeedProd Blog',
-    													'items' => 3,
-    													'show_summary' => 0,
-    													'show_author' => 0,
-    													'show_date' => 1,
-    												));
-    												?>
+                                                        wp_widget_rss_output(array(
+                                                        'url' => 'http://feeds.feedburner.com/seedprod/',
+                                                        'title' => 'SeedProd Blog',
+                                                        'items' => 3,
+                                                        'show_summary' => 0,
+                                                        'show_author' => 0,
+                                                        'show_date' => 1,
+                                                    )); ?>
     												<ul>
 
     											</ul>
@@ -578,46 +587,48 @@ class SEED_CSP4_ADMIN
     									</div>
     								</div> -->
 
-                        </div>
                     </div>
-                </div> <!-- #post-body -->
+                </div>
+            </div> <!-- #post-body -->
 
 
-            </div> <!-- #poststuff -->
-            <?php endif; ?>
-        </div> <!-- .wrap --></div>
+        </div> <!-- #poststuff -->
+        <?php endif; ?>
+    </div> <!-- .wrap -->
+</div>
 
-        <?php
-        if(!empty($_GET['tab']) && $_GET['tab'] == 'seed_csp4_design'){
-        ?>
+<?php
+        if (!empty($_GET['tab']) && $_GET['tab'] == 'seed_csp4_design') {
+            ?>
 
 
-        <?php
+<?php
+        } ?>
+
+<!-- JS login to confirm setting resets. -->
+<script>
+jQuery(document).ready(function($) {
+    $('#reset').click(function(e) {
+        if (!confirm(
+                '<?php _e('This tabs settings be deleted and reset to the defaults. Are you sure you want to reset?', 'coming-soon'); ?>'
+                )) {
+            e.preventDefault();
         }
-        ?>
-
-        <!-- JS login to confirm setting resets. -->
-        <script>
-            jQuery(document).ready(function($) {
-                $('#reset').click(function(e){
-                    if(!confirm('<?php _e( 'This tabs settings be deleted and reset to the defaults. Are you sure you want to reset?', 'coming-soon' ); ?>')){
-                        e.preventDefault();
-                    }
-                });
-            });
-        </script>
+    });
+});
+</script>
 
 
-        <?php include SEED_CSP4_PLUGIN_PATH.'resources/views/exit-pop.php';?>
+<?php include SEED_CSP4_PLUGIN_PATH.'resources/views/exit-pop.php'; ?>
 
-        <script>
-        jQuery( document ).ready(function($) {
-            $( ".seed-csp4-cta" ).click(function(e) {
-                jQuery('.exit-popup-link').magnificPopup('open');
-            });
-        });
-        </script>
-        <?php
+<script>
+jQuery(document).ready(function($) {
+    $(".seed-csp4-cta").click(function(e) {
+        jQuery('.exit-popup-link').magnificPopup('open');
+    });
+});
+</script>
+<?php
     }
 
     /**
@@ -627,27 +638,26 @@ class SEED_CSP4_ADMIN
      *
      * @since 0.1.0
      */
-    function create_settings( )
+    public function create_settings()
     {
-        foreach ( seed_csp4_get_options() as $k => $v ) {
-
-            switch ( $v[ 'type' ] ) {
+        foreach (seed_csp4_get_options() as $k => $v) {
+            switch ($v[ 'type' ]) {
                 case 'menu':
                     $menu_slug = $v[ 'menu_slug' ];
 
                     break;
                 case 'setting':
-                    if ( empty( $v[ 'validate_function' ] ) ) {
+                    if (empty($v[ 'validate_function' ])) {
                         $v[ 'validate_function' ] = array(
                              &$this,
                             'validate_machine'
                         );
                     }
-                    register_setting( $v[ 'id' ], $v[ 'id' ], $v[ 'validate_function' ] );
+                    register_setting($v[ 'id' ], $v[ 'id' ], $v[ 'validate_function' ]);
                     $setting_id = $v[ 'id' ];
                     break;
                 case 'section':
-                    if ( empty( $v[ 'desc_callback' ] ) ) {
+                    if (empty($v[ 'desc_callback' ])) {
                         $v[ 'desc_callback' ] = array(
                              &$this,
                             'return_empty_string'
@@ -655,28 +665,28 @@ class SEED_CSP4_ADMIN
                     } else {
                         $v[ 'desc_callback' ] = $v[ 'desc_callback' ];
                     }
-                    add_settings_section( $v[ 'id' ], $v[ 'label' ], $v[ 'desc_callback' ], $v[ 'id' ] );
+                    add_settings_section($v[ 'id' ], $v[ 'label' ], $v[ 'desc_callback' ], $v[ 'id' ]);
                     $section_id = $v[ 'id' ];
                     break;
                 case 'tab':
                     break;
                 default:
-                    if ( empty( $v[ 'callback' ] ) ) {
+                    if (empty($v[ 'callback' ])) {
                         $v[ 'callback' ] = array(
                              &$this,
                             'field_machine'
                         );
                     }
 
-                    add_settings_field( $v[ 'id' ], $v[ 'label' ], $v[ 'callback' ], $section_id, $section_id, array(
+                    add_settings_field($v[ 'id' ], $v[ 'label' ], $v[ 'callback' ], $section_id, $section_id, array(
                          'id' => $v[ 'id' ],
-                        'desc' => ( isset( $v[ 'desc' ] ) ? $v[ 'desc' ] : '' ),
+                        'desc' => (isset($v[ 'desc' ]) ? $v[ 'desc' ] : ''),
                         'setting_id' => $setting_id,
-                        'class' => ( isset( $v[ 'class' ] ) ? $v[ 'class' ] : '' ),
+                        'class' => (isset($v[ 'class' ]) ? $v[ 'class' ] : ''),
                         'type' => $v[ 'type' ],
-                        'default_value' => ( isset( $v[ 'default_value' ] ) ? $v[ 'default_value' ] : '' ),
-                        'option_values' => ( isset( $v[ 'option_values' ] ) ? $v[ 'option_values' ] : '' )
-                    ) );
+                        'default_value' => (isset($v[ 'default_value' ]) ? $v[ 'default_value' ] : ''),
+                        'option_values' => (isset($v[ 'option_values' ]) ? $v[ 'option_values' ] : '')
+                    ));
 
             }
         }
@@ -687,38 +697,37 @@ class SEED_CSP4_ADMIN
      *
      * @since 0.1.0
      */
-    function field_machine( $args )
+    public function field_machine($args)
     {
-        extract( $args ); //$id, $desc, $setting_id, $class, $type, $default_value, $option_values
+        extract($args); //$id, $desc, $setting_id, $class, $type, $default_value, $option_values
 
         // Load defaults
         $defaults = array( );
-        foreach ( seed_csp4_get_options() as $k ) {
-            switch ( $k[ 'type' ] ) {
+        foreach (seed_csp4_get_options() as $k) {
+            switch ($k[ 'type' ]) {
                 case 'setting':
                 case 'section':
                 case 'tab':
                     break;
                 default:
-                    if ( isset( $k[ 'default_value' ] ) ) {
+                    if (isset($k[ 'default_value' ])) {
                         $defaults[ $k[ 'id' ] ] = $k[ 'default_value' ];
                     }
             }
         }
-        $options = get_option( $setting_id );
+        $options = get_option($setting_id);
 
-        $options = wp_parse_args( $options, $defaults );
+        $options = wp_parse_args($options, $defaults);
 
         $path = SEED_CSP4_PLUGIN_PATH . 'framework/field-types/' . $type . '.php';
-        if ( file_exists( $path ) ) {
+        if (file_exists($path)) {
             // Show Field
-            include( $path );
+            include($path);
             // Show description
-            if ( !empty( $desc ) ) {
+            if (!empty($desc)) {
                 echo "<small class='description'>{$desc}</small>";
             }
         }
-
     }
 
     /**
@@ -729,42 +738,42 @@ class SEED_CSP4_ADMIN
      * @return array $input Contains sanitized values.
      * @todo Figure out best way to validate values.
      */
-    function validate_machine( $input )
+    public function validate_machine($input)
     {
         $option_page = $_POST['option_page'];
-        foreach ( seed_csp4_get_options() as $k ) {
-            switch ( $k[ 'type' ] ) {
+        foreach (seed_csp4_get_options() as $k) {
+            switch ($k[ 'type' ]) {
                 case 'menu':
                 case 'setting':
-                    if(isset($k['id']))
+                    if (isset($k['id'])) {
                         $setting_id = $k['id'];
+                    }
+                        // no break
                 case 'section':
-                case 'tab';
+                case 'tab':
                     break;
                 default:
-                    if ( !empty( $k[ 'validate' ] ) && $setting_id == $option_page ) {
-                        $validation_rules = explode( ',', $k[ 'validate' ] );
+                    if (!empty($k[ 'validate' ]) && $setting_id == $option_page) {
+                        $validation_rules = explode(',', $k[ 'validate' ]);
 
-                        foreach ( $validation_rules as $v ) {
+                        foreach ($validation_rules as $v) {
                             $path = SEED_CSP4_PLUGIN_PATH . 'framework/validations/' . $v . '.php';
-                            if ( file_exists( $path ) ) {
+                            if (file_exists($path)) {
                                 // Defaults Values
                                 $is_valid  = true;
                                 $error_msg = '';
 
                                 // Test Validation
-                                include( $path );
+                                include($path);
 
                                 // Is it valid?
-                                if ( $is_valid === false ) {
-                                    add_settings_error( $k[ 'id' ], 'seedprod_error', $error_msg, 'error' );
+                                if ($is_valid === false) {
+                                    add_settings_error($k[ 'id' ], 'seedprod_error', $error_msg, 'error');
                                     // Unset invalids
-                                    unset( $input[ $k[ 'id' ] ] );
+                                    unset($input[ $k[ 'id' ] ]);
                                 }
-
                             }
                         } //end foreach
-
                     }
             }
         }
@@ -778,7 +787,7 @@ class SEED_CSP4_ADMIN
      * @since 0.1.0
      * @return string Empty
      */
-    function return_empty_string( )
+    public function return_empty_string()
     {
         echo '';
     }
@@ -789,62 +798,65 @@ class SEED_CSP4_ADMIN
      *
      * @since 0.1.0
      */
-    function do_settings_sections( $page, $show_submit )
+    public function do_settings_sections($page, $show_submit)
     {
         global $wp_settings_sections, $wp_settings_fields;
 
-        if ( !isset( $wp_settings_sections ) || !isset( $wp_settings_sections[ $page ] ) )
+        if (!isset($wp_settings_sections) || !isset($wp_settings_sections[ $page ])) {
             return;
+        }
 
-        foreach ( (array) $wp_settings_sections[ $page ] as $section ) {
+        foreach ((array) $wp_settings_sections[ $page ] as $section) {
             echo "<h3 class='hndle'>{$section['title']}</h3>\n";
             echo '<div class="inside">';
-            call_user_func( $section[ 'callback' ], $section );
-            if ( !isset( $wp_settings_fields ) || !isset( $wp_settings_fields[ $page ] ) || !isset( $wp_settings_fields[ $page ][ $section[ 'id' ] ] ) )
+            call_user_func($section[ 'callback' ], $section);
+            if (!isset($wp_settings_fields) || !isset($wp_settings_fields[ $page ]) || !isset($wp_settings_fields[ $page ][ $section[ 'id' ] ])) {
                 continue;
+            }
             echo '<table class="form-table">';
-            $this->do_settings_fields( $page, $section[ 'id' ] );
+            $this->do_settings_fields($page, $section[ 'id' ]);
             echo '</table>';
-            if($show_submit): ?>
-                <p>
-                <input name="submit" type="submit" value="<?php _e( 'Save All Changes', 'coming-soon' ); ?>" class="button-primary"/>
-                </p>
-            <?php endif;
+            if ($show_submit): ?>
+<p>
+    <input name="submit" type="submit" value="<?php _e('Save All Changes', 'coming-soon'); ?>" class="button-primary" />
+</p>
+<?php endif;
             echo '</div>';
         }
     }
 
-    function do_settings_fields($page, $section) {
-          global $wp_settings_fields;
+    public function do_settings_fields($page, $section)
+    {
+        global $wp_settings_fields;
 
-          if ( !isset($wp_settings_fields) || !isset($wp_settings_fields[$page]) || !isset($wp_settings_fields[$page][$section]) )
-              return;
+        if (!isset($wp_settings_fields) || !isset($wp_settings_fields[$page]) || !isset($wp_settings_fields[$page][$section])) {
+            return;
+        }
 
-          foreach ( (array) $wp_settings_fields[$page][$section] as $field ) {
-              echo '<tr valign="top">';
-              if ( !empty($field['args']['label_for']) )
-                  echo '<th scope="row"><label for="' . $field['args']['label_for'] . '">' . $field['title'] . '</label></th>';
-              else
-                  echo '<th scope="row"><strong>' . $field['title'] . '</strong><!--<br>'.$field['args']['desc'].'--></th>';
-              echo '<td>';
-              call_user_func($field['callback'], $field['args']);
-              echo '</td>';
-              echo '</tr>';
-          }
-      }
-
+        foreach ((array) $wp_settings_fields[$page][$section] as $field) {
+            echo '<tr valign="top">';
+            if (!empty($field['args']['label_for'])) {
+                echo '<th scope="row"><label for="' . $field['args']['label_for'] . '">' . $field['title'] . '</label></th>';
+            } else {
+                echo '<th scope="row"><strong>' . $field['title'] . '</strong><!--<br>'.$field['args']['desc'].'--></th>';
+            }
+            echo '<td>';
+            call_user_func($field['callback'], $field['args']);
+            echo '</td>';
+            echo '</tr>';
+        }
+    }
 }
 
-add_action( 'admin_head', 'seed_csp4_set_user_settings' );
-function seed_csp4_set_user_settings() {
-  if(isset($_GET['page']) && $_GET['page'] == 'seed_csp4'){
-              $user_id = get_current_user_id();
-              $options = get_user_option( 'user-settings', $user_id );
-              parse_str($options,$user_settings);
-              $user_settings['imgsize'] = 'full';
-              update_user_option( $user_id, 'user-settings', http_build_query($user_settings), false );
-              update_user_option( $user_id, 'user-settings-time', time(), false );
-  }
+add_action('admin_head', 'seed_csp4_set_user_settings');
+function seed_csp4_set_user_settings()
+{
+    if (isset($_GET['page']) && $_GET['page'] == 'seed_csp4') {
+        $user_id = get_current_user_id();
+        $options = get_user_option('user-settings', $user_id);
+        parse_str($options, $user_settings);
+        $user_settings['imgsize'] = 'full';
+        update_user_option($user_id, 'user-settings', http_build_query($user_settings), false);
+        update_user_option($user_id, 'user-settings-time', time(), false);
+    }
 }
-
-

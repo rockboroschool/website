@@ -99,14 +99,47 @@ add_action( 'network_admin_menu', 'monsterinsights_network_admin_menu', 5 );
  * @return String          Altered body classes.
  */
 function monsterinsights_add_admin_body_class( $classes ) {
-    $screen = get_current_screen();
-    if ( empty( $screen->id ) || strpos( $screen->id, 'monsterinsights' ) === false ) {
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+    if ( empty( $screen ) || empty( $screen->id ) || strpos( $screen->id, 'monsterinsights' ) === false ) {
         return $classes;
     }
 
     return "$classes monsterinsights_page ";
 }
 add_filter( 'admin_body_class', 'monsterinsights_add_admin_body_class', 10, 1 );
+
+/**
+ * Adds one or more classes to the body tag in the dashboard.
+ *
+ * @param  String $classes Current body classes.
+ * @return String          Altered body classes.
+ */
+function monsterinsights_add_admin_body_class_tools_page( $classes ) {
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+
+    if ( empty( $screen ) || empty( $screen->id ) || strpos( $screen->id, 'monsterinsights_tools' ) === false || 'insights_page_monsterinsights_tools' === $screen->id  ) {
+        return $classes;
+    }
+
+    return "$classes insights_page_monsterinsights_tools ";
+}
+add_filter( 'admin_body_class', 'monsterinsights_add_admin_body_class_tools_page', 10, 1 );
+
+/**
+ * Adds one or more classes to the body tag in the dashboard.
+ *
+ * @param  String $classes Current body classes.
+ * @return String          Altered body classes.
+ */
+function monsterinsights_add_admin_body_class_addons_page( $classes ) {
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+    if ( empty( $screen ) || empty( $screen->id ) || strpos( $screen->id, 'monsterinsights_addons' ) === false || 'insights_page_monsterinsights_addons' === $screen->id  ) {
+        return $classes;
+    }
+
+    return "$classes insights_page_monsterinsights_addons ";
+}
+add_filter( 'admin_body_class', 'monsterinsights_add_admin_body_class_addons_page', 10, 1 );
 
 /**
  * Add a link to the settings page to the plugins list
@@ -193,12 +226,7 @@ function monsterinsights_admin_header() {
     if ( empty( $screen->id ) || strpos( $screen->id, 'monsterinsights' ) === false ) {
         return;
     }
-	if ( in_array( $screen->id, array(
-		'insights_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_network-network',
-		'insights_page_monsterinsights_network',
-	), true ) ) {
+	if ( monsterinsights_is_settings_page() ) {
 		// Prevent loading the header in the new settings page.
 		return false;
 	}

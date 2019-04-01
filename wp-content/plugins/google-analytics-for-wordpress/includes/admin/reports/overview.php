@@ -964,7 +964,7 @@ final class MonsterInsights_Report_Overview extends MonsterInsights_Report {
 					</ul>
 				</div>
 				<?php
-				$referral_url = 'https://analytics.google.com/analytics/web/#report/content-pages/' . MonsterInsights()->auth->get_referral_url() . $this->get_ga_report_range( $data );
+				$referral_url = 'https://analytics.google.com/analytics/web/#/report/content-pages/' . MonsterInsights()->auth->get_referral_url() . $this->get_ga_report_range( $data );
 				?>
 				<div class="monsterinsights-reports-panel-footer monsterinsights-reports-panel-footer-large">
 					<?php echo esc_html__( 'Show', 'google-analytics-for-wordpress' ); ?>&nbsp;

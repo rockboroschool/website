@@ -14,6 +14,38 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+function monsterinsights_is_settings_page() {
+    $current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+    global $admin_page_hooks;
+
+    if ( ! is_object( $current_screen ) || empty( $current_screen->id ) || empty( $admin_page_hooks ) ) {
+        return false;
+    }
+
+    $settings_page = false;
+    if ( ! empty( $admin_page_hooks['monsterinsights_settings'] ) && $current_screen->id === $admin_page_hooks['monsterinsights_settings'] ) {
+        $settings_page = true;
+    }
+
+    if ( $current_screen->id === 'toplevel_page_monsterinsights_settings' ) {
+        $settings_page = true;
+    }
+
+    if ( $current_screen->id === 'insights_page_monsterinsights_settings' ) {
+        $settings_page = true;
+    }
+
+	if ( strpos( $current_screen->id, 'monsterinsights_settings' ) !== false ) {
+        $settings_page = true;
+	}
+
+    if ( ! empty( $current_screen->base ) && strpos( $current_screen->base, 'monsterinsights_network' ) !== false ) {
+        $settings_page = true;
+    }
+
+    return $settings_page;
+}
+
 /**
  * Loads styles for all MonsterInsights-based Administration Screens.
  *
@@ -39,12 +71,7 @@ function monsterinsights_admin_styles() {
 	}
 
 	// For the settings page, load the Vue app styles.
-	if ( in_array( $screen->id, array(
-		'insights_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_network-network',
-		'insights_page_monsterinsights_network',
-	), true ) ) {
+	if ( monsterinsights_is_settings_page() ) {
 		$version_path = monsterinsights_is_pro_version() ? 'pro' : 'lite';
 		if ( ! defined( 'MONSTERINSIGHTS_LOCAL_JS_URL' ) ) {
 			wp_enqueue_style( 'monsterinsights-vue-style-vendors', plugins_url( $version_path . '/assets/vue/css/chunk-vendors.css', MONSTERINSIGHTS_PLUGIN_FILE ), array(), monsterinsights_get_asset_version() );
@@ -120,12 +147,7 @@ function monsterinsights_admin_scripts() {
 	}
 
 	// For the settings page, load the Vue app.
-	if ( in_array( $screen->id, array(
-		'insights_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_settings',
-		'toplevel_page_monsterinsights_network-network',
-		'insights_page_monsterinsights_network',
-	), true ) ) {
+	if ( monsterinsights_is_settings_page() ) {
 		global $wp_version;
 		$version_path = monsterinsights_is_pro_version() ? 'pro' : 'lite';
 		if ( ! defined( 'MONSTERINSIGHTS_LOCAL_JS_URL' ) ) {
@@ -174,7 +196,7 @@ function monsterinsights_admin_scripts() {
 				'ajax'                 => admin_url( 'admin-ajax.php' ),
 				'nonce'                => wp_create_nonce( 'mi-admin-nonce' ),
 				'network'              => is_network_admin(),
-				'translations'         => wp_get_jed_locale_data( 'mi-vue-app' ),
+				'translations'         => wp_get_jed_locale_data( monsterinsights_is_pro_version() ? 'ga-premium' : 'google-analytics-for-wordpress' ),
 				'assets'               => plugins_url( $version_path . '/assets/vue', MONSTERINSIGHTS_PLUGIN_FILE ),
 				'roles'                => monsterinsights_get_roles(),
 				'roles_manage_options' => monsterinsights_get_manage_options_roles(),

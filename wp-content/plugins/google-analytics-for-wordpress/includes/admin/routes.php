@@ -258,6 +258,12 @@ class MonsterInsights_Rest_Routes {
 		$parsed_addons['formidable_forms'] = array(
 			'active' => class_exists( 'FrmHooksController' ),
 		);
+		// Manual UA Addon.
+		if ( ! isset( $parsed_addons['manual_ua'] ) ) {
+			$parsed_addons['manual_ua'] = array(
+				'active' => class_exists( 'MonsterInsights_Manual_UA' ),
+			);
+		}
 
 		wp_send_json( $parsed_addons );
 	}
@@ -356,7 +362,9 @@ class MonsterInsights_Rest_Routes {
 				MonsterInsights()->auth->delete_manual_ua();
 			}
 		} else if ( isset( $_POST['manual_ua_code'] ) && empty( $manual_ua_code ) ) {
-			wp_send_json_error();
+			wp_send_json_error( array(
+				'error' => __( 'Invalid UA code', 'google-analytics-for-wordpress' ),
+			));
 		}
 
 		wp_send_json_success();

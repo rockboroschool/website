@@ -224,12 +224,15 @@ class MonsterInsights_Install {
 			'anonymize_ips'             => 0,
 			'extensions_of_files'       => 'doc,exe,js,pdf,ppt,tgz,zip,xls',
 			'subdomain_tracking'        => '',
-			'tag_links_in_rss'          => 0,
+			'link_attribution'          => true,
+			'tag_links_in_rss'          => true,
 			'allow_anchor'              => 0,
 			'add_allow_linker'          => 0,
 			'custom_code'               => '',
 			'save_settings'             => array( 'administrator' ),
 			'view_reports'              => array( 'administrator', 'editor' ),
+			'events_mode'               => 'js',
+			'tracking_mode'             => 'analytics',
 		);
 	}
 

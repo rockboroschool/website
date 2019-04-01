@@ -4,43 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-function monsterinsights_is_settings_page() {
-    $current_screen = get_current_screen();
-    global $admin_page_hooks;
-
-    if ( ! is_object( $current_screen ) || empty( $current_screen->id ) || empty( $admin_page_hooks ) ) {
-        return false;
-    }
-
-    $settings_page = false;
-    if ( ! empty( $admin_page_hooks['monsterinsights_settings'] ) && $current_screen->id === $admin_page_hooks['monsterinsights_settings'] ) {
-        $settings_page = true;
-    }
-
-    if ( ! empty( $admin_page_hooks['monsterinsights_reports'] ) && $current_screen->id === $admin_page_hooks['monsterinsights_reports'] ) {
-        $settings_page = true;
-    }
-
-    if ( $current_screen->id === 'toplevel_page_monsterinsights_settings' ) {
-        $settings_page = true;
-    }
-
-    if ( $current_screen->id === 'insights_page_monsterinsights_settings' ) {
-        $settings_page = true;
-    }
-
-    if ( $current_screen->id === 'insights_page_monsterinsights_tracking' ) {
-        $settings_page = true;
-    }
-
-    if ( ! empty( $current_screen->base ) && strpos( $current_screen->base, 'monsterinsights_network' ) !== false ) {
-        $settings_page = true;
-    }
-
-    return $settings_page;
-}
-
-
 /**
  * Callback to output the MonsterInsights settings page.
  *

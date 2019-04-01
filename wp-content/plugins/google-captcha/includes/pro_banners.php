@@ -65,7 +65,11 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 			'wpforo_login_form'			=> array( 'form_name' => __( 'wpForo Login form', 'google-captcha' ) ),
 			'wpforo_register_form'		=> array( 'form_name' => __( 'wpForo Registration form', 'google-captcha' ) ),
 			'wpforo_new_topic_form'		=> array( 'form_name' => __( 'wpForo New Topic form', 'google-captcha' ) ),
-			'wpforo_reply_form'			=> array( 'form_name' => __( 'wpForo Reply form', 'google-captcha') )
+			'wpforo_reply_form'			=> array( 'form_name' => __( 'wpForo Reply form', 'google-captcha') ),
+            'ninja_form'				=> array( 'form_name' => __( 'Ninja Forms', 'google-captcha' ) ),
+			'divi_contact_form'			=> array( 'form_name' => __( 'Divi Contact Form', 'google-captcha' ) ),
+			'divi_login'				=> array( 'form_name' => __( 'Divi Login Forms', 'google-captcha' ) ),
+			'divi_theme_contact_form'	=> array( 'form_name' => __( 'Divi Theme Contact Form', 'google-captcha' ) ),
 		);
 		$pro_sections = array(
 			'external' => array(
@@ -76,13 +80,16 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 					'jetpack_contact_form',
 					'sbscrbr',
 					'mailchimp',
+                    'ninja_form',
 				)
 			),
-			'bbpress' => array(
-				'name' => 'bbPress',
+			'woocommerce' => array(
+				'name' => 'WooCommerce',
 				'forms' => array(
-					'bbpress_new_topic_form',
-					'bbpress_reply_form'
+					'woocommerce_login',
+					'woocommerce_register',
+					'woocommerce_lost_password',
+					'woocommerce_checkout'
 				)
 			),
 			'buddypress' => array(
@@ -93,13 +100,24 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 					'buddypress_group'
 				)
 			),
-			'woocommerce' => array(
-				'name' => 'WooCommerce',
+			'divi' => array(
+				'name' => 'Divi Builder',
 				'forms' => array(
-					'woocommerce_login',
-					'woocommerce_register',
-					'woocommerce_lost_password',
-					'woocommerce_checkout'
+					'divi_contact_form',
+					'divi_login',
+				)
+			),
+			'divi_theme' => array(
+				'name' => 'Divi Theme',
+				'forms' => array(
+					'divi_theme_contact_form',
+				)
+			),
+			'bbpress' => array(
+				'name' => 'bbPress',
+				'forms' => array(
+					'bbpress_new_topic_form',
+					'bbpress_reply_form'
 				)
 			),
 			'wpforo' => array(

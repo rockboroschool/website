@@ -3,8 +3,8 @@ Contributors: bestwebsoft
 Donate link: https://bestwebsoft.com/donate/
 Tags: anti-spam security, antispam, recaptcha, captcha, captha, Invisible reCaptcha, Invisible captcha, Invisibl reCaptcha, comment, cpatcha, google catcha, Invisible re captcha, recaptcha version3
 Requires at least: 3.9
-Tested up to: 5.0.1
-Stable tag: 1.39
+Tested up to: 5.1.1
+Stable tag: 1.43
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -43,6 +43,7 @@ http://www.youtube.com/watch?v=qwHsW3IJ7gQ
 		* Dark
 * Compatible with [Limit Attempts](https://bestwebsoft.com/products/wordpress/plugins/limit-attempts/?k=1b1865c556920231995b35c3ed889415)
 * Hide Google Captcha (reCAPTCHA) in your forms for certain user roles
+* Hide Google Captcha (reCAPTCHA) Badge (Invisible and V3) [NEW]
 * Supports Google Captcha (reCAPTCHA):
 	* Version 2
 	* Version 3
@@ -64,11 +65,16 @@ http://www.youtube.com/watch?v=qwHsW3IJ7gQ
 > 	* Jetpack contact form
 > 	* Fast Secure Contact Form
 > 	* MailChimp for WordPress
+> 	* Ninja Forms
 > * Compatible with WooCommerce:
 > 	* Login form
 > 	* Register form
 > 	* Lost password form
 > 	* Checkout billing form
+> * Compatible with Divi:
+> 	* Divi Builder Contact form
+> 	* Divi Builder Login form
+> 	* Divi Theme Contact form [NEW]
 > * Compatible with bbPress:
 > 	* New Topic form
 > 	* Reply form
@@ -259,6 +265,24 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 
 == Changelog ==
 
+= V1.43 - 27.03.2019 =
+* NEW : The ability to hide reCAPTCHA Badge has been added.
+* PRO : The compatibility with Divi Theme has been added.
+* Bugfix : The bug with button Test verification has been fixed.
+
+= V1.42 - 26.02.2019 =
+* PRO : The compatibility with Divi Builder has been added.
+* Update : All functionality was updated for WordPress 5.1.
+
+= V1.41 - 13.02.2019 =
+* PRO : The compatibility with Ninja Forms has been added.
+* Update : The user interface has been updated.
+* Bugfix : The code refactoring was performed.
+
+= V1.40 - 18.01.2019 =
+* Update : All functionality was updated for WordPress 5.0.3.
+* Update : The enqueueing of styles and scripts has been improved.
+
 = V1.39 - 20.12.2018 =
 * Update : All functionality was updated for WordPress 5.0.1.
 
@@ -433,6 +457,23 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 * NEW : Ability to add Google Captcha (reCAPTCHA) into standard forms was added.
 
 == Upgrade Notice ==
+
+= V1.43 =
+* New features added.
+* Bugs fixed.
+
+= V1.42 =
+* Functionality expanded.
+* The compatibility with new WordPress version updated.
+
+= V1.41 =
+* Functionality expanded.
+* Usability improved.
+* Bugs fixed.
+
+= V1.40 =
+* The compatibility with new WordPress version updated.
+* Functionality improved.
 
 = V1.39 =
 * The compatibility with new WordPress version updated.

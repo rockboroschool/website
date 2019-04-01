@@ -115,7 +115,7 @@ function seed_csp4_get_options(){
         "type" => "wpeditor",
         "id" => "description",
         "label" => __( "Message", 'coming-soon' ),
-        "desc" => __( "Need Shortcode Support? <a href='".seed_csp4_admin_upgrade_link( 'settings-content-shortcode' )."' target='blank' rel='noopener noreferrer' class='seed-csp4-cta'>Check out the Pro Verion</a> which supports shortcodes, realtime page builder and adds many more features.", 'coming-soon' ),
+        "desc" => __( "Need Shortcode Support? <a href='".seed_csp4_admin_upgrade_link( 'settings-content-shortcode' )."' target='blank' rel='noopener noreferrer' class='seed-csp4-cta'>Check out the Pro Version</a> which supports shortcodes, realtime page builder and adds many more features.", 'coming-soon' ),
         "class" => "large-text"
     );
 
