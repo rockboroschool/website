@@ -197,8 +197,129 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 			add_action( 'edited_term', array( &$this, 'save_tax_data' ), 10, 3 );
 			// Adds special filters
 			add_filter( 'aioseop_opengraph_placeholder', array( &$this, 'filter_placeholder' ) );
+			add_action( 'aiosp_activate_opengraph', array( $this, 'activate_module' ) );
+			add_action( 'created_term', array( $this, 'created_term' ), 10, 3 );
 			// Call to init to generate menus
 			$this->init();
+		}
+
+		/**
+		 * Sets the terms defaults after a new term is created.
+		 *
+		 * @param int    $term_id  Term ID.
+		 * @param int    $tt_id    Term taxonomy ID.
+		 * @param string $taxonomy Taxonomy slug.
+		 */
+		function created_term( $term_id, $tt_id, $taxonomy_name ) {
+			$k = 'settings';
+			$prefix  = $this->get_prefix( $k );
+			$tax = get_taxonomy( $taxonomy_name );
+			$this->set_object_type_for_taxonomy( $prefix, $k, $taxonomy_name, $tax, false, array( $term_id ) );
+		}
+
+		/**
+		 * Sets the defaults for a taxonomy.
+		 *
+		 * @param string    $prefix             The prefix of this module.
+		 * @param string    $k                  The key against which the options will be determined/set.
+		 * @param string    $taxonomy_name      The name of the taxonomy.
+		 * @param Object    $tax                The taxonomy object.
+		 * @param bool      $bail_if_no_terms   Bail if the taxonomy has no terms.
+		 * @param array     $terms              The terms in the taxonomy.
+		 */
+		private function set_object_type_for_taxonomy( $prefix, $k, $taxonomy_name, $tax, $bail_if_no_terms = false, $terms = null ) {
+			$object_type = null;
+			if ( ! $terms ) {
+				$terms = get_terms(
+					$taxonomy_name, array(
+						'meta_query' => array(
+							array(
+								'key' => '_' . $prefix . $k,
+								'compare' => 'NOT EXISTS',
+							),
+						),
+						'number' => PHP_INT_MAX,
+						'fields' => 'ids',
+						'hide_empty' => false,
+					)
+				);
+			}
+
+			if ( empty( $terms ) && $bail_if_no_terms ) {
+				return false;
+			}
+
+			if ( true === $tax->_builtin ) {
+				$object_type = 'article';
+			} else {
+				// custom taxonomy. Let's get a post against this to determine its post type.
+				$posts = get_posts(
+					array(
+						'numberposts' => 1,
+						'post_type' => 'any',
+						'tax_query' => array(
+							array(
+								'taxonomy' => $taxonomy_name,
+								'field' => 'term_id',
+								'terms' => $terms,
+							),
+						),
+					)
+				);
+				if ( $posts ) {
+					global $aioseop_options;
+					$post_type = $posts[0]->post_type;
+					if ( isset( $aioseop_options['modules'] ) && isset( $aioseop_options['modules'][ $this->prefix . 'options' ] ) ) {
+						$og_options = $aioseop_options['modules'][ $this->prefix . 'options' ];
+
+						// now let's see what default object type is set for this post type.
+						$object_type_set = $og_options[ $this->prefix . $post_type . '_fb_object_type' ];
+						if ( ! empty( $object_type_set ) ) {
+							$object_type = $object_type_set;
+						}
+					}
+				}
+			}
+
+			if ( $object_type ) {
+				$opts[ $prefix . $k . '_category' ] = $object_type;
+				foreach ( $terms as $term_id ) {
+					update_term_meta( $term_id, '_' . $prefix . $k, $opts );
+				}
+			}
+
+			return true;
+		}
+
+		/**
+		 * Called when this module is activated.
+		 */
+		public function activate_module() {
+			if ( $this->locations !== null ) {
+				foreach ( $this->locations as $k => $v ) {
+					if ( ! isset( $v['type'] ) || 'metabox' !== $v['type'] ) {
+						continue;
+					}
+					$this->set_virgin_tax_terms( $k );
+				}
+			}
+		}
+		/**
+		 * This iterates over all taxonomies that do not have a opengraph setting defined and sets the defaults.
+		 *
+		 * @param string $k The key against which the options will be determined/set.
+		 */
+		private function set_virgin_tax_terms( $k ) {
+			$prefix  = $this->get_prefix( $k );
+			$opts    = $this->default_options( $k );
+			$taxonomies = get_taxonomies( array( 'public' => true ), 'object' );
+			if ( ! $taxonomies ) {
+				return;
+			}
+			foreach ( $taxonomies as $name => $tax ) {
+				$this->set_object_type_for_taxonomy( $prefix, $k, $name, $tax, true, null );
+
+			}
 		}
 
 		/**
@@ -699,8 +820,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 			if ( $location == 'settings' ) {
 				$prefix = $this->get_prefix( $location ) . $location . '_';
 				list( $legacy, $images ) = $this->get_all_images( $options );
-				if ( isset( $options ) && isset( $options["{$prefix}image"] ) ) {
-					$thumbnail = $options["{$prefix}image"];
+				if ( isset( $options ) && isset( $options[ "{$prefix}image" ] ) ) {
+					$thumbnail = $options[ "{$prefix}image" ];
 					if ( ctype_digit( (string) $thumbnail ) || ( $thumbnail == 'post' ) ) {
 						if ( $thumbnail == 'post' ) {
 							$thumbnail = $images['post1'];
@@ -708,7 +829,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 							$thumbnail = $legacy[ $thumbnail ];
 						}
 					}
-					$options["{$prefix}image"] = $thumbnail;
+					$options[ "{$prefix}image" ] = $thumbnail;
 				}
 				if ( empty( $options[ $prefix . 'image' ] ) ) {
 					$img = array_keys( $images );
@@ -850,7 +971,6 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 								$options[ $prefix . 'category' ] =
 									$aioseop_options['modules']['aiosp_opengraph_options'][ 'aiosp_opengraph_' . $type . '_fb_object_type' ];
 							}
-							continue;
 						}
 						break;
 				}
@@ -914,7 +1034,6 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 			if ( empty( $type ) ) {
 				$type = 'website';
 			}
-
 			$schema_types = array(
 				'album'      => 'MusicAlbum',
 				'article'    => 'Article',
@@ -1178,7 +1297,19 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 					$description = get_queried_object()->description;
 				}
 				if ( empty( $type ) ) {
-					$type = 'website';
+					// https://github.com/semperfiwebdesign/aioseop-pro/issues/321
+					if ( AIOSEOPPRO && ( is_category() || is_tag() || is_tax() ) ) {
+						$og_options        = $aioseop_options['modules'][ $this->prefix . 'options' ];
+						$current_post_type = get_post_type();
+						// check if the post type's object type is set.
+						if ( isset( $og_options[ "aiosp_opengraph_{$current_post_type}_fb_object_type" ] ) ) {
+							$type = $og_options[ "aiosp_opengraph_{$current_post_type}_fb_object_type" ];
+						} elseif ( in_array( $current_post_type, array( 'post', 'page' ) ) ) {
+							$type = 'article';
+						}
+					} else {
+						$type = 'website';
+					}
 				}
 			} elseif ( is_home() && ! is_front_page() ) {
 				// This is the blog page but not the homepage.
@@ -1472,7 +1603,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 
 END;
 			}
-			echo apply_filters( 'aiosp_opengraph_social_link_schema', $social_link_schema );
+
+			// Only show if "use schema.org markup is checked".
+			if ( ! empty( $aioseop_options['aiosp_schema_markup'] ) ) {
+				echo apply_filters( 'aiosp_opengraph_social_link_schema', $social_link_schema );
+			}
 		}
 
 		/**
@@ -1529,21 +1664,23 @@ END;
 		function admin_init() {
 			add_filter( $this->prefix . 'display_settings', array( &$this, 'filter_settings' ), 10, 3 );
 			add_filter( $this->prefix . 'override_options', array( &$this, 'override_options' ), 10, 3 );
-			add_filter( $this->get_prefix( 'settings' ) . 'default_options', array(
-				&$this,
-				'filter_default_options',
-			), 10, 2 );
+			add_filter(
+				$this->get_prefix( 'settings' ) . 'default_options', array(
+					&$this,
+					'filter_default_options',
+				), 10, 2
+			);
 			add_filter(
 				$this->get_prefix( 'settings' ) . 'filter_metabox_options', array(
-				&$this,
-				'filter_metabox_options',
-			), 10, 3
+					&$this,
+					'filter_metabox_options',
+				), 10, 3
 			);
 			add_filter(
 				$this->get_prefix( 'settings' ) . 'filter_term_metabox_options', array(
-				&$this,
-				'filter_metabox_options',
-			), 10, 3
+					&$this,
+					'filter_metabox_options',
+				), 10, 3
 			);
 			$post_types                                        = $this->get_post_type_titles();
 			$rempost                                           = array(
@@ -1670,7 +1807,6 @@ END;
 			// Dev note: If certain JS files need to be restricted to select screens, then follow concept
 			// used in `All_in_One_SEO_Pack::admin_enqueue_scripts()` (v2.9.1); which uses the `$hook_suffix`
 			// and a switch-case. This also helps prevent unnessecarily processing localized data when it isn't needed.
-
 			parent::admin_enqueue_scripts( $hook_suffix );
 		}
 

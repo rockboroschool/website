@@ -142,6 +142,18 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		);
 
 		/**
+		 * Image IDs => URLs
+		 *
+		 * @since 2.11
+		 *
+		 * @var null|array $image_ids_urls {
+		 *     @type string $base_url The URL for the original sized image.
+		 *     @type string ${$id}    Contains the URLs associated to the IDs.
+		 * }
+		 */
+		private $image_ids_urls = null;
+
+		/**
 		 * All_in_One_SEO_Pack_Sitemap constructor.
 		 */
 		public function __construct() {
@@ -640,7 +652,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 					$buf .= "<table class='aioseop_table' cellpadding=0 cellspacing=0>\n";
 					foreach ( $args['value'] as $k => $v ) {
 						if ( is_object( $v ) ) {
-							$v = (Array) $v;
+							$v = (array) $v;
 						}
 						$buf .= "\t<tr><td><a href='#' title='$k' class='dashicons dashicons-trash aiosp_delete_url'></a> {$k}</td><td>{$v['prio']}</td><td>{$v['freq']}</td><td>{$v['mod']}</td></tr>\n";
 					}
@@ -825,7 +837,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 *
 		 * @return string
 		 */
-		private function get_filename() {
+		protected function get_filename() {
 			$filename = 'sitemap';
 			if ( ! empty( $this->options[ "{$this->prefix}filename" ] ) ) {
 				$filename = $this->options[ "{$this->prefix}filename" ];
@@ -930,7 +942,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 					$decoded = maybe_unserialize( $options[ $this->prefix . 'addl_pages' ] );
 				}
 				if ( ! is_array( $decoded ) ) {
-					$decoded = (Array) $decoded;
+					$decoded = (array) $decoded;
 				}
 				if ( null === $decoded ) {
 					$decoded = $options[ $this->prefix . 'addl_pages' ];
@@ -940,7 +952,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			if ( is_array( $options[ $this->prefix . 'addl_pages' ] ) ) {
 				foreach ( $options[ $this->prefix . 'addl_pages' ] as $k => $v ) {
 					if ( is_object( $v ) ) {
-						$options[ $this->prefix . 'addl_pages' ][ $k ] = (Array) $v;
+						$options[ $this->prefix . 'addl_pages' ][ $k ] = (array) $v;
 					}
 				}
 			}
@@ -3338,10 +3350,13 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		/**
 		 * Return the images from the post.
 		 *
-		 * @param WP_Post|int $post the post object.
+		 * @todo Add ~`get_attachment_postid_to_url()` function.
+		 * @todo Benchmark `wp_get_attachment_image_src()` & `wp_get_attachment_url()`.
 		 *
 		 * @since 2.4
+		 * @since 2.11 Optimization #2008 - Reduce the need to convert url to id.
 		 *
+		 * @param WP_Post|int $post the post object.
 		 * @return array
 		 */
 		private function get_images_from_post( $post ) {
@@ -3349,7 +3364,10 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 				return array();
 			}
 
-			$images = array();
+			$rtn_image_attributes = array();
+			$post_image_ids       = array();
+			$post_image_urls      = array();
+			$transient_update     = false;
 
 			if ( is_numeric( $post ) ) {
 				if ( 0 === $post ) {
@@ -3365,14 +3383,29 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 				}
 				$attributes = wp_get_attachment_image_src( $post->ID );
 				if ( $attributes ) {
-					$images[] = array(
+					$rtn_image_attributes[] = array(
 						'image:loc'     => $this->clean_url( $attributes[0] ),
 						'image:caption' => wp_get_attachment_caption( $post->ID ),
 						'image:title'   => get_the_title( $post->ID ),
 					);
 				}
 
-				return $images;
+				return $rtn_image_attributes;
+			}
+
+			// Set Image IDs w/ URLs.
+			if ( is_null( $this->image_ids_urls ) ) {
+				// Get Transient/Cache data.
+				if ( is_multisite() ) {
+					$this->image_ids_urls = get_site_transient( 'aioseop_multisite_attachment_ids_urls' );
+				} else {
+					$this->image_ids_urls = get_transient( 'aioseop_attachment_ids_urls' );
+				}
+
+				// Set default if no data exists.
+				if ( false === $this->image_ids_urls ) {
+					$this->image_ids_urls = array();
+				}
 			}
 
 			/**
@@ -3396,72 +3429,119 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			}
 
 			if ( isset( $post_thumbnails[ $post->ID ] ) ) {
-				$attachment_url = wp_get_attachment_image_url( $post_thumbnails[ $post->ID ], 'post-thumbnail' );
-				if ( $attachment_url ) {
-					$images[] = $attachment_url;
+				$post_image_ids[] = intval( $post_thumbnails[ $post->ID ] );
+			}
+
+			$post_image_ids = array_merge( $post_image_ids, $this->get_gallery_image_ids( $post ) );
+
+			$this->get_gallery_images( $post, $post_image_urls );
+
+			// Get image URLs from content.
+			$content  = $post->post_content;
+			$content .= $this->get_content_from_galleries( $content );
+			$this->parse_content_for_images( $content, $post_image_urls );
+
+			if ( ! empty( $post_image_urls ) ) {
+				// Remove any invalid/empty images.
+				$post_image_urls = array_filter( $post_image_urls, array( $this, 'is_image_url_valid' ) );
+
+				// If possible, get ID from URL, and store the post's attachment ID => URL value.
+				// This is to base the attachment query on the ID instead of the URL; which is less SQL intense.
+				foreach ( $post_image_urls as $k1_index => &$v1_image_url ) {
+					$v1_image_url  = aiosp_common::absolutize_url( $v1_image_url );
+					$attachment_id = aiosp_common::attachment_url_to_postid( $v1_image_url );
+
+					if ( $attachment_id ) {
+						if ( ! isset( $this->image_ids_urls[ $attachment_id ] ) ) {
+							// Use transient/cache data.
+							$this->image_ids_urls[ $attachment_id ] = array( $v1_image_url );
+
+							$transient_update = true;
+						} else {
+							// If transient/cache data is already set, and URL is not already stored.
+							if ( ! in_array( $v1_image_url, $this->image_ids_urls[ $attachment_id ], true ) ) {
+								$this->image_ids_urls[ $attachment_id ][] = $v1_image_url;
+
+								$transient_update = true;
+							}
+						}
+
+						// Store and use ID instead.
+						array_push( $post_image_ids, $attachment_id );
+						unset( $post_image_urls[ $k1_index ] );
+					}
 				}
 			}
 
-			$content = $post->post_content;
+			// Site's Images.
+			if ( $post_image_ids ) {
+				// Filter out duplicates.
+				$post_image_ids = array_unique( $post_image_ids );
 
-			$this->get_gallery_images( $post, $images );
+				foreach ( $post_image_ids as $v1_image_id ) {
+					// Set base URL to display later in this instance, or later (transient/cache) instances.
+					// Converting ID from URL can also be heavy on memory & time.
+					if ( ! isset( $this->image_ids_urls[ $v1_image_id ] ) ) {
+						// Sets any remaining post image IDs that weren't converted from URL.
+						$this->image_ids_urls[ $v1_image_id ] = array(
+							'base_url' => $this->clean_url( wp_get_attachment_url( $v1_image_id ) ),
+						);
 
-			$content .= $this->get_content_from_galleries( $content );
-			$this->parse_content_for_images( $content, $images );
+						$transient_update = true;
+					} else {
+						if ( empty( $this->image_ids_urls[ $v1_image_id ]['base_url'] ) ) {
+							$this->image_ids_urls[ $v1_image_id ]['base_url'] = $this->clean_url( wp_get_attachment_url( $v1_image_id ) );
 
-			if ( $images ) {
-				$tmp = $images;
-				if ( 1 < count( $images ) ) {
-					// Filter out duplicates.
-					$tmp = array_unique( $images );
-				}
+							$transient_update = true;
+						}
+					}
 
-				// remove any invalid/empty images.
-				$tmp = array_filter( $images, array( $this, 'is_image_valid' ) );
-
-				$images = array();
-				foreach ( $tmp as $image ) {
-					$image_attributes = $this->get_image_attributes( $image );
-
-					$images[] = array_merge(
-						array(
-							'image:loc' => $this->clean_url( $image ),
-						),
-						$image_attributes
+					// Set return variable for image data/attributes.
+					$rtn_image_attributes[] = array(
+						'image:loc'     => $this->image_ids_urls[ $v1_image_id ]['base_url'],
+						'image:caption' => wp_get_attachment_caption( $v1_image_id ),
+						'image:title'   => get_the_title( $v1_image_id ),
 					);
 				}
 			}
 
-			return $images;
+			// External/Custom images remaining.
+			if ( ! empty( $post_image_urls ) ) {
+				foreach ( $post_image_urls as $v1_image_url ) {
+					$rtn_image_attributes[] = array(
+						'image:loc'     => $v1_image_url,
+					);
+				}
+			}
+
+			if ( $transient_update ) {
+				add_action( 'shutdown', array( $this, 'set_transient_attachment_ids_urls' ) );
+			}
+
+			return $rtn_image_attributes;
 		}
 
 		/**
-		 * Fetch image attributes such as title and caption given the image URL.
+		 * Set Transient for Image IDs => URLs
 		 *
-		 * @param string $url The image URL.
-		 * @return array
+		 * @since 2.11
 		 */
-		private function get_image_attributes( $url ) {
-			global $wpdb;
-			$attributes = array();
-
-			$attachment = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid='%s';", $url ) );
-			if ( $attachment && is_array( $attachment ) && is_numeric( $attachment[0] ) ) {
-				$attributes = array(
-					'image:caption' => wp_get_attachment_caption( $attachment[0] ),
-					'image:title'   => get_the_title( $attachment[0] ),
-				);
+		public function set_transient_attachment_ids_urls() {
+			if ( is_multisite() ) {
+				set_site_transient( 'aioseop_multisite_attachment_ids_urls', $this->image_ids_urls, DAY_IN_SECONDS );
+			} else {
+				set_transient( 'aioseop_attachment_ids_urls', $this->image_ids_urls, DAY_IN_SECONDS );
 			}
-			return $attributes;
 		}
 
 		/**
 		 * Fetch images from WP, Jetpack and WooCommerce galleries.
 		 *
+		 * @since 2.4.2
+		 * @since 2.11 Optimization #2008 - Reduce the need to convert url to id.
+		 *
 		 * @param WP_Post $post The post.
 		 * @param array   $images the array of images.
-		 *
-		 * @since 2.4.2
 		 */
 		private function get_gallery_images( $post, &$images ) {
 			if ( false === apply_filters( 'aioseo_include_images_in_wp_gallery', true ) ) {
@@ -3471,6 +3551,13 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			// Check images galleries in the content. DO NOT run the_content filter here as it might cause issues with other shortcodes.
 			if ( has_shortcode( $post->post_content, 'gallery' ) ) {
 				// Get the jetpack gallery images.
+				// TODO Investigate other alternatives to retrieve ID instead. Specifically Jetpack data.
+				/*
+				 * Is this even necessary? Jetpack uses many of the WP functions, some of which may already be in use.
+				 * This is also limited to 1 source, and doesn't check other sources once a value is obtained.
+				 *
+				 * @link https://hayashikejinan.com/wp-content/uploads/jetpack_api/classes/Jetpack_PostImages.html
+				 */
 				if ( class_exists( 'Jetpack_PostImages' ) ) {
 					$jetpack = Jetpack_PostImages::get_images( $post->ID );
 					if ( $jetpack ) {
@@ -3479,30 +3566,67 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 						}
 					}
 				}
+			}
 
+			$images = array_unique( $images );
+		}
+
+		/**
+		 * Get Gallery Image IDs
+		 *
+		 * @uses get_post_galleries()
+		 * @link https://developer.wordpress.org/reference/functions/get_post_galleries/
+		 *
+		 * @since 2.11
+		 *
+		 * @param WP_Post $post
+		 * @return array
+		 */
+		private function get_gallery_image_ids( $post ) {
+			$rtn_image_ids = array();
+			if ( false === apply_filters( 'aioseo_include_images_in_wp_gallery', true ) ) {
+				return $rtn_image_ids;
+			}
+
+			// Check images galleries in the content. DO NOT run the_content filter here as it might cause issues with other shortcodes.
+			if ( has_shortcode( $post->post_content, 'gallery' ) ) {
 				// Get the default WP gallery images.
 				$galleries = get_post_galleries( $post, false );
-				if ( $galleries ) {
+				if ( ! empty( $galleries ) ) {
 					foreach ( $galleries as $gallery ) {
-						$images = array_merge( $images, $gallery['src'] );
+						$gallery_ids = explode( ',', $gallery['ids'] );
+
+						if ( ! empty( $gallery_ids ) ) {
+							foreach ( $gallery_ids as $image_id ) {
+								// Skip if invalid id.
+								if ( ! is_numeric( $image_id ) ) {
+									continue;
+								}
+								$image_id = intval( $image_id );
+
+								array_push( $rtn_image_ids, $image_id );
+							}
+						}
 					}
 				}
 			}
 
 			// Check WooCommerce product gallery.
 			if ( class_exists( 'WooCommerce' ) ) {
-				$woo_images = get_post_meta( $post->ID, '_product_image_gallery', true );
+				$wc_image_ids = get_post_meta( $post->ID, '_product_image_gallery', true );
 				if ( ! empty( $woo_images ) ) {
-					$woo_images = array_filter( explode( ',', $woo_images ) );
-					if ( is_array( $woo_images ) ) {
-						foreach ( $woo_images as $id ) {
-							$images[] = wp_get_attachment_url( $id );
+					$wc_image_ids = array_filter( explode( ',', $wc_image_ids ) );
+					foreach ( $wc_image_ids as $image_id ) {
+						if ( is_numeric( $image_id ) ) {
+							$image_id = intval( $image_id );
+
+							array_push( $rtn_image_ids, $image_id );
 						}
 					}
 				}
 			}
 
-			$images = array_unique( $images );
+			return array_unique( $rtn_image_ids );
 		}
 
 		/**
@@ -3608,10 +3732,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 *
 		 * @since 2.4.1
 		 * @since 2.4.3 Compatibility with Pre v4.7 wp_parse_url().
+		 * @since 2.11 Sitemap Optimization #2008 - Changed to a more appropriate name.
 		 *
 		 * @return bool
 		 */
-		public function is_image_valid( $image ) {
+		public function is_image_url_valid( $image ) {
 			global $wp_version;
 
 			// Bail if empty image.
@@ -3639,7 +3764,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			// TODO Change to wp_parse_url().
 			$extn    = pathinfo( parse_url( $image, PHP_URL_PATH ), PATHINFO_EXTENSION );
 			$allowed = apply_filters( 'aioseop_allowed_image_extensions', self::$image_extensions );
-			// Bail if image does not refer to an image file otherwise google webmaster tools might reject the sitemap.
+			// Bail if image does not refer to an image file otherwise Google Search Console might reject the sitemap.
 			if ( ! in_array( $extn, $allowed, true ) ) {
 				return false;
 			}

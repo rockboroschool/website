@@ -7,7 +7,7 @@
  * @copyright https://semperplugins.com
  * @version 1.0.0
  */
-if ( typeof aiosp_data != 'undefined' ) {
+if ( typeof aiosp_data !== 'undefined' ) {
 
 	/**
 	 * @since 1.0.0
@@ -18,19 +18,19 @@ if ( typeof aiosp_data != 'undefined' ) {
 		aiosp_data, function( index, value ) {
 			// aiosp_data[index] = value.json.replace(/&quot;/g, '"');
 			// aiosp_data[index] = jQuery.parseJSON( value );
-			if ( index == 0 ) {
-				if ( typeof value.condshow == 'undefined' ) {
+			if ( index === 0 ) {
+				if ( typeof value.condshow === 'undefined' ) {
 					aiosp_data[ index ].condshow = [];
 				}
 			} else {
-				if ( typeof value.condshow != 'undefined' ) {
+				if ( typeof value.condshow !== 'undefined' ) {
 					aiosp_data[ 0 ].condshow =
 					jQuery.merge( aiosp_data[0].condshow, value.condshow );
 				}
 			}
 		}
 	);
-	aiosp_data = aiosp_data[0];
+	aiosp_data = aiosp_data[0]; // jshint ignore:line
 }
 
 /**
@@ -41,7 +41,7 @@ if ( typeof aiosp_data != 'undefined' ) {
  */
 function toggleVisibility( id ) {
 	var e = document.getElementById( id );
-	if ( e.style.display == 'block' ) {
+	if ( e.style.display === 'block' ) {
 		e.style.display = 'none';
 	} else {
 		e.style.display = 'block';
@@ -56,15 +56,15 @@ function toggleVisibility( id ) {
  * @return Mixed.
  */
 function aioseop_get_field_value( field ) {
-	if ( field.length == 0 ) {
+	if ( field.length === 0 ) {
 		return field;
 	}
-	cur = jQuery( '[name=' + field + ']' );
-	if ( cur.length == 0 ) {
+	var cur = jQuery( '[name=' + field + ']' );
+	if ( cur.length === 0 ) {
 		return field;
 	}
-	type = cur.attr( 'type' );
-	if ( type == "checkbox" || type == "radio" ) {
+	var type = cur.attr( 'type' );
+	if ( type === "checkbox" || type === "radio" ) {
 		cur = jQuery( 'input[name=' + field + ']:checked' );
 	}
 	return cur.val();
@@ -78,13 +78,13 @@ function aioseop_get_field_value( field ) {
  * @return Mixed.
  */
 function aioseop_get_field_values( field ) {
-	arr = [];
-	cur = jQuery( '[name=' + field + ']' );
-	if ( cur.length == 0 ) {
+	var arr = [];
+	var cur = jQuery( '[name=' + field + ']' );
+	if ( cur.length === 0 ) {
 		return field;
 	}
-	type = cur.attr( 'type' );
-	if ( type == "checkbox" || type == "radio" ) {
+	var type = cur.attr( 'type' );
+	if ( type === "checkbox" || type === "radio" ) {
 		jQuery( 'input[name=' + field + ']:checked' ).each(
 			function() {
 				arr.push( jQuery( this ).val() );
@@ -106,13 +106,13 @@ function aioseop_get_field_values( field ) {
  */
 function aioseop_eval_condshow_logic( statement ) {
 	var lhs, rhs;
-	if ( ( typeof statement ) == 'object' ) {
+	if ( ( typeof statement ) === 'object' ) {
 		lhs = statement.lhs;
 		rhs = statement.rhs;
-		if ( lhs !== null && ( ( typeof lhs ) == 'object' ) ) {
+		if ( lhs !== null && ( ( typeof lhs ) === 'object' ) ) {
 			lhs = aioseop_eval_condshow_logic( lhs );
 		}
-		if ( rhs !== null && ( typeof rhs ) == 'object' ) {
+		if ( rhs !== null && ( typeof rhs ) === 'object' ) {
 			rhs = aioseop_eval_condshow_logic( rhs );
 		}
 		lhs = aioseop_get_field_value( lhs );
@@ -125,9 +125,9 @@ function aioseop_eval_condshow_logic( statement ) {
 			case 'OR' :
 				return ( lhs || rhs );
 			case '==' :
-				return ( lhs == rhs );
+				return ( lhs === rhs );
 			case '!=' :
-				return ( lhs != rhs );
+				return ( lhs !== rhs );
 			default   :
 				return null;
 		}
@@ -144,17 +144,18 @@ function aioseop_eval_condshow_logic( statement ) {
  * @return Mixed.
  */
 function aioseop_do_condshow_match( index, value ) {
-	if ( typeof value != 'undefined' ) {
-		matches = true;
+	if ( typeof value !== 'undefined' ) {
+		var matches = true;
 		jQuery.each(
 			value, function(subopt, setting) {
 				var statement;
-				if ( ( typeof setting ) == 'object' ) {
+				if ( ( typeof setting ) === 'object' ) {
 					statement = aioseop_eval_condshow_logic( setting );
 					if ( ! statement ) {
 						matches = false;
 					}
 				} else {
+					var cur = [];
 					if ( subopt.match( /\\\[\\\]/ ) ) { // special case for these -- pdb
 						cur = aioseop_get_field_values( subopt );
 						if ( jQuery.inArray( setting, cur, 0 ) < 0 ) {
@@ -162,7 +163,24 @@ function aioseop_do_condshow_match( index, value ) {
 						}
 					} else {
 						cur = aioseop_get_field_value( subopt );
-						if ( cur != setting ) {
+						/*
+						 * TODO Improve values of aioseop settings & default settings (in PHP files). By reducing mixed values & casetypes.
+						 *
+						 * There are too many mixed values to do a strict comparison.
+						 *
+						 * For an int value, an element.val() will return a string. Plus, there is also a mixture of
+						 * int/booleans and string "on||off". This can be improved with using consistancy in the values
+						 * being used, and then JSHint & ESLint can be re-enabled.
+						 *
+						 * Current values occuring...
+						 * "1" : 1
+						 * "0" : "on"
+						 * 0 : "off"
+						 * undefined : "on"
+						 */
+						/* eslint-disable eqeqeq */
+						if ( cur != setting ) { // jshint ignore:line
+							/* eslint-enable eqeqeq */
 							matches = false;
 						}
 					}
@@ -187,7 +205,7 @@ function aioseop_do_condshow_match( index, value ) {
  * @param $value.
  */
 function aioseop_add_condshow_handlers( index, value ) {
-	if ( typeof value != 'undefined' ) {
+	if ( typeof value !== 'undefined' ) {
 		jQuery.each(
 			value, function(subopt, setting) {
 				jQuery( '[name=' + subopt + ']' ).bind(
@@ -207,7 +225,7 @@ function aioseop_add_condshow_handlers( index, value ) {
  * @param $condshow.
  */
 function aioseop_do_condshow( condshow ) {
-	if ( typeof aiosp_data.condshow != 'undefined' ) {
+	if ( typeof aiosp_data.condshow !== 'undefined' ) {
 		jQuery.each(
 			aiosp_data.condshow, function( index, value ) {
 				aioseop_do_condshow_match( index, value );
@@ -222,8 +240,8 @@ function aioseop_do_condshow( condshow ) {
  */
 jQuery( document ).ready(
 	function() {
-		if ( typeof aiosp_data != 'undefined' ) {
-			if ( typeof aiosp_data.condshow != 'undefined' ) {
+		if ( typeof aiosp_data !== 'undefined' ) {
+			if ( typeof aiosp_data.condshow !== 'undefined' ) {
 				aioseop_do_condshow( aiosp_data.condshow );
 			}
 		}
@@ -261,7 +279,7 @@ jQuery( document ).ready(
                                     if (jQuery(el).prev().length > 0) {
                                         jQuery(el).prev().val(1);
                                     }
-                                },
+                                }
                             }
                         );
                     }
@@ -275,7 +293,7 @@ jQuery( document ).ready(
                     'click', function () {
                         var previousValue = jQuery(this).attr('previousValue');
                         var name = jQuery(this).attr('name');
-                        if (typeof previousValue == 'undefined') {
+                        if (typeof previousValue === 'undefined') {
                             if (jQuery(this).prop("checked")) {
                                 jQuery(this).prop('checked', true);
                                 jQuery(this).attr('previousValue', 'checked');
@@ -285,7 +303,7 @@ jQuery( document ).ready(
                             }
                             return;
                         }
-                        if (previousValue == 'checked') {
+                        if (previousValue === 'checked') {
                             jQuery(this).prop('checked', false);
                             jQuery(this).attr('previousValue', false);
                         } else {
@@ -297,7 +315,7 @@ jQuery( document ).ready(
                 );
             }
         );
-		if ( typeof aiosp_data.pointers != 'undefined' ) {
+		if ( typeof aiosp_data.pointers !== 'undefined' ) {
 
 			/**
 		 * @since 1.0.0
@@ -307,8 +325,13 @@ jQuery( document ).ready(
 		 */
 			jQuery.each(
 				aiosp_data.pointers, function( index, value ) {
-					if ( value != 'undefined' && value.pointer_text != '' ) {
-						aioseop_show_pointer( index, value );
+					if ( value !== 'undefined' && value.pointer_text !== '' ) {
+						/*
+						 * The function is located in a PHP function where it is rendered/printed.
+						 *
+						 * @see \All_in_One_SEO_Pack::add_page_icon()
+						 */
+						aioseop_show_pointer( index, value ); // jshint ignore:line
 					}
 				}
 			);
@@ -580,7 +603,10 @@ jQuery( document ).ready(
 				jQuery( this ).attr( "data-action" ),
 				function( data ) {
 					if ( data.data && data.data.message ) {
+						// TODO Add alert function. Check example of correct code. https://eslint.org/docs/rules/no-alert
+						/* eslint-disable no-alert */
 						alert( data.data.message );
+						/* eslint-enable no-alert */
 					}
 					window.location.reload();
 				},
@@ -609,7 +635,7 @@ jQuery.fn.aioseopImageUploader = function( options ) {
   // Options
 	self.options = jQuery.extend(
 		{
-			success: undefined,
+			success: undefined
 		}, options
 	);
 
@@ -685,11 +711,16 @@ function aiosp_reclick_radio() {
 	var radios = jQuery( document ).data( 'radioshack' );
 
 	// steps thru each object element and trigger a click on it's corresponding radio button
+	// TODO Change for loop. (This also appears to be an unused/deprecated function)
+	// https://stackoverflow.com/questions/1963102/what-does-the-jslint-error-body-of-a-for-in-should-be-wrapped-in-an-if-statemen
+	/* eslint-disable guard-for-in */
 	for ( var key in radios ) {
 		jQuery( 'input[name="' + key + '"]' )
 			.filter( '[value="' + radios[ key ] + '"]' )
 			.trigger( 'click' );
 	}
+	/* eslint-enable guard-for-in */
+
 	// unbinds the event listener on .wrap  (prevents clicks on inputs from triggering function)
 	jQuery( '.wrap' ).unbind( 'mouseup' );
 }
@@ -710,7 +741,7 @@ function aioseop_handle_ajax_call( action, settings, options, success ) {
 	aioseop_sack.setVar( "action", action );
 	aioseop_sack.setVar( "settings", settings );
 	aioseop_sack.setVar( "options", options );
-	if ( typeof success != 'undefined' ) {
+	if ( typeof success !== 'undefined' ) {
 		aioseop_sack.onCompletion = success;
 	}
 	aioseop_sack.setVar(
@@ -722,7 +753,10 @@ function aioseop_handle_ajax_call( action, settings, options, success ) {
 		jQuery( 'input[name="nonce-aioseop-edit"]' ).val()
 	);
 	aioseop_sack.onError = function() {
+		// TODO Add alert function. Check example of correct code. https://eslint.org/docs/rules/no-alert
+		/* eslint-disable no-alert */
 		alert( 'Ajax error on saving.' );
+		/* eslint-enable no-alert */
 	};
 	aioseop_sack.runAJAX();
 }
@@ -761,7 +795,7 @@ function aioseop_handle_post_url( action, settings, options, success_function, u
                             }
                         });
                     }else{
-					    aioseop_handle_ajax_call( action, settings, options, success_function );
+						aioseop_handle_ajax_call( action, settings, options, success_function );
                     }
 				}
 			);
@@ -802,7 +836,7 @@ function aiospinitAll(){
 
 function aiospinitCalendar(){
     if ( jQuery( '.aiseop-date' ).length > 0 && jQuery( '.aiseop-date' ).eq( 0 ).prop( 'type' ).toLowerCase() === 'text' ) {
-	  jQuery( '.aiseop-date' ).datepicker(
+		jQuery( '.aiseop-date' ).datepicker(
 			{
 				dateFormat: "yy-mm-dd"
 			}

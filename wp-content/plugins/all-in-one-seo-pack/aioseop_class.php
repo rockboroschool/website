@@ -57,11 +57,11 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 	 *
 	 * @since 2.3.14 #921 More google analytics options added.
 	 * @since 2.4.0 #1395 Longer Meta Descriptions.
-     * @since 2.6.1 #1694 Back to shorter meta descriptions.
+	 * @since 2.6.1 #1694 Back to shorter meta descriptions.
 	 */
 	function __construct() {
 		global $aioseop_options;
-		$this->log_file = dirname( __FILE__ ) . '/all-in-one-seo-pack.log'; // PHP <5.3 compatibility, once we drop support we can use __DIR___.
+		$this->log_file = WP_CONTENT_DIR . '/all-in-one-seo-pack.log'; // PHP <5.3 compatibility, once we drop support we can use __DIR___.
 
 		if ( ! empty( $aioseop_options ) && isset( $aioseop_options['aiosp_do_log'] ) && $aioseop_options['aiosp_do_log'] ) {
 			$this->do_log = true;
@@ -79,6 +79,17 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 		$blog_name          = esc_attr( get_bloginfo( 'name' ) );
 		parent::__construct();
 
+		/*
+		 * Consider changing the construction of the macros.
+		 *
+		 * The name of the macro should NOT be inside _e() or __() because it does not make sense as it
+		 * won't change with the language.
+		 *
+		 * Moreover, it will confuse WPCS and it will try to replace %c (as in %category%) to %$1c.
+		 * Placeholder %s (%something) has been bug fixed.
+		 * @link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/698
+		 */
+		// @codingStandardsIgnoreStart
 		$this->help_text = array(
 			'license_key'                 => __( 'This will be the license key received when the product was purchased. This is used for automatic upgrades.', 'all-in-one-seo-pack' ),
 			'can'                         => __( 'This option will automatically generate Canonical URLs for your entire WordPress installation.  This will help to prevent duplicate content penalties by Google', 'all-in-one-seo-pack' ),
@@ -193,7 +204,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			'cpostactive'                 => __( 'Use these checkboxes to select which Content Types you want to use All in One SEO Pack with.', 'all-in-one-seo-pack' ),
 			'taxactive'                   => __( 'Use these checkboxes to select which Taxonomies you want to use All in One SEO Pack with.', 'all-in-one-seo-pack' ),
 			'posttypecolumns'             => __( 'This lets you select which screens display the SEO Title, SEO Keywords and SEO Description columns.', 'all-in-one-seo-pack' ),
-			'google_verify'               => __( "Enter your verification code here to verify your site with Google Search Console.<br /><a href='https://semperplugins.com/documentation/google-webmaster-tools-verification/' target='_blank'>Click here for documentation on this setting</a>", 'all-in-one-seo-pack' ),
+			'google_verify'               => __( "Enter your verification code here to verify your site with Google Search Console.<br /><a href='https://semperplugins.com/documentation/google-search-console-verification/' target='_blank'>Click here for documentation on this setting</a>", 'all-in-one-seo-pack' ),
 			'bing_verify'                 => __( "Enter your verification code here to verify your site with Bing Webmaster Tools.<br /><a href='https://semperplugins.com/documentation/bing-webmaster-verification/' target='_blank'>Click here for documentation on this setting</a>", 'all-in-one-seo-pack' ),
 			'pinterest_verify'            => __( "Enter your verification code here to verify your site with Pinterest.<br /><a href='https://semperplugins.com/documentation/pinterest-site-verification/' target='_blank'>Click here for documentation on this setting</a>", 'all-in-one-seo-pack' ),
 			'google_publisher'            => __( 'Enter your Google+ Profile URL here to add the rel=“author” tag to your site for Google authorship. It is recommended that the URL you enter here should be your personal Google+ profile.  Use the Advanced Authorship Options below if you want greater control over the use of authorship.', 'all-in-one-seo-pack' ),
@@ -242,6 +253,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			'front_meta_tags'             => __( 'What you enter here will be copied verbatim to the header of the front page if you have set a static page in Settings, Reading, Front Page Displays. You can enter whatever additional headers you want here, even references to stylesheets. This will fall back to using Additional Page Headers if you have them set and nothing is entered here.', 'all-in-one-seo-pack' ),
 			'home_meta_tags'              => __( 'What you enter here will be copied verbatim to the header of the home page if you have Front page displays your latest posts selected in Settings, Reading.  It will also be copied verbatim to the header on the Posts page if you have one set in Settings, Reading. You can enter whatever additional headers you want here, even references to stylesheets.', 'all-in-one-seo-pack' ),
 		);
+		// @codingStandardsIgnoreStop
 
 		$this->help_anchors = array(
 			'license_key'                 => '#license-key',
@@ -3011,8 +3023,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 	function add_page_icon() {
 		wp_enqueue_script( 'wp-pointer', false, array( 'jquery' ) );
 		wp_enqueue_style( 'wp-pointer' );
-		//$this->add_admin_pointers();
-
+		// $this->add_admin_pointers();
+		// TODO Enqueue script as a JS file.
 		?>
 		<script>
 			function aioseop_show_pointer(handle, value) {
@@ -3040,7 +3052,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			}
 			<?php
 			if ( ! empty( $this->pointers ) ) {
-			?>
+				?>
 			if (typeof( jQuery ) != 'undefined') {
 				jQuery(document).ready(function () {
 					var admin_pointer;
@@ -3048,7 +3060,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 					<?php
 					foreach ( $this->pointers as $k => $p ) {
 						if ( ! empty( $p['pointer_scope'] ) && ( 'global' === $p['pointer_scope'] ) ) {
-												?>
+							?>
 												admin_index = "<?php echo esc_attr( $k ); ?>";
 											admin_pointer = <?php echo json_encode( $p ); ?>;
 											aioseop_show_pointer(admin_index, admin_pointer);
@@ -3300,8 +3312,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 		$extra_title_len = 0;
 		switch ( $hook_suffix ) {
 			// Screens `post.php`, `post-new.php`, & `../aioseop_class.php` share the same `count-char.js`.
-			case 'post.php' :
-			case 'post-new.php' :
+			case 'post.php':
+			case 'post-new.php':
 				$info         = $this->get_page_snippet_info();
 				$title        = $info['title'];
 				$title_format = $this->get_title_format( array( 'name' => 'aiosp_snippet' ) );
@@ -3310,8 +3322,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 					$replace_title   = '<span id="aiosp_snippet_title">' . esc_attr( wp_strip_all_tags( html_entity_decode( $title ) ) ) . '</span>';
 					$extra_title_len = strlen( $this->html_entity_decode( str_replace( $replace_title, '', $title_format ) ) );
 				}
-			// Fall through.
-			case 'toplevel_page_all-in-one-seo-pack/aioseop_class' :
+				// Fall through.
+			case 'toplevel_page_' . AIOSEOP_PLUGIN_DIRNAME . '/aioseop_class':
 				wp_enqueue_script(
 					'aioseop-post-edit-script',
 					AIOSEOP_PLUGIN_URL . 'js/count-chars.js',
@@ -3440,14 +3452,13 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				global $post;
 				$info = $this->get_page_snippet_info();
 
-
 				$title = $info['title'];
 				$description = $info['description'];
 				$keywords = $info['keywords'];
 
-				$settings["{$prefix}title"]['placeholder']       = $this->html_entity_decode( $title );
-				$settings["{$prefix}description"]['placeholder'] = $this->html_entity_decode( $description );
-				$settings["{$prefix}keywords"]['placeholder']    = $keywords;
+				$settings[ "{$prefix}title" ]['placeholder']       = $this->html_entity_decode( $title );
+				$settings[ "{$prefix}description" ]['placeholder'] = $this->html_entity_decode( $description );
+				$settings[ "{$prefix}keywords" ]['placeholder']    = $keywords;
 			}
 
 			if ( ! AIOSEOPPRO ) {
@@ -3704,6 +3715,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles_all' ) );
 			add_action( 'admin_init', 'aioseop_addmycolumns', 1 );
 			add_action( 'admin_init', 'aioseop_handle_ignore_notice' );
+			add_action( 'shutdown', array( $this, 'check_recently_activated_modules' ), 99 );
 			if ( AIOSEOPPRO ) {
 				if ( current_user_can( 'update_plugins' ) ) {
 					add_action( 'admin_notices', array( $aioseop_update_checker, 'key_warning' ) );
@@ -3986,12 +3998,14 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				) as $k => $v
 			) {
 				if ( ! empty( $aioseop_options[ "aiosp_{$k}_verify" ] ) ) {
-					$meta_string .= '<meta name="' . $v . '" content="' . trim( strip_tags( $aioseop_options["aiosp_{$k}_verify"] ) ) . '" />' . "\n";
+					$meta_string .= '<meta name="' . $v . '" content="' . trim( strip_tags( $aioseop_options[ "aiosp_{$k}_verify" ] ) ) . '" />' . "\n";
 				}
 			}
 
-			// Sitelinks search.
-			if ( ! empty( $aioseop_options['aiosp_google_sitelinks_search'] ) || ! empty( $aioseop_options['aiosp_google_set_site_name'] ) ) {
+			// Sitelinks search. Only show if "use schema.org markup is checked".
+			if ( ! empty( $aioseop_options['aiosp_schema_markup'] ) && (
+					! empty( $aioseop_options['aiosp_google_sitelinks_search'] ) || ! empty( $aioseop_options['aiosp_google_set_site_name'] ) )
+			) {
 				$meta_string .= $this->sitelinks_search_box() . "\n";
 			}
 		}
@@ -4244,7 +4258,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			) {
 
 				if ( ( 'on' === $aiosp_noindex ) || ( ( ! empty( $aioseop_options['aiosp_paginated_noindex'] ) ) && $page > 1 ) ||
-				     ( ( '' === $aiosp_noindex ) && ( ! empty( $aioseop_options['aiosp_cpostnoindex'] ) ) && in_array( $post_type, $aioseop_options['aiosp_cpostnoindex'] ) )
+					 ( ( '' === $aiosp_noindex ) && ( ! empty( $aioseop_options['aiosp_cpostnoindex'] ) ) && in_array( $post_type, $aioseop_options['aiosp_cpostnoindex'] ) )
 
 				) {
 					$noindex = 'noindex';
@@ -4289,8 +4303,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 	}
 
 	/**
-   * Determine if post is password protected.
-   * @since 2.3.11.5
+	 * Determine if post is password protected.
+	 * @since 2.3.11.5
 	 * @return bool
 	 */
 	function is_password_protected() {
@@ -4472,17 +4486,26 @@ EOF;
 			}
 			if ( ! empty( $page ) ) {
 				if ( $page > 1 ) {
+					// Cannot use `wp_link_page()` since it is for rendering purposes and has no control over the page number.
+					// TODO Investigate alternate wp concept. If none is found, keep private function in case of any future WP changes.
 					$prev = _wp_link_page( $page - 1 );
 				}
 				if ( $page + 1 <= $numpages ) {
+					// Cannot use `wp_link_page()` since it is for rendering purposes and has no control over the page number.
+					// TODO Investigate alternate wp concept. If none is found, keep private function in case of any future WP changes.
 					$next = _wp_link_page( $page + 1 );
 				}
 			}
+
 			if ( ! empty( $prev ) ) {
-				$prev = $this->substr( $prev, 9, - 2 );
+				$dom = new DOMDocument();
+				$dom->loadHTML( $prev );
+				$prev = $dom->getElementsByTagName( 'a' )->item(0)->getAttribute( 'href' );
 			}
 			if ( ! empty( $next ) ) {
-				$next = $this->substr( $next, 9, - 2 );
+				$dom = new DOMDocument();
+				$dom->loadHTML( $next );
+				$next = $dom->getElementsByTagName( 'a' )->item(0)->getAttribute( 'href' );
 			}
 		}
 
@@ -4860,7 +4883,6 @@ EOF;
 	}
 
 	function admin_menu() {
-		$this->check_recently_activated_modules( $_POST );
 		$file      = plugin_basename( __FILE__ );
 		$menu_name = __( 'All in One SEO', 'all-in-one-seo-pack' );
 
@@ -5024,32 +5046,6 @@ EOF;
 						$title .= "<a class='aioseop_help_text_link aioseop_meta_box_help' target='_blank' href='" . $m['help_link'] . "'><span>" . __( 'Help', 'all-in-one-seo-pack' ) . '</span></a>';
 					}
 					add_meta_box( $m['id'], $title, $m['callback'], $m['post_type'], $m['context'], $m['priority'], $m['callback_args'] );
-				}
-			}
-		}
-	}
-
-	/**
-	 * Checks which module(s) have been (de)activated just now and fires a corresponding action.
-	 *
-	 * @param array $post Duplicate of $_POST.
-	 */
-	private function check_recently_activated_modules( $post ) {
-		global $aioseop_options;
-		$modules	= array();
-		if ( array_key_exists( 'modules', $aioseop_options ) && array_key_exists( 'aiosp_feature_manager_options', $aioseop_options['modules'] ) ) {
-			$modules = array_keys( $aioseop_options['modules']['aiosp_feature_manager_options'] );
-		}
-
- 		if ( $modules ) {
-			foreach ( $modules as $module ) {
-				$name = str_replace( 'aiosp_feature_manager_enable_', '', $module );
-				if ( empty( $aioseop_options['modules']['aiosp_feature_manager_options'][ $module ] ) && ! empty( $post[ $module ] ) ) {
-					// this module was activated.
-					do_action( $this->prefix . 'activate_' . $name );
-				} else if ( ! empty( $aioseop_options['modules']['aiosp_feature_manager_options'][ $module ] ) && ! isset( $post[ $module ] ) ) {
-					// this module was deactivated. This action should be registered NOT in the specific module but elsewhere because that module is not going to be loaded.
-					do_action( $this->prefix . 'deactivate_' . $name );
 				}
 			}
 		}
@@ -5261,4 +5257,41 @@ EOF;
 		<?php
 	}
 
+	/**
+	 * Checks which module(s) have been (de)activated just now and fires a corresponding action.
+	 */
+	function check_recently_activated_modules() {
+		global $aioseop_options;
+		$options = get_option( 'aioseop_options' );
+		$modules_before = array();
+		$modules_now    = array();
+		if ( array_key_exists( 'modules', $aioseop_options ) && array_key_exists( 'aiosp_feature_manager_options', $aioseop_options['modules'] ) ) {
+			foreach ( $aioseop_options['modules']['aiosp_feature_manager_options'] as $module => $state ) {
+				if ( ! empty( $state ) ) {
+					$modules_before[] = $module;
+				}
+			}
+		}
+		if ( array_key_exists( 'modules', $options ) && array_key_exists( 'aiosp_feature_manager_options', $options['modules'] ) ) {
+			foreach ( $options['modules']['aiosp_feature_manager_options'] as $module => $state ) {
+				if ( ! empty( $state ) ) {
+					$modules_now[] = $module;
+				}
+			}
+		}
+
+		$action = 'deactivate';
+		$diff = array_diff( $modules_before, $modules_now );
+		if ( count( $modules_now ) > count( $modules_before ) ) {
+			$action = 'activate';
+			$diff = array_diff( $modules_now, $modules_before );
+		}
+
+		if ( $diff ) {
+			foreach ( $diff as $module ) {
+				$name = str_replace( 'aiosp_feature_manager_enable_', '', $module );
+				do_action( $this->prefix . $action . '_' . $name );
+			}
+		}
+	}
 }
