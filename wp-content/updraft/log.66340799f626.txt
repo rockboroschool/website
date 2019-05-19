@@ -98,3 +98,34 @@
 0001.464 (0) Dropbox: quota usage: used=37.8 MB, total=2048 MB, available=2010.2 MB
 0001.467 (0) Dropbox: Attempt to upload: backup_2019-05-12-1905_Rockboro_Primary_School_66340799f626-db.gz to: backup_2019-05-12-1905_Rockboro_Primary_School_66340799f626-db.gz
 0002.305 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAAFhBTetoKygScw, 145253, 1024 KB)
+0003.482 (0) Recording as successfully uploaded: backup_2019-05-12-1905_Rockboro_Primary_School_66340799f626-db.gz
+0003.489 (0) Deleting local file: backup_2019-05-12-1905_Rockboro_Primary_School_66340799f626-db.gz: OK
+0003.491 (0) Dropbox: File upload success (backup_2019-05-12-1905_Rockboro_Primary_School_66340799f626-db.gz): 141 KB in 2s (70 KB/s)
+0003.498 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0003.499 (0) Number of backup sets in history: 3; groups (db): 1
+0003.501 (0) Examining (for databases) backup set with group_id=0, nonce=66340799f626, datestamp=1557684323 (May 12 2019 18:05:23)
+0003.502 (0) This backup set is the backup set just made, so will not be deleted.
+0003.502 (0) Examining (for databases) backup set with group_id=0, nonce=70b918473be7, datestamp=1557079449 (May 05 2019 18:04:09)
+0003.502 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0003.503 (0) Examining (for databases) backup set with group_id=0, nonce=f567ab93cb14, datestamp=1556474698 (Apr 28 2019 18:04:58)
+0003.503 (0) 1556474698: db: this set includes a database (backup_2019-04-28-1904_Rockboro_Primary_School_f567ab93cb14-db.gz); db count is now 2
+0003.503 (0) 1556474698: db: over retain limit (2); will delete this database
+0003.503 (0) Delete file: backup_2019-04-28-1904_Rockboro_Primary_School_f567ab93cb14-db.gz, service=dropbox
+0003.505 (0) Dropbox: request deletion: backup_2019-04-28-1904_Rockboro_Primary_School_f567ab93cb14-db.gz
+0004.100 (0) Dropbox: delete succeeded
+0004.105 (0) This backup set is now empty; will remove from history
+0004.106 (0) Deleting log file (log.f567ab93cb14.txt)
+0004.107 (0) Number of backup sets in history: 2; groups (files): 1
+0004.110 (0) Examining (for files) backup set with nonce=66340799f626, datestamp=1557684323 (May 12 2019 18:05:23)
+0004.110 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0004.111 (0) Examining (for files) backup set with nonce=70b918473be7, datestamp=1557079449 (May 05 2019 18:04:09)
+0004.111 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0004.111 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0004.116 (0) Resume backup (66340799f626, 0): finish run
+0004.122 (0) Decremented the semaphore (fd) by 1
+0004.125 (0) Semaphore (fd) unlocked
+0004.126 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0004.133 (0) Fetching RSS news feed
+0004.421 (0) Fetched RSS news feed; result is a: SimplePie
+0004.451 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0004.524 (0) The backup apparently succeeded and is now complete
