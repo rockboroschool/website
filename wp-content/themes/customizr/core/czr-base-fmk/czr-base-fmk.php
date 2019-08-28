@@ -27,6 +27,8 @@ if ( ! class_exists( 'CZR_Fmk_Base_Construct' ) ) :
 
         public $czr_css_attr = array();
 
+        public $current_module_params_when_ajaxing;// store the params when ajaxing and allows us to access the currently requested module params at any point of the ajax action
+
         public static function czr_fmk_get_instance( $params ) {
             if ( ! isset( self::$instance ) && ! ( self::$instance instanceof CZR_Fmk_Base ) ) {
               self::$instance = new CZR_Fmk_Base( $params );
@@ -184,6 +186,8 @@ if ( ! class_exists( 'CZR_Fmk_Base_Load_Resources' ) ) :
 
             // adds specific js templates for the czr_module control
             add_action( 'customize_controls_print_footer_scripts', array( $this, 'ac_print_module_control_templates' ) , 1 );
+
+            add_action( 'customize_controls_print_footer_scripts', array( $this, 'ac_print_img_uploader_template' ) , 1 );
         }
 
 
@@ -351,6 +355,62 @@ if ( ! class_exists( 'CZR_Fmk_Base_Load_Resources' ) ) :
               </script>
             <?php
         }
+
+
+        // this template is used in setupImageUploaderSaveAsId and setupImageUploaderSaveAsUrl
+        // @see js CZRInputMths
+        function ac_print_img_uploader_template() {
+          ?>
+            <script type="text/html" id="tmpl-czr-img-uploader">
+              <?php // case when a regular attachement object is provided, fetched from an id with wp.media.attachment( id ) ?>
+                <# if ( ( data.attachment && data.attachment.id ) ) { #>
+                  <div class="attachment-media-view attachment-media-view-{{ data.attachment.type }} {{ data.attachment.orientation }}">
+                    <div class="thumbnail thumbnail-{{ data.attachment.type }}">
+                      <# if ( 'image' === data.attachment.type && data.attachment.sizes && data.attachment.sizes.medium ) { #>
+                        <img class="attachment-thumb" src="{{ data.attachment.sizes.medium.url }}" draggable="false" alt="" />
+                      <# } else if ( 'image' === data.attachment.type && data.attachment.sizes && data.attachment.sizes.full ) { #>
+                        <img class="attachment-thumb" src="{{ data.attachment.sizes.full.url }}" draggable="false" alt="" />
+                      <# } #>
+                    </div>
+                    <div class="actions">
+                      <# if ( data.canUpload ) { #>
+                      <button type="button" class="button remove-button">{{ data.button_labels.remove }}</button>
+                      <button type="button" class="button upload-button control-focus" id="{{ data.settings['default'] }}-button">{{ data.button_labels.change }}</button>
+                      <div style="clear:both"></div>
+                      <# } #>
+                    </div>
+                  </div>
+                <?php // case when an url is provided ?>
+                <# } else if ( ! _.isEmpty( data.fromUrl ) ) { #>
+                  <div class="attachment-media-view">
+                    <div class="thumbnail thumbnail-thumb">
+                        <img class="attachment-thumb" src="{{ data.fromUrl }}" draggable="false" alt="" />
+                    </div>
+                    <div class="actions">
+                      <# if ( data.canUpload ) { #>
+                      <button type="button" class="button remove-button">{{ data.button_labels.remove }}</button>
+                      <button type="button" class="button upload-button control-focus" id="{{ data.settings['default'] }}-button">{{ data.button_labels.change }}</button>
+                      <div style="clear:both"></div>
+                      <# } #>
+                    </div>
+                  </div>
+                <?php // case when neither attachement or url are provided => placeholder ?>
+                <# } else { #>
+                  <div class="attachment-media-view">
+                    <div class="placeholder">
+                      {{ data.button_labels.placeholder }}
+                    </div>
+                    <div class="actions">
+                      <# if ( data.canUpload ) { #>
+                      <button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button">{{ data.button_labels.select }}</button>
+                      <# } #>
+                      <div style="clear:both"></div>
+                    </div>
+                  </div>
+                <# } #>
+            </script>
+          <?php
+        }
     }//class
 endif;
 
@@ -402,7 +462,38 @@ if ( ! class_exists( 'CZR_Fmk_Base_Ajax_Filter' ) ) :
             }
             $tmpl = $_POST['tmpl'];
             $module_type = $_POST['module_type'];
+
+            ///////////////////////////////////////////////////////////////////////
+            // @param $tmpl = 'item-inputs'
+            //
+            // @param $_POST = {
+            // [tmpl] => item-inputs
+            // [module_type] => czr_heading_child
+            // [module_id] => __nimble__51b2f35191b3__main_settings_czr_module
+            // [cache] => true
+            // [nonce] => b4b0aea848
+            // [control_id] => __nimble__51b2f35191b3__main_settings
+            // [item_model] => Array
+            //     (
+            //         [id] => czr_heading_child_0
+            //         [title] =>
+            //         [heading_text] => This is a heading.
+            //         [heading_tag] => h1
+            //         [h_alignment_css] => Array
+            //             (
+            //                 [desktop] => center
+            //             )
+
+            //         [heading_title] =>
+            //         [link-to] =>
+            //         [link-custom-url] =>
+            //         [link-target] =>
+            //     )
+
+            // [action] => ac_get_template
+            // }
             $html = apply_filters( "ac_set_ajax_czr_tmpl___{$module_type}", '', $tmpl, $_POST );
+            ///////////////////////////////////////////////////////////////////////////
 
             if ( empty( $html ) ) {
                 wp_send_json_error( 'ac_set_ajax_czr_tmpl => module ' . $module_type . ' => template empty for requested tmpl : ' . $tmpl );
@@ -586,7 +677,10 @@ if ( ! class_exists( 'CZR_Fmk_Base_Tmpl_Builder' ) ) :
 
                 'scope' => 'local',// <= used when resetting the sections
                 // introduced for https://github.com/presscustomizr/nimble-builder/issues/403
-                'editor_params' => array()
+                'editor_params' => array(),
+
+                // introduced for https://github.com/presscustomizr/nimble-builder/issues/431
+                'section_collection' => array()
             );
             foreach( $tmpl_map as $input_id => $input_data ) {
                 if ( ! is_string( $input_id ) || empty( $input_id ) ) {
@@ -814,9 +908,17 @@ if ( ! class_exists( 'CZR_Fmk_Base_Tmpl_Builder' ) ) :
                           <#
                             var _checked = ( false != data['<?php echo $input_id; ?>'] ) ? "checked=checked" : '';
                           #>
+                          <?php
+                          // when input and label are tied by an id - for relationship
+                          // clicking on any of them changes the input
+                          // => We need a unique ID here so that input and label are tied by a unique link
+                          // @see https://www.w3.org/TR/html401/interact/forms.html#h-17.9.1
+                          // @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input/checkbox
+                          $unique_id = sprintf('%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535));
+                          ?>
                           <div class="nimblecheck-wrap">
-                            <input id="nimblecheck-<?php echo $input_id; ?>" data-czrtype="<?php echo $input_id; ?>" type="checkbox" {{ _checked }} class="nimblecheck-input">
-                            <label for="nimblecheck-<?php echo $input_id; ?>" class="nimblecheck-label">Switch</label>
+                            <input id="nimblecheck-<?php echo $unique_id; ?>" data-czrtype="<?php echo $input_id; ?>" type="checkbox" {{ _checked }} class="nimblecheck-input">
+                            <label for="nimblecheck-<?php echo $unique_id; ?>" class="nimblecheck-label">Switch</label>
                           </div>
                         <?php
                     break;
@@ -1454,6 +1556,9 @@ if ( ! class_exists( 'CZR_Fmk_Dyn_Module_Registration' ) ) :
             }
 
             $module_params = $registered_modules[ $module_type ];
+            // Store the params now, so we can access them when rendering the input templates
+            $this->current_module_params_when_ajaxing = $module_params;
+
             $tmpl_params = $module_params[ 'tmpl' ];
             // Enqueue the list of registered scripts
             if ( empty( $tmpl_params ) ) {

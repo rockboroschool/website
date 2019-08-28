@@ -1,5 +1,5 @@
 /*!
- * Customizr v4.1.35
+ * Customizr v4.1.43
  *
  * Licensed under the GNU General Public License v2 or later
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -254,7 +254,18 @@ body {
 .row:after {
   clear: both;
 }
-[class*="span"] {
+.span1,
+.span2,
+.span3,
+.span4,
+.span5,
+.span6,
+.span7,
+.span8,
+.span9,
+.span10,
+.span11,
+.span12 {
   float: left;
   min-height: 1px;
   margin-left: 20px;
@@ -7502,6 +7513,23 @@ footer ol {
   z-index: 1000;
   position: relative;
 }
+/* Add space before the first sidebar below content on mobile devices
+  fixes https://github.com/presscustomizr/customizr/issues/1767
+*/
+hr.tc-mobile-separator {
+  display: none;
+}
+@media (max-width: 767px) {
+  .tc-l-sidebar hr.tc-mobile-separator {
+    display: block;
+  }
+  .tc-r-sidebar hr.tc-mobile-separator {
+    display: block;
+  }
+  .tc-b-sidebar hr.tc-mobile-separator {
+    display: block;
+  }
+}
 /*********************************************************************************
 ************************** Responsive T. Bootstrap Grid **************************
 **********************************************************************************/
@@ -7586,7 +7614,18 @@ footer ol {
   .row:after {
     clear: both;
   }
-  [class*="span"] {
+  .span1,
+  .span2,
+  .span3,
+  .span4,
+  .span5,
+  .span6,
+  .span7,
+  .span8,
+  .span9,
+  .span10,
+  .span11,
+  .span12 {
     float: left;
     min-height: 1px;
     margin-left: 30px;
@@ -7937,7 +7976,18 @@ footer ol {
   .row:after {
     clear: both;
   }
-  [class*="span"] {
+  .span1,
+  .span2,
+  .span3,
+  .span4,
+  .span5,
+  .span6,
+  .span7,
+  .span8,
+  .span9,
+  .span10,
+  .span11,
+  .span12 {
     float: left;
     min-height: 1px;
     margin-left: 20px;

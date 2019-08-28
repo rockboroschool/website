@@ -2552,7 +2552,7 @@ template {
 }
 body {
   font-family: "Source Sans Pro", Arial, sans-serif;
-  line-height: 1.65;
+  line-height: 1.55;
   font-size: 0.9375em;
   color: #333;
 }
@@ -3190,7 +3190,7 @@ ul, ol {
 }
 
 ul li, ol li {
-  line-height: 1.875em;
+  line-height: 1.55em;
 }
 
 ul, ol {
@@ -3885,7 +3885,7 @@ embed, iframe, object, video {
 }
 
 .regular-nav .dropdown-menu .dropdown-menu {
-  top: 15px;
+  top: 0;
 }
 
 .dropdown-item {
@@ -3970,6 +3970,12 @@ embed, iframe, object, video {
   transition: all 0.25s ease-in-out;
   -webkit-transform: translate(0, -20px);
   transform: translate(0, -20px);
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+  .czr-submenu-fade .regular-nav .menu-item-has-children > ul {
+    transition: opacity 0.25s ease-in-out;
+  }
 }
 
 .czr-submenu-fade .regular-nav .menu-item-has-children:not(.show) {
@@ -4271,6 +4277,7 @@ li#wp-admin-bar-tc-customizr-help a {
   white-space: nowrap;
   max-width: 100%;
   height: auto;
+  color: #313131;
 }
 
 .navbar-brand img {
@@ -8061,6 +8068,17 @@ a.czr-format-link {
   height: 100%;
 }
 
+.czr__r-i .wp-video {
+  min-height: 100%;
+  width: 100% !important;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .grid-container__alternate .format-audio .audio-container:not(.soundcloud) iframe {
   height: 380px;
 }
@@ -8393,7 +8411,7 @@ a.czr-format-link {
 /* end regular headings */
 article .entry-content {
   font-size: 1.2em;
-  line-height: 1.65em;
+  line-height: 1.55em;
   color: #444;
 }
 
@@ -9562,6 +9580,14 @@ footer#footer .colophon__row .footer__credits a.fab {
 
 .woocommerce #content div.product .woocommerce-tabs ul.tabs li::before, .woocommerce #content div.product .woocommerce-tabs ul.tabs li::after {
   display: none;
+}
+
+@media (max-width: 767px) {
+  .woocommerce-cart-form .coupon button[type=submit] {
+    font-size: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }
 
 .woocommerce a.remove {

@@ -2,8 +2,8 @@
 Contributors: nikeo, d4z_c0nf
 Tags: one-column, two-columns, three-columns, left-sidebar, right-sidebar, buddypress, custom-menu, custom-colors, featured-images, full-width-template, theme-options, threaded-comments, translation-ready, sticky-post, post-formats, rtl-language-support, editor-style
 Requires at least: 4.6
-Tested up to: 5.1.0
-Stable tag: 4.1.35
+Tested up to: 5.2.2
+Stable tag: 4.1.43
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,10 +13,47 @@ Customizr is a simple and fast WordPress theme designed to help you attract and 
 Customizr is a simple and fast WordPress theme designed to help you attract and engage more visitors. Provides a perfect user experience on smartphones. Powers more than 100K active sites around the world. Hundreds of 5-stars reviews received on WordPress.org.
 
 == Upgrade Notice ==
-= 4.1.35 =
-Improved compatibility with Event Tickets plugins. Removed title attribute on logo and site title. New unififed style for the checkboxes in the customizer. New option to control the current menu item style. Fixed a few reported issues.
+= 4.1.43 =
+This new release fixes a bug impacting galleries, and brings minor various style improvements to the theme.
 
 == Changelog ==
+= 4.1.43 July 27th 2019 =
+* fixed : attachment page issue when building the gallery of siblings. fixes 1768
+* fixed : add space after content before the first sidebar on mobile fixes #1767
+* fixed : use consistent line-height accross html elements. fixes #1761
+* improved : better style for admin notices on mobiles
+
+= 4.1.42 June 30th 2019 =
+* fixed : fix dropdown menu on hover not opening in tablet iOS based. fixes #1757
+* fixed : WooCommerce compat reduce the font size of the "apply coupon" text. fixes #1754
+* fixed H1 tag wrapping site-title, leading to possible multiple H1 on singular pages. fixes #1760
+
+= 4.1.41 June 3rd 2019 =
+* fixed : minor font-size issue. for #1755
+* improved : replaced TGMPA class for plugin recommendation
+
+= 4.1.40 May 29th 2019 =
+* improved : deactivation of modular font-size for headings (Hx) by default for mobile devices. fixes #1746.
+
+= 4.1.39 May 14th 2019 =
+* fixed : reponsive wrapper "breaking" video post formats when using self-hosted or facebook video URLs we now handle only the responsiveness embeds which are iframes. fixes #1742
+* fixed : remove 'hentry' among the post classes. fixes #1726
+* fixed : added missing nimblecheck controls in the customizer. fixes #1752
+* improved : remove offset for 2nd level submenu in desktops. fixes #1748
+* improved : remove title attribute "Permalink To" on thumbnails links in post lists and featured pages
+* added : new wp_body_open theme Hook. fixes #1722
+
+= 4.1.38 April 24th 2019 =
+* improved : block editor style in order to only enlarge the editor. fixes #1728
+* fixed : smooth scroll throwing JS errors in latest chrome. fixes #1739
+* fixed : using the letters "span" in categories could make their containers inherit the CSS rules defined with [class*="span"]. fixes #1734
+
+= 4.1.37 April 9th, 2019 =
+* fixed : image of featured pages not displayed when customizing
+
+= 4.1.36 April 9th, 2019 =
+* fixed : a bug with the images of featured pages not displayed sometimes.
+
 = 4.1.35 April 5th, 2019 =
 * fixed : make sure we catch the post_type_archive case when displaying the archive titles. fixes #1715
 * fixed : remove title attribute on logo and site title + add aria-label attribute. fixes #1719
