@@ -158,6 +158,7 @@ class SEED_CSP4_ADMIN
         wp_enqueue_script('wp-lists');
         wp_enqueue_script('seed_csp4-framework-js', SEED_CSP4_PLUGIN_URL . 'framework/settings-scripts.js', array( 'jquery' ), $this->plugin_version);
         wp_enqueue_script('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/jquery.magnific-popup.min.js', array( 'jquery' ), $this->plugin_version);
+        wp_enqueue_script('seed_csp4-tingle', SEED_CSP4_PLUGIN_URL . 'public/vendor/tingle/tingle.min.js', array(), $this->plugin_version);
         wp_enqueue_script('theme-preview');
         wp_enqueue_style('thickbox');
         wp_enqueue_style('media-upload');
@@ -166,6 +167,7 @@ class SEED_CSP4_ADMIN
         wp_enqueue_style('font-awesome-solid', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/solid.min.css', false, $this->plugin_version, false, $this->plugin_version);
         wp_enqueue_style('font-awesome', SEED_CSP4_PLUGIN_URL . 'public/vendor/fontawesome/css/fontawesome.min.css', false, $this->plugin_version, false, $this->plugin_version);
         wp_enqueue_style('seed_csp4-magnific-popup-js', SEED_CSP4_PLUGIN_URL . 'public/vendor/magnific-popup/magnific-popup.css', false, $this->plugin_version, false, $this->plugin_version);
+        wp_enqueue_style('seed_csp4-tingle-css', SEED_CSP4_PLUGIN_URL . 'public/vendor/tingle/tingle.min.css', false, $this->plugin_version, false, $this->plugin_version);
     }
 
     /**
@@ -213,6 +215,8 @@ class SEED_CSP4_ADMIN
             'seed_csp4_stockimages',
             array( &$this , 'stockimages_page' )
         );
+
+
             
         add_submenu_page(
                 'seed_csp4',
@@ -222,6 +226,18 @@ class SEED_CSP4_ADMIN
                 'seed_csp4_subscribers',
                 array( &$this , 'subscribers_page' )
                 );
+
+        $plugins = seed_csp4_plugins_active();
+        if($plugins['rafflepress-pro'] == 'Not Installed'){
+                add_submenu_page(
+                    'seed_csp4',
+                    __("Giveaways", 'coming-soon'),
+                    __("Giveaways", 'coming-soon'),
+                    'manage_options',
+                    'seed_csp4_giveaways',
+                    array( &$this , 'giveaways_page' )
+                );
+        }
         
         add_submenu_page(
             'seed_csp4',
@@ -241,6 +257,11 @@ class SEED_CSP4_ADMIN
     public function stockimages_page()
     {
         include SEED_CSP4_PLUGIN_PATH.'resources/views/stockimages.php';
+    }
+
+    public function giveaways_page()
+    {
+        include SEED_CSP4_PLUGIN_PATH.'resources/views/giveaways.php';
     }
 
     public function subscribers_page()
@@ -859,4 +880,48 @@ function seed_csp4_set_user_settings()
         update_user_option($user_id, 'user-settings', http_build_query($user_settings), false);
         update_user_option($user_id, 'user-settings-time', time(), false);
     }
+}
+
+
+function seed_csp4_plugins_active(){
+// check if plugin is installed
+$am_plugins = array(
+    'rafflepress/rafflepress.php' => 'rafflepress' ,
+    'rafflepress-pro/rafflepress-pro.php' => 'rafflepress-pro' ,
+);
+$all_plugins = get_plugins();
+
+$response = array();
+
+foreach ($am_plugins as $slug => $label) {
+    if (array_key_exists($slug, $all_plugins)) {
+        if (is_plugin_active($slug)) {
+            $response[$label] = 'Active';
+        } else {
+            $response[$label] = 'Inactive';
+        }
+    } else {
+        $response[$label]= 'Not Installed';
+    }
+}
+return $response;
+}
+
+
+function seed_csp4_disable_admin_notices()
+{
+    global $wp_filter;
+    if (is_user_admin()) {
+        if (isset($wp_filter['user_admin_notices'])) {
+            unset($wp_filter['user_admin_notices']);
+        }
+    } elseif (isset($wp_filter['admin_notices'])) {
+        unset($wp_filter['admin_notices']);
+    }
+    if (isset($wp_filter['all_admin_notices'])) {
+        unset($wp_filter['all_admin_notices']);
+    }
+}
+if (!empty($_GET['page']) && strpos($_GET['page'], 'seed_csp4') !==  false) {
+    add_action('admin_print_scripts', 'seed_csp4_disable_admin_notices');
 }

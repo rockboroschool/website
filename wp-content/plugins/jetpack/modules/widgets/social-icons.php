@@ -311,7 +311,7 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 				<p class="jetpack-widget-social-icons-url">
 					<?php
 						printf(
-							'<input class="widefat id="%1$s" name="%2$s[]" type="text" placeholder="%3$s" value="%4$s"/>',
+							'<input class="widefat" id="%1$s" name="%2$s[]" type="text" placeholder="%3$s" value="%4$s"/>',
 							esc_attr( $args['url-icon-id'] ),
 							esc_attr( $args['url-icon-name'] ),
 							esc_attr__( 'Account URL', 'jetpack' ),
@@ -364,7 +364,7 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 		$aria_hidden = ' aria-hidden="true"';
 
 		// Begin SVG markup.
-		$svg = '<svg class="icon icon-' . esc_attr( $args['icon'] ) . '"' . $aria_hidden . ' role="img">';
+		$svg = '<svg class="icon icon-' . esc_attr( $args['icon'] ) . '"' . $aria_hidden . ' role="presentation">';
 
 		/*
 		 * Display the icon.
@@ -528,16 +528,6 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 				'label' => 'Goodreads',
 			),
 			array(
-				'url'   => 'google.com/+',
-				'icon'  => 'google-plus',
-				'label' => 'Google +',
-			),
-			array(
-				'url'   => 'plus.google.com',
-				'icon'  => 'google-plus',
-				'label' => 'Google +',
-			),
-			array(
 				'url'   => 'google.com',
 				'icon'  => 'google',
 				'label' => 'Google',
@@ -616,6 +606,11 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 				'url'   => 'spotify.com',
 				'icon'  => 'spotify',
 				'label' => 'Spotify',
+			),
+			array(
+				'url'   => 'stackoverflow.com',
+				'icon'  => 'stackoverflow',
+				'label' => 'Stack Overflow',
 			),
 			array(
 				'url'   => 'stumbleupon.com',

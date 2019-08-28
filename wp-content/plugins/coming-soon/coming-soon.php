@@ -3,7 +3,7 @@
  * Plugin Name:       Coming Soon Page & Maintenance Mode by SeedProd
  * Plugin URI:        http://www.seedprod.com
  * Description:       The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPress.
- * Version:           5.0.25
+ * Version:           5.0.26
  * Author:            SeedProd
  * Author URI:        http://www.seedprod.com
  * Text Domain:       coming-soon
@@ -20,7 +20,7 @@ define('SEED_CSP4_SHORTNAME', 'seed_csp4'); // Used to reference namespace funct
 define('SEED_CSP4_SLUG', 'coming-soon/coming-soon.php'); // Used for settings link.
 define('SEED_CSP4_TEXTDOMAIN', 'coming-soon'); // Your textdomain
 define('SEED_CSP4_PLUGIN_NAME', __('Coming Soon Page & Maintenance Mode by SeedProd', 'coming-soon')); // Plugin Name shows up on the admin settings screen.
-define('SEED_CSP4_VERSION', '5.0.25'); // Plugin Version Number. Recommend you use Semantic Versioning http://semver.org/
+define('SEED_CSP4_VERSION', '5.0.26'); // Plugin Version Number. Recommend you use Semantic Versioning http://semver.org/
 define('SEED_CSP4_PLUGIN_PATH', plugin_dir_path(__FILE__)); // Example output: /Applications/MAMP/htdocs/wordpress/wp-content/plugins/seed_csp4/
 define('SEED_CSP4_PLUGIN_URL', plugin_dir_url(__FILE__)); // Example output: http://localhost:8888/wordpress/wp-content/plugins/seed_csp4/
 define('SEED_CSP4_TABLENAME', 'seed_csp4_subscribers');
