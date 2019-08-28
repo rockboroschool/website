@@ -2,26 +2,40 @@
 /**
  * The Performance class.
  *
- * @package All-in-One-SEO-Pack
+ * @package All_in_One_SEO_Pack
+ * @since ?
  */
 
 if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 
+	/**
+	 * Class All_in_One_SEO_Pack_Performance
+	 *
+	 * @since ?
+	 */
 	class All_in_One_SEO_Pack_Performance extends All_in_One_SEO_Pack_Module {
 
+		/**
+		 * Module Info
+		 *
+		 * @since ?
+		 *
+		 * @var array $module_info
+		 */
 		protected $module_info = array();
 
+		/**
+		 * All_in_One_SEO_Pack_Performance constructor.
+		 *
+		 * @since ?
+		 *
+		 * @param $mod
+		 */
 		function __construct( $mod ) {
 			$this->name   = __( 'Performance', 'all-in-one-seo-pack' );        // Human-readable name of the plugin.
 			$this->prefix = 'aiosp_performance_';                        // Option prefix.
 			$this->file   = __FILE__;                                    // The current file.
 			parent::__construct();
-
-			$this->help_text = array(
-				'memory_limit'   => __( 'This setting allows you to raise your PHP memory limit to a reasonable value. Note: WordPress core and other WordPress plugins may also change the value of the memory limit.', 'all-in-one-seo-pack' ),
-				'execution_time' => __( 'This setting allows you to raise your PHP execution time to a reasonable value.', 'all-in-one-seo-pack' ),
-				'force_rewrites' => __( 'Use output buffering to ensure that the title gets rewritten. Enable this option if you run into issues with the title tag being set by your theme or another plugin.', 'all-in-one-seo-pack' ),
-			);
 
 			$this->default_options = array(
 				'memory_limit'   => array(
@@ -51,24 +65,16 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 				),
 			);
 
-			$this->help_anchors = array(
-				'memory_limit'   => '#raise-memory-limit',
-				'execution_time' => '#raise-execution-time',
-				'force_rewrites' => '#force-rewrites',
-			);
-
 			global $aiosp, $aioseop_options;
-			if ( aioseop_option_isset( 'aiosp_rewrite_titles' ) && $aioseop_options['aiosp_rewrite_titles'] ) {
-				$this->default_options['force_rewrites'] = array(
-					'name'            => __( 'Force Rewrites:', 'all-in-one-seo-pack' ),
-					'default'         => 1,
-					'type'            => 'radio',
-					'initial_options' => array(
-						1 => __( 'Enabled', 'all-in-one-seo-pack' ),
-						0 => __( 'Disabled', 'all-in-one-seo-pack' ),
-					),
-				);
-			}
+			$this->default_options['force_rewrites'] = array(
+				'name'            => __( 'Force Rewrites:', 'all-in-one-seo-pack' ),
+				'default'         => 1,
+				'type'            => 'radio',
+				'initial_options' => array(
+					1 => __( 'Enabled', 'all-in-one-seo-pack' ),
+					0 => __( 'Disabled', 'all-in-one-seo-pack' ),
+				),
+			);
 
 			$this->layout = array(
 				'default' => array(
@@ -79,8 +85,18 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			);
 
 			$system_status = array(
-				'status' => array( 'default' => '', 'type' => 'html', 'label' => 'none', 'save' => false ),
-				'send_email' => array( 'default' => '', 'type' => 'html', 'label' => 'none', 'save' => false ),
+				'status'     => array(
+					'default' => '',
+					'type'    => 'html',
+					'label'   => 'none',
+					'save'    => false,
+				),
+				'send_email' => array(
+					'default' => '',
+					'type'    => 'html',
+					'label'   => 'none',
+					'save'    => false,
+				),
 			);
 
 			$this->layout['system_status'] = array(
@@ -91,13 +107,20 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 
 			$this->default_options = array_merge( $this->default_options, $system_status );
 
-			$this->add_help_text_links();
-
 			add_filter( $this->prefix . 'display_options', array( $this, 'display_options_filter' ), 10, 2 );
 			add_filter( $this->prefix . 'update_options', array( $this, 'update_options_filter' ), 10, 2 );
 			add_action( $this->prefix . 'settings_update', array( $this, 'settings_update_action' ), 10, 2 );
 		}
 
+		/**
+		 * Update Options Filter
+		 *
+		 * @since ?
+		 *
+		 * @param $options
+		 * @param $location
+		 * @return mixed
+		 */
 		function update_options_filter( $options, $location ) {
 			if ( $location == null && isset( $options[ $this->prefix . 'force_rewrites' ] ) ) {
 				unset( $options[ $this->prefix . 'force_rewrites' ] );
@@ -106,19 +129,33 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			return $options;
 		}
 
+		/**
+		 * Display Options Filter
+		 *
+		 * @since ?
+		 *
+		 * @param $options
+		 * @param $location
+		 * @return mixed
+		 */
 		function display_options_filter( $options, $location ) {
 			if ( $location == null ) {
 				$options[ $this->prefix . 'force_rewrites' ] = 1;
 				global $aiosp;
-				if ( aioseop_option_isset( 'aiosp_rewrite_titles' ) ) {
-					$opts                                        = $aiosp->get_current_options( array(), null );
-					$options[ $this->prefix . 'force_rewrites' ] = $opts['aiosp_force_rewrites'];
-				}
+				$opts                                        = $aiosp->get_current_options( array(), null );
+				$options[ $this->prefix . 'force_rewrites' ] = $opts['aiosp_force_rewrites'];
 			}
-
 			return $options;
 		}
 
+		/**
+		 * Settings Update Action
+		 *
+		 * @since ?
+		 *
+		 * @param $options
+		 * @param $location
+		 */
 		function settings_update_action( $options, $location ) {
 			if ( $location == null && isset( $_POST[ $this->prefix . 'force_rewrites' ] ) ) {
 				$force_rewrites = $_POST[ $this->prefix . 'force_rewrites' ];
@@ -132,6 +169,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			}
 		}
 
+		/**
+		 * Add Page Hooks
+		 *
+		 * @since ?
+		 */
 		function add_page_hooks() {
 			$memory_usage = memory_get_peak_usage() / 1024 / 1024;
 			if ( $memory_usage > 32 ) {
@@ -150,15 +192,34 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			parent::add_page_hooks();
 		}
 
+		/**
+		 * Settings Page Initialization
+		 *
+		 * @since ?
+		 */
 		function settings_page_init() {
 			$this->default_options['status']['default'] = $this->get_serverinfo();
 			$this->default_options['send_email']['default'] = $this->get_email_input();
 		}
 
+		/**
+		 * Menu Order
+		 *
+		 * @since ?
+		 *
+		 * @return int
+		 */
 		function menu_order() {
 			return 7;
 		}
 
+		/**
+		 * Get Server Info
+		 *
+		 * @since ?
+		 *
+		 * @return mixed|string|void
+		 */
 		function get_serverinfo() {
 			global $wpdb;
 			global $wp_version;
@@ -239,13 +300,14 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			$blog_public    = get_option( 'blog_public' );
 			$perm_struct    = get_option( 'permalink_structure' );
 
-			$debug_info                   = array(
+			// TODO Change array keys to NOT be translations. Try to use a separate array for translations.
+			$debug_info = array(
 				__( 'Operating System', 'all-in-one-seo-pack' ) => PHP_OS,
-				__( 'Server', 'all-in-one-seo-pack' )                      => $_SERVER['SERVER_SOFTWARE'],
+				__( 'Server', 'all-in-one-seo-pack' )      => $_SERVER['SERVER_SOFTWARE'],
 				__( 'Memory usage', 'all-in-one-seo-pack' ) => $memory_usage,
 				__( 'MYSQL Version', 'all-in-one-seo-pack' ) => $sqlversion,
-				__( 'SQL Mode', 'all-in-one-seo-pack' )                    => $sql_mode,
-				__( 'PHP Version', 'all-in-one-seo-pack' )                 => PHP_VERSION,
+				__( 'SQL Mode', 'all-in-one-seo-pack' )    => $sql_mode,
+				__( 'PHP Version', 'all-in-one-seo-pack' ) => PHP_VERSION,
 				__( 'PHP Allow URL fopen', 'all-in-one-seo-pack' ) => $allow_url_fopen,
 				__( 'PHP Memory Limit', 'all-in-one-seo-pack' ) => $memory_limit,
 				__( 'PHP Max Upload Size', 'all-in-one-seo-pack' ) => $upload_max,
@@ -254,19 +316,19 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 				__( 'PHP Exif support', 'all-in-one-seo-pack' ) => $exif,
 				__( 'PHP IPTC support', 'all-in-one-seo-pack' ) => $iptc,
 				__( 'PHP XML support', 'all-in-one-seo-pack' ) => $xml,
-				__( 'Site URL', 'all-in-one-seo-pack' )                    => $siteurl,
-				__( 'Home URL', 'all-in-one-seo-pack' )                    => $homeurl,
+				__( 'Site URL', 'all-in-one-seo-pack' )    => $siteurl,
+				__( 'Home URL', 'all-in-one-seo-pack' )    => $homeurl,
 				__( 'WordPress Version', 'all-in-one-seo-pack' ) => $wp_version,
 				__( 'WordPress DB Version', 'all-in-one-seo-pack' ) => $db_version,
-				__( 'Multisite', 'all-in-one-seo-pack' )                   => $ms,
+				__( 'Multisite', 'all-in-one-seo-pack' )   => $ms,
 				__( 'Active Theme', 'all-in-one-seo-pack' ) => $theme['Name'] . ' ' . $theme['Version'],
-				__( 'Site Title', 'all-in-one-seo-pack' )                  => $site_title,
+				__( 'Site Title', 'all-in-one-seo-pack' )  => $site_title,
 				__( 'Site Language', 'all-in-one-seo-pack' ) => $language,
 				__( 'Front Page Displays', 'all-in-one-seo-pack' ) => $front_displays === 'page' ? $front_displays . ' [ID = ' . $page_on_front . ']' : $front_displays,
 				__( 'Search Engine Visibility', 'all-in-one-seo-pack' ) => $blog_public,
 				__( 'Permalink Setting', 'all-in-one-seo-pack' ) => $perm_struct,
 			);
-			$debug_info['Active Plugins'] = null;
+			$debug_info[ __( 'Active Plugins', 'all-in-one-seo-pack' ) ] = null;
 			$active_plugins               = $inactive_plugins = array();
 			$plugins                      = get_plugins();
 			foreach ( $plugins as $path => $plugin ) {
@@ -276,10 +338,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 					$inactive_plugins[ $plugin['Name'] ] = $plugin['Version'];
 				}
 			}
-			$debug_info['Inactive Plugins'] = null;
+			$debug_info[ __( 'Inactive Plugins', 'all-in-one-seo-pack' ) ] = null;
 			$debug_info                     = array_merge( $debug_info, (array) $inactive_plugins );
 
-			$mail_text = __( 'All in One SEO Pack Pro Debug Info', 'all-in-one-seo-pack' ) . "\r\n------------------\r\n\r\n";
+			/* translators: %s is a placeholder, which means that it should not be translated. It will be replaced with the name of the premium version of the plugin, All in One SEO Pack Pro. */
+			$mail_text = sprintf( __( '%s Debug Info', 'all-in-one-seo-pack' ), 'All in One SEO Pack Pro' ) . "\r\n------------------\r\n\r\n";
 			$page_text = '';
 			if ( ! empty( $debug_info ) ) {
 				foreach ( $debug_info as $name => $value ) {
@@ -315,11 +378,13 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 								if ( $file_handle = @fopen( $file_path, 'w' ) ) {
 								// @codingStandardsIgnoreEnd
 									global $aiosp;
-									$buf = '; ' . __(
-										'Settings export file for All in One SEO Pack', 'all-in-one-seo-pack'
+									$buf = '; ' . sprintf(
+										/* translators: %s is a placeholder, which means that it should not be translated. It will be replaced with the name of the plugin, All in One SEO Pack. */
+										__( 'Settings export file for %s', 'all-in-one-seo-pack' ),
+										AIOSEOP_PLUGIN_NAME
 									) . "\n";
 
-									// Adds all settings and posts data to settings file
+									// Adds all settings and posts data to settings file.
 									add_filter( 'aioseop_export_settings_exporter_post_types', array( $this, 'get_exporter_post_types' ) );
 									add_filter( 'aioseop_export_settings_exporter_choices', array( $this, 'get_exporter_choices' ) );
 
@@ -347,17 +412,40 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			return $buf;
 		}
 
+		/**
+		 * Get Email Input
+		 *
+		 * @since ?
+		 *
+		 * @return string
+		 */
 		function get_email_input() {
 			$nonce = wp_create_nonce( 'sfwd-debug-nonce' );
-			$buf   = '<input name="sfwd_debug_send_email" type="text" value="" placeholder="' . __( 'E-mail debug information', 'all-in-one-seo-pack' ) . '"><input name="sfwd_debug_nonce" type="hidden" value="' .
-					 $nonce . '"><input name="sfwd_debug_submit" type="submit" value="' . __( 'Submit', 'all-in-one-seo-pack' ) . '" class="button-primary">';
+			$buf   =
+				'<input name="sfwd_debug_send_email" type="text" value="" placeholder="' . __( 'E-mail debug information', 'all-in-one-seo-pack' ) . '" aria-label="' . __( 'Enter the email address provided by Semper Plugins Support to send your debug information', 'all-in-one-seo-pack' ) . '">' .
+				'<input name="sfwd_debug_nonce" type="hidden" value="' . $nonce . '">' .
+				'<input name="sfwd_debug_submit" type="submit" value="' . __( 'Submit', 'all-in-one-seo-pack' ) . '" class="button-primary">';
 			return $buf;
 		}
 
+		/**
+		 * Get Exporter Choices
+		 *
+		 * @since 2.3.13
+		 *
+		 * @return array
+		 */
 		function get_exporter_choices() {
 			return array( 1, 2 );
 		}
 
+		/**
+		 * Get Exporter Post Types
+		 *
+		 * @since 2.3.13
+		 *
+		 * @return array
+		 */
 		function get_exporter_post_types() {
 			$post_types = $this->get_post_type_titles();
 			$rempost    = array(
