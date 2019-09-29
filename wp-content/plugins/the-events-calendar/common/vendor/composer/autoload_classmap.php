@@ -118,6 +118,8 @@ return array(
     'Tribe\\Log\\Canonical_Formatter' => $baseDir . '/src/Tribe/Log/Canonical_Formatter.php',
     'Tribe\\Log\\Monolog_Logger' => $baseDir . '/src/Tribe/Log/Monolog_Logger.php',
     'Tribe\\Log\\Service_Provider' => $baseDir . '/src/Tribe/Log/Service_Provider.php',
+    'Tribe\\Models\\Post_Types\\Base' => $baseDir . '/src/Tribe/Models/Post_Types/Base.php',
+    'Tribe\\Models\\Post_Types\\Nothing' => $baseDir . '/src/Tribe/Models/Post_Types/Nothing.php',
     'Tribe\\PUE\\Update_Prevention' => $baseDir . '/src/Tribe/PUE/Update_Prevention.php',
     'Tribe\\Service_Providers\\PUE' => $baseDir . '/src/Tribe/Service_Providers/PUE.php',
     'Tribe\\Traits\\Cache_User' => $baseDir . '/src/Tribe/Traits/Cache_User.php',

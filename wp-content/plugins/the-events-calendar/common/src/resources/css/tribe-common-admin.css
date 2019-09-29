@@ -45,12 +45,10 @@ textarea::-webkit-input-placeholder {
 	color: #999;
 }
 .bubble {
-	-khtml-border-radius: 3px;
 	background-color: #f9f9f9;
 	border-color: #dfdfdf;
-border-radius: 3px;
+	border-radius: 3px;
 	border-spacing: 0;
-	border-style: solid;
 	border-style: solid;
 	border-width: 1px;
 	padding: 10px;
@@ -77,14 +75,14 @@ td.tribe_message {
 #tribe-upgrade {
 	background: #f6f6f6;
 	border: 1px solid #ccc;
-border-radius: 5px;
+	border-radius: 5px;
 	margin: 20px 0 30px;
 	padding: 0 20px 20px;
 }
 #tribe-upgrade .message {
 	background-color: #ffffe0;
 	border-color: #e6db55;
-border-radius: 3px;
+	border-radius: 3px;
 	border-style: solid;
 	border-width: 1px;
 	padding: 6px 12px;
@@ -92,22 +90,22 @@ border-radius: 3px;
 /* = Plugin Screen
 =============================================*/
 table.plugins .tribe-plugin-update-message {
-		background: #D54E21; /* taken from colour scheme in list-tables.css */
-		color:      white;
-		display:    inline-table;
-		margin:     6px 0;
-		padding:    10px 12px;
+		background: #d54e21; /* taken from color scheme in list-tables.css */
+		color: white;
+		display: inline-table;
+		margin: 6px 0;
+		padding: 10px 12px;
 	}
 table.plugins .tribe-plugin-update-message h4 {
-			display:      inline;
-			font-weight:  bold;
+			display: inline;
+			font-weight: bold;
 			margin-right: 8px;
 		}
 table.plugins .tribe-plugin-update-message h4:after {
 				content: ' \00BB ';
 			}
 table.plugins .tribe-plugin-update-message a {
-			color:           white;
+			color: white;
 			text-decoration: underline;
 		}
 /* = Settings Screen
@@ -161,10 +159,14 @@ table.plugins .tribe-plugin-update-message a {
 .tribe-settings-form .tribe-settings-form-wrap fieldset .tribe-style-selection {
 				margin-bottom: 18px;
 			}
+.tribe-settings-form .tribe-settings-form-wrap #tribe-field-stylesheetOption .description {
+				color: #999;
+				margin-left: 1px;
+			}
 .tribe-settings-form .tribe-settings-form-wrap h3 {
-			 background-color: #f9f9f9;
-			 margin-bottom: 10px;
-			 padding: 6px 0 6px 12px;
+			background-color: #f9f9f9;
+			margin-bottom: 10px;
+			padding: 6px 0 6px 12px;
 		}
 .tribe-settings-form .tribe-settings-form-wrap .tribe-sysinfo-optin-msg,
 		.tribe-settings-form .tribe-settings-form-wrap .system-info,
@@ -172,9 +174,6 @@ table.plugins .tribe-plugin-update-message a {
 		.tribe-settings-form .tribe-settings-form-wrap .contained {
 			margin: 0 0 10px;
 			padding-left: 12px;
-		}
-.tribe-settings-form #tribe-field-stylesheetOption p.description {
-			color: #999;
 		}
 .tribe_settings .tribe-field-indent {
 		margin-left: 245px;
@@ -201,10 +200,9 @@ table.plugins .tribe-plugin-update-message a {
 	}
 /* Modern Tribe box */
 #modern-tribe-info {
-	-khtml-border-radius: 4px;
 	background-color: #f9f9f9;
 	border: 1px solid #ccc;
-border-radius: 4px;
+	border-radius: 4px;
 	margin: 20px 0;
 	padding: 8px 20px 12px;
 }
@@ -333,20 +331,18 @@ border-radius: 4px;
 }
 /* miscellaneous */
 .tribe-admin-box-left {
-	-khtml-border-radius: 4px;
 	background-color: #f9f9f9;
 	border: 1px solid #ccc;
-border-radius: 4px;
+	border-radius: 4px;
 	float: left;
 	margin: 20px 0;
 	padding: 0 20px 15px;
 	width: 20%;
 }
 .tribe-admin-box-right {
-	-khtml-border-radius: 4px;
 	background-color: #f9f9f9;
 	border: 1px solid #ccc;
-border-radius: 4px;
+	border-radius: 4px;
 	float: right;
 	margin: 20px 0;
 	padding: 0 20px 15px;
@@ -440,10 +436,9 @@ border-radius: 4px;
 	padding-bottom: 10px;
 }
 .tribe-section-type-box {
-	-khtml-border-radius: 4px;
 	background-color: #f9f9f9;
 	border: 1px solid #ccc;
-border-radius: 4px;
+	border-radius: 4px;
 	padding: 8px 20px 12px;
 }
 .tribe-section-type-box img {
@@ -500,11 +495,11 @@ border-radius: 4px;
 	padding-left: 10px;
 }
 .system-info-copy .system-info-copy-btn {
-	padding: 6px;
-  }
-.system-info-copy .system-info-copy-btn .dashicons {
-	  padding-right: 10px;
+		padding: 6px;
 	}
+.system-info-copy .system-info-copy-btn .dashicons {
+			padding-right: 10px;
+		}
 .template-updates-wrapper p {
 	margin-top: 0;
 }
@@ -571,8 +566,7 @@ border-radius: 4px;
 }
 .ui-widget-shadow {
 	background: #000;
-	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
+	border-radius: 5px;
 	filter: Alpha(Opacity=20);
 	margin: -5px 0 0 -5px;
 	opacity: .20;
@@ -733,7 +727,6 @@ border-radius: 4px;
 	position: absolute;
 	top: 0;
 	transition: all 1s linear;
-	webkit-transition: all 1s linear;
 	width: 100%;
 	z-index: 4;
 }
@@ -763,7 +756,7 @@ border-radius: 4px;
 .tribe_welcome_page.wrap h1:before {
 			color: #555d66;
 			content: '\f145';
-			font-family: 'dashicons';
+			font-family: dashicons;
 			font-size: 0.9em;
 			line-height: 1;
 			margin-right: 5px;
@@ -835,7 +828,7 @@ p.tribe-welcome-message {
 .tribe_welcome_page .tribe-half-column h4:before {
 		color: #555d66;
 		content: '\f145';
-		font-family: 'dashicons';
+		font-family: dashicons;
 		font-size: 21px;
 		line-height: 1;
 		margin-right: 10px;
@@ -860,7 +853,7 @@ p.tribe-welcome-message {
 		}
 .tribe_update_page h4:before {
 	content: '\f145';
-	font-family: 'dashicons';
+	font-family: dashicons;
 	font-size: 34px;
 	line-height: 1;
 	margin-right: 5px;
@@ -1170,7 +1163,6 @@ Red button styles.
 Credit to https://github.com/jensjns/wp-admin-red-button
 =============================================*/
 .wp-core-ui .button-red {
-	-webkit-box-shadow: inset 0 1px 0 rgba(120,200,230,0.5);
 	background-color: #a00;
 	border-bottom-color: #8D1F21;
 	border-color: #9B2124;
@@ -1183,7 +1175,6 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 .wp-core-ui .button-red:hover,
 .wp-core-ui .button-red.focus,
 .wp-core-ui .button-red:focus {
-	-webkit-box-shadow: inset 0 1px 0 rgba(120,200,230,0.6);
 	background-color: #a00;
 	border-color: #7F1C1F;
 	box-shadow: inset 0 1px 0 rgba(120,200,230,0.6);
@@ -1192,7 +1183,6 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 }
 .wp-core-ui .button-red.focus,
 .wp-core-ui .button-red:focus {
-	-webkit-box-shadow: inset 0 1px 0 rgba(120,200,230,0.6), 1px 1px 2px rgba(0,0,0,0.4);
 	border-color: #500F0E;
 	box-shadow: inset 0 1px 0 rgba(120,200,230,0.6), 1px 1px 2px rgba(0,0,0,0.4);
 }
@@ -1200,7 +1190,6 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 .wp-core-ui .button-red.active:hover,
 .wp-core-ui .button-red.active:focus,
 .wp-core-ui .button-red:active {
-	-webkit-box-shadow: inset 0 1px 0 rgba(0,0,0,0.1);
 	background: #7F1C1F;
 	border-color: #601312 #AE2426 #AE2426 #AE2426;
 	box-shadow: inset 0 1px 0 rgba(0,0,0,0.1);
@@ -1213,7 +1202,7 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 	color: #E79496 !important;
 	background: #BA292B !important;
 	border-color: #7F1C1F !important;
-	box-shadow:         none !important;
+	box-shadow: none !important;
 	text-shadow: 0 -1px 0 rgba(0,0,0,0.1) !important;
 	cursor: default;
 }
@@ -1261,14 +1250,20 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 .checkmark.no-checkmark:after {
 		display: none;
 	}
-.complete, .ok, .yes, .on,
+.complete,
+.ok,
+.yes,
+.on,
 [data-status="complete"],
 [data-status="ok"],
 [data-status="yes"],
 [data-status="on"] {
 	color: #0AB152;
 }
-.incomplete, .ko, .no, .off,
+.incomplete,
+.ko,
+.no,
+.off,
 [data-status="incomplete"],
 [data-status="ko"],
 [data-status="no"],
@@ -1312,11 +1307,13 @@ Credit to https://github.com/jensjns/wp-admin-red-button
 	}
 @media
 only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+
 	#tribe-loading span {
 		background-image: url(../images/tribe-loading@2x.gif);
 	}
 }
 @media screen and (max-width: 782px) {
+
 	.tribe-half-column,
 	.tribe-row .tribe-half-column:last-child {
 		margin: 0 0 20px 0;
@@ -1328,6 +1325,7 @@ only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device
 	}
 }
 @media screen and ( max-width: 782px ) {
+
 	.events-cal .subsubsub {
 		float: none;
 	}
