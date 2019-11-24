@@ -1026,6 +1026,14 @@
 				background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='12' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.084 2.159L2 .243l9.9 9.9L2 20.041.084 18.126l7.983-7.984z' fill='%23D5D5D5'/%3E%3C/svg%3E");
 			}
 
+/* Promo */
+
+/* -----------------------------------------------------------------------------
+ *
+ * Promo
+ *
+ * ----------------------------------------------------------------------------- */
+
 /* Read More */
 
 /* -----------------------------------------------------------------------------
@@ -1401,6 +1409,10 @@
 				width: 3px;
 			}
 
+.tribe-events .tribe-events-calendar-list__event-venue {
+		font-style: normal;
+	}
+
 .tribe-events .tribe-events-calendar-list__event-date-tag-weekday {
 		color: #141827;
 		font-family: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
@@ -1699,6 +1711,14 @@
 				color: rgba(20,24,39, 0.9);
 			}
 
+/* -------------------------------------------------------------------------
+	 * Theme Overrides - Twenty Twenty
+	 * ------------------------------------------------------------------------- */
+
+.tribe-theme-twentytwenty .tribe-events .tribe-events-calendar-month__day-cell--selected {
+			background-color: #334AFF;
+		}
+
 /* -----------------------------------------------------------------------------
 	 * Theme Overrides - Avada
 	 * ----------------------------------------------------------------------------- */
@@ -1827,6 +1847,10 @@
 			position: absolute;
 			width: 3px;
 		}
+
+.tribe-events .tribe-events-calendar-day__event-venue {
+		font-style: normal;
+	}
 
 .tribe-events .tribe-events-calendar-day__event-featured-image-link {
 		-webkit-transition: opacity 0.2s ease;

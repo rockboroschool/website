@@ -223,6 +223,24 @@
 		border-radius: 0;
 	}
 
+.tribe-theme-twentytwenty .tribe-common {
+
+	/* -------------------------------------------------------------------------
+	 * Reset Full Theme Overrides - Twenty Twenty
+	 * ------------------------------------------------------------------------- */
+	background-color: #FFFFFF;
+	letter-spacing: normal;
+}
+
+.tribe-theme-twentytwenty .tribe-common input,
+	.tribe-theme-twentytwenty .tribe-common textarea {
+		letter-spacing: normal;
+	}
+
+.tribe-theme-twentytwenty .tribe-common * {
+		word-break: normal;
+	}
+
 /* Utilities */
 
 /* -----------------------------------------------------------------------------
@@ -322,6 +340,10 @@
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
+ * SVG - Arrow (light, left)
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
  * SVG - Caret Down
  * ----------------------------------------------------------------------------- */
 
@@ -354,6 +376,10 @@
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
+ * SVG - Error
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
  * SVG - Featured
  * ----------------------------------------------------------------------------- */
 
@@ -374,15 +400,7 @@
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
- * SVG - Messages
- * ----------------------------------------------------------------------------- */
-
-/* -----------------------------------------------------------------------------
  * SVG - Month
- * ----------------------------------------------------------------------------- */
-
-/* -----------------------------------------------------------------------------
- * SVG - No Map
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
@@ -391,6 +409,10 @@
 
 /* -----------------------------------------------------------------------------
  * SVG - Recurring
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * SVG - Remove
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
@@ -521,6 +543,10 @@
 
 /* -----------------------------------------------------------------------------
  * Button - Solid
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * Button - Link
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
@@ -835,6 +861,7 @@
 			margin: 5px 0;
 			padding: 0;
 			position: relative;
+			-webkit-transition: background-color 0.2s ease;
 			transition: background-color 0.2s ease;
 			background-color: #334AFF;
 		}
@@ -846,6 +873,7 @@
 			margin: 5px 0;
 			padding: 0;
 			position: relative;
+			-moz-transition: background-color 0.2s ease;
 			transition: background-color 0.2s ease;
 			background-color: #334AFF;
 		}
@@ -967,6 +995,11 @@
 			font-style: normal;
 		}
 
+.tribe-common .tribe-common-form-control-text__input::-moz-placeholder {
+			color: #727272;
+			font-style: normal;
+		}
+
 .tribe-common .tribe-common-form-control-text__input:-ms-input-placeholder {
 			color: #727272;
 			font-style: normal;
@@ -993,6 +1026,14 @@
 
 .tribe-theme-twentyseventeen .tribe-common .tribe-common-form-control-text__input {
 			color: #141827;
+		}
+
+/* -------------------------------------------------------------------------
+	 * Theme Overrides - Twenty Twenty
+	 * ------------------------------------------------------------------------- */
+
+.tribe-theme-twentytwenty .tribe-common .tribe-common-form-control-text__input {
+			line-height: inherit;
 		}
 
 /* -------------------------------------------------------------------------
@@ -1065,6 +1106,7 @@
 		margin: 5px 0;
 		padding: 0;
 		position: relative;
+		-webkit-transition: background-color 0.2s ease;
 		transition: background-color 0.2s ease;
 
 		-webkit-appearance: none;
@@ -1088,6 +1130,7 @@
 			left: 0;
 			position: absolute;
 			top: -5px;
+			-webkit-transition: -webkit-transform 0.2s ease;
 			transition: -webkit-transform 0.2s ease;
 			transition: transform 0.2s ease;
 			transition: transform 0.2s ease, -webkit-transform 0.2s ease;
@@ -1215,6 +1258,7 @@
 
 .tribe-common .tribe-common-anchor {
 		border-bottom: 2px solid transparent;
+		-webkit-transition: border-color 0.2s ease;
 		transition: border-color 0.2s ease;
 	}
 
@@ -1227,6 +1271,7 @@
 .tribe-common .tribe-common-anchor-alt {
 		border-bottom: 2px solid #334AFF;
 		color: #141827;
+		-webkit-transition: color 0.2s ease;
 		transition: color 0.2s ease;
 	}
 
@@ -1239,6 +1284,7 @@
 
 .tribe-common .tribe-common-anchor-thin {
 		border-bottom: 1px solid transparent;
+		-webkit-transition: border-color 0.2s ease;
 		transition: border-color 0.2s ease;
 	}
 
@@ -1353,6 +1399,7 @@
 		font-weight: 400;
 		font-weight: 700;
 		border-bottom: 2px solid transparent;
+		-webkit-transition: border-color 0.2s ease;
 		transition: border-color 0.2s ease;
 	}
 
@@ -1365,6 +1412,7 @@
 .tribe-common .tribe-common-cta--alt {
 		border-bottom: 2px solid #334AFF;
 		color: #141827;
+		-webkit-transition: color 0.2s ease;
 		transition: color 0.2s ease;
 	}
 
@@ -1378,6 +1426,7 @@
 .tribe-common .tribe-common-cta--thin-alt {
 		border-bottom: 1px solid #334AFF;
 		color: #141827;
+		-webkit-transition: color 0.2s ease;
 		transition: color 0.2s ease;
 	}
 
@@ -1680,15 +1729,6 @@
 	 * ----------------------------------------------------------------------------- */
 }
 
-.tribe-common {
-
-	/* -------------------------------------------------------------------------
-	 *
-	 * Button: Theme Overrides
-	 *
-	 * ------------------------------------------------------------------------- */
-}
-
 /* -------------------------------------------------------------------------
 	 * Button
 	 * ------------------------------------------------------------------------- */
@@ -1710,6 +1750,22 @@
 .tribe-theme-twentyseventeen .tribe-common button:hover,
 			.tribe-theme-twentyseventeen .tribe-common button:focus {
 				background-color: transparent;
+			}
+
+/* -------------------------------------------------------------------------
+	 *
+	 * Button: Theme Overrides
+	 *
+	 * ------------------------------------------------------------------------- */
+
+.tribe-theme-twentytwenty .tribe-common button {
+			background-color: transparent;
+			text-transform: inherit;
+		}
+
+.tribe-theme-twentytwenty .tribe-common button:hover,
+			.tribe-theme-twentytwenty .tribe-common button:focus {
+				text-decoration: none;
 			}
 
 /* .tribe-common { */
@@ -1801,6 +1857,7 @@
 		border: 1px solid #D5D5D5;
 		border-radius: 4px;
 		text-align: center;
+		-webkit-transition: color 0.2s ease, border-color 0.2s ease;
 		transition: color 0.2s ease, border-color 0.2s ease;
 
 		color: #727272;
@@ -1897,10 +1954,14 @@
 .tribe-common .tribe-common-c-btn-icon--border {
 		background-color: #FFFFFF;
 		border: 1px solid #D5D5D5;
-		align-items: center;
+		-webkit-box-align: center;
+		        align-items: center;
+		display: -webkit-inline-box;
 		display: inline-flex;
 		height: 56px;
-		justify-content: center;
+		-webkit-box-pack: center;
+		        justify-content: center;
+		-webkit-transition: none;
 		transition: none;
 		width: 56px;
 	}
@@ -1959,6 +2020,7 @@
 		border-radius: 4px;
 		color: #FFFFFF;
 		text-align: center;
+		-webkit-transition: background-color 0.2s ease;
 		transition: background-color 0.2s ease;
 
 		padding: 11px 20px 11px;
@@ -1986,6 +2048,20 @@
 
 .tribe-theme-twentyseventeen .tribe-common .tribe-common-c-btn:hover,
 			.tribe-theme-twentyseventeen .tribe-common .tribe-common-c-btn:focus {
+				background-color: rgba(51,74,255, 0.8);
+				color: #FFFFFF;
+			}
+
+/* -------------------------------------------------------------------------
+	 * Theme Overrides - Twenty Twenty
+	 * ------------------------------------------------------------------------- */
+
+.tribe-theme-twentytwenty .tribe-common .tribe-common-c-btn {
+			background-color: #334AFF;
+		}
+
+.tribe-theme-twentytwenty .tribe-common .tribe-common-c-btn:hover,
+			.tribe-theme-twentytwenty .tribe-common .tribe-common-c-btn:focus {
 				background-color: rgba(51,74,255, 0.8);
 				color: #FFFFFF;
 			}

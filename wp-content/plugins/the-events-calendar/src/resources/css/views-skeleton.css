@@ -880,6 +880,18 @@
 		        justify-content: center;
 	}
 
+/* Promo */
+
+/* -----------------------------------------------------------------------------
+ *
+ * Promo
+ *
+ * ----------------------------------------------------------------------------- */
+
+.tribe-events .tribe-events-c-promo {
+		margin-top: 20px;
+	}
+
 /* Read More */
 
 /* -----------------------------------------------------------------------------
@@ -1804,6 +1816,14 @@
 		margin-top: 12px;
 	}
 
+/* -------------------------------------------------------------------------
+	 * Theme Overrides - Twenty Nineteen
+	 * ------------------------------------------------------------------------- */
+
+.tribe-theme-twentynineteen .tribe-events .tribe-events-calendar-day__event {
+			margin-top: 32px;
+		}
+
 /* -----------------------------------------------------------------------------
 	 * Nav
 	 * ----------------------------------------------------------------------------- */
@@ -1883,7 +1903,8 @@
 			-webkit-box-flex: 1;
 			        flex: auto;
 			padding: 0;
-			position: static
+			position: static;
+			z-index: auto
 	}
 
 .tribe-events .tribe-events-c-events-bar__search {
@@ -2401,6 +2422,10 @@
 .tribe-events .tribe-events-calendar-day__event-cost {
 			margin-top: 16px
 	}
+
+.tribe-theme-twentynineteen .tribe-events .tribe-events-calendar-day__event {
+				margin-top: 48px
+		}
 
 .tribe-events .tribe-events-calendar-day-nav {
 			padding-top: 32px

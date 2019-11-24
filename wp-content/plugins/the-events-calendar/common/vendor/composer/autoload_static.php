@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit597d1c705b8dc5cfb56760536aba0518
+class ComposerStaticInit7662ee13ae579487f6bb7c48a1b07268
 {
     public static $prefixLengthsPsr4 = array (
         'T' => 
@@ -170,6 +170,7 @@ class ComposerStaticInit597d1c705b8dc5cfb56760536aba0518
         'Psr\\Log\\Test\\DummyTest' => __DIR__ . '/..' . '/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
         'Psr\\Log\\Test\\LoggerInterfaceTest' => __DIR__ . '/..' . '/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
         'Psr\\Log\\Test\\TestLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/Test/TestLogger.php',
+        'Tribe\\Dialog\\View' => __DIR__ . '/../..' . '/src/Tribe/Dialog/View.php',
         'Tribe\\Log\\Action_Logger' => __DIR__ . '/../..' . '/src/Tribe/Log/Action_Logger.php',
         'Tribe\\Log\\Canonical_Formatter' => __DIR__ . '/../..' . '/src/Tribe/Log/Canonical_Formatter.php',
         'Tribe\\Log\\Monolog_Logger' => __DIR__ . '/../..' . '/src/Tribe/Log/Monolog_Logger.php',
@@ -177,7 +178,10 @@ class ComposerStaticInit597d1c705b8dc5cfb56760536aba0518
         'Tribe\\Models\\Post_Types\\Base' => __DIR__ . '/../..' . '/src/Tribe/Models/Post_Types/Base.php',
         'Tribe\\Models\\Post_Types\\Nothing' => __DIR__ . '/../..' . '/src/Tribe/Models/Post_Types/Nothing.php',
         'Tribe\\PUE\\Update_Prevention' => __DIR__ . '/../..' . '/src/Tribe/PUE/Update_Prevention.php',
+        'Tribe\\Service_Providers\\Dialog' => __DIR__ . '/../..' . '/src/Tribe/Service_Providers/Dialog.php',
         'Tribe\\Service_Providers\\PUE' => __DIR__ . '/../..' . '/src/Tribe/Service_Providers/PUE.php',
+        'Tribe\\Service_Providers\\Tooltip' => __DIR__ . '/../..' . '/src/Tribe/Service_Providers/Tooltip.php',
+        'Tribe\\Tooltip\\View' => __DIR__ . '/../..' . '/src/Tribe/Tooltip/View.php',
         'Tribe\\Traits\\Cache_User' => __DIR__ . '/../..' . '/src/Tribe/Traits/Cache_User.php',
         'Tribe\\Utils\\Collection_Interface' => __DIR__ . '/../..' . '/src/Tribe/Utils/Collection_Interface.php',
         'Tribe\\Utils\\Collection_Trait' => __DIR__ . '/../..' . '/src/Tribe/Utils/Collection_Trait.php',
@@ -199,10 +203,10 @@ class ComposerStaticInit597d1c705b8dc5cfb56760536aba0518
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit597d1c705b8dc5cfb56760536aba0518::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit597d1c705b8dc5cfb56760536aba0518::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit597d1c705b8dc5cfb56760536aba0518::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit597d1c705b8dc5cfb56760536aba0518::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7662ee13ae579487f6bb7c48a1b07268::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7662ee13ae579487f6bb7c48a1b07268::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit7662ee13ae579487f6bb7c48a1b07268::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit7662ee13ae579487f6bb7c48a1b07268::$classMap;
 
         }, null, ClassLoader::class);
     }
