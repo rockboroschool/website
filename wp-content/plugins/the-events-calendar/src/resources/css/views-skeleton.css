@@ -198,6 +198,10 @@
  * ----------------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
+ * SVG - Plus
+ * ----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
  * SVG - Recurring
  * ----------------------------------------------------------------------------- */
 
@@ -445,7 +449,7 @@
 
 .tribe-events .tribe-events-c-breadcrumbs__list-item:not(:last-child):after {
 				content: '';
-				background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='12' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.084 2.159L2 .243l9.9 9.9L2 20.041.084 18.126l7.983-7.984z' fill='%23727272'/%3E%3C/svg%3E");
+				background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='12' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.084 2.159L2 .243l9.9 9.9L2 20.041.084 18.126l7.983-7.984z' fill='%235D5D5D'/%3E%3C/svg%3E");
 				background-repeat: no-repeat;
 				background-size: contain;
 				display: inline-block;
@@ -544,7 +548,7 @@
 
 .tribe-events .datepicker .day {
 			padding: 11px 0;
-			width: 48px; /* this is a hack to max out the day width to the container, not exactly 48px */
+			min-width: 48px; /* this is a hack to max out the day width to the container, not exactly 48px */
 		}
 
 .tribe-events .datepicker .month,
@@ -747,7 +751,7 @@
 				}
 
 .tribe-common--breakpoint-medium.tribe-events .tribe-events-c-events-bar__filters-button:before {
-				background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17'%3E%3Cg fill='none' fill-rule='evenodd' stroke='%23727272' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' transform='translate(1 1)'%3E%3Cpath d='M3 3V0M3 15v-2' stroke='%23727272'/%3E%3Ccircle cx='3' cy='9' r='3' stroke='%23727272'/%3E%3Cpath d='M12 9v6' stroke='%23727272'/%3E%3Ccircle cx='12' cy='3' r='3' transform='matrix(1 0 0 -1 0 6)' stroke='%23727272'/%3E%3C/g%3E%3C/svg%3E");
+				background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17'%3E%3Cg fill='none' fill-rule='evenodd' stroke='%23727272' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' transform='translate(1 1)'%3E%3Cpath d='M3 3V0M3 15v-2' stroke='%235D5D5D'/%3E%3Ccircle cx='3' cy='9' r='3' stroke='%235D5D5D'/%3E%3Cpath d='M12 9v6' stroke='%235D5D5D'/%3E%3Ccircle cx='12' cy='3' r='3' transform='matrix(1 0 0 -1 0 6)' stroke='%235D5D5D'/%3E%3C/g%3E%3C/svg%3E");
 				background-repeat: no-repeat;
 				background-size: contain;
 				background-size: 17px;
@@ -856,6 +860,15 @@
 		margin-top: 20px;
 		text-align: right;
 	}
+
+.tribe-events .tribe-events-c-ical__link {
+		padding: 12px;
+		width: 100%;
+	}
+
+.tribe-common--breakpoint-medium.tribe-events .tribe-events-c-ical__link {
+			width: auto;
+		}
 
 /* Loader */
 
@@ -989,18 +1002,6 @@
 			display: none !important;
 			visibility: hidden;
 		}
-
-.tribe-events .tribe-events-c-nav__prev-label-plural,
-	.tribe-events .tribe-events-c-nav__next-label-plural {
-		border: 0;
-		clip: rect(0 0 0 0);
-		height: 1px;
-		margin: -1px;
-		overflow: hidden;
-		padding: 0;
-		position: absolute;
-		width: 1px;
-	}
 
 .tribe-common--breakpoint-medium.tribe-events .tribe-events-c-nav__prev-label-plural, .tribe-common--breakpoint-medium.tribe-events .tribe-events-c-nav__next-label-plural {
 			clip: auto;
@@ -1165,7 +1166,7 @@
 	 * Theme Overrides - Enfold
 	 * ----------------------------------------------------------------------------- */
 
-#top.tribe-theme-enfold .tribe-events.tribe-common--breakpoint-medium .tribe-events-c-search__input {
+#top.tribe-theme-enfold .tribe-events.tribe-common--breakpoint-medium .tribe-events-c-search__input, #top .main_color .tribe-events.tribe-common--breakpoint-medium .tribe-events-c-search__input {
 			margin: -12px 0;
 		}
 
@@ -1213,15 +1214,6 @@
  * Top Bar
  *
  * ----------------------------------------------------------------------------- */
-
-.tribe-events {
-
-	/* -----------------------------------------------------------------------------
-	 *
-	 * Top Bar: Theme Overrides
-	 *
-	 * ----------------------------------------------------------------------------- */
-}
 
 .tribe-common--breakpoint-medium.tribe-events .tribe-events-c-top-bar {
 			-webkit-box-align: center;
@@ -1273,13 +1265,6 @@
 			visibility: visible;
 		}
 
-.tribe-events .tribe-events-c-top-bar__datepicker-form {
-		-webkit-box-align: center;
-		        align-items: center;
-		display: -webkit-box;
-		display: flex;
-	}
-
 .tribe-events .tribe-events-c-top-bar__datepicker {
 		-webkit-box-flex: 1;
 		        flex: auto;
@@ -1317,7 +1302,7 @@
 .tribe-events .tribe-events-c-top-bar__datepicker-container {
 		bottom: 0;
 		left: 0;
-		max-width: calc(100% + 66px); /* mobile search and view selector buttons have 66px width */
+		max-width: calc(100% + 29px); /* view selector buttons have 29px width */
 		position: absolute;
 		width: 363px;
 	}
@@ -1327,12 +1312,14 @@
 			min-width: 363px;
 		}
 
-.tribe-common--breakpoint-medium.tribe-events .tribe-events-c-top-bar__datepicker-submit {
-			display: block !important;
-			-webkit-box-flex: 0;
-			        flex: none;
-			margin-left: 15px;
-			visibility: visible;
+.tribe-events .tribe-events-header--has-event-search .tribe-events-c-top-bar__datepicker-container {
+		max-width: calc(100% + 66px);
+	}
+
+/* mobile search and view selector buttons have 66px width */
+
+.tribe-common--breakpoint-medium.tribe-events .tribe-events-header--has-event-search .tribe-events-c-top-bar__datepicker-container {
+			max-width: none;
 		}
 
 .tribe-common--breakpoint-medium.tribe-events .tribe-events-c-top-bar__actions {
@@ -1347,7 +1334,7 @@
 	 * Theme Overrides - Enfold
 	 * ----------------------------------------------------------------------------- */
 
-#top.tribe-theme-enfold .tribe-events .tribe-events-c-top-bar__datepicker-input {
+#top.tribe-theme-enfold .tribe-events .tribe-events-c-top-bar__datepicker-input, #top .main_color .tribe-events .tribe-events-c-top-bar__datepicker-input {
 			border: 0;
 			clip: rect(0 0 0 0);
 			height: 1px;
@@ -1356,6 +1343,16 @@
 			padding: 0;
 			position: absolute;
 			width: 1px;
+		}
+
+/* -----------------------------------------------------------------------------
+	 *
+	 * Top Bar: Theme Overrides
+	 *
+	 * ----------------------------------------------------------------------------- */
+
+.entry-content-wrapper .tribe-events .tribe-events-c-top-bar__nav-list-item {
+			padding-right: 15px;
 		}
 
 /* -----------------------------------------------------------------------------
