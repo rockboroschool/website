@@ -5,6 +5,8 @@
 
 // Don't load directly
 
+use Tribe\DB_Lock;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
@@ -33,7 +35,7 @@ if ( ! class_exists( 'Tribe__Events__Main' ) ) {
 		const VENUE_POST_TYPE     = 'tribe_venue';
 		const ORGANIZER_POST_TYPE = 'tribe_organizer';
 
-		const VERSION             = '5.1.1';
+		const VERSION             = '5.1.4';
 
 		/**
 		 * Min Pro Addon
@@ -632,10 +634,16 @@ if ( ! class_exists( 'Tribe__Events__Main' ) ) {
 				tribe_singleton( 'tec.customizer.widget', new Tribe__Events__Customizer__Widget() );
 			}
 
+			// First boot.
+			tribe_register_provider( Tribe\Events\Service_Providers\First_Boot::class );
+
 			/**
 			 * Allows other plugins and services to override/change the bound implementations.
 			 */
 			do_action( 'tribe_events_bound_implementations' );
+
+			// Database locks.
+			tribe_singleton( 'db-lock', DB_Lock::class );
 		}
 
 		/**
@@ -3143,6 +3151,11 @@ if ( ! class_exists( 'Tribe__Events__Main' ) ) {
 
 				$avoid_recursion = false;
 
+				return;
+			}
+
+			// When not an instance of Post we bail to avoid revision problems.
+			if ( ! $post instanceof WP_Post ) {
 				return;
 			}
 
