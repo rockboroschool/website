@@ -9,7 +9,7 @@ function wpcf7_admin_init_bulk_cv() {
 	}
 
 	$result = WPCF7::get_option( 'bulk_validate' );
-	$last_important_update = '5.0.4';
+	$last_important_update = '5.1.5';
 
 	if ( ! empty( $result['version'] )
 	and version_compare( $last_important_update, $result['version'], '<=' ) ) {
@@ -69,7 +69,7 @@ function wpcf7_load_bulk_validate_page( $page, $action ) {
 	$contact_forms = WPCF7_ContactForm::find();
 
 	$result = array(
-		'timestamp' => current_time( 'timestamp' ),
+		'timestamp' => time(),
 		'version' => WPCF7_VERSION,
 		'count_valid' => 0,
 		'count_invalid' => 0,
@@ -105,12 +105,14 @@ function wpcf7_admin_bulk_validate_page() {
 	$count = WPCF7_ContactForm::count();
 
 	$submit_text = sprintf(
-		/* translators: %s: number of contact forms */
 		_n(
-			"Validate %s Contact Form Now",
-			"Validate %s Contact Forms Now",
-			$count, 'contact-form-7' ),
-		number_format_i18n( $count ) );
+			/* translators: %s: number of contact forms */
+			"Validate %s contact form now",
+			"Validate %s contact forms now",
+			$count, 'contact-form-7'
+		),
+		number_format_i18n( $count )
+	);
 
 ?>
 <div class="wrap">

@@ -56,7 +56,7 @@ function seed_csp4_customcss() {
 	$output = '';
 
 	if ( !empty( $custom_css ) ) {
-		$output = '<style type="text/css">'.$custom_css.'</style>';
+		$output = '<style type="text/css">'.esc_html($custom_css).'</style>';
 	}
 
 	return $output;
@@ -270,7 +270,7 @@ function seed_csp4_logo() {
 	$output = '';
 
 	if ( !empty( $logo ) ) {
-		$output .= "<img id='seed-csp4-image' src='$logo'>";
+		$output .= "<img id='seed-csp4-image' src='".esc_attr($logo)."'>";
 	}
 
 	return  $output;
@@ -283,7 +283,15 @@ function seed_csp4_headline() {
 	$output = '';
 
 	if ( !empty( $headline ) ) {
-		$output .= '<h1 id="seed-csp4-headline">'.$headline.'</h1>';
+		$output .= '<h1 id="seed-csp4-headline">'.wp_kses($headline,array(
+			'a' => array(
+				'href' => array(),
+				'title' => array()
+			),
+			'br' => array(),
+			'em' => array(),
+			'strong' => array(),
+		)).'</h1>';
 	}
 
 	return  $output;
@@ -296,7 +304,12 @@ function seed_csp4_description() {
 	$output = '';
 
 	if ( !empty( $description ) ) {
-		$output .= '<div id="seed-csp4-description">'.shortcode_unautop(wpautop(convert_chars(wptexturize($description)))).'</div>';
+		if(has_shortcode( $description,'rafflepress')){
+			$output .= '<div id="seed-csp4-description">'.do_shortcode(shortcode_unautop(wpautop(convert_chars(wptexturize($description))))).'</div>';
+		}else{
+			$output .= '<div id="seed-csp4-description">'.shortcode_unautop(wpautop(convert_chars(wptexturize($description)))).'</div>';
+		}
+		
 	}
 
 	return  $output;

@@ -7,6 +7,105 @@
 	background-color:#fff;
 }
 
+#seed_csp4_quicklinks{
+	line-height: 1;
+	position: fixed;
+	bottom: 25px;
+	right: 25px;
+	z-index:9999;
+}
+
+#seed_csp4_quicklinks i{
+font-size: 16px;
+}
+
+.seed_csp4_quicklinks_menu_item_wrapper:hover .seed_csp4_quicklinks_inner_item{
+	background: #049C4A !important;
+}
+
+.seed_csp4_quicklinks_menu_item a{
+	color:#fff !important;;
+	text-decoration: none !important;
+	outline: none !important;
+	box-shadow:none !important;
+}
+
+.seed_csp4_quicklinks_inner_item {
+	background: #04be5b !important;
+	display: flex;
+	min-height: 20px;
+	align-items: center;
+
+}
+
+.seed_csp4_quicklinks_inner_item a{
+	color:#fff !important;;
+	text-decoration: none !important;
+	outline: none !important;
+	box-shadow:none !important;
+}
+
+.seed_csp4_quicklinks_inner,.seed_csp4_quicklinks_inner_item{
+	background: #fff;
+	border-radius:50%;
+	padding:10px;
+	box-shadow: 0px 0px 15px rgba(0,0,0,.25)!important;
+}
+#seed_csp4_quicklinks img{
+	width:45px;
+	transform: rotate(0deg);
+	transition: all 0.2s ease-out;
+}
+
+#seed_csp4_quicklinks.active img{
+	transform: rotate(30deg);
+	transition: all 0.2s ease-out;
+}
+
+#seed_csp4_quicklinks.active .seed_csp4_quicklinks_menu{
+	opacity: 0;
+	transition: all 0.2s ease-out;
+}
+
+
+.seed_csp4_quicklinks_base,.seed_csp4_quicklinks_menu_item_wrapper{
+	display:flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.seed_csp4_quicklinks_menu_item_wrapper{
+	margin-bottom:7px;
+}
+
+.seed_csp4_quicklinks_menu,.seed_csp4_quicklinks_menu_item{
+    background: #666;
+    color: #fff;
+    padding: 4px;
+	border-radius: 5px;
+	margin-right:10px;
+	box-shadow: 0px 0px 3px  rgba(255, 255, 255, 1);
+	transition: all 0.2s ease-out;
+}
+
+.seed_csp4_quicklinks_menu_list{
+	display: flex;
+    flex-direction: column;
+	align-items: flex-end;
+	position: relative;
+	right: 14px;
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.2s ease-out;
+}
+
+#seed_csp4_quicklinks.active .seed_csp4_quicklinks_menu_list{
+	opacity: 1;
+	visibility: visible;
+	transition: all 0.2s ease-out;
+}
+
+
 #seed_csp4_header{
 
 /* 	

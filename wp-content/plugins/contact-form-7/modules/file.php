@@ -9,7 +9,11 @@ add_action( 'wpcf7_init', 'wpcf7_add_form_tag_file', 10, 0 );
 
 function wpcf7_add_form_tag_file() {
 	wpcf7_add_form_tag( array( 'file', 'file*' ),
-		'wpcf7_file_form_tag_handler', array( 'name-attr' => true ) );
+		'wpcf7_file_form_tag_handler',
+		array(
+			'name-attr' => true,
+		)
+	);
 }
 
 function wpcf7_file_form_tag_handler( $tag ) {
@@ -48,7 +52,8 @@ function wpcf7_file_form_tag_handler( $tag ) {
 
 	$html = sprintf(
 		'<span class="wpcf7-form-control-wrap %1$s"><input %2$s />%3$s</span>',
-		sanitize_html_class( $tag->name ), $atts, $validation_error );
+		sanitize_html_class( $tag->name ), $atts, $validation_error
+	);
 
 	return $html;
 }
@@ -60,7 +65,8 @@ add_filter( 'wpcf7_form_enctype', 'wpcf7_file_form_enctype_filter', 10, 1 );
 
 function wpcf7_file_form_enctype_filter( $enctype ) {
 	$multipart = (bool) wpcf7_scan_form_tags(
-		array( 'type' => array( 'file', 'file*' ) ) );
+		array( 'type' => array( 'file', 'file*' ) )
+	);
 
 	if ( $multipart ) {
 		$enctype = 'multipart/form-data';
@@ -81,7 +87,7 @@ function wpcf7_file_validation_filter( $result, $tag ) {
 
 	$file = isset( $_FILES[$name] ) ? $_FILES[$name] : null;
 
-	if ( $file['error'] and UPLOAD_ERR_NO_FILE != $file['error'] ) {
+	if ( $file['error'] and UPLOAD_ERR_NO_FILE !== $file['error'] ) {
 		$result->invalidate( $tag, wpcf7_get_message( 'upload_failed_php_error' ) );
 		return $result;
 	}
@@ -110,31 +116,9 @@ function wpcf7_file_validation_filter( $result, $tag ) {
 
 	/* File size validation */
 
-	$allowed_size = 1048576; // default size 1 MB
+	$allowed_size = $tag->get_limit_option();
 
-	if ( $file_size_a = $tag->get_option( 'limit' ) ) {
-		$limit_pattern = '/^([1-9][0-9]*)([kKmM]?[bB])?$/';
-
-		foreach ( $file_size_a as $file_size ) {
-			if ( preg_match( $limit_pattern, $file_size, $matches ) ) {
-				$allowed_size = (int) $matches[1];
-
-				if ( ! empty( $matches[2] ) ) {
-					$kbmb = strtolower( $matches[2] );
-
-					if ( 'kb' == $kbmb ) {
-						$allowed_size *= 1024;
-					} elseif ( 'mb' == $kbmb ) {
-						$allowed_size *= 1024 * 1024;
-					}
-				}
-
-				break;
-			}
-		}
-	}
-
-	if ( $file['size'] > $allowed_size ) {
+	if ( $allowed_size < $file['size'] ) {
 		$result->invalidate( $tag, wpcf7_get_message( 'upload_file_too_large' ) );
 		return $result;
 	}
@@ -214,7 +198,7 @@ function wpcf7_tag_generator_file( $contact_form, $args = '' ) {
 
 	$description = __( "Generate a form-tag for a file uploading field. For more details, see %s.", 'contact-form-7' );
 
-	$desc_link = wpcf7_link( __( 'https://contactform7.com/file-uploading-and-attachment/', 'contact-form-7' ), __( 'File Uploading and Attachment', 'contact-form-7' ) );
+	$desc_link = wpcf7_link( __( 'https://contactform7.com/file-uploading-and-attachment/', 'contact-form-7' ), __( 'File uploading and attachment', 'contact-form-7' ) );
 
 ?>
 <div class="control-box">

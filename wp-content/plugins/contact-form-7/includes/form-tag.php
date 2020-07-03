@@ -197,9 +197,14 @@ class WPCF7_FormTag implements ArrayAccess {
 				$unit = 'days';
 			}
 
-			$date = gmdate( 'Y-m-d',
-				strtotime( sprintf( 'today %1$s %2$s', $number, $unit ) ) );
-			return $date;
+			// Temporary fix until introducing wp_date()
+			$today = gmdate( 'Y-m-d',
+				time() + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS
+			);
+
+			$format = sprintf( '%1$s %2$s %3$s', $today, $number, $unit );
+
+			return gmdate( 'Y-m-d', strtotime( $format ) );
 		}
 
 		return false;
@@ -320,6 +325,30 @@ class WPCF7_FormTag implements ArrayAccess {
 		$options = (array) $this->get_option( 'data' );
 
 		return apply_filters( 'wpcf7_form_tag_data_option', null, $options, $args );
+	}
+
+	public function get_limit_option( $default = 1048576 ) { // 1048576 = 1 MB
+		$pattern = '/^limit:([1-9][0-9]*)([kKmM]?[bB])?$/';
+
+		$matches = $this->get_first_match_option( $pattern );
+
+		if ( $matches ) {
+			$size = (int) $matches[1];
+
+			if ( ! empty( $matches[2] ) ) {
+				$kbmb = strtolower( $matches[2] );
+
+				if ( 'kb' == $kbmb ) {
+					$size *= 1024;
+				} elseif ( 'mb' == $kbmb ) {
+					$size *= 1024 * 1024;
+				}
+			}
+
+			return $size;
+		}
+
+		return (int) $default;
 	}
 
 	public function get_first_match_option( $pattern ) {

@@ -5,4 +5,6 @@
 	<span class="seed_csp4_version" style="font-size: 10px;"> Version <?php echo SEED_CSP4_VERSION; ?></span>
 </h1>
 <span id="seed_csp4_header_bg" class="dashicons dashicons-chart-area"></span>
+
 </div>
+

@@ -211,12 +211,13 @@ function wpcf7_acceptance_mail_tag( $replaced, $submitted, $html, $mail_tag ) {
 	$content = trim( $content );
 
 	if ( $content ) {
-		/* translators: 1: 'Consented' or 'Not consented', 2: conditions */
 		$replaced = sprintf(
+			/* translators: 1: 'Consented' or 'Not consented', 2: conditions */
 			_x( '%1$s: %2$s', 'mail output for acceptance checkboxes',
 				'contact-form-7' ),
 			$replaced,
-			$content );
+			$content
+		);
 	}
 
 	return $replaced;
@@ -239,7 +240,7 @@ function wpcf7_tag_generator_acceptance( $contact_form, $args = '' ) {
 
 	$description = __( "Generate a form-tag for an acceptance checkbox. For more details, see %s.", 'contact-form-7' );
 
-	$desc_link = wpcf7_link( __( 'https://contactform7.com/acceptance-checkbox/', 'contact-form-7' ), __( 'Acceptance Checkbox', 'contact-form-7' ) );
+	$desc_link = wpcf7_link( __( 'https://contactform7.com/acceptance-checkbox/', 'contact-form-7' ), __( 'Acceptance checkbox', 'contact-form-7' ) );
 
 ?>
 <div class="control-box">

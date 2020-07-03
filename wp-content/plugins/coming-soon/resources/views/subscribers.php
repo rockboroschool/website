@@ -1,4 +1,5 @@
 <div class="wrap columns-2 seed-csp4">
+<?php include SEED_CSP4_PLUGIN_PATH.'resources/views/quicklinks.php'; ?>
     <div id="seed_csp4_header">
         <h1 style="margin-bottom: 10px;">
             <img style="width:150px;margin-right:10px;margin-bottom: -2px;vertical-align: text-bottom;" src="<?php echo SEED_CSP4_PLUGIN_URL ?>public/images/seedprod-logo.png"> 

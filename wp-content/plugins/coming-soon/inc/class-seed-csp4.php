@@ -214,6 +214,7 @@ class SEED_CSP4{
         if(!defined('DONOTCACHEOBJECT')) {
           define('DONOTCACHEOBJECT', true);
         }
+        //ob_end_clean();
         nocache_headers();
 
 
