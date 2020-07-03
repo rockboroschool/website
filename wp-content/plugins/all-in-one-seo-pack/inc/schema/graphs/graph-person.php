@@ -54,7 +54,17 @@ class AIOSEOP_Graph_Person extends AIOSEOP_Graph {
 		$author_url = '';
 		$hashtag    = 'person';
 
-		if ( ! empty( $post->post_author ) ) {
+		if (
+				'single_page' === AIOSEOP_Context::get_is() &&
+				function_exists( 'bp_is_user' ) &&
+				bp_is_user()
+		) {
+			// BuddyPress - Member Page.
+			$wp_user    = wp_get_current_user();
+			$user_id    = intval( $wp_user->ID );
+			$author_url = get_author_posts_url( $user_id );
+			$hashtag    = 'author';
+		} elseif ( ! empty( $post->post_author ) ) {
 			$user_id    = intval( $post->post_author );
 			$author_url = get_author_posts_url( $post->post_author );
 			$hashtag    = 'author';

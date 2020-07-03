@@ -58,21 +58,53 @@ class AIOSEOP_Graph_Organization extends AIOSEOP_Graph {
 		// Site represents Organization or Person.
 		if ( 'person' === $aioseop_options['aiosp_schema_site_represents'] ) {
 			$person_id = intval( $aioseop_options['aiosp_schema_person_user'] );
+			// If no user is selected, then use first admin available.
+			if ( 0 === $person_id ) {
+				$args  = array(
+					'role' => 'administrator',
+				);
+				$users = get_users( $args );
 
-			$rtn_data['@type']  = array( 'Person', $this->slug );
-			$rtn_data['@id']    = home_url() . '/#person';
-			$rtn_data['name']   = get_the_author_meta( 'display_name', $person_id );
-			$rtn_data['sameAs'] = $this->get_user_social_profile_links( $person_id );
+				if ( ! empty( $users ) ) {
+					$person_id = $users[0]->ID;
+				}
+			}
 
-			// Handle Logo/Image.
-			$image_schema = $this->prepare_image( $this->get_user_image_data( $person_id ), home_url() . '/#personlogo' );
-			if ( $image_schema ) {
-				$rtn_data['image'] = $image_schema;
-				$rtn_data['logo'] = array( '@id' => home_url() . '/#personlogo' );
+			$rtn_data['@type'] = array( 'Person', $this->slug );
+			$rtn_data['@id']   = home_url() . '/#person';
+
+			if ( -1 === $person_id ) {
+				// Manually added Person's name.
+				$rtn_data['name'] = $aioseop_options['aiosp_schema_person_manual_name'];
+
+				// Handle Logo/Image.
+				$image_data   = wp_parse_args( array( 'url' => $aioseop_options['aiosp_schema_person_manual_image'] ), $this->get_image_data_defaults() );
+				$image_schema = $this->prepare_image( $image_data, home_url() . '/#personlogo' );
+				if ( $image_schema ) {
+					$rtn_data['image'] = $image_schema;
+					$rtn_data['logo']  = array( '@id' => home_url() . '/#personlogo' );
+				}
+			} else {
+				// User's Display Name.
+				$rtn_data['name'] = get_the_author_meta( 'display_name', $person_id );
+
+				// Social links from user profile.
+				$rtn_data['sameAs'] = $this->get_user_social_profile_links( $person_id );
+
+				// Handle Logo/Image for retrieving gravatar and image schema.
+				$image_schema = $this->prepare_image( $this->get_user_image_data( $person_id ), home_url() . '/#personlogo' );
+				if ( $image_schema ) {
+					$rtn_data['image'] = $image_schema;
+					$rtn_data['logo']  = array( '@id' => home_url() . '/#personlogo' );
+				}
 			}
 		} else {
 			// Get Name from General > Schema Settings > Organization Name, and fallback on WP's Site Name.
-			$rtn_data['name']   = $aioseop_options['aiosp_schema_organization_name'] ?: get_bloginfo( 'name' );
+			if ( $aioseop_options['aiosp_schema_organization_name'] ) {
+				$rtn_data['name'] = $aioseop_options['aiosp_schema_organization_name'];
+			} else {
+				$rtn_data['name'] = get_bloginfo( 'name' );
+			}
 			$rtn_data['sameAs'] = $this->get_site_social_profile_links();
 
 			// Handle Logo/Image.
@@ -104,7 +136,7 @@ class AIOSEOP_Graph_Organization extends AIOSEOP_Graph {
 	protected function prepare_logo() {
 		$rtn_data = array();
 
-		$logo_id   = $this->get_logo_id();
+		$logo_id = $this->get_logo_id();
 		if ( ! empty( $logo_id ) ) {
 			$rtn_data = array(
 				'@type' => 'ImageObject',
@@ -115,7 +147,7 @@ class AIOSEOP_Graph_Organization extends AIOSEOP_Graph {
 			$logo_meta = wp_get_attachment_metadata( $logo_id );
 			// Get image dimensions. Some images may not have this property.
 			if ( isset( $rtn_data['width'] ) ) {
-				$rtn_data['width']  = $logo_meta['width'];
+				$rtn_data['width'] = $logo_meta['width'];
 			}
 			if ( isset( $rtn_data['height'] ) ) {
 				$rtn_data['height'] = $logo_meta['height'];

@@ -24,13 +24,10 @@ class AIOSEOPAdminMenus {
 			return;
 		}
 
-		if ( ! AIOSEOPPRO && ( current_user_can( 'manage_options' ) || current_user_can( 'aiosp_manage_seo' ) ) ) {
-			add_action( 'admin_menu', array( $this, 'add_pro_submenu' ), 11 );
-		} else {
-			return;
+		if ( ( current_user_can( 'manage_options' ) || current_user_can( 'aiosp_manage_seo' ) ) ) {
+			add_action( 'admin_menu', array( $this, 'add_submenu_pages' ), 11 );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		}
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 
 	function remove_menus() {
@@ -38,13 +35,32 @@ class AIOSEOPAdminMenus {
 	}
 
 	/**
-	 * Adds Upgrade link to our menu.
+	 * Adds the submenu pages for Lite users.
 	 *
-	 * @since 2.3.11.5
+	 * @since   2.3.11.5
+	 * @since   3.4.0       Added About page to admin menu.
 	 */
-	function add_pro_submenu() {
+	function add_submenu_pages() {
 		global $submenu;
-		$url = 'https://semperplugins.com/all-in-one-seo-pack-pro-version/?loc=aio_menu';
+
+		$plugin_base_dir = explode( '/', plugin_basename( __FILE__ ) );
+		$menu_slug       = $plugin_base_dir[0] . '/aioseop_class.php';
+
+		add_submenu_page(
+			$menu_slug,
+			sprintf( __( 'About %s', 'all-in-one-seo-pack' ), AIOSEOP_PLUGIN_NAME ),
+			__( 'About Us', 'all-in-one-seo-pack' ),
+			apply_filters( 'manage_aiosp', 'aiosp_manage_seo' ),
+			'aioseop-about',
+			array( 'AIOSEOP_About', 'init' ),
+			null
+		);
+
+		if ( AIOSEOPPRO ) {
+			return;
+		}
+
+		$url          = aioseop_get_utm_url( 'admin-menu' );
 		$upgrade_text = __( 'Upgrade to Pro', 'all-in-one-seo-pack' );
 		$submenu[ AIOSEOP_PLUGIN_DIRNAME . '/aioseop_class.php' ][] = array(
 			"<span class='upgrade_menu_link'>$upgrade_text</span>",

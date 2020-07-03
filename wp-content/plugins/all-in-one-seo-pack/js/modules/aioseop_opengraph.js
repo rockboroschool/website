@@ -3,8 +3,7 @@
  *
  * @summary For AIOSEOP OpenGraph settings on AIOSEOP screens & edit post screen (possibly more others).
  *
- * @author Michael Torbert.
- * @author Semper Fi Web Design.
+ * @author All in One SEO Team.
  * @copyright https://semperplugins.com
  * @version 2.9.2
  */

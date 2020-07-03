@@ -58,7 +58,7 @@ class aiosp_common {
 	 * @return array|null|string|WP_Post
 	 */
 	static function get_blog_page( $p = null ) {
-		static $blog_page = '';
+		static $blog_page      = '';
 		static $page_for_posts = '';
 		if ( null === $p ) {
 			global $post;
@@ -173,19 +173,19 @@ class aiosp_common {
 		if ( 0 !== strpos( $url, 'http' ) ) {
 			if ( 0 === strpos( $url, '//' ) ) {
 				// for //<host>/resource type urls.
-				$url    = $scheme . ':' . $url;
+				$url = $scheme . ':' . $url;
 			} elseif ( strpos( $url, '.' ) !== false && strpos( $url, '/' ) !== false && strpos( $url, '.' ) < strpos( $url, '/' ) ) {
 				// if the . comes before the first / then this is absolute.
-				$url    = $scheme . '://' . $url;
+				$url = $scheme . '://' . $url;
 			} else {
 				// for /resource type urls.
 				$url = home_url( $url );
 			}
 		} elseif ( strpos( $url, 'http://' ) === false ) {
 			if ( 0 === strpos( $url, 'http:/' ) ) {
-				$url    = $scheme . '://' . str_replace( 'http:/', '', $url );
+				$url = $scheme . '://' . str_replace( 'http:/', '', $url );
 			} elseif ( 0 === strpos( $url, 'http:' ) ) {
-				$url    = $scheme . '://' . str_replace( 'http:', '', $url );
+				$url = $scheme . '://' . str_replace( 'http:', '', $url );
 			}
 		}
 		return $url;
@@ -202,7 +202,7 @@ class aiosp_common {
 	 * @return bool
 	 */
 	public static function is_url_valid( $url ) {
-		return filter_var( filter_var( $url, FILTER_SANITIZE_URL ), FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED ) !== false;
+		return filter_var( filter_var( $url, FILTER_SANITIZE_URL ), FILTER_VALIDATE_URL ) !== false;
 	}
 
 	/**
@@ -210,9 +210,10 @@ class aiosp_common {
 	 *
 	 * Renders the value XML safe.
 	 *
-	 * @since 2.10
+	 * @since	2.10.0
+	 * @since	3.4.0	Renamed function.
 	 */
-	public static function make_xml_safe( $tag, $value ) {
+	public static function esc_xml( $tag, $value ) {
 		// some tags contain an array of values.
 		if ( is_array( $value ) ) {
 			return $value;
@@ -264,7 +265,7 @@ class aiosp_common {
 		static $results_1;
 		static $results_2;
 
-		$id = 0;
+		$id      = 0;
 		$url_md5 = md5( $url );
 
 		// Gets the URL => PostIDs array.

@@ -1,8 +1,7 @@
 /**
  * Controls all the styling of the plugin.
  *
- * @author Michael Torbert.
- * @author Semper Fi Web Design.
+ * @author All in One SEO Team.
  * @copyright http://semperplugins.com
  * @package All-in-One-SEO-Pack.
  */
@@ -87,7 +86,7 @@
 
 .aioseop_tabs .aioseop_meta_box_help,
 .aioseop_tabs .aioseop_meta_box_help:active {
-	margin-top: 10px;
+	margin: 15px 0;
 }
 
 .aioseop_tabs #aioseop_opengraph_settings .aioseop_meta_box_help,
@@ -122,11 +121,12 @@
 	border: 1px solid #e1e1e1;
 }
 
-.aioseop input[type="text"], 
+.aioseop input[type="text"],
 .aioseop input[type="url"]  {
 	color: #515151;
-	min-height: 35px;
-	padding: 10px;
+	min-height: 40px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	font-size: 14px;
 	width: 95%;
 	max-width: 600px;
@@ -143,7 +143,7 @@
 	min-height: 36px;
 }
 
-.aioseop input, 
+.aioseop input,
 .aioseop textarea {
     border-radius: 4px;
     border: 1px solid #8d96a0;
@@ -151,7 +151,7 @@
     font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif !important;
 }
 
-.aioseop input:focus, 
+.aioseop input:focus,
 .aioseop textarea:focus {
     box-shadow: 0 0 0 1px #007cba;
 }
@@ -262,23 +262,6 @@
 	float: right;
 }
 
-.wincherad {
-	width: 100%;
-	height: 100%;
-	background-size: 100%;
-	background-repeat: no-repeat;
-	margin-bottom: 0;
-	border: none;
-}
-
-#wincher21 {
-	background-image: url(../../modules/images/banner21.jpg);
-}
-
-#wincher22 {
-	background-image: url(../../modules/images/banner22.jpg);
-}
-
 .aioseop_content {
 	min-width: 760px;
 	clear: left;
@@ -384,10 +367,7 @@
 }
 
 .aioseop_sidebar #mc-embedded-subscribe-form {
-	margin: 0 0 10px 0;
-	background: white;
-	padding: 10px 10px;
-	border: 1px solid #DDD;
+	padding: 0px 10px;
 }
 
 #aioseop-about .aioseop_metabox_text ul {
@@ -427,7 +407,7 @@ body.all-in-one-seo_page_all-in-one-seo-pack-pro-aioseop_feature_manager .aioseo
 
 .aioseop_top {
 	margin: 10px 10px 0 0;
-	/*	margin: 10px 477px 0px 0px; */
+	/*  margin: 10px 477px 0px 0px; */
 }
 
 .aioseop_top #aioseop-list {
@@ -440,7 +420,7 @@ body.all-in-one-seo_page_all-in-one-seo-pack-pro-aioseop_feature_manager .aioseo
 
 .aioseop_right_sidebar {
 	float: right;
-	margin-top: 55px;
+	margin-top: 50px;
 }
 
 #aiosp_settings_form .button-primary.hidden {
@@ -526,10 +506,6 @@ div.aioseop_feature {
 	content: "";
 	position: absolute;
 	right: 0;
-}
-
-.aioseop_feature .flag.pro {
-	display: none;
 }
 
 #aioseop_coming_soon .free.flag,
@@ -634,12 +610,12 @@ div.aioseop_feature#aioseop_opengraph .aioseop_featured_image.active {
 	background-image: url(../../modules/images/SocialMeta-Color-Standard.png);
 }
 
-div.aioseop_feature#aioseop_robots .aioseop_featured_image, 
+div.aioseop_feature#aioseop_robots .aioseop_featured_image,
 div.aioseop_feature#aioseop_bad_robots .aioseop_featured_image {
 	background-image: url(../../modules/images/Robots-BW-Standard.png);
 }
 
-div.aioseop_feature#aioseop_robots .aioseop_featured_image.active, 
+div.aioseop_feature#aioseop_robots .aioseop_featured_image.active,
 div.aioseop_feature#aioseop_bad_robots .aioseop_featured_image.active {
 	background-image: url(../../modules/images/Robots-Color-Standard.png);
 }
@@ -736,12 +712,12 @@ div.aioseop_feature#aioseop_coming_soon2 .aioseop_featured_image {
 		background-image: url(../../modules/images/SocialMeta-Color-Retina.png);
 	}
 
-	div.aioseop_feature#aioseop_robots .aioseop_featured_image, 
+	div.aioseop_feature#aioseop_robots .aioseop_featured_image,
 	div.aioseop_feature#aioseop_bad_robots .aioseop_featured_image {
 		background-image: url(../../modules/images/Robots-BW-Retina.png);
 	}
 
-	div.aioseop_feature#aioseop_robots .aioseop_featured_image.active, 
+	div.aioseop_feature#aioseop_robots .aioseop_featured_image.active,
 	div.aioseop_feature#aioseop_bad_robots .aioseop_featured_image.active {
 		background-image: url(../../modules/images/Robots-Color-Retina.png);
 	}
@@ -810,7 +786,7 @@ div.aioseop_feature#aioseop_coming_soon2 .aioseop_featured_image {
 	margin: 0;
 	padding-left: 1px;
 	min-width: 160px;
-	/*	max-width: 900px; */
+	/*  max-width: 900px; */
 }
 
 /*** Sitemap Additional Pages section ***/
@@ -966,7 +942,7 @@ table.aioseop_table td {
 	padding-right: 2%;
 }
 
-table.aioseop_table td, 
+table.aioseop_table td,
 table.aioseop_table th {
 	padding: 3px;
 }
@@ -1046,7 +1022,7 @@ table.aioseop_table th {
 	margin: 1.5em 0.6em 0.3em;
 }
 
-#aiosp_settings_form .aioseop_no_label, 
+#aiosp_settings_form .aioseop_no_label,
 .aioseop_no_label {
 	float: left;
 	width: 92%;
@@ -1105,7 +1081,13 @@ table.aioseop_table th {
 }
 
 .aioseop_input input[type="checkbox"]:before {
+	float: left;
+	display: inline-block;
+	vertical-align: middle;
+	width: 16px;
+	content: "\f147";
     margin: -3px 0 0 -5px;
+	font: normal 21px/1 dashicons;
     color: white;
 }
 
@@ -1256,16 +1238,6 @@ div.aioseop_notice a.aioseop_dismiss_link {
 	padding: 10px;
 }
 
-.aioseop_loading {
-	background-image: url('../../images/activity.gif');
-	display: inline-block;
-	width: 24px;
-	height: 24px;
-	margin: 0;
-	padding: 0;
-	vertical-align: bottom;
-}
-
 .aioseop_tabs.ui-widget-content {
 	background: none !important;
 }
@@ -1380,7 +1352,7 @@ div.sfwd_debug_error {
 	max-height: 420px;
 }
 
-#aioseop_coming_soon, 
+#aioseop_coming_soon,
 #aioseop_coming_soon2 {
 	padding-top: 40px;
 	text-align: center;
@@ -1455,9 +1427,8 @@ div.sfwd_debug_error {
 	margin: 0;
 }
 
-#aioseop_opengraph_settings .aioseop_options {
-	clear: both;
-	margin-top: 35px;
+#aioseop_opengraph_settings_upgrade_wrapper {
+	margin-top: 10px;
 }
 
 /**
@@ -1531,16 +1502,15 @@ div#aioseop_snippet > div > span {
 	border: 0;
 }
 
-/* the good, the bad and the ugly character counts */
-.aioseop_count_good {
+.aioseop_count_chars_below_treshold {
 	color: #515151 !important;
 	background-color: #eee !important;
 }
-.aioseop_count_bad {
+.aioseop_count_chars_near_treshold {
 	color: #515151 !important;
 	background-color: #ff0 !important;
 }
-.aioseop_count_ugly {
+.aioseop_count_chars_past_treshold {
 	color: #fff !important;
 	background-color: #f00 !important;
 }
@@ -1607,4 +1577,68 @@ div#aiosp_sitemap_status_metabox .toggle-indicator {
 .aioseop_options .aioseop-exclude-terms.selectize-control.multi .selectize-input [data-value] {
 	background-color: #0E7BBE;
 	background-image: none;
+}
+
+/**
+* Styling for jQuery UI Datepicker in Safari
+*
+*/
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div {
+	background-color: #fff;
+	padding: 15px;
+	border: 1px solid #8d96a0;
+	border-radius: 4px;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div .ui-datepicker-prev {
+	float: left;
+	text-align: left;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div .ui-datepicker-prev:before {
+	content: '\2190 ';
+	padding-right: 2px;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div .ui-datepicker-next {
+	float: right;
+	text-align: right;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div .ui-datepicker-next:after {
+	content: '\2192 ';
+	padding-left: 2px;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div .ui-datepicker-title {
+	clear: both;
+	text-align: center;
+	font-weight: bold;
+	padding: 10px 0;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar {
+	border: 1px solid #007cba;
+	border-collapse: collapse;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar thead {
+	background-color: #f1f1f1;
+	border-bottom: 1px solid #8d96a0;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar thead th,
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar td {
+	width: 2rem;
+	height: 2rem;
+	text-align: center;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar td a {
+	text-decoration: none;
+}
+
+body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar td a:hover {
+	border: 1px solid #8d96a0;
+	padding: 5px 7px;
 }

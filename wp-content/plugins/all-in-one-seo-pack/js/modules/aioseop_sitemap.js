@@ -5,8 +5,7 @@
  *
  * @link https://github.com/selectize/selectize.js
  *
- * @author Michael Torbert.
- * @author Semper Fi Web Design.
+ * @author All in One SEO Team.
  * @copyright https://semperplugins.com
  * @version 3.0
  */

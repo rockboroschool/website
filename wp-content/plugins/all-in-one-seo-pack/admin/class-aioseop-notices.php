@@ -93,7 +93,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 *
 		 * @var int $default_dismiss_delay
 		 */
-		private $default_dismiss_delay = 180;
+		private $default_dismiss_delay = 315569260; // 10 years
 
 		/**
 		 * List of Screens used in AIOSEOP.
@@ -107,31 +107,27 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		private $aioseop_screens = array();
 
 		/**
+		 * List of screens that should be excluded.
+		 *
+		 * @var array
+		 *
+		 * @since 3.4.0
+		 */
+		private $excluded_screens = array(
+			'About Us' => 'all-in-one-seo_page_aioseop-about',
+		);
+
+		/**
 		 * __constructor.
 		 *
 		 * @since 3.0
 		 */
 		public function __construct() {
-
-			// DirectoryIterator::getExtension() was added in PHP 5.3.6. We can remove this once we drop support < PHP 5.3.
-			if ( version_compare( phpversion(), '5.3.6', '<' ) ) {
-				return false;
-			}
-
 			$this->_requires();
 			$this->obj_load_options();
 
 			if ( current_user_can( 'aiosp_manage_seo' ) ) {
-				$this->aioseop_screens[] = 'toplevel_page_' . AIOSEOP_PLUGIN_DIRNAME . '/aioseop_class';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_performance';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_sitemap';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_aiosp_opengraph';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_aiosp_robots_generator';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_robots';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_file_editor';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_importer_exporter';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_bad_robots';
-				$this->aioseop_screens[] = 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_feature_manager';
+				$this->aioseop_screens = aioseop_get_admin_screens();
 
 				add_action( 'admin_init', array( $this, 'init' ) );
 				add_action( 'current_screen', array( $this, 'admin_screen' ) );
@@ -161,7 +157,8 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 */
 		private function autoload_notice_files() {
 			foreach ( new DirectoryIterator( AIOSEOP_PLUGIN_DIR . 'admin/display/notices/' ) as $file ) {
-				if ( $file->isFile() && 'php' === $file->getExtension() ) {
+				$extension = pathinfo( $file->getFilename(), PATHINFO_EXTENSION );
+				if ( $file->isFile() && 'php' === $extension ) {
 					$filename = $file->getFilename();
 
 					// Qualified file pattern; "*-notice.php".
@@ -339,6 +336,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				'time'    => 0,
 				'text'    => __( 'Dismiss', 'all-in-one-seo-pack' ),
 				'link'    => '#',
+				'new_tab' => true,
 				'dismiss' => true,
 				'class'   => '',
 			);
@@ -547,9 +545,9 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				update_user_meta( $current_user_id, 'aioseop_notice_display_time_' . $slug, $display_time );
 			}
 
-			$this->notices[ $slug ]['time_set'] = $time_set;
+			$this->notices[ $slug ]['time_set']   = $time_set;
 			$this->notices[ $slug ]['time_start'] = $display_time;
-			$this->active_notices[ $slug ]      = $display_time;
+			$this->active_notices[ $slug ]        = $display_time;
 
 			return true;
 		}
@@ -730,29 +728,30 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 			$current_screen  = get_current_screen();
 			$current_user_id = get_current_user_id();
 			foreach ( $this->active_notices as $a_notice_slug => $a_notice_time_display ) {
-				// vvv TEMP Avoid review notice.
-				if ( 'review_plugin' === $a_notice_slug ) {
-					continue;
-				}
-				// ^^^ TEMP Avoid review notice.
 				$notice_show = true;
 				$notice      = $this->get_notice( $a_notice_slug );
 
+				// If we have no message or static HTML, this is a bad notice.
+				if ( empty( $notice['message'] ) && empty( $notice['html'] ) ) {
+					$this->remove_notice( $a_notice_slug );
+					continue;
+				}
+
 				// Screen Restriction.
 				if ( ! empty( $notice['screens'] ) ) {
-					// Checks if on aioseop screen.
+
 					if ( in_array( 'aioseop', $notice['screens'], true ) ) {
-						if ( ! in_array( $current_screen->id, $this->aioseop_screens, true ) ) {
-							continue;
-						}
+						unset( $notice['screens']['aiosoep'] );
+						$notice['screens'] = array_merge( $notice['screens'], aioseop_get_admin_screens() );
 					}
 
-					// Checks the other screen restrictions by slug/id.
-					if ( ! in_array( 'aioseop', $notice['screens'], true ) ) {
-						if ( ! in_array( $current_screen->id, $notice['screens'], true ) ) {
-							continue;
-						}
+					if ( ! in_array( $current_screen->id, $notice['screens'], true ) ) {
+						continue;
 					}
+				}
+
+				if ( in_array( $current_screen->id, $this->excluded_screens, true ) ) {
+					continue;
 				}
 
 				if ( isset( $this->dismissed[ $a_notice_slug ] ) && $this->dismissed[ $a_notice_slug ] ) {
@@ -825,7 +824,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 			if ( empty( $notice_slug ) ) {
 				/* Translators: Displays the hordcoded slug that missing. */
 				wp_send_json_error( sprintf( __( 'Missing values from `%s`.', 'all-in-one-seo-pack' ), 'notice_slug' ) );
-			} elseif ( empty( $action_index ) && 0 !== $action_index ) {
+			} elseif ( empty( $action_index ) && 0 !== (int) $action_index ) {
 				/* Translators: Displays the hordcoded slug that missing. */
 				wp_send_json_error( sprintf( __( 'Missing values from `%s`.', 'all-in-one-seo-pack' ), 'action_index' ) );
 			}
