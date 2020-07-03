@@ -3,8 +3,9 @@ Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, google analytics dashboard, google analytics widget, WooCommerce stats, analytics dashboard, universal google analytics, statistics, tracking, stats, google, google analytics by yoast, ga, monster insights, monsterinsights, universal analytics, web stats, ecommerce, ecommerce tracking
 Requires at least: 3.8.0
-Tested up to: 5.3
-Stable tag: 7.7.1
+Tested up to: 5.4
+Stable tag: 7.11.0
+Requires PHP: 5.2
 License: GPL v3
 
 The best Google Analytics plugin for WordPress. See how visitors find and use your website, so you can keep them coming back.
@@ -36,7 +37,7 @@ https://www.youtube.com/watch?v=IbdKpSygp2U
 
 = Quick & Easy Google Analytics Setup =
 
-The old way of "properly" setting up Google Analytics was complicated. You had to either hire a developer or learn to add Google Analtyics code in various different areas of your WordPress theme. The setup time would take days to weeks if you wanted to add powerful features like events tracking, eCommerce tracking, etc.
+The old way of "properly" setting up Google Analytics was complicated. You had to either hire a developer or learn to add Google Analytics code in various different areas of your WordPress theme. The setup time would take days to weeks if you wanted to add powerful features like events tracking, eCommerce tracking, etc.
 
 With MonsterInsights, we made it "effortless" to properly setup Google Analytics in WordPress. Yes, you can enable all advanced Google Analytics features with just a few clicks.
 
@@ -88,7 +89,7 @@ Google Analytics Enhanced Ecommerce tracking is a powerful feature that lets you
 
 With MonsterInsights' easy WooCommerce Google Analytics integration, you can setup WooCommerce analytics with literally 1-click.
 
-Once you have enabled WooCommerce tracking, MonsterInsights will show you all important WooCommerce metrics in a single dashboard including WooCommerce conversion rate, top products in your WooCommerce store, total transactions, total revenue, average order value, top referral sourecs, and more.
+Once you have enabled WooCommerce tracking, MonsterInsights will show you all important WooCommerce metrics in a single dashboard including WooCommerce conversion rate, top products in your WooCommerce store, total transactions, total revenue, average order value, top referral sources, and more.
 
 Our WooCommerce analytics report also include other detailed WooCommerce event tracking data like total add to carts, total removed from cart, time to purchase, and sessions to purchase.
 
@@ -106,13 +107,13 @@ MonsterInsights helps make Google Analytics GDPR compliance easier for business 
 
 Our EU compliance addon allows you to:
 
-* Anonymyze IP in Google Analytics
+* Anonymize IP in Google Analytics
 * Disable the Demographics and Interest Reports for Remarketing and Advertising
 * Disable UserID and author name tracking
 * Enable the ga() compatibility mode
 * Integrate with Cookie Notice and CookieBot plugins to collect user consent before tracking
 * Integrate with Google AMP Consent Box before enable tracking
-* Integrate with Google Analytic's Chrome browser opt-out extension and built-in cookie opt-out system
+* Integrate with Google Analytics's Chrome browser opt-out extension and built-in cookie opt-out system
 * Offer Easy Opt Out link for Google Analytics tracking
 
 While no single plugin can guarantee 100% GDPR compliance in WordPress, MonsterInsights goes to great length in helping business owners with Google Analytics GDPR compliance.
@@ -181,7 +182,7 @@ We have built-in all permissions and controls that you would need to successfull
 
 You can control who has access to view the Google Analytics Dashboard report in WordPress. Our permissions setting allows you to hide Google analytics reports for specific user roles.
 
-Similarly, we undrestand that some sites may want to exclude logged-in users from Google Analytics tracking. MonsterInsights gives you granular control to exclude admin in Google Analytics as well as other user roles.
+Similarly, we understand that some sites may want to exclude logged-in users from Google Analytics tracking. MonsterInsights gives you granular control to exclude admin in Google Analytics as well as other user roles.
 
 Our performance addon allows you to adjust sample rate and site speed sample rates for Google Analytics.
 
@@ -212,7 +213,7 @@ We understand Google Analytics better than any other analytics plugin for WordPr
 * Enhanced Link Attribution - Get better analytics with enhanced link attribution.
 * Google Analytics for AMP - Add proper Google Analytics tracking for Google AMP.
 * Google Analytics for Facebook Instant Articles - Add proper Google Analytics tracking for Facebook Analytics.
-* Google Analytics GDPR Compliance - EU compliance addon helps you improve Google Analytics GDPR compliance by adding adding anonymize IP, cookie consent for Google Analytics, opt-out tracking, and more.
+* Google Analytics GDPR Compliance - EU compliance addon helps you improve Google Analytics GDPR compliance by adding anonymize IP, cookie consent for Google Analytics, opt-out tracking, and more.
 * Form Conversion Tracking - Track conversions for your WordPress forms. Works with all popular plugins including WPForms, Contact Form 7, Gravity Forms, Formidable Forms, and more.
 * Google Optimize Tracking - Enable Google Analytics support for Google Optimize A/B Testing.
 * Google Analytics Tools - Helpful tools for Google analytics such as UTM link tracking builder.
@@ -273,8 +274,74 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
-= 7.7.1: June 19, 2019 =
-- Fixed: SVN didn't add one of our files.
+= 7.11.0: July 1, 2020 =
+- New: We’ve added a new integration with PrettyLinks, allowing you to easily combine the power of our UTM builder in our Tools section with the pretty urls provided by PrettyLinks.
+- Tweak: We’ve refined the installation and setup process for MonsterInsights users who use MonsterInsights as a network activated plugin. New mutlisite users will find a new install wizard, updated settings panel, and further bugfixes and refinements to make the multisite experience as polished as possible.
+- Tweak: We’ve enhanced MonsterInsights’s automatic tracking code output checker to handle all of the most common coming soon plugins to ensure no false positives are detected.
+- Tweak: For users using our PHP constant to disable tracking on staging and other non-production sites, we’ve fixed a bug that caused the “tracking not working” error message to show.
+- Fixed: We fixed a bug that for some users caused the enhanced link attribution code to not output properly.
+
+= 7.10.4: January 29, 2020 =
+- Tweak: In rare cases, we had users who have installed badly coded plugins and themes which were not properly detecting admin side only scripts and styles when stripping version numbers. This causes problems when the browser cache should be cleared but is not because the query param is stripped, and results in users who get Javascript errors from mismatched dependencies. This release attempts to solve that problem for most affected users.
+
+= 7.10.3: January 9, 2020 =
+- New: The limited time (available until end of day Jan. 13) Year in Review report is now available in the admin, which shows how your site performed last year and offers suggestions for 2020.
+- New: Integration with PrettyLinks for hosted files so viewing of files directly accessed can now be tracked.
+
+= 7.10.2: December 19, 2019 =
+- Fixed: Right to Left (RTL) language stylesheets are now properly loaded for the onboarding wizard.
+
+= 7.10.1: December 5, 2019 =
+- Fixed: We've tweaked how certain classes of errors are handled in our onboarding wizard to make it more intuitive for some uncommon setups.
+- Fixed: We've fixed a bug with the reports tooltip Javascript that sometimes threw an undefined error.
+- Fixed: We've adjusted the logic used to show the not-tracking warning for administrators.
+
+= 7.10.0: November 7, 2019 =
+- New: Welcome to Project Delight Phase 3! Over this and the next several major releases, we're going to be focusing on polishing MonsterInsights and it's addons. You can learn more about our Project Delight initative on our blog at monsterinsights.com/blog/.
+- New: We've added .docx, .pptx, and .xlsx to our file tracking feature as these are uploadable by WordPress by default and are commonly uploaded filetypes (and complement the existing .doc, .ppt, and .xls tracking we already have). We removed .exe, .js, and .tgz as they cannot be uploaded in WordPress by default and were not commonly used (however these can be added if desired on the file download tracking setting).
+- New: Previously in MonsterInsights we did not track administrators, and on multisite super administrators, by default. Starting with this release, editors will also now be excluded from tracking, to prevent them from skewing the analytics data for a site.
+- New: You can now change the roles able to adjust MonsterInsights settings prior to authenticating. This allows agencies flexibility in workflow if they do not give clients access to the administrator role to be able to authenticate their site.
+- Tweak: We've adjusted the error messages some users were getting revolving around SSL certificates to make them more clear on the action they need to perform to fix it.
+- Fixed: We've fixed a bug in the Safari web browser where there was some unintented padding on the Charlie overlay.
+- Fixed: We've adjusted the dashboard widget so that if a user cannot save settings, it won't suggest they go to the setup wizard but rather to contact a site administrator.
+- Fixed: We've fixed an edge case on multisite that would have prevented some users who saved a manual UA code from being able to remove (rather than replace) it.
+- Fixed: We've fixed an extreme edge case in link tracking where if a user is linking to a different domain B from domain A, if domain B's name is in domain A (such as monsterinsights.com and getmonsterinsights.com) this will now be correctly determined to be an outbound link instead of an internal link.
+
+= 7.9.0: October 2, 2019 =
+- New: Welcome to Project Delight Phase 2! Over this and the next several major releases, we're going to be focusing on polishing MonsterInsights and it's addons. You can learn more about our Project Delight initative on our blog at monsterinsights.com/blog/.
+- New: We added a Quick Links menu so you can suggest features and find help easier
+- New: After you set up tracking and visit your site’s frontend as a logged in administrator user you’ll get a notice to make it clearer why your administrator user is not tracked.
+- Tweak: Improved the flow when your site is disconnected so it’s easier to authenticate and see results.
+- Tweak: Date range is now indicated in the dashboard widget report so report data is clearer.
+- Tweak: We moved the link to view the full reports area in the dashboard widget making it easier to access more data.
+- Tweak: It’s now easier to set up tracking from the dashboard widget by accessing the setup wizard directly.
+- Tweak: We added the "About us" page to multisite panel so it’s easier to get access to the info you need to get started.
+- Fixed: We improved the loading state for the dashboard widget in the full-width mode.
+
+= 7.8.2: September 23, 2019 =
+- Tweak: Removal of a library for the news dashboard widget
+
+= 7.8.1: September 17, 2019 =
+- Tweak: Admin bar reports were no longer in the frontend.
+- Fixed: One of our Site Health integrations was triggering an error on PHP versions lower than PHP 5.5.
+
+= 7.8.0: September 10, 2019 =
+- New: Welcome to Project Delight Phase 1! Over this and the next several major releases, we're going to be focusing on polishing MonsterInsights and it's addons. You can learn more about our Project Delight initative on our blog at monsterinsights.com/blog/.
+- New: We've added a new welcome screen for first time MonsterInsights users that makes it easier than ever to get started with our plugin.
+- New: We've added a pair of health checks to the WordPress core site health area to help make it even easier than ever to know that your MonsterInsights install is working properly.
+- Tweak: We've added more GA error code detection to help our users when their access tokens expire due to Google's token expiration guidelines.
+- Tweak: We've adjusted some of the wording of settings in the plugin to make them clearer.
+- Tweak: You can now toggle the dashboard widget on/off directly from the dashboard widget (can also still be done in the Screen Options).
+- Tweak: We've added a link on the dashboard widget to bring you directly to the full Overview report.
+- Tweak: We've spent some time adding more checks and more verbose error messages whenever we show a user an error message. It rarely happens, but if we can make them more helpful when they do, everyone wins.
+- Tweak: We've ensured the menu items look good regardless of the WordPress admin color scheme used.
+- Fixed: While MonsterInsights does not track site administrators by default in order to prevent unintended skewing of the Google Analytics data by site owners, we've fixed a bug that prevented users from being able to track them if they wanted to.
+- Fixed: While we strongly recommend connecting with MonsterInsights since that allows the Reports and some of the more powerful MonsterInsights features to work, we've fixed a bug where if a manual UA code was added it was not removable on the mulitisite network panel due to a bug in the validation of that field.
+- Fixed: We fixed an issue where on the network admin area of WordPress sites, if the plugin SG Optimizer plugin was installed, their plugin's CSS would mess up our plugin's menu item icon.
+- Fixed: With our plugin's conversion to VueJS complete, we've removed some old stylesheet and javascript files from the admin that are no longer needed.
+- Fixed: Sometimes the current screen was not set in the onboarding wizard so we've added some logic to ensure it's always set for consistency.
+- Fixed: Javascript translations for the admin bar widget were sometimes loaded even if the admin bar widget was not going to load itself due to settings.
+- Fixed: We've fixed a couple spelling errors in the plugin.
 
 = 7.7.0: June 18, 2019 =
 - New: Admin bar insights now available in the WordPress admin.

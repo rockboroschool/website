@@ -36,6 +36,8 @@ class MonsterInsights_WP_Site_Health_Lite {
 
 		add_action( 'wp_ajax_health-check-monsterinsights-test_connection', array( $this, 'test_check_connection' ) );
 
+		add_action( 'wp_ajax_health-check-monsterinsights-test_tracking_code', array( $this, 'test_check_tracking_code' ) );
+
 	}
 
 	/**
@@ -46,13 +48,6 @@ class MonsterInsights_WP_Site_Health_Lite {
 	 * @return array
 	 */
 	public function add_tests( $tests ) {
-
-		if ( $this->is_licensed() ) {
-			$tests['direct']['monsterinsights_license'] = array(
-				'label' => __( 'MonsterInsights License', 'google-analytics-for-wordpress' ),
-				'test'  => array( $this, 'test_check_license' ),
-			);
-		}
 
 		$tests['direct']['monsterinsights_auth'] = array(
 			'label' => __( 'MonsterInsights Authentication', 'google-analytics-for-wordpress' ),
@@ -90,21 +85,29 @@ class MonsterInsights_WP_Site_Health_Lite {
 			'test'  => 'monsterinsights_test_connection',
 		);
 
+		if ( $this->is_tracking() ) {
+			$tests['async']['monsterinsights_tracking_code'] = array(
+				'label' => __( 'MonsterInsights Tracking Code', 'ga-premium' ),
+				'test'  => 'monsterinsights_test_tracking_code',
+			);
+		}
+
 		return $tests;
 	}
 
 	/**
-	 * Checke if the website is licensed.
+	 * Checks if the website is being tracked.
 	 *
 	 * @return bool
 	 */
-	public function is_licensed() {
+	public function is_tracking() {
 
-		if ( ! isset( $this->is_licensed ) ) {
-			$this->is_licensed = is_network_admin() ? MonsterInsights()->license->is_network_licensed() : MonsterInsights()->license->is_site_licensed();
+		if ( ! isset( $this->is_tracking ) ) {
+			$ua                = monsterinsights_get_ua();
+			$this->is_tracking = ! empty( $ua );
 		}
 
-		return $this->is_licensed;
+		return $this->is_tracking;
 
 	}
 
@@ -127,6 +130,8 @@ class MonsterInsights_WP_Site_Health_Lite {
 			$this->ecommerce = 'Easy Digital Downloads';
 		} else if ( defined( 'MEPR_VERSION' ) && version_compare( MEPR_VERSION, '1.3.43', '>' ) ) {
 			$this->ecommerce = 'MemberPress';
+		} else if ( function_exists( 'LLMS' ) && version_compare( LLMS()->version, '3.32.0', '>=' ) ) {
+			$this->ecommerce = 'LifterLMS';
 		}
 
 		return $this->ecommerce;
@@ -152,6 +157,80 @@ class MonsterInsights_WP_Site_Health_Lite {
 
 		return class_exists( 'MonsterInsights_FB_Instant_Articles' ) || defined( 'IA_PLUGIN_VERSION' ) && version_compare( IA_PLUGIN_VERSION, '3.3.4', '>' );
 
+	}
+
+	/**
+	 * Is Coming Soon / Maintenance / Under Construction mode being activated by another plugin?
+	 *
+	 * @return bool
+	 */
+	private function is_coming_soon_active() {
+		if ( defined( 'SEED_CSP4_SHORTNAME' ) ) {
+			// SeedProd
+			// http://www.seedprod.com
+
+			$settings = get_option( 'seed_csp4_settings_content' );
+
+			// 0: Disabled
+			// 1: Coming soon mode
+			// 2: Maintenance mode
+			return ! empty( $settings['status'] );
+		} elseif ( defined( 'WPMM_PATH' ) ) {
+			// WP Maintenance Mode
+			// https://designmodo.com/
+
+			$settings = get_option( 'wpmm_settings', array() );
+
+			return isset( $settings['general']['status'] ) && 1 === $settings['general']['status'];
+		} elseif ( function_exists( 'csmm_get_options' ) ) {
+			// Minimal Coming Soon & Maintenance Mode
+			// https://comingsoonwp.com/
+
+			$settings = csmm_get_options();
+
+			return isset( $settings['status'] ) && 1 === $settings['status'];
+		} elseif ( defined( 'WPM_DIR' ) ) {
+			// WP Maintenance
+			// https://fr.wordpress.org/plugins/wp-maintenance/
+
+			return '1' === get_option( 'wp_maintenance_active' );
+		} elseif ( defined( 'ACX_CSMA_CURRENT_VERSION' ) ) {
+			// Under Construction / Maintenance Mode From Acurax
+			// http://www.acurax.com/products/under-construction-maintenance-mode-wordpress-plugin
+
+			return '1' === get_option( 'acx_csma_activation_status' );
+		} elseif ( defined( 'SAHU_SO_PLUGIN_URL' ) ) {
+			// Site Offline
+			// http://www.freehtmldesigns.com
+
+			$settings = maybe_unserialize( get_option( 'sahu_so_dashboard' ) );
+
+			return isset( $settings['sahu_so_status'] ) && '1' === $settings['sahu_so_status'];
+		} elseif ( defined( 'CSCS_GENEROPTION_PREFIX' ) ) {
+			// IgniteUp
+			// http://getigniteup.com
+
+			return '1' === get_option( CSCS_GENEROPTION_PREFIX . 'enable', '' );
+		} elseif ( method_exists( 'UCP', 'is_construction_mode_enabled' ) ) {
+			// Under Construction by WebFactory Ltd
+			// https://underconstructionpage.com/
+
+			return UCP::is_construction_mode_enabled( true );
+		} elseif ( function_exists( 'mtnc_get_plugin_options' ) ) {
+			// Maintenance by WP Maintenance
+			// http://wordpress.org/plugins/maintenance/
+
+			$settings = mtnc_get_plugin_options( true );
+
+			return 1 === $settings['state'];
+		} elseif ( class_exists( 'CMP_Coming_Soon_and_Maintenance' ) ) {
+			// CMP Coming Soon & Maintenance
+			// https://wordpress.org/plugins/cmp-coming-soon-maintenance/
+
+			return get_option( 'niteoCS_status' );
+		}
+
+		return false;
 	}
 
 	/**
@@ -384,6 +463,39 @@ class MonsterInsights_WP_Site_Health_Lite {
 			if ( is_wp_error( $response ) ) {
 				// Translators: The error message received.
 				$result['description'] .= ' ' . sprintf( __( 'Error message: %s', 'google-analytics-for-wordpress' ), $response->get_error_message() );
+			}
+		}
+
+		wp_send_json_success( $result );
+	}
+
+	/**
+	 * Checks if there is a duplicate tracker.
+	 */
+	public function test_check_tracking_code() {
+
+		$result = array(
+			'label'       => __( 'Tracking code is properly being output.', 'google-analytics-for-wordpress' ),
+			'status'      => 'good',
+			'badge'       => array(
+				'label' => __( 'MonsterInsights', 'google-analytics-for-wordpress' ),
+				'color' => 'blue',
+			),
+			'description' => __( 'The Google Analytics tracking code is being output correctly, and no duplicate Google Analytics scripts have been detected.', 'google-analytics-for-wordpress' ),
+			'test'        => 'monsterinsights_tracking_code',
+		);
+
+		$errors = monsterinsights_is_code_installed_frontend();
+
+		if ( ! empty( $errors ) && is_array( $errors ) && ! empty( $errors[0] ) ) {
+			if ( $this->is_coming_soon_active() ) {
+				$result['status']      = 'good';
+				$result['label']       = __( 'Tracking code disabled: coming soon/maintenance mode plugin present', 'ga-premium' );
+				$result['description'] = __( 'MonsterInsights has detected that you have a coming soon or maintenance mode plugin currently activated on your site. This plugin does not allow other plugins (like MonsterInsights) to output Javascript, and thus MonsterInsights is not currently tracking your users (expected). Once the coming soon/maintenance mode plugin is deactivated, tracking will resume automatically.', 'ga-premium' );
+			} else {
+				$result['status']      = 'critical';
+				$result['label']       = __( 'MonsterInsights has automatically detected an issue with your tracking setup', 'google-analytics-for-wordpress' );
+				$result['description'] = $errors[0];
 			}
 		}
 

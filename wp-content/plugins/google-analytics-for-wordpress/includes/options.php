@@ -61,12 +61,17 @@ function monsterinsights_get_option( $key = '', $default = false ) {
  * @return string The UA to use.
  */
 function monsterinsights_get_ua() {
+	// Allow short circuiting (for staging sites)
+	if ( defined( 'MONSTERINSIGHTS_DISABLE_TRACKING' ) && MONSTERINSIGHTS_DISABLE_TRACKING ) {
+		return '';
+	}
+
 	// Try getting it from the auth UA
 	$ua = MonsterInsights()->auth->get_ua();
 
 	// If that didn't work, try the manual UA at the site level
 	if ( empty( $ua ) ) {
-		$ua = MonsterInsights()->auth->get_manual_ua();	
+		$ua = MonsterInsights()->auth->get_manual_ua();
 		// If that didn't work try getting it from the network
 		if ( empty( $ua ) ) {
 			$ua = monsterinsights_get_network_ua();
@@ -97,13 +102,13 @@ function monsterinsights_get_network_ua() {
 	if ( ! is_multisite() ) {
 		return '';
 	}
-	
+
 	// First try network auth UA
 	$ua = MonsterInsights()->auth->get_network_ua();
 	if ( ! empty( $ua ) ) {
 		return $ua;
 	}
-	
+
 	// Then try manual network UA
 	$ua = MonsterInsights()->auth->get_network_manual_ua();
 	if ( ! empty( $ua ) ) {
@@ -313,10 +318,10 @@ function monsterinsights_is_valid_ua( $ua_code = '' ) {
 	if ( empty( $ua_code ) ) {
 		return '';
 	}
-	
+
 	// Replace all type of dashes (n-dash, m-dash, minus) with normal dashes.
 	$ua_code = str_replace( array( '–', '—', '−' ), '-', $ua_code );
-	
+
 	if ( preg_match( "/^(UA|YT|MO)-\d{4,}-\d+$/", strval( $ua_code ) ) ) {
 		return $ua_code;
 	} else {
@@ -356,7 +361,10 @@ function monsterinsights_get_license() {
  * @return string       The value of the setting.
  */
 function monsterinsights_get_license_key() {
-	return MonsterInsights()->license->get_license_key();
+	if ( monsterinsights_is_pro_version() ) {
+		return MonsterInsights()->license->get_license_key();
+	}
+	return '';
 }
 
 function monsterinsights_get_option_name() {
@@ -369,7 +377,7 @@ function monsterinsights_get_option_name() {
 
 function monsterinsights_export_settings() {
 	$settings = monsterinsights_get_options();
-	$exclude  = array( 
+	$exclude  = array(
 				'analytics_profile',
 				'analytics_profile_code',
 				'analytics_profile_name',

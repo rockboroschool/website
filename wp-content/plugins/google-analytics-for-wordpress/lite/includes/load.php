@@ -31,14 +31,18 @@ if ( is_admin() ) {
 	$realtime_report = new MonsterInsights_Lite_Report_RealTime();
 	MonsterInsights()->reporting->add_report( $realtime_report );
 
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/reports/report-year-in-review.php';
+	$year_in_review = new MonsterInsights_Lite_Report_YearInReview();
+	MonsterInsights()->reporting->add_report( $year_in_review );
+
 	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/dashboard-widget.php';
 	new MonsterInsights_Dashboard_Widget();
 
 	// Load the Welcome class.
 	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/welcome.php';
 
-	// Load the Upgrade functions.
-	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/upgrade.php';
+	// Load the MonsterInsights Connect class.
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/connect.php';
 
 	if ( isset( $_GET['page'] ) && 'monsterinsights-onboarding' === $_GET['page'] ) { // WPCS: CSRF ok, input var ok.
 		// Only load the Onboarding wizard if the required parameter is present.
@@ -47,5 +51,8 @@ if ( is_admin() ) {
 
 	// Site Health logic.
 	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/wp-site-health.php';
+
+	// Helper functions specific to this version of the plugin.
+	require_once MONSTERINSIGHTS_PLUGIN_DIR . 'lite/includes/admin/helpers.php';
 
 }

@@ -82,10 +82,22 @@ class MonsterInsights_Skin extends WP_Upgrader_Skin {
      */
     function error( $errors ) {
 
-        if ( ! empty( $errors ) ) {
-            echo json_encode( array( 'error' => esc_html__( 'There was an error installing the addon. Please try again.', 'google-analytics-for-wordpress' ) ) );
-            die;
-        }
+	    if ( ! empty( $errors ) ) {
+		    $error_message = esc_html__( 'There was an error installing the addon. Please try again.', 'google-analytics-for-wordpress' );
+		    if ( is_wp_error( $errors ) ) {
+			    /**
+			     * @var WP_Error $errors
+			     */
+			    $message = $errors->get_error_message();
+
+			    if ( ! empty( $message ) ) {
+			    	// Translators: The name of the addon that can't be installed.
+				    $error_message = sprintf( esc_html__( 'There was an error installing the addon: %s', 'google-analytics-for-wordpress' ), esc_html( $message ) );
+			    }
+		    }
+
+		    wp_send_json( array( 'error' => $error_message ) );
+	    }
 
     }
 
@@ -98,7 +110,7 @@ class MonsterInsights_Skin extends WP_Upgrader_Skin {
      * @param string $string The feedback string.
      */
     function feedback( $string ) {
-        
+
     }
 
 }

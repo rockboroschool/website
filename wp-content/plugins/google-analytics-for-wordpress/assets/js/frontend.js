@@ -174,7 +174,7 @@ var MonsterInsights = function(){
 			type = "tel";
 		} else if ( protocol && protocol.length > 0 && ( __gaTrackerStringTrim( protocol ) == 'mailto' ||  __gaTrackerStringTrim( protocol ) == 'mailto:' ) ) { /* If it's a email */
 			type = "mailto";
-		} else if ( hostname && currentdomain && hostname.length > 0 && currentdomain.length > 0 && ! hostname.endsWith( currentdomain ) ) { /* If it's a outbound */
+		} else if ( hostname && currentdomain && hostname.length > 0 && currentdomain.length > 0 && ! hostname.endsWith( '.' + currentdomain)  && hostname !== currentdomain ) { /* If it's a outbound */
 			type = "external";
 		} else if ( pathname && JSON.stringify( inbound_paths ) != "{}" && pathname.length > 0 ) { /* If it's an internal as outbound */
 			var inbound_paths_length = inbound_paths.length;
@@ -215,6 +215,44 @@ var MonsterInsights = function(){
 			target = "_blank";
 		}
 		return target;
+	}
+
+	function __gaTrackerGetTitle( el ) {
+		if ( el.getAttribute("data-vars-ga-label") && el.getAttribute("data-vars-ga-label").replace(/\n/ig, '') ) {
+			return el.getAttribute("data-vars-ga-label").replace(/\n/ig, '');
+		} else if ( el.title && el.title.replace(/\n/ig, '') ) {
+			return el.title.replace(/\n/ig, '');
+		} else if ( el.innerText && el.innerText.replace(/\n/ig, '') ) {
+			return el.innerText.replace(/\n/ig, '');
+		} else if ( el.getAttribute('aria-label') && el.getAttribute('aria-label').replace(/\n/ig, '') ) {
+			return el.getAttribute('aria-label').replace(/\n/ig, '');
+		} else if ( el.alt && el.alt.replace(/\n/ig, '') ) {
+			return el.alt.replace(/\n/ig, '');
+		} else if ( el.textContent && el.textContent.replace(/\n/ig, '') ) {
+			return el.textContent.replace(/\n/ig, '');
+		} else {
+			return undefined;
+		}
+	}
+
+	function __gaTrackerGetInnerTitle( el ) {
+		var children = el.children;
+		var count    = 0;
+		var child;
+		var value;
+		for (var i = 0; i < children.length; i++) {
+		  child = children[i];
+		  value = __gaTrackerGetTitle( child );
+		  if ( value ) {
+		     return value;
+		  }
+		  /* max search 100 elements to ensure performance */
+		  if ( count == 99 ) {
+		  	return undefined;
+		  }
+		  count++;
+		}
+		return undefined;
 	}
 
 	function __gaTrackerClickEvent( event ) {
@@ -274,7 +312,12 @@ var MonsterInsights = function(){
 			valuesArray.extension           = extension; 			/* What extension is this link */
 			valuesArray.type                = type; 				/* What type of link is this */
 			valuesArray.target              = target;				/* Is a new tab/window being opened? */
-			valuesArray.title 				= el.title || el.innerText || el.getAttribute('aria-label') || el.textContent; /* Try link title, then text content */
+			valuesArray.title 				= __gaTrackerGetTitle( el ); /* Try link title, then text content */
+
+			/* only find innerTitle if we need one */
+			if ( ! valuesArray.label && ! valuesArray.title ) {
+				valuesArray.title = __gaTrackerGetInnerTitle( el );
+			}
 
 			/* Let's track everything but internals (that aren't internal-as-externals) and javascript */
 			if ( type !== 'internal' && type !== 'javascript' ) {
