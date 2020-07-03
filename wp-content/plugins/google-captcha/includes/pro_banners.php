@@ -1,7 +1,7 @@
 <?php
 /**
  * Display banners on settings page
- * @package Google Captcha(reCAPTCHA) by BestWebSoft
+ * @package reCaptcha by BestWebSoft
  * @since 1.27
  */
 
@@ -25,7 +25,7 @@ if ( ! function_exists( 'gglcptch_pro_block' ) ) {
 					</div>
 				</div>
 				<div class="bws_pro_version_tooltip">
-					<a class="bws_button" href="https://bestwebsoft.com/products/wordpress/plugins/google-captcha/?k=b850d949ccc1239cab0da315c3c822ab&pn=109&v=<?php echo $gglcptch_plugin_info["Version"]; ?>&wp_v=<?php echo $wp_version; ?>" target="_blank" title="Google Captcha Pro (reCAPTCHA)">
+					<a class="bws_button" href="https://bestwebsoft.com/products/wordpress/plugins/google-captcha/?k=b850d949ccc1239cab0da315c3c822ab&pn=109&v=<?php echo $gglcptch_plugin_info["Version"]; ?>&wp_v=<?php echo $wp_version; ?>" target="_blank" title="reCaptcha Pro">
 						<?php _e( 'Upgrade to Pro', 'google-captcha' ); ?>
 					</a>
 					<div class="clear"></div>
@@ -68,8 +68,7 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 			'wpforo_reply_form'			=> array( 'form_name' => __( 'wpForo Reply form', 'google-captcha') ),
             'ninja_form'				=> array( 'form_name' => __( 'Ninja Forms', 'google-captcha' ) ),
 			'divi_contact_form'			=> array( 'form_name' => __( 'Divi Contact Form', 'google-captcha' ) ),
-			'divi_login'				=> array( 'form_name' => __( 'Divi Login Forms', 'google-captcha' ) ),
-			'divi_theme_contact_form'	=> array( 'form_name' => __( 'Divi Theme Contact Form', 'google-captcha' ) ),
+			'divi_login'				=> array( 'form_name' => __( 'Divi Login Form', 'google-captcha' ) )
 		);
 		$pro_sections = array(
 			'external' => array(
@@ -101,16 +100,10 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 				)
 			),
 			'divi' => array(
-				'name' => 'Divi Builder',
+				'name' => 'Divi',
 				'forms' => array(
 					'divi_contact_form',
 					'divi_login',
-				)
-			),
-			'divi_theme' => array(
-				'name' => 'Divi Theme',
-				'forms' => array(
-					'divi_theme_contact_form',
 				)
 			),
 			'bbpress' => array(
@@ -192,7 +185,7 @@ if ( ! function_exists( 'gglcptch_additional_settings_banner' ) ) {
 				<th scope="row"><?php _e( 'Multilanguage', 'google-captcha' ); ?></th>
 				<td>
 					<input disabled="disabled" type="checkbox" />
-					<span class="bws_info"><?php _e( 'Enable to switch language automatically on multilingual website using Multilanguage plugin.', 'google-captcha' ); ?></span>
+					<span class="bws_info"><?php _e( 'Enable to switch language automatically on multilingual website using the Multilanguage plugin.', 'google-captcha' ); ?></span>
 				</td>
 			</tr>
 		</table>

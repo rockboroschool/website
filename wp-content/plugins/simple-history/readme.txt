@@ -1,11 +1,11 @@
 === Simple History ===
 Contributors: eskapism
-Donate link: http://eskapism.se/sida/donate/
+Donate link: https://www.paypal.me/eskapism
 Tags: history, log, changes, changelog, audit, audit log, event log, user tracking, trail, pages, attachments, users, dashboard, admin, syslog, feed, activity, stream, audit trail, brute-force
 Requires at least: 5.2
-Tested up to: 5.2
+Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 2.32
+Stable tag: 2.34.0
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -80,7 +80,7 @@ The plugin [Duplicate Post](https://wordpress.org/plugins/duplicate-post/) allow
 clone posts of any type.
 Simple History will log when a clone of a post or page is done.
 
-**Beaver Builder**  
+**Beaver Builder**
 The plugin [Beaver Build](https://wordpress.org/plugins/beaver-builder-lite-version/) is a page builder for WordPress that adds a flexible drag and drop page builder to the front end of your WordPress website.
 Simple History will log when a Beaver Builder layout or template is saved or when the settings for the plugins are saved.
 
@@ -190,6 +190,36 @@ Events in the log are stored for 60 days by default. Events older than this will
 == Changelog ==
 
 ## Changelog
+
+### [Unreleased]
+
+= 2.34 (January 2020) =
+
+**Changed**
+
+- Use flexbox for history page layout, so if all dropins are disabled then the content area
+  spans the entire 100 % width (#199).
+
+- Adjust style of pagination to match WordPress core pagination.
+
+= 2.33.2 (January 2020) =
+
+- Fix history displaying blank white space on smaller screens. Fixes https://wordpress.org/support/topic/viewing-the-log-on-a-iphone/.
+
+= 2.33.1 (January 2020) =
+
+- Was just an internal test version.
+
+= 2.33 (November 2019) =
+
+- Better compatibility with the Gutenberg Block editor.
+- Correct URL redirected to after clearing log. Fixes #123.
+- Fix history log on dashboard leaving lots of white space and sometimes overlapping other dashboard widgets.
+  Fixes https://wordpress.org/support/topic/dashboard-block-cut-off/, https://wordpress.org/support/topic/simple-history-v2-32/, and https://wordpress.org/support/topic/new-update-not-working-10/.
+- Fix join parameter order for PHP 7.4.
+- Update donate link. It's now https://www.paypal.me/eskapism.
+  If you like the plugin please consider donate.
+  A very small amount makes me much more happy than nothing at all! ;)
 
 = 2.32 (August 2019) =
 
