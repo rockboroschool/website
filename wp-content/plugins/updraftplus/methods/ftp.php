@@ -211,6 +211,14 @@ class UpdraftPlus_BackupModule_ftp extends UpdraftPlus_BackupModule {
 
 	}
 
+	/**
+	 * Delete a single file from the service using FTP protocols
+	 *
+	 * @param Array $files    - array of file names to delete
+	 * @param Array $ftparr   - FTP details/credentials
+	 * @param Array $sizeinfo - unused here
+	 * @return Boolean|String - either a boolean true or an error code string
+	 */
 	public function delete($files, $ftparr = array(), $sizeinfo = array()) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		global $updraftplus;
@@ -234,7 +242,7 @@ class UpdraftPlus_BackupModule_ftp extends UpdraftPlus_BackupModule {
 			if (is_wp_error($ftp) || !$ftp->connect()) {
 				if (is_wp_error($ftp)) $updraftplus->log_wp_error($ftp);
 				$this->log("Failure: we did not successfully log in with those credentials (host=".$opts['host'].").");
-				return false;
+				return 'authentication_fail';
 			}
 
 		}
@@ -243,11 +251,11 @@ class UpdraftPlus_BackupModule_ftp extends UpdraftPlus_BackupModule {
 
 		$ret = true;
 		foreach ($files as $file) {
-			if (@$ftp->delete($ftp_remote_path.$file)) {
+			if (@$ftp->delete($ftp_remote_path.$file)) {// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 				$this->log("delete: succeeded (${ftp_remote_path}${file})");
 			} else {
 				$this->log("delete: failed (${ftp_remote_path}${file})");
-				$ret = false;
+				$ret = 'file_delete_error';
 			}
 		}
 		return $ret;
@@ -375,13 +383,13 @@ class UpdraftPlus_BackupModule_ftp extends UpdraftPlus_BackupModule {
 		
 		<tr class="<?php echo $classes;?>">
 			<th><?php _e('Remote path', 'updraftplus');?>:</th>
-			<td><input class="updraft_input--wide" type="text" size="64" data-updraft_settings_test="path" <?php $this->output_settings_field_name_and_id('path');?> value="{{path}}" /> <em><?php _e('Needs to already exist', 'updraftplus');?></em></td>
+			<td><input title="<?php _e('Needs to already exist', 'updraftplus'); ?>" class="updraft_input--wide" type="text" size="64" data-updraft_settings_test="path" <?php $this->output_settings_field_name_and_id('path');?> value="{{path}}" /> <em><?php _e('Needs to already exist', 'updraftplus');?></em></td>
 		</tr>
 		
 		<tr class="<?php echo $classes;?>">
 			<th><?php _e('Passive mode', 'updraftplus');?>:</th>
 			<td>
-			<input type="checkbox" data-updraft_settings_test="passive" <?php $this->output_settings_field_name_and_id('passive');?> value="1" {{#ifeq '1' passive}}checked="checked"{{/ifeq}}> <br><em><?php echo __('Almost all FTP servers will want passive mode; but if you need active mode, then uncheck this.', 'updraftplus');?></em></td>
+			<input title="<?php echo __('Almost all FTP servers will want passive mode; but if you need active mode, then uncheck this.', 'updraftplus');?>" type="checkbox" data-updraft_settings_test="passive" <?php $this->output_settings_field_name_and_id('passive');?> value="1" {{#ifeq '1' passive}}checked="checked"{{/ifeq}}> <br><em><?php echo __('Almost all FTP servers will want passive mode; but if you need active mode, then uncheck this.', 'updraftplus');?></em></td>
 		</tr>
 		
 		<?php
@@ -438,7 +446,7 @@ class UpdraftPlus_BackupModule_ftp extends UpdraftPlus_BackupModule {
 		
 		if ($ftp->put(ABSPATH.WPINC.'/version.php', $fullpath, FTP_BINARY, false, true)) {
 			echo __("Success: we successfully logged in, and confirmed our ability to create a file in the given directory (login type:", 'updraftplus')." ".$ftp->login_type.')';
-			@$ftp->delete($fullpath);
+			@$ftp->delete($fullpath);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		} else {
 			_e('Failure: we successfully logged in, but were not able to create a file in the given directory.', 'updraftplus');
 			if (!empty($ftp->ssl)) {

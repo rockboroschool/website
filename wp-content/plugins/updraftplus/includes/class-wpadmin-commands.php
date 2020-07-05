@@ -49,7 +49,6 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			return array('r' => false);
 		} else {
 			$this->_updraftplus->log("Forcing resumption: job id=$job_id, resumption=$resumption");
-			$time = $get_cron[0];
 			wp_clear_scheduled_hook('updraft_backup_resume', array($resumption, $job_id));
 			$this->_updraftplus->close_browser_connection(json_encode(array('r' => true)));
 			$this->_updraftplus->jobdata_set_from_array($get_cron[1]);
@@ -70,7 +69,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 
 		if (empty($data['wpaction'])) return new WP_Error('error', '', 'no command sent');
 		
-		$response = $this->_updraftplus_admin->call_wp_action($data, array($this->_uc_helper, '_updraftplus_background_operation_started'));
+		$response = $this->_updraftplus_admin->call_wp_action($data, array($this->_uc_helper, '_updraftplus_background_operation_started'));// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 		die;
 
@@ -126,8 +125,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			$warn = array();
 			$err = array();
 
-			@set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);
-			$max_execution_time = (int) @ini_get('max_execution_time');
+			@set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+			$max_execution_time = (int) @ini_get('max_execution_time');// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 
 			if ($max_execution_time>0 && $max_execution_time<61) {
 				$warn[] = sprintf(__('The PHP setup on this webserver allows only %s seconds for PHP to run, and does not allow this limit to be raised. If you have a lot of data to import, and if the restore operation times out, then you will need to ask your web hosting company for ways to raise this limit (or attempt the restoration piece-by-piece).', 'updraftplus'), $max_execution_time);
@@ -176,7 +175,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				$outof = false;
 				foreach ($whatwegot as $index => $file) {
 					if (preg_match('/\d+of(\d+)\.zip/', $file, $omatch)) {
-						$outof = max($matches[1], 1);
+						$outof = max($omatch[1], 1);
 					}
 					while ($expected_index < $index) {
 						$missing .= ('' == $missing) ? (1+$expected_index) : ",".(1+$expected_index);
@@ -214,7 +213,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				$incremental_sets = array_keys($backups[$timestamp]['incremental_sets']);
 				// Check if there are more than one timestamp in the incremental set
 				if (1 < count($incremental_sets)) {
-					$incremental_select_html = '<label>'.__('This backup set contains incremental backups of your files; please select the time you wish to restore your files to', 'updraftplus').': </label>';
+					$incremental_select_html = '<div class="notice updraft-restore-option"><label>'.__('This backup set contains incremental backups of your files; please select the time you wish to restore your files to', 'updraftplus').': </label>';
 					$incremental_select_html .= '<select name="updraft_incremental_restore_point" id="updraft_incremental_restore_point">';
 					$incremental_sets = array_reverse($incremental_sets);
 					$first_timestamp = $incremental_sets[0];
@@ -226,14 +225,15 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 					}
 
 					$incremental_select_html .= '</select>';
+					$incremental_select_html .= '</div>';
 					$info['addui'] = empty($info['addui']) ? $incremental_select_html : $info['addui'].'<br>'.$incremental_select_html;
 				}
 			}
 
 			if (0 == count($err) && 0 == count($warn)) {
-				$mess_first = __('The backup archive files have been successfully processed. Now press Restore again to proceed.', 'updraftplus');
+				$mess_first = __('The backup archive files have been successfully processed. Now press Restore to proceed.', 'updraftplus');
 			} elseif (0 == count($err)) {
-				$mess_first = __('The backup archive files have been processed, but with some warnings. If all is well, then now press Restore again to proceed. Otherwise, cancel and correct any problems first.', 'updraftplus');
+				$mess_first = __('The backup archive files have been processed, but with some warnings. If all is well, then press Restore to proceed. Otherwise, cancel and correct any problems first.', 'updraftplus');
 			} else {
 				$mess_first = __('The backup archive files have been processed, but with some errors. You will need to cancel and correct any problems before retrying.', 'updraftplus');
 			}
@@ -254,6 +254,14 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			if (!isset($info['multisite']) && !empty($backups[$timestamp]['is_multisite'])) $info['multisite'] = $backups[$timestamp]['is_multisite'];
 			
 			do_action_ref_array('updraftplus_restore_all_downloaded_postscan', array($backups, $timestamp, $elements, &$info, &$mess, &$warn, &$err));
+
+			if (0 == count($err) && 0 == count($warn)) {
+				$mess_first = __('The backup archive files have been successfully processed. Now press Restore again to proceed.', 'updraftplus');
+			} elseif (0 == count($err)) {
+				$mess_first = __('The backup archive files have been processed, but with some warnings. If all is well, then now press Restore again to proceed. Otherwise, cancel and correct any problems first.', 'updraftplus');
+			} else {
+				$mess_first = __('The backup archive files have been processed, but with some errors. You will need to cancel and correct any problems before retrying.', 'updraftplus');
+			}
 
 			$warn_result = '';
 			foreach ($warn as $warning) {
@@ -361,7 +369,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		phpinfo(INFO_ALL ^ (INFO_CREDITS | INFO_LICENSE));
 
 		echo '<h3 id="ud-debuginfo-constants">'.__('Constants', 'updraftplus').'</h3>';
-		$opts = @get_defined_constants();
+		$opts = @get_defined_constants();// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		ksort($opts);
 		echo '<table><thead></thead><tbody>';
 		foreach ($opts as $key => $opt) {
@@ -379,25 +387,55 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	}
 	
 	/**
-	 * Return a message if there are more than 4 overdue cron jobs
+	 * Return messages if there are more than 4 overdue cron jobs
 	 *
-	 * @return Array - the message, if there is one,  is in the key 'm'
+	 * @return Array - the messages are stored in an associative array and are indexed with key 'm'
 	 */
 	public function check_overdue_crons() {
+		$messages = array();
 		$how_many_overdue = $this->_updraftplus_admin->howmany_overdue_crons();
-		return ($how_many_overdue >= 4) ? array('m' => $this->_updraftplus_admin->show_admin_warning_overdue_crons($how_many_overdue)) : array();
+		if ($how_many_overdue >= 4) {
+			$messages['m'] = array();
+			$messages['m'][] = $this->_updraftplus_admin->show_admin_warning_overdue_crons($how_many_overdue);
+			if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON && (!defined('UPDRAFTPLUS_DISABLE_WP_CRON_NOTICE') || !UPDRAFTPLUS_DISABLE_WP_CRON_NOTICE)) $messages['m'][] = $this->_updraftplus_admin->show_admin_warning_disabledcron();
+		}
+		return $messages;
 	}
 	
 	public function whichdownloadsneeded($params) {
 		// The purpose of this is to look at the list of indicated downloads, and indicate which are not already fully downloaded. i.e. Which need further action.
 		$send_back = array();
-
 		$backup = UpdraftPlus_Backup_History::get_history($params['timestamp']);
 		$updraft_dir = $this->_updraftplus->backups_dir_location();
 		$backupable_entities = $this->_updraftplus->get_backupable_file_entities();
 
 		if (empty($backup)) return array('result' => 'asyouwere');
 
+		if (isset($params['updraftplus_clone']) && empty($params['downloads'])) {
+			$entities = array('db', 'plugins', 'themes', 'uploads', 'others');
+			foreach ($entities as $entity) {
+				
+				foreach ($backup as $key => $data) {
+					if ($key != $entity) continue;
+					
+					$set_contents = '';
+					$entity_array = array();
+					$entity_array[] = $key;
+					
+					if ('db' == $key) {
+						$set_contents = "0";
+					} else {
+						foreach (array_keys($data) as $findex) {
+							$set_contents .= ('' == $set_contents) ? $findex : ",$findex";
+						}
+					}
+
+					$entity_array[] = $set_contents;
+					$params['downloads'][] = $entity_array;
+				}
+			}
+		}
+		
 		foreach ($params['downloads'] as $i => $download) {
 			if (is_array($download) && 2 == count($download) && isset($download[0]) && isset($download[1])) {
 				$entity = $download[0];
@@ -486,6 +524,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			$path = $params['node']['id'];
 		}
 
+		$page = empty($params['page']) ? '' : $params['page'];
+
 		if ($dh = opendir($path)) {
 			$path = rtrim($path, DIRECTORY_SEPARATOR);
 
@@ -500,7 +540,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 							'id' => UpdraftPlus_Manipulation_Functions::wp_normalize_path($path . DIRECTORY_SEPARATOR . $value),
 							'icon' => 'jstree-folder'
 						);
-					} else {
+					} elseif ('restore' != $page && is_file($path . DIRECTORY_SEPARATOR . $value)) {
 						$node_array[] = array(
 							'text' => $value,
 							'children' => false,
@@ -643,7 +683,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 					)
 				);
 
-				@$zip->close();
+				@$zip->close();// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 			}
 		}
 
@@ -689,7 +729,6 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	 * elem_val - Dropdown element value which should be selected for other drodown
 	 */
 	public function collate_change_on_charset_selection($params) {
-		global $updraftplus;
 		$collate_change_on_charset_selection_data = json_decode(UpdraftPlus_Manipulation_Functions::wp_unslash($params['collate_change_on_charset_selection_data']), true);
 		$updraft_restorer_collate = $params['updraft_restorer_collate'];
 		$updraft_restorer_charset = $params['updraft_restorer_charset'];
@@ -707,7 +746,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		}
 		$similar_type_collate = $this->_updraftplus->get_similar_collate_related_to_charset($db_supported_collations, $db_unsupported_collate_unique, $updraft_restorer_charset);
 		if (empty($similar_type_collate)) {
-			$similar_type_collate = $this->_updraftplus->get_similar_collate_based_on_ocuurence_count($db_collates_found, $db_supported_collations, $db_supported_charsets_related_to_unsupported_collations = array($updraft_restorer_collate));
+			$similar_type_collate = $this->_updraftplus->get_similar_collate_based_on_ocuurence_count($db_collates_found, $db_supported_collations, $updraft_restorer_collate);
 		}
 		// Default collation for changed charcter set
 		if (empty($similar_type_collate)) {

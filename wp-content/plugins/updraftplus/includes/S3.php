@@ -2417,7 +2417,7 @@ final class UpdraftPlus_S3Request {
 			elseif ('content-type' == strtolower($header))
 				$this->response->headers['type'] = $value;
 			elseif ('etag' == strtolower($header))
-				$this->response->headers['hash'] = '"' == $value{0} ? substr($value, 1, -1) : $value;
+				$this->response->headers['hash'] = '"' == $value[0] ? substr($value, 1, -1) : $value;
 			elseif (preg_match('/^x-amz-meta-.*$/i', $header))
 				$this->response->headers[strtolower($header)] = $value;
 		}

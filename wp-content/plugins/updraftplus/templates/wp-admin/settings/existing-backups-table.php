@@ -21,7 +21,13 @@ $image_folder_url = UPDRAFTPLUS_URL.'/images/icons/';
 	</thead>
 	<tbody>
 		<?php
-
+		
+		if (!defined('UPDRAFTCENTRAL_COMMAND') && $backup_count <= count($backup_history) - 1) {
+			$backup_history = array_slice($backup_history, 0, $backup_count, true);
+		} else {
+			$show_paging_actions = true;
+		}
+		
 		foreach ($backup_history as $key => $backup) {
 
 			$remote_sent = !empty($backup['service']) && ((is_array($backup['service']) && in_array('remotesend', $backup['service'])) || 'remotesend' === $backup['service']);
@@ -60,7 +66,7 @@ $image_folder_url = UPDRAFTPLUS_URL.'/images/icons/';
 				</td>
 				<?php endif; ?>
 				<td class="updraft_existingbackup_date " data-rawbackup="<?php echo $rawbackup;?>" data-label="<?php _e('Backup date', 'updraftplus');?>">
-					<div class="backup_date_label">
+					<div tabindex="0" class="backup_date_label">
 						<?php
 							echo $date_label;
 							if (!empty($backup['always_keep'])) {
@@ -146,14 +152,23 @@ $image_folder_url = UPDRAFTPLUS_URL.'/images/icons/';
 		<?php } ?>	
 
 	</tbody>
+	<?php if (!$show_paging_actions) : ?>
+	<tfoot>
+		<tr class="updraft_existing_backups_page_actions">
+			<td colspan="4" style="text-align: center;">
+				<a class="updraft-load-more-backups"><?php _e('Show more backups...', 'updraftplus');?></a> | <a class="updraft-load-all-backups"><?php _e('Show all backups...', 'updraftplus');?></a>
+			</td>
+		</tr>
+	</tfoot>
+	<?php endif; ?>
 </table>
 <?php if (!defined('UPDRAFTCENTRAL_COMMAND')) : ?>
 <div id="ud_massactions">
 	<strong><?php _e('Actions upon selected backups', 'updraftplus');?></strong>
-	<div class="updraftplus-remove"><button type="button" class="button button-remove js--delete-selected-backups"><?php _e('Delete', 'updraftplus');?></button></div>
-	<div class="updraft-viewlogdiv"><button type="button" class="button js--select-all-backups" href="#"><?php _e('Select all', 'updraftplus');?></button></div>
-	<div class="updraft-viewlogdiv"><button type="button" class="button js--deselect-all-backups" href="#"><?php _e('Deselect', 'updraftplus');?></button></div>
-	<small class="ud_massactions-tip"><?php _e('Use ctrl / cmd + press to select several items', 'updraftplus'); ?></small>
+	<div class="updraftplus-remove"><button title="<?php _e('Delete selected backups', 'updraftplus');?>" type="button" class="button button-remove js--delete-selected-backups"><?php _e('Delete', 'updraftplus');?></button></div>
+	<div class="updraft-viewlogdiv"><button title="<?php _e('Select all backups', 'updraftplus');?>" type="button" class="button js--select-all-backups" href="#"><?php _e('Select all', 'updraftplus');?></button></div>
+	<div class="updraft-viewlogdiv"><button title="<?php _e('Deselect all backups', 'updraftplus');?>" type="button" class="button js--deselect-all-backups" href="#"><?php _e('Deselect', 'updraftplus');?></button></div>
+	<small class="ud_massactions-tip"><?php _e('Use ctrl / cmd + press to select several items, or ctrl / cmd + shift + press to select all in between', 'updraftplus'); ?></small>
 </div>
 <div id="updraft-delete-waitwarning" class="updraft-hidden" style="display:none;">
 	<span class="spinner"></span> <em><?php _e('Deleting...', 'updraftplus');?> <span class="updraft-deleting-remote"><?php _e('Please allow time for the communications with the remote storage to complete.', 'updraftplus');?><span></em>

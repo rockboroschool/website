@@ -46,8 +46,6 @@ abstract class UpdraftPlus_BackupModule {
 			throw new Exception('save_options() requires an instance ID, but was called without setting one (either directly or via set_instance_id())');
 		}
 		
-		global $updraftplus;
-		
 		$current_db_options = UpdraftPlus_Storage_Methods_Interface::update_remote_storage_options_format($this->get_id());
 
 		if (is_wp_error($current_db_options)) {
@@ -68,6 +66,18 @@ abstract class UpdraftPlus_BackupModule {
 	 */
 	public function get_default_options() {
 		return array();
+	}
+
+	/**
+	 * Check whether options have been set up by the user, or not
+	 * This method would normally be over-ridden by the child.
+	 *
+	 * @param Array $opts - the potential options
+	 *
+	 * @return Boolean
+	 */
+	public function options_exist($opts) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return false;
 	}
 
 	/**
@@ -545,7 +555,7 @@ abstract class UpdraftPlus_BackupModule {
 
 		if ($template_instead_of_notice) {
 			$instance_id = "{{instance_id}}";
-			$text = sprintf(__("<strong>After</strong> you have saved your settings (by clicking 'Save Changes' below), then come back here once and click this link to complete authentication with %s.", 'updraftplus'), $description);
+			$text = sprintf(__("<strong>After</strong> you have saved your settings (by clicking 'Save Changes' below), then come back here once and follow this link to complete authentication with %s.", 'updraftplus'), $description);
 		} else {
 			$instance_id = $this->get_instance_id();
 			$text = sprintf(__('Follow this link to authorize access to your %s account (you will not be able to backup to %s without it).', 'updraftplus'), $description, $description);
@@ -647,7 +657,7 @@ abstract class UpdraftPlus_BackupModule {
 
 		$prefix = $this->get_storage_label();
 
-		$updraftplus->log("$prefix: $line", $level, $uniq_id = false, $skip_dblog = false);
+		$updraftplus->log("$prefix: $line", $level, $uniq_id, $skip_dblog);
 	}
 
 	/**

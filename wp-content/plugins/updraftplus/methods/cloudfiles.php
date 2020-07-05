@@ -29,8 +29,6 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 		$storage = $this->get_storage();
 		if (!empty($storage)) return $storage;
 		
-		global $updraftplus;
-
 		if (!class_exists('UpdraftPlus_CF_Authentication')) include_once(UPDRAFTPLUS_DIR.'/includes/cloudfiles/cloudfiles.php');
 
 		if (!defined('UPDRAFTPLUS_SSL_DISABLEVERIFY')) define('UPDRAFTPLUS_SSL_DISABLEVERIFY', UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
@@ -77,9 +75,21 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 		);
 	}
 	
+	/**
+	 * Check whether options have been set up by the user, or not
+	 *
+	 * @param Array $opts - the potential options
+	 *
+	 * @return Boolean
+	 */
+	public function options_exist($opts) {
+		if (is_array($opts) && isset($opts['user']) && '' != $opts['user'] && !empty($opts['apikey'])) return true;
+		return false;
+	}
+
 	public function backup($backup_array) {
 
-		global $updraftplus, $updraftplus_backup;
+		global $updraftplus;
 
 		$opts = $this->get_options();
 
@@ -124,7 +134,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 
 				if ($uploaded_size <= $orig_file_size) {
 
-					$fp = @fopen($fullpath, "rb");
+					$fp = @fopen($fullpath, "rb");// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 					if (!$fp) {
 						$this->log("failed to open file: $fullpath");
 						$this->log("$file: ".__('Error: Failed to open local file', 'updraftplus'), 'error');
@@ -265,16 +275,22 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 		return $results;
 
 	}
-
+	
+	/**
+	 * Delete a single file from the service using the CloudFiles API
+	 *
+	 * @param Array $files         - array of file paths to delete
+	 * @param Array $cloudfilesarr - CloudFiles container and object details
+	 * @param Array $sizeinfo      - unused here
+	 * @return Boolean|String - either a boolean true or an error code string
+	 */
 	public function delete($files, $cloudfilesarr = false, $sizeinfo = array()) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
-		global $updraftplus;
 		if (is_string($files)) $files =array($files);
 
 		if ($cloudfilesarr) {
 			$container_object = $cloudfilesarr['cloudfiles_object'];
 			$container = $cloudfilesarr['cloudfiles_container'];
-			$path = $cloudfilesarr['cloudfiles_orig_path'];
 		} else {
 			try {
 				$opts = $this->get_options();
@@ -284,7 +300,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 			} catch (Exception $e) {
 				$this->log('authentication failed ('.$e->getMessage().')');
 				$this->log(__('authentication failed', 'updraftplus').' ('.$e->getMessage().')', 'error');
-				return false;
+				return 'authentication_fail';
 			}
 		}
 
@@ -296,7 +312,6 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 			$this->log("Delete remote: container=$container, path=$fpath");
 
 			// We need to search for chunks
-			// $chunk_path = ($path == '') ? "chunk-do-not-delete-$file_" : "$path/chunk-do-not-delete-$file_";
 			$chunk_path = "chunk-do-not-delete-$file";
 
 			try {
@@ -315,7 +330,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 				$this->log('Deleted: '.$fpath);
 			} catch (Exception $e) {
 				$this->log('delete failed: '.$e->getMessage());
-				$ret = false;
+				$ret = 'file_delete_error';
 			}
 		}
 		return $ret;
@@ -443,7 +458,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 			?>
 
 			<?php
-				echo '<p>' . __('Get your API key <a href="https://mycloud.rackspace.com/" target="_blank">from your Rackspace Cloud console</a> (read instructions <a href="http://www.rackspace.com/knowledge_center/article/rackspace-cloud-essentials-1-generating-your-api-key" target="_blank">here</a>), then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus').' <a href="https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/" target="_blank">'.__('Also, you should read this important FAQ.', 'updraftplus').'</a></p>';
+				echo '<p>' . __('Get your API key <a href="https://mycloud.rackspace.com/" target="_blank">from your Rackspace Cloud console</a> (<a href="http://www.rackspace.com/knowledge_center/article/rackspace-cloud-essentials-1-generating-your-api-key" target="_blank">read instructions here</a>), then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus').' <a href="https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/" target="_blank">'.__('Also, you should read this important FAQ.', 'updraftplus').'</a></p>';
 			?>
 			</td>
 		</tr>
@@ -574,7 +589,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 
 		echo __('Success', 'updraftplus').": ".__('We accessed the container, and were able to create files within it.', 'updraftplus');
 
-		@$container_object->delete_object($try_file);
+		@$container_object->delete_object($try_file);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 	}
 }
 

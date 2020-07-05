@@ -386,8 +386,8 @@ class UpdraftPlus_S3_Compat {
 					'name' => (string) $c['Key'],
 					'time' => strtotime((string) $c['LastModified']),
 					'size' => (int) $c['Size'],
-// 'hash' => trim((string)$c['ETag'])
-// 'hash' => substr((string)$c['ETag'], 1, -1)
+					// 'hash' => trim((string)$c['ETag'])
+					// 'hash' => substr((string)$c['ETag'], 1, -1)
 				);
 				$next_marker = (string) $c['Key'];
 			}
@@ -409,18 +409,18 @@ class UpdraftPlus_S3_Compat {
 						'name' => (string) $c['Key'],
 						'time' => strtotime((string) $c['LastModified']),
 						'size' => (int) $c['Size'],
-// 'hash' => trim((string)$c['ETag'])
-// 'hash' => substr((string)$c['ETag'], 1, -1)
+						// 'hash' => trim((string)$c['ETag'])
+						// 'hash' => substr((string)$c['ETag'], 1, -1)
 					);
 					$next_marker = (string) $c['Key'];
 				}
 
-// if ($return_common_prefixes && isset($response->body, $response->body->CommonPrefixes))
-// foreach ($response->body->CommonPrefixes as $c)
-// $results[(string)$c->Prefix] = array('prefix' => (string)$c->Prefix);
+				// if ($return_common_prefixes && isset($response->body, $response->body->CommonPrefixes))
+				// foreach ($response->body->CommonPrefixes as $c)
+				// $results[(string)$c->Prefix] = array('prefix' => (string)$c->Prefix);
 
-				if (isset($response['NextMarker']))
-					$next_marker = (string) $response['NextMarker'];
+				if (isset($result['NextMarker']))
+					$next_marker = (string) $result['NextMarker'];
 
 			} while (is_a($result, 'Guzzle\Service\Resource\Model') && !empty($result['Contents']) && !empty($result['IsTruncated']));
 
@@ -656,7 +656,6 @@ class UpdraftPlus_S3_Compat {
 				return $this->trigger_from_exception($e);
 			}
 		}
-		fclose($fh);
 	}
 
 
@@ -710,13 +709,13 @@ class UpdraftPlus_S3_Compat {
 				$fp = $save_to;
 				if (!is_bool($resume)) $range_header = $resume;
 			} elseif (file_exists($save_to)) {
-				if ($resume && ($fp = @fopen($save_to, 'ab')) !== false) {
+				if ($resume && ($fp = @fopen($save_to, 'ab')) !== false) {// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 					$range_header = "bytes=".filesize($save_to).'-';
 				} else {
 					throw new Exception('Unable to open save file for writing: '.$save_to);
 				}
 			} else {
-				if (($fp = @fopen($save_to, 'wb')) !== false) {
+				if (($fp = @fopen($save_to, 'wb')) !== false) {// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 					$range_header = false;
 				} else {
 					throw new Exception('Unable to open save file for writing: '.$save_to);
