@@ -1,0 +1,131 @@
+0000.006 (0) Opened log file at time: Sun, 12 Jul 2020 18:05:58 +0000 on https://52.214.9.134
+0000.011 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.26 WP: 5.2.2 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1110-aws #121-Ubuntu SMP Fri Jun 12 04:21:59 UTC 2020 x86_64) MySQL: 5.7.21 WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 9.2M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.016 (0) Free space on disk containing Updraft's temporary directory: 2952.7 MB
+0000.024 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB:  (schedule: weekly)
+0000.032 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.148 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1593972344, seconds_ago=604814)
+0000.156 (0) Set semaphore last lock (fd) time to 2020-07-12 18:05:58
+0000.157 (0) Semaphore lock (fd) complete
+0000.168 (0) Backup run: resumption=0, nonce=9271ab96e05b, file_nonce=9271ab96e05b begun at=1594577158 (0s ago), job type=backup
+0000.173 (0) Scheduling a resumption (1) after 300 seconds (1594577458) in case this run gets aborted
+0000.485 (0) Checking if we have a zip executable available
+0000.490 (0) Testing: /usr/bin/zip
+0000.497 (0) Output: zip warning: binziptest/test.zip not found or empty
+0000.500 (0) Output: adding: binziptest/subdir1/	(in=0) (out=0) (stored 0%)
+0000.503 (0) Output: adding: binziptest/subdir1/subdir2/	(in=0) (out=0) (stored 0%)
+0000.504 (0) Output: adding: binziptest/subdir1/subdir2/test.html	(in=131) (out=107) (deflated 18%)
+0000.505 (0) Output: total bytes=131, compressed=107 -> 18% savings
+0000.509 (0) Output: adding: binziptest/subdir1/subdir2/test2.html	(in=138) (out=113) (deflated 18%)
+0000.511 (0) Output: total bytes=269, compressed=220 -> 18% savings
+0000.555 (0) Working binary zip found: /usr/bin/zip
+0000.561 (0) Zip engine: found/will use a binary zip: /usr/bin/zip
+0000.563 (0) Creation of backups of directories: beginning
+0000.570 (0) No backup of plugins: excluded by user's options
+0000.573 (0) No backup of themes: excluded by user's options
+0000.575 (0) No backup of uploads: excluded by user's options
+0000.576 (0) No backup of others: excluded by user's options
+0000.583 (0) Saving backup status to database (elements: 0)
+0000.588 (0) Beginning creation of database dump (WordPress DB)
+0000.624 (0) Table wp_options: Total expected rows (approximate): 489
+0000.671 (0) Table wp_options: Rows added in this batch (start page: 0; next: finished): 495 in 0.04 seconds
+0000.673 (0) Table wp_options: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_options.table.gz - 49.9 KB)
+0000.684 (0) Table wp_users: Total expected rows (approximate): 4
+0000.690 (0) Table wp_users: Rows added in this batch (start page: 0; next: finished): 5 in 0.00 seconds
+0000.693 (0) Table wp_users: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_users.table.gz - 1 KB)
+0000.702 (0) Table wp_usermeta: Total expected rows (approximate): 123
+0000.712 (0) Table wp_usermeta: Rows added in this batch (start page: 0; next: finished): 123 in 0.01 seconds
+0000.714 (0) Table wp_usermeta: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_usermeta.table.gz - 3 KB)
+0000.722 (0) Table wp_commentmeta: Total expected rows (approximate): 0
+0000.726 (0) Table wp_commentmeta: Rows added in this batch (start page: 0; next: finished): 0 in 0.00 seconds
+0000.728 (0) Table wp_commentmeta: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_commentmeta.table.gz - 0.4 KB)
+0000.739 (0) Table wp_comments: Total expected rows (approximate): 1
+0000.744 (0) Table wp_comments: Rows added in this batch (start page: 0; next: finished): 0 in 0.00 seconds
+0000.747 (0) Table wp_comments: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_comments.table.gz - 0.5 KB)
+0000.756 (0) Table wp_links: Total expected rows (approximate): 0
+0000.762 (0) Table wp_links: Rows added in this batch (start page: 0; next: finished): 0 in 0.00 seconds
+0000.765 (0) Table wp_links: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_links.table.gz - 0.4 KB)
+0000.769 (0) Table wp_postmeta: Total expected rows (approximate): 1624
+0000.805 (0) Table wp_postmeta: Rows added in this batch (start page: 0; next: finished): 1560 in 0.03 seconds
+0000.808 (0) Table wp_postmeta: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_postmeta.table.gz - 32.5 KB)
+0000.815 (0) Table wp_posts: Total expected rows (approximate): 492
+0000.931 (0) Table wp_posts: Rows added in this batch (start page: 0; next: finished): 485 in 0.11 seconds
+0000.935 (0) Table wp_posts: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_posts.table.gz - 108.2 KB)
+0000.946 (0) Table wp_term_relationships: Total expected rows (approximate): 82
+0000.951 (0) Table wp_term_relationships: Rows added in this batch (start page: 0; next: finished): 98 in 0.00 seconds
+0000.954 (0) Table wp_term_relationships: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_term_relationships.table.gz - 0.7 KB)
+0000.967 (0) Table wp_term_taxonomy: Total expected rows (approximate): 24
+0000.977 (0) Table wp_term_taxonomy: Rows added in this batch (start page: 0; next: finished): 27 in 0.01 seconds
+0000.980 (0) Table wp_term_taxonomy: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_term_taxonomy.table.gz - 0.7 KB)
+0000.990 (0) Table wp_termmeta: Total expected rows (approximate): 0
+0000.998 (0) Table wp_termmeta: Rows added in this batch (start page: 0; next: finished): 0 in 0.00 seconds
+0001.001 (0) Table wp_termmeta: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_termmeta.table.gz - 0.4 KB)
+0001.012 (0) Table wp_terms: Total expected rows (approximate): 24
+0001.019 (0) Table wp_terms: Rows added in this batch (start page: 0; next: finished): 27 in 0.00 seconds
+0001.022 (0) Table wp_terms: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_terms.table.gz - 0.7 KB)
+0001.034 (0) Table wp_gglcptch_whitelist: Total expected rows (approximate): 0
+0001.041 (0) Table wp_gglcptch_whitelist: Rows added in this batch (start page: 0; next: finished): 0 in 0.00 seconds
+0001.043 (0) Table wp_gglcptch_whitelist: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_gglcptch_whitelist.table.gz - 0.3 KB)
+0001.049 (0) Table wp_simple_history: Total expected rows (approximate): 246
+0001.063 (0) Table wp_simple_history: Rows added in this batch (start page: 0; next: finished): 248 in 0.01 seconds
+0001.065 (0) Table wp_simple_history: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_simple_history.table.gz - 4.7 KB)
+0001.075 (0) Table wp_simple_history_contexts: Total expected rows (approximate): 1679
+0001.104 (0) Table wp_simple_history_contexts: Rows added in this batch (start page: 0; next: finished): 1692 in 0.03 seconds
+0001.107 (0) Table wp_simple_history_contexts: finishing file (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_simple_history_contexts.table.gz - 19.7 KB)
+0001.114 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_options.table.gz (1/15): adding to final database dump
+0001.138 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_users.table.gz (2/15): adding to final database dump
+0001.141 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_usermeta.table.gz (3/15): adding to final database dump
+0001.144 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_commentmeta.table.gz (4/15): adding to final database dump
+0001.146 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_comments.table.gz (5/15): adding to final database dump
+0001.147 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_links.table.gz (6/15): adding to final database dump
+0001.149 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_postmeta.table.gz (7/15): adding to final database dump
+0001.170 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_posts.table.gz (8/15): adding to final database dump
+0001.223 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_term_relationships.table.gz (9/15): adding to final database dump
+0001.226 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_term_taxonomy.table.gz (10/15): adding to final database dump
+0001.229 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_termmeta.table.gz (11/15): adding to final database dump
+0001.231 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_terms.table.gz (12/15): adding to final database dump
+0001.233 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_gglcptch_whitelist.table.gz (13/15): adding to final database dump
+0001.235 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_simple_history.table.gz (14/15): adding to final database dump
+0001.238 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db-table-wp_simple_history_contexts.table.gz (15/15): adding to final database dump
+0001.314 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz: finished writing out complete database file (208 KB)
+0001.330 (0) Total database tables backed up: 15 (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz, size: 225851, sha1: 3a7edbc5800dfa5ffed670ca0a9f6b72742b888b, sha256: 8293631555267716252d9b7b09a8afad9296fba62ac72f4a7d7cee4a267e386c)
+0001.342 (0) backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz: db: This file has not yet been successfully uploaded: will queue
+0001.344 (0) Saving backup history. Total backup size: 220.6 KB
+0001.349 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0001.354 (0) Cloud backup selection (1/1): dropbox with instance (1/1) (last)
+0001.357 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
+0001.361 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
+0001.435 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0001.940 (0) Dropbox: quota usage: used=38 MB, total=2048 MB, available=2010 MB
+0001.943 (0) Dropbox: Attempt to upload: backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz to: backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz
+0002.653 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAAJerjHkDyyDs2g, 225851, 1024 KB)
+0004.052 (0) Recording as successfully uploaded: backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz
+0004.060 (0) Deleting local file: backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz: OK
+0004.063 (0) Dropbox: File upload success (backup_2020-07-12-1905_Rockboro_Primary_School_9271ab96e05b-db.gz): 220 KB in 2s (104 KB/s)
+0004.073 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0004.076 (0) Number of backup sets in history: 3; groups (db): 1
+0004.077 (0) Examining (for databases) backup set with group_id=0, nonce=9271ab96e05b, datestamp=1594577158 (Jul 12 2020 18:05:58)
+0004.080 (0) This backup set is the backup set just made, so will not be deleted.
+0004.080 (0) Examining (for databases) backup set with group_id=0, nonce=5f089a9de094, datestamp=1593972343 (Jul 05 2020 18:05:43)
+0004.080 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0004.081 (0) Examining (for databases) backup set with group_id=0, nonce=163f21866182, datestamp=1593367456 (Jun 28 2020 18:04:16)
+0004.081 (0) 1593367456: db: this set includes a database (backup_2020-06-28-1904_Rockboro_Primary_School_163f21866182-db.gz); db count is now 2
+0004.081 (0) 1593367456: db: over retain limit (2); will delete this database
+0004.081 (0) Delete file: backup_2020-06-28-1904_Rockboro_Primary_School_163f21866182-db.gz, service=dropbox
+0004.084 (0) Dropbox: request deletion: backup_2020-06-28-1904_Rockboro_Primary_School_163f21866182-db.gz
+0005.060 (0) Dropbox: deletion succeeded
+0005.067 (0) This backup set is now empty; will remove from history
+0005.068 (0) Deleting log file (log.163f21866182.txt)
+0005.069 (0) Number of backup sets in history: 2; groups (files): 1
+0005.072 (0) Examining (for files) backup set with nonce=9271ab96e05b, datestamp=1594577158 (Jul 12 2020 18:05:58)
+0005.072 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.074 (0) Examining (for files) backup set with nonce=5f089a9de094, datestamp=1593972343 (Jul 05 2020 18:05:43)
+0005.074 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.074 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0005.079 (0) Resume backup (9271ab96e05b, 0): finish run
+0005.097 (0) Decremented the semaphore (fd) by 1
+0005.100 (0) Semaphore (fd) unlocked
+0005.106 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0005.112 (0) Fetching RSS news feed
+0005.373 (0) Fetched RSS news feed; result is a: SimplePie
+0005.390 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0005.521 (0) The backup apparently succeeded and is now complete
