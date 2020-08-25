@@ -1,0 +1,1 @@
+(function(d,t){t=d.createElement('script');t.setAttribute('src','https://assets.gumroad.com/assets/gumroad-embed-432946313fb60983f97749187d117dd00e80b5c3339aa4ec392593eddf20d1a2.js');d.getElementsByTagName('head')[0].appendChild(t)})(document)
