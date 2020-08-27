@@ -8,12 +8,13 @@ jQuery(function($) {
         newsSitemapSetting: $('#aiosp_sitemap_posttypes_news_wrapper .aioseop_option_input'),
 
         init: function() {
-            aioseopNewsSitemapUpsell.disableCheckboxes();
+            aioseopNewsSitemapUpsell.disableSettings();
             aioseopNewsSitemapUpsell.getNewsSitemapUpsell();
         },
 
-        disableCheckboxes: function() {
-            $('#aiosp_sitemap_posttypes_news_wrapper .aioseop_option_input input').attr('disabled', true);
+        disableSettings: function() {
+            $('#aiosp_sitemap_publication_name_wrapper .aioseop_option_input input').attr('disabled', 'disabled');
+            $('#aiosp_sitemap_posttypes_news_wrapper .aioseop_option_input input').attr('disabled', 'disabled');
         },
 
         getNewsSitemapUpsell: function() {

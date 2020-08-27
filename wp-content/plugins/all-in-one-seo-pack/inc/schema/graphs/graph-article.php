@@ -141,7 +141,7 @@ class AIOSEOP_Graph_Article extends AIOSEOP_Graph_CreativeWork {
 		} else {
 			$content_image_url = $this->get_image_url_from_content( $post );
 			if ( ! empty( $content_image_url ) ) {
-				$rtn_image_data = wp_parse_args( $this->get_image_data_defaults(), array( 'url' => $content_image_url ) );
+				$rtn_image_data = wp_parse_args( array( 'url' => $content_image_url ), $this->get_image_data_defaults() );
 			} else {
 				$blog_logo = get_theme_mod( 'custom_logo' );
 				if ( $blog_logo ) {

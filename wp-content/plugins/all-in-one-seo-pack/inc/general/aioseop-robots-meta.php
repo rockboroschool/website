@@ -52,6 +52,10 @@ class AIOSEOP_Robots_Meta {
 			return '';
 		}
 
+		if ( $this->isNoindexedWooCommercePage() ) {
+			return '';
+		}
+
 		if ( is_front_page() && 0 === $page_number ) {
 			return $this->get_robots_meta_tag_helper( false, false );
 		}
@@ -161,6 +165,40 @@ class AIOSEOP_Robots_Meta {
 		}
 
 		return $meta_value;
+	}
+
+	/**
+	 * Checks whether the current page is a noindexed WooCommerce page.
+	 *
+	 * WooCommerce noindexes the Cart, Checkout and My Account pages by default. In this case we don't need to output another robots meta tag.
+	 *
+	 * @since 3.6.0
+	 *
+	 * @return boolean Whether or not the current page is an noindexed WooCommerce page.
+	 */
+	private function isNoindexedWooCommercePage() {
+		if (
+			! aioseop_is_woocommerce_active() ||
+			! is_singular() ||
+			'page' !== get_post_type() ||
+			! has_action( 'wp_head', 'wc_page_noindex' )
+		) {
+			return false;
+		}
+
+		$pages = array(
+			wc_get_cart_url(),
+			wc_get_checkout_url(),
+			wc_get_page_permalink( 'myaccount' )
+		);
+
+		$url = get_permalink();
+		foreach ( $pages as $page ) {
+			if ( $url === $page ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

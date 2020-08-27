@@ -83,6 +83,8 @@ class AIOSEOP_Helper {
 			case 'All_in_One_SEO_Pack_Image_Seo':
 				$this->help_text = $this->help_text_image_seo();
 				break;
+			default:
+				break;
 		}
 
 		/**
@@ -116,6 +118,7 @@ class AIOSEOP_Helper {
 			'aiosp_schema_markup'               => __( 'This enables Schema.org structured data markup for rich snippets in search results.', 'all-in-one-seo-pack' ),
 			/* translators: %s is a placeholder, which means that it should not be translated. It will be replaced with the name of the plugin, All in One SEO Pack. */
 			'aiosp_do_log'                      => sprintf( __( 'Check this and %s will create a log of important events (all-in-one-seo-pack.log) in the wp-content directory which might help debugging. Make sure this directory is writable.', 'all-in-one-seo-pack' ), AIOSEOP_PLUGIN_NAME ),
+			'aiosp_usage_tracking'              => __( 'By allowing us to track usage data we can better help you because we know with which WordPress configurations, themes and plugins we should test.', 'all-in-one-seo-pack' ),
 
 			// Home Page Settings.
 			'aiosp_home_title'                  => __( 'As the name implies, this will be the Meta Title of your homepage. This is independent of any other option. If not set, the default Site Title (found in WordPress under Settings, General, Site Title) will be used.', 'all-in-one-seo-pack' ),
@@ -449,6 +452,49 @@ class AIOSEOP_Helper {
 			'aiosp_front_meta_tags'             => __( 'What you enter here will be copied verbatim to the header of the front page if you have set a static page in Settings, Reading, Front Page Displays. You can enter whatever additional headers you want here, even references to stylesheets. This will fall back to using Additional Page Headers if you have them set and nothing is entered here.', 'all-in-one-seo-pack' ),
 			'aiosp_home_meta_tags'              => __( 'What you enter here will be copied verbatim to the header of the home page if you have Front page displays your latest posts selected in Settings, Reading.  It will also be copied verbatim to the header on the Posts page if you have one set in Settings, Reading. You can enter whatever additional headers you want here, even references to stylesheets.', 'all-in-one-seo-pack' ),
 
+			// RSS Content Settings.
+			'aiosp_rss_content_before'          => 
+				__( "This feature allows you to automatically add content <u>before</u> each post in your site's RSS feed.", 'all-in-one-seo-pack' ) . '<br /><br />' .
+				__( 'The following macros are supported:', 'all-in-one-seo-pack' ) .
+				'<dl>' .
+					'<dt>%site_title%</dt>' .
+					'<dd>' . __( 'Your site title', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%site_link%</dt>' .
+					'<dd>' . __( 'A link to your homepage with your site title as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%site_link_raw%</dt>' .
+					'<dd>' . __( 'A link to your homepage with the link as anchor text.', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%post_title%</dt>' .
+					'<dd>' . sprintf( __( 'The original title of the %s', 'all-in-one-seo-pack' ), __( 'Post', 'all-in-one-seo-pack' ) ) . '</dd>' .
+					'<dt>%post_link%</dt>' .
+					'<dd>' . __( 'A link to the post with the post name as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%post_link_raw%</dt>' .
+					'<dd>' . __( 'A link to the post with the link as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%author_name%</dt>' .
+					'<dd>' . __( 'The display name of the post author', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%author_link%</dt>' .
+					'<dd>' . __( 'A link to the author archive of the post author with the author name as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+				'</dl>',
+			'aiosp_rss_content_after'           =>
+				__( "This feature allows you to automatically add content <u>after</u> each post in your site's RSS feed.", 'all-in-one-seo-pack' ) . '<br /><br />' .
+				__( 'The following macros are supported:', 'all-in-one-seo-pack' ) .
+				'<dl>' .
+					'<dt>%site_title%</dt>' .
+					'<dd>' . __( 'Your site title', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%site_link%</dt>' .
+					'<dd>' . __( 'A link to your homepage with your site title as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%site_link_raw%</dt>' .
+					'<dd>' . __( 'A link to your homepage with the link as anchor text.', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%post_title%</dt>' .
+					'<dd>' . sprintf( __( 'The original title of the %s', 'all-in-one-seo-pack' ), __( 'Post', 'all-in-one-seo-pack' ) ) . '</dd>' .
+					'<dt>%post_link%</dt>' .
+					'<dd>' . __( 'A link to the post with the post name as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%post_link_raw%</dt>' .
+					'<dd>' . __( 'A link to the post with the link as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%author_name%</dt>' .
+					'<dd>' . __( 'The display name of the post author', 'all-in-one-seo-pack' ) . '</dd>' .
+					'<dt>%author_link%</dt>' .
+					'<dd>' . __( 'A link to the author archive of the post author with the author name as anchor text', 'all-in-one-seo-pack' ) . '</dd>' .
+				'</dl>',
 			// Keyword Settings.
 			'aiosp_togglekeywords'              => __( 'This option allows you to toggle the use of Meta Keywords throughout the whole of the site.', 'all-in-one-seo-pack' ),
 			'aiosp_use_categories'              => __( 'Check this if you want your categories for a given post used as the Meta Keywords for this post (in addition to any keywords you specify on the Edit Post screen).', 'all-in-one-seo-pack' ),
@@ -539,6 +585,7 @@ class AIOSEOP_Helper {
 			'aiosp_use_original_title'          => 'https://semperplugins.com/documentation/general-settings/#use-original-title',
 			'aiosp_schema_markup'               => 'https://semperplugins.com/documentation/schema-settings/#use-schema-markup',
 			'aiosp_do_log'                      => 'https://semperplugins.com/documentation/general-settings/#log-important-events',
+			'aiosp_usage_tracking'              => 'https://semperplugins.com/documentation/usage-tracking/',
 
 			// Home Page Settings.
 			'aiosp_home_title'                  => 'https://semperplugins.com/documentation/home-page-settings/#home-title',
@@ -622,6 +669,10 @@ class AIOSEOP_Helper {
 			'aiosp_page_meta_tags'              => 'https://semperplugins.com/documentation/all-in-one-seo-pack-advanced-settings/#additional-page-headers',
 			'aiosp_front_meta_tags'             => 'https://semperplugins.com/documentation/all-in-one-seo-pack-advanced-settings/#additional-front-page-headers',
 			'aiosp_home_meta_tags'              => 'https://semperplugins.com/documentation/all-in-one-seo-pack-advanced-settings/#additional-blog-page-headers',
+
+			// RSS Content Settings.
+			'aiosp_rss_content_before'          => 'https://semperplugins.com/documentation/rss-content-settings/',
+			'aiosp_rss_content_after'           => 'https://semperplugins.com/documentation/rss-content-settings/',
 
 			// Keyword Settings.
 			'aiosp_togglekeywords'              => 'https://semperplugins.com/documentation/keyword-settings/#use-keywords',
@@ -714,9 +765,10 @@ class AIOSEOP_Helper {
 			'aiosp_sitemap_excl_pages'      => __( 'Use page slugs or page IDs, separated by commas, to exclude pages from the sitemap.', 'all-in-one-seo-pack' ),
 
 			// Additional Sitemaps
-			'aiosp_sitemap_posttypes_news'  => __( 'Select which Post Types should appear in your Google News sitemap. This sitemap only includes posts that were published in the last 48 hours.', 'all-in-one-seo-pack' ),
-			'aiosp_sitemap_rss_sitemap'     => __( 'Generate an RSS sitemap in addition to the regular XML Sitemap.', 'all-in-one-seo-pack' ),
-			
+			'aiosp_sitemap_posttypes_news'   => __( 'Select which Post Types should appear in your Google News sitemap. This sitemap only includes posts that were published in the last 48 hours.', 'all-in-one-seo-pack' ),
+			'aiosp_sitemap_rss_sitemap'      => __( 'Generate an RSS sitemap in addition to the regular XML Sitemap.', 'all-in-one-seo-pack' ),
+			'aiosp_sitemap_publication_name' => __( 'The publication name for your Google News sitemap. It must exactly match the name as it appears on your articles on news.google.com, except for anything in parentheses.', 'all-in-one-seo-pack' ),
+
 			// Priorities.
 			'aiosp_sitemap_prio_homepage'   => sprintf( __( 'Manually set the %1$s of your %2$s.', 'all-in-one-seo-pack' ), __( 'priority', 'all-in-one-seo-pack' ), __( 'Homepage', 'all-in-one-seo-pack' ) ),
 			'aiosp_sitemap_prio_post'       => sprintf( __( 'Manually set the %1$s of your %2$s.', 'all-in-one-seo-pack' ), __( 'priority', 'all-in-one-seo-pack' ), __( 'Posts', 'all-in-one-seo-pack' ) ),
@@ -756,7 +808,6 @@ class AIOSEOP_Helper {
 
 		$help_doc_link = array(
 			// XML Sitemap.
-			'aiosp_sitemap_rss_sitemap'     => 'https://semperplugins.com/documentation/xml-sitemaps-module/#create-rss_sitemap',
 			'aiosp_sitemap_daily_cron'      => 'https://semperplugins.com/documentation/xml-sitemaps-module/#schedule-updates',
 			'aiosp_sitemap_indexes'         => 'https://semperplugins.com/documentation/xml-sitemaps-module/#enable-sitemap-indexes',
 			'aiosp_sitemap_max_posts'       => 'https://semperplugins.com/documentation/xml-sitemaps-module/#enable-sitemap-indexes',
@@ -769,7 +820,9 @@ class AIOSEOP_Helper {
 			'aiosp_sitemap_rewrite'         => 'https://semperplugins.com/documentation/xml-sitemaps-module/#dynamically-generate-sitemap',
 
 			// Additional Sitemaps
-			'aiosp_sitemap_posttypes_news'  => 'https://semperplugins.com/documentation/google-news-sitemap/',
+			'aiosp_sitemap_rss_sitemap'      => 'https://semperplugins.com/documentation/xml-sitemaps-module/#create-rss_sitemap',
+			'aiosp_sitemap_posttypes_news'   => 'https://semperplugins.com/documentation/google-news-sitemap/',
+			'aiosp_sitemap_publication_name' => 'https://semperplugins.com/documentation/google-news-sitemap/',
 
 			// Additional Pages.
 			'aiosp_sitemap_addl_url'        => 'https://semperplugins.com/documentation/xml-sitemaps-module/#additional-pages',

@@ -99,12 +99,74 @@
 		});
 	}
 
+	function aioseop_remote_notice_button_dismiss( noticeId ) {
+		let noticeNonce   = aioseop_notice_data.notice_nonce;
+		$( `.aioseop-remote-notice-${noticeId} .aioseo-action-buttons a` ).on( "click", function( event ) {
+
+			let doNotDismiss = $( this ).attr( "data-dismiss" );
+			let href = $( this ).attr( "href" );
+
+			if (
+				( 'undefined' !== typeof doNotDismiss && "false" === doNotDismiss ) &&
+				"#dismiss" !== href
+			) {
+				return;
+			}
+
+			let formData = new FormData();
+			formData.append( "remote_notice_id", noticeId );
+
+			formData.append( "action", "aioseop_remote_notice" );
+			formData.append( "_ajax_nonce", noticeNonce );
+			$.ajax({
+				url: ajaxurl,
+				type: "POST",
+				data: formData,
+				cache: false,
+				dataType: "json",
+				processData: false,
+				contentType: false,
+
+				success: function( data, textStatus, jqXHR ){
+					var noticeContainer = ".aioseop-remote-notice-" + noticeId;
+					$( noticeContainer ).remove();
+				}
+			});
+		});
+	}
+
+	function aioseop_remote_notice_wp_default_dismiss( noticeID ) {
+		let noticeNonce     = aioseop_notice_data.notice_nonce;
+		let noticeContainer = ".aioseop-remote-notice-" + noticeID;
+		$( noticeContainer ).on( "click", "button.notice-dismiss ", function( event ) {
+			// Prevents any unwanted actions.
+			event.stopPropagation();
+			event.preventDefault();
+
+			let formData = new FormData();
+			formData.append( "remote_notice_id", noticeID );
+
+			formData.append( "action", "aioseop_remote_notice" );
+			formData.append( "_ajax_nonce", noticeNonce );
+			$.ajax({
+				url: ajaxurl,
+				type: "POST",
+				data: formData,
+				cache: false,
+				dataType: "json",
+				processData: false,
+				contentType: false
+			});
+		});
+	}
+
 	/**
 	 * INITIALIZE NOTICE JS
 	 *
 	 * Constructs the actions the user may perform.
 	 */
-	var noticeDelays = aioseop_notice_data.notice_actions;
+	let noticeDelays  = aioseop_notice_data.notice_actions;
+	let remoteNotices = aioseop_notice_data.remote_notices;
 
 	$.each( noticeDelays, function ( k1NoticeSlug, v1DelayArr ) {
 		$.each( v1DelayArr, function ( k2I, v2DelayIndex ) {
@@ -113,6 +175,11 @@
 
 		// Default WP action for Dismiss Button on Upper-Right.
 		aioseop_notice_delay_wp_default_dismiss_ajax_action( k1NoticeSlug );
+	});
+
+	$.each( remoteNotices, function( index, noticeId ) {
+		aioseop_remote_notice_button_dismiss( noticeId );
+		aioseop_remote_notice_wp_default_dismiss( noticeId );
 	});
 }(jQuery));
 // phpcs:enable

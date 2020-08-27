@@ -278,13 +278,13 @@ function aiosp_seometa_meta_key_convert( $old = '', $new = '', $delete_old = fal
 	}
 
 	// See which records we need to ignore, if any.
-	$exclude = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s", $new ) );
+	$exclude = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s", $new ) );
 
 	// If no records to ignore, we'll do a basic UPDATE and DELETE.
 	if ( ! $exclude ) {
 
 		$output->updated = $wpdb->update( $wpdb->postmeta, array( 'meta_key' => $new ), array( 'meta_key' => $old ) );
-		$output->deleted = $delete_old ? $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->postmeta WHERE meta_key = %s", $old ) ) : 0;
+		$output->deleted = $delete_old ? $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s", $old ) ) : 0;
 		$output->ignored = 0;
 
 	} else {
@@ -295,8 +295,8 @@ function aiosp_seometa_meta_key_convert( $old = '', $new = '', $delete_old = fal
 		$not_in = implode( ', ', (array) $not_in );
 
 		// @codingStandardsIgnoreStart
-		$output->updated = $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_key = %s WHERE meta_key = %s AND post_id NOT IN ($not_in)", $new, $old ) );
-		$output->deleted = $delete_old ? $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->postmeta WHERE meta_key = %s", $old ) ) : 0;
+		$output->updated = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_key = %s WHERE meta_key = %s AND post_id NOT IN (%s)", $new, $old, $not_in ) );
+		$output->deleted = $delete_old ? $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s", $old ) ) : 0;
 		// @codingStandardsIgnoreEnd
 		$output->ignored = count( $exclude );
 
@@ -411,7 +411,7 @@ function aiosp_seometa_post_meta_analyze( $old_platform = '', $new_platform = 'A
 		$ignore = 0;
 		// $ignore = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s", $meta_key ) );
 		// See which records to update, if any.
-		$update = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s", $meta_key ) );
+		$update = $wpdb->get_results( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s", $meta_key ) );
 
 		// Count items in returned arrays.
 		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar

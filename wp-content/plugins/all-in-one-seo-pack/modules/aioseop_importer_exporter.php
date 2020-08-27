@@ -38,8 +38,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Importer_Exporter' ) ) {
 					'name'            => __( 'Export Settings', 'all-in-one-seo-pack' ),
 					'type'            => 'multicheckbox',
 					'initial_options' => array(
-						1 => __( 'General Settings', 'all-in-one-seo-pack' ),
-						2 => __( 'Post Data', 'all-in-one-seo-pack' ),
+						1 => ''
 					),
 				),
 				'export_post_types'  => array(
@@ -56,13 +55,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Importer_Exporter' ) ) {
 				'import_export_help' => array(
 					'type'    => 'html',
 					'label'   => 'none',
-					'default' => __(
-						'Note: If General Settings is checked, the
-								General Settings, the Feature Manager settings,
-								and the following currently active modules will
-								have their settings data exported:',
-						'all-in-one-seo-pack'
-					) . '<br />',
+					'default' => __( '<strong>Note:</strong> If Export Settings is checked, the General Settings, Feature Manager settings, and the following active modules will have their settings exported:', 'all-in-one-seo-pack' ) . '<br />',
 				),
 			);
 
@@ -128,34 +121,34 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Importer_Exporter' ) ) {
 				$post_types,
 				$rempost
 			);
-			global $aioseop_modules;
+			global $aioseop_modules, $aioseop_options;
 			if ( ! empty( $aioseop_modules ) ) {
 				$modules = $aioseop_modules->get_loaded_module_list();
 				if ( ! empty( $modules ) && ! empty( $modules['feature_manager'] ) ) {
 					unset( $modules['feature_manager'] );
 				}
 				if ( ! empty( $modules ) ) {
-					$this->default_options['import_export_help']['default'] .= "<ul>\n";
+					$this->default_options['import_export_help']['default'] .= "<ul class='aioseop-importer-exporter-active-modules'>\n";
 					foreach ( $modules as $m ) {
+						if (
+							! AIOSEOPPRO ||
+							! isset( $aioseop_options['plan'] ) ||
+							! in_array( $aioseop_options['plan'], array( 'business', 'agency' ) )
+						) {
+							if ( in_array( $m, array( 'AIOSEOP_Schema_Local_Business', 'All_in_One_SEO_Pack_Image_Seo' ) ) ) {
+								continue;
+							}
+						}
 						$module = $aioseop_modules->return_module( $m );
 						$this->default_options['import_export_help']['default'] .=
 							"\t<li>" . $module->name . "</li>\n";
 					}
 					$this->default_options['import_export_help']['default'] .= "\n</ul>\n";
 				} else {
-					$this->default_options['import_export_help']['default'] .= '<br />'
-																			. __(
-																				'There are no other modules currently loaded!',
-																				'all-in-one-seo-pack'
-																			);
+					$this->default_options['import_export_help']['default'] .= __( 'There are no other modules currently loaded!', 'all-in-one-seo-pack' );
 				}
 			}
-			$this->default_options['import_export_help']['default'] .= '<br />'
-																	. __(
-																		'You may change this by activating or deactivating
-						modules in the Feature Manager.',
-																		'all-in-one-seo-pack'
-																	);
+			$this->default_options['import_export_help']['default'] .=  __( 'You may change this by activating or deactivating modules in the Feature Manager.', 'all-in-one-seo-pack' );
 			$this->update_options();
 			if ( ! empty( $_REQUEST['export_submit'] ) ) {
 				$this->do_importer_exporter();
@@ -555,6 +548,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Importer_Exporter' ) ) {
 						header( 'Content-Length: ' . $strlength );
 						echo $buf;
 						die();
+						break;
+					default:
 						break;
 				}
 			}

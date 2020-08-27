@@ -91,9 +91,21 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Feature_Manager' ) ) {
 					'is_pro_feature' => true,
 					'can_activate'   => AIOSEOPPRO,
 				),
+				'schema_local_business' => array(
+					'name'           => __( 'Local Business SEO', 'all-in-one-seo-pack' ),
+					'description'    => sprintf(
+						__( 'Tell Google more about your business and increase your click-through rate using Local Business structured data %s.', 'all-in-one-seo-pack' ),
+						sprintf( '<strong>%s</strong>', __( '(Business & Agency plans only)', 'all-in-one-seo-pack' ) )
+					),
+					'is_pro_feature' => true,
+					'can_activate'   => false,
+				),
 				'image_seo'         => array(
 					'name'           => __( 'Image SEO', 'all-in-one-seo-pack' ),
-					'description'    => __( 'Manage the SEO for your images by controlling their title & alt tag attributes.', 'all-in-one-seo-pack' ),
+					'description'    => sprintf(
+						__( 'Manage the SEO for your images by controlling their title & alt tag attributes %s.', 'all-in-one-seo-pack' ),
+						sprintf( '<strong>%s</strong>', __( '(Business & Agency plans only)', 'all-in-one-seo-pack' ) )
+					),
 					'is_pro_feature' => true,
 					'can_activate'   => false,
 				),
@@ -116,10 +128,10 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Feature_Manager' ) ) {
 			}
 
 			// Set up default settings fields.
-			// Name			- Human-readable name of the setting.
-			// Help_text	- Inline documentation for the setting.
-			// Type			- Type of field; this defaults to checkbox; currently supported types are checkbox, text, select, multiselect.
-			// Default		- Default value of the field.
+			// Name         - Human-readable name of the setting.
+			// Help_text    - Inline documentation for the setting.
+			// Type         - Type of field; this defaults to checkbox; currently supported types are checkbox, text, select, multiselect.
+			// Default      - Default value of the field.
 			// Initial_options - Initial option list used for selects and multiselects.
 			// Other supported options: class, id, style -- allows you to set these HTML attributes on the field.
 			$this->default_options = array();

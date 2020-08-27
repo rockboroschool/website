@@ -840,11 +840,12 @@ if ( ! function_exists( 'render_seo_column' ) ) {
 			}
 		}
 
+		$value = aioseop_sanitize( $value );
 		if ( empty( $value ) ) {
 			$value = sprintf( '<strong>%s</strong>', sprintf( __( 'No value', 'all-in-one-seo-pack' ), str_replace( '_', ' ', $name ) ) );
 		}
 
-		$span  = "<span id='aioseop_{$column_name}_{$post_id}_value'>" . trim( $value ) . '</span>';
+		$span  = "<span id='aioseop_{$column_name}_{$post_id}_value'>" . $value . '</span>';
 		$nonce = wp_create_nonce( "aioseop_meta_{$column_name}_{$post_id}" );
 
 		?>
@@ -918,9 +919,11 @@ if ( ! function_exists( 'aioseop_ajax_save_meta' ) ) {
 				$key = '_wp_attachment_image_alt';
 				break;
 			}
+			default:
+				return;
 		}
 
-		update_post_meta( $post_id, $key, $value );
+		update_post_meta( $post_id, $key, aioseop_sanitize( $value ) );
 	}
 }
 
@@ -1481,6 +1484,7 @@ if ( ! function_exists( 'aioseop_get_admin_screens' ) ) {
 			'Video Sitemap'      => 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/pro/video_sitemap',
 			'Image SEO'          => 'all-in-one-seo_page_aiosp_image_seo',
 			'About Us'           => 'all-in-one-seo_page_aioseop-about',
+			'Local Business SEO' => 'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/pro/modules/class-aioseop-schema-local-business',
 		);
 	}
 }
@@ -1646,5 +1650,37 @@ if ( ! function_exists( 'aioseop_last_modified_post' ) ) {
 			return false;
 		}
 		return $query->posts[0];
+	}
+}
+
+if ( ! function_exists( 'aioseop_sanitize' ) ) {
+	/**
+	 * Sanitizes a given value before we store it in the DB.
+	 *
+	 * @since 3.7.0
+	 *
+	 * @param  mixed $value The value.
+	 * @return mixed $value The sanitized value.
+	 */
+	function aioseop_sanitize( $value ) {
+		switch ( gettype( $value ) ) {
+			case 'boolean':
+				return (bool) $value;
+			case 'string':
+				// This is similar to what sanitize_text_field() does but we want to escape tags instead of strip them.
+				return esc_html( wp_check_invalid_utf8( trim( $value ) ) );
+			case 'integer':
+				return intval( $value );
+			case 'double':
+				return floatval( $value );
+			case 'array':
+				$sanitized = array();
+				foreach ( (array) $value as $child ) {
+					array_push( $sanitized, aioseop_sanitize($child) );
+				}
+				return $sanitized;
+			default:
+				return false;
+		}
 	}
 }

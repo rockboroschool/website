@@ -69,7 +69,7 @@ $dismissible = ! isset( $notice['dismissible'] ) || $notice['dismissible'] ? ' i
 				id="<?php echo esc_attr( $id ); ?>" 
 				class="aioseop-notice-delay <?php echo esc_attr( $class ); ?>"
 				<?php
-				if ( $action_option['new_tab'] ) {
+				if ( isset( $action_option['new_tab'] ) && $action_option['new_tab'] ) {
 					echo 'target="_blank" rel="noopener"';}
 				?>
 				>

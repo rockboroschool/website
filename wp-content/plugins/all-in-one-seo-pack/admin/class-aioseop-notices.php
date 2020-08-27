@@ -60,6 +60,35 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		public $notices = array();
 
 		/**
+		 * Collection of remote notices.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @var array $remote_notices => {
+		 *     @type array $id => {
+		 *         @type int    $id                Notice ID
+		 *         @type string $title             The notification title.
+		 *         @type string $content           Content of notification.
+		 *         @type array  $type              License levels/type.
+		 *         @type array  $btns              Notice buttons.
+		 *         @type string $start             Time/Date to show notification.
+		 *         @type string $end               Time/Date to hide notification.
+		 *         @type string $notification_type Notification type class.
+		 *     }
+		 * }
+		 */
+		public $remote_notices = array();
+
+		/**
+		 * Source of remote notifications.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @var string
+		 */
+		public $remote_url = 'https://plugin-cdn.aioseo.com/wp-content/notifications.json';
+
+		/**
 		 * List of notice slugs that are currently active.
 		 * NOTE: Amount is reduced by 1 second in order to display at exactly X amount of time.
 		 *
@@ -82,11 +111,11 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 *
 		 * @since 3.0
 		 *
-		 * @var array $dismissed {
+		 * @var array $dismissed_notices {
 		 *     @type boolean $notice_slug => $is_dismissed True if dismissed.
 		 * }
 		 */
-		public $dismissed = array();
+		public $dismissed_notices = array();
 
 		/**
 		 * The default dismiss time. An anti-nag setting.
@@ -132,6 +161,8 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				add_action( 'admin_init', array( $this, 'init' ) );
 				add_action( 'current_screen', array( $this, 'admin_screen' ) );
 			}
+
+			add_action( 'aioseop_cron_check_remote_notices', array( $this, 'cron_check_remote_notices' ) );
 		}
 
 		/**
@@ -179,6 +210,204 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 */
 		public function init() {
 			add_action( 'wp_ajax_aioseop_notice', array( $this, 'ajax_notice_action' ) );
+			add_action( 'wp_ajax_aioseop_remote_notice', array( $this, 'ajax_remote_notice_action' ) );
+
+			if ( ! wp_next_scheduled( 'aioseop_cron_check_remote_notices' ) ) {
+				wp_schedule_event( time(), 'daily', 'aioseop_cron_check_remote_notices' );
+			}
+		}
+
+		/**
+		 * Check Remote Notices.
+		 *
+		 * @since 3.6.0
+		 */
+		public function cron_check_remote_notices() {
+			$remote_notices = $this->get_remote_notices();
+
+			// Replace existing notices in case they were updated.
+			for ( $i = 0; $i < count( $this->remote_notices ); $i++ ) {
+				foreach ( $remote_notices as $remote_notice ) {
+					if ( $this->remote_notices[ $i ]['id'] === $remote_notice['id'] ) {
+						unset( $this->remote_notices[ $i ] );
+					}
+				}
+			}
+
+			$this->remote_notices = array_merge( $this->remote_notices, $remote_notices );
+
+			$this->obj_update_options();
+		}
+
+		/**
+		 * Get Remote URL.
+		 *
+		 * Checks is a constant is defined (dev purposes), if not, then use URL in `$this->remote_url`.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @return string
+		 */
+		public function get_remote_url() {
+			if ( defined( 'AIOSEO_NOTIFICATIONS_URL' ) ) {
+				return AIOSEO_NOTIFICATIONS_URL;
+			}
+
+			return $this->remote_url;
+		}
+
+		/**
+		 * Get Remote Notices.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @return array
+		 */
+		private function get_remote_notices() {
+			$res = wp_remote_get( $this->get_remote_url() );
+
+			if ( is_wp_error( $res ) ) {
+				return array();
+			}
+
+			$body = wp_remote_retrieve_body( $res );
+
+			if ( empty( $body ) ) {
+				return array();
+			}
+
+			return $this->validate_remote_notices( json_decode( $body, true ) );
+		}
+
+		/**
+		 * Validate Remote Notices.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param $remote_notices
+		 * @return array
+		 */
+		private function validate_remote_notices( $remote_notices ) {
+			if ( ! is_array( $remote_notices ) || empty( $remote_notices ) ) {
+				return array();
+			}
+
+			$data        = array();
+			$obj_options = $this->obj_get_options();
+			foreach ( $remote_notices as $remote_notice ) {
+				// Invalid notice if required variables have no value.
+				if (
+						empty( $remote_notice['content'] ) ||
+						empty( $remote_notice['type'] )
+				) {
+					continue;
+				}
+
+				// If no 'start' time exists, set start to current time.
+				if ( ! isset( $remote_notice['start'] ) || empty( $remote_notice['start'] ) ) {
+					$remote_notice['start'] = date( 'Y-m-d H:i:s' );
+				}
+				// Skip if already expired.
+				if ( ! empty( $remote_notice['end'] ) && time() > strtotime( $remote_notice['end'] ) ) {
+					continue;
+				}
+
+				// Skip if already dismissed.
+				if ( in_array( 'remote_' . $remote_notice['id'], array_keys( $obj_options['dismissed_notices'] ) ) ) {
+					continue;
+				}
+
+				// Store notice if version matches.
+				if ( $this->version_match( AIOSEOP_VERSION, $remote_notice['type'] ) ) {
+					$data[ 'remote_' . $remote_notice['id'] ] = $remote_notice;
+					continue;
+				}
+
+				// Store notice if plan matches.
+				if ( AIOSEOPPRO ) {
+					if (
+						'pro' === $remote_notice['type'] ||
+						in_array( $this->get_license_plan(), $remote_notice['type'], true )
+					) {
+						$data[ 'remote_' . $remote_notice['id'] ] = $remote_notice;
+					}
+				} else {
+					if ( 'lite' === $remote_notice['type'] ) {
+						$data[ 'remote_' . $remote_notice['id'] ] = $remote_notice;
+					}
+				}
+			}
+			return $data;
+		}
+
+		/**
+		 * Get License Level.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @return string Type of license level being used.
+		 */
+		public function get_license_plan() {
+			global $aioseop_options;
+
+			if ( ! isset( $aioseop_options['plan'] ) || empty( $aioseop_options['plan'] ) ) {
+				return AIOSEOPPRO ? 'unlicensed' : 'lite';
+			}
+			return $aioseop_options['plan'];
+		}
+
+		/**
+		 * Version Compare.
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param string       $current_version The current version being used.
+		 * @param string|array $compare_version The version to compare with.
+		 * @return bool
+		 */
+		public function version_match( $current_version, $compare_version ) {
+			if ( is_array( $compare_version ) ) {
+				foreach ( $compare_version as $compare_single ) {
+					$recursive_result = $this->version_match( $current_version, $compare_single );
+					if ( $recursive_result ) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			$current_parse = explode( '.', $current_version );
+
+			if ( strpos( $compare_version, '-' ) ) {
+				$compare_parse = explode( '-', $compare_version );
+			} elseif ( strpos( $compare_version, '.' ) ) {
+				$compare_parse = explode( '.', $compare_version );
+			} else {
+				return false;
+			}
+
+			$current_count = count( $current_parse );
+			$compare_count = count( $compare_parse );
+			for ( $i = 0; $i < $current_count || $i < $compare_count; $i++ ) {
+				if ( isset( $compare_parse[ $i ] ) && 'x' === strtolower( $compare_parse[ $i ] ) ) {
+					unset( $compare_parse[ $i ] );
+				}
+
+				if ( ! isset( $current_parse[ $i ] ) ) {
+					unset( $compare_parse[ $i ] );
+				} elseif ( ! isset( $compare_parse[ $i ] ) ) {
+					unset( $current_parse[ $i ] );
+				}
+			}
+
+			foreach ( $compare_parse as $index => $sub_number ) {
+				if ( $current_parse[ $index ] !== $sub_number ) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/**
@@ -198,6 +427,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				// AIOSEO Notice Content.
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 				add_action( 'all_admin_notices', array( $this, 'display_notice_aioseop' ) );
+				add_action( 'all_admin_notices', array( $this, 'display_remote_notice' ) );
 			} elseif ( isset( $current_screen->id ) ) {
 				// Default WP Notice.
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -219,8 +449,10 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		private function obj_load_options() {
 			$notices_options = $this->obj_get_options();
 
-			$this->notices        = $notices_options['notices'];
-			$this->active_notices = $notices_options['active_notices'];
+			$this->notices           = $notices_options['notices'];
+			$this->remote_notices    = $this->validate_remote_notices( $notices_options['remote_notices'] );
+			$this->active_notices    = $notices_options['active_notices'];
+			$this->dismissed_notices = $notices_options['dismissed_notices'];
 		}
 
 		/**
@@ -233,8 +465,10 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 */
 		private function obj_get_options() {
 			$defaults = array(
-				'notices'        => array(),
-				'active_notices' => array(),
+				'notices'           => array(),
+				'remote_notices'    => array(),
+				'active_notices'    => array(),
+				'dismissed_notices' => array(),
 			);
 
 			// Prevent old data from being loaded instead.
@@ -258,8 +492,10 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		 */
 		private function obj_update_options() {
 			$notices_options     = array(
-				'notices'        => $this->notices,
-				'active_notices' => $this->active_notices,
+				'notices'           => $this->notices,
+				'remote_notices'    => $this->remote_notices,
+				'active_notices'    => $this->active_notices,
+				'dismissed_notices' => $this->dismissed_notices,
 			);
 			$old_notices_options = $this->obj_get_options();
 			$notices_options     = wp_parse_args( $notices_options, $old_notices_options );
@@ -490,7 +726,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 			$notice = $this->get_notice( $slug );
 
 			unset( $this->active_notices[ $slug ] );
-			unset( $this->dismissed[ $slug ] );
+			unset( $this->dismissed_notices[ $slug ] );
 			delete_metadata(
 				'user',
 				0,
@@ -563,7 +799,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 		public function set_notice_dismiss( $slug, $dismiss ) {
 			$notice = $this->get_notice( $slug );
 			if ( 'site' === $notice['target'] ) {
-				$this->dismissed[ $slug ] = $dismiss;
+				$this->dismissed_notices[ $slug ] = $dismiss;
 			} elseif ( 'user' === $notice['target'] ) {
 				$current_user_id = get_current_user_id();
 
@@ -657,9 +893,18 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				}
 			}
 
+			$loc_remote_notices = array();
+			foreach ( $this->remote_notices as $remote_notice ) {
+				if ( ! isset( $remote_notice['btns'] ) ) {
+					continue;
+				}
+				array_push( $loc_remote_notices, $remote_notice['id'] );
+			}
+
 			$admin_notice_localize = array(
 				'notice_nonce'   => wp_create_nonce( 'aioseop_ajax_notice' ),
 				'notice_actions' => $notice_actions,
+				'remote_notices' => $loc_remote_notices,
 			);
 			wp_localize_script( 'aioseop-admin-notice-js', 'aioseop_notice_data', $admin_notice_localize );
 
@@ -754,7 +999,7 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 					continue;
 				}
 
-				if ( isset( $this->dismissed[ $a_notice_slug ] ) && $this->dismissed[ $a_notice_slug ] ) {
+				if ( isset( $this->dismissed_notices[ $a_notice_slug ] ) && $this->dismissed_notices[ $a_notice_slug ] ) {
 					$notice_show = false;
 				}
 
@@ -785,6 +1030,100 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 					include AIOSEOP_PLUGIN_DIR . 'admin/display/notice-' . $template . '.php';
 				}
 			}
+		}
+
+		/**
+		 * Display Remote Notices
+		 *
+		 * @since 3.6.0
+		 */
+		public function display_remote_notice() {
+			if ( ! current_user_can( 'aiosp_manage_seo' ) ) {
+				return;
+			}
+
+			$current_screen  = get_current_screen();
+			if ( in_array( $current_screen->id, $this->excluded_screens, true ) ) {
+				return;
+			}
+
+			foreach ( $this->remote_notices as $remote_notice_slug => $remote_notice ) {
+				if (
+						time() < strtotime( $remote_notice['start'] ) ||
+						( ! empty( $remote_notice['end'] ) && time() > strtotime( $remote_notice['end']  ) )
+				) {
+					continue;
+				}
+				if ( isset( $this->dismissed_notices[ $remote_notice_slug ] ) && $this->dismissed_notices[ $remote_notice_slug ] ) {
+					continue;
+				}
+
+				if ( isset( $remote_notice['btns'] ) ) {
+					foreach ( $remote_notice['btns'] as $btn_slug => $btn ) {
+						$remote_notice['btns'][ $btn_slug ]['url'] = $this->format_url( $btn['url'] );
+					}
+				}
+
+				// Display/Render.
+				$important_admin_notices = array(
+					'error',
+					'warning',
+					'do-nag',
+				);
+				if ( defined( 'DISABLE_NAG_NOTICES' ) && true === DISABLE_NAG_NOTICES && ( ! in_array( $remote_notice['notification_type'], $important_admin_notices, true ) ) ) {
+					continue;
+				} else {
+					include AIOSEOP_PLUGIN_DIR . 'admin/display/notice-remote.php';
+				}
+			}
+		}
+
+		/**
+		 * Format URL
+		 *
+		 * @since 3.6.0
+		 *
+		 * @param  string $url
+		 * @return string
+		 */
+		public function format_url( $url ) {
+			$replace = array(
+				'(http://dismiss)'            => '#dismiss',
+				'(http://route)'              => admin_url() . 'admin.php',
+				'(#aioseo-settings)'          => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/aioseop_class.php',
+				'(#aioseo-general-settings)'  => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/aioseop_class.php',
+				'(#aioseo-performance)'       => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_performance.php',
+				'(#aioseo-sitemap)'           => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_sitemap.php',
+				'(#aioseo-opengraph)'         => '?page=aiosp_opengraph',
+				'(#aioseo-robots)'            => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_robots.php',
+				'(#aioseo-file-editor)'       => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_file_editor.php',
+				'(#aioseo-importer-exporter)' => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_importer_exporter.php',
+				'(#aioseo-bad-robots)'        => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_bad_robots.php',
+				'(#aioseo-feature-manager)'   => '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_feature_manager.php',
+				'(#aioseo-about)'             => '?page=aioseop-about',
+				'(#aioseo-video-sitemap)'     => '#',
+				'(#aioseo-image-seo)'         => '#',
+				'(#aioseo-local-business)'    => '#',
+				'(:[0-9a-zA-Z-_]+)'           => '#',
+			);
+			if ( AIOSEOPPRO ) {
+				$replace['(#aioseo-sitemap)']       = '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/pro/class-aioseop-pro-sitemap.php';
+				$replace['(#aioseo-video-sitemap)'] = '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/pro/video_sitemap.php';
+				if ( aioseop_is_addon_allowed( 'image_seo' ) ) {
+					$replace['(#aioseo-image-seo)'] = '?page=aiosp_image_seo';
+				}
+				if ( aioseop_is_addon_allowed( 'schema_local_business' ) ) {
+					$replace['(#aioseo-local-business)'] = '?page=' . AIOSEOP_PLUGIN_DIRNAME . '/pro/modules/class-aioseop-schema-local-business.php';
+				}
+			}
+			$search = array_keys( $replace );
+
+			$tmp_url = preg_replace( $search, $replace, $url );
+			if ( ! empty( $tmp_url ) ) {
+				$url = $tmp_url;
+			}
+
+			return $url;
 		}
 
 		/**
@@ -822,10 +1161,10 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 				}
 			}
 			if ( empty( $notice_slug ) ) {
-				/* Translators: Displays the hordcoded slug that missing. */
+				/* Translators: Displays the hardcoded slug that is missing. */
 				wp_send_json_error( sprintf( __( 'Missing values from `%s`.', 'all-in-one-seo-pack' ), 'notice_slug' ) );
 			} elseif ( empty( $action_index ) && 0 !== (int) $action_index ) {
-				/* Translators: Displays the hordcoded slug that missing. */
+				/* Translators: Displays the hardcoded action index that is missing. */
 				wp_send_json_error( sprintf( __( 'Missing values from `%s`.', 'all-in-one-seo-pack' ), 'action_index' ) );
 			}
 
@@ -850,7 +1189,39 @@ if ( ! class_exists( 'AIOSEOP_Notices' ) ) {
 			wp_send_json_success( __( 'Notice updated successfully.', 'all-in-one-seo-pack' ) );
 		}
 
+		/**
+		 * AJAX Remote Notice
+		 *
+		 * @since 3.6.0
+		 */
+		public function ajax_remote_notice_action() {
+			check_ajax_referer( 'aioseop_ajax_notice' );
+			if ( ! current_user_can( 'aiosp_manage_seo' ) ) {
+				wp_send_json_error( __( "User doesn't have `aiosp_manage_seo` capabilities.", 'all-in-one-seo-pack' ) );
+			}
+
+			$remote_notice_id  = null;
+			if ( isset( $_POST['remote_notice_id'] ) ) {
+				$remote_notice_id = filter_input( INPUT_POST, 'remote_notice_id', FILTER_SANITIZE_STRING );
+
+				// When PHPUnit is unable to use filter_input.
+				if ( defined( 'AIOSEOP_UNIT_TESTING' ) && null === $remote_notice_id && ! empty( $_POST['remote_notice_id'] ) ) {
+					$remote_notice_id = $_POST['remote_notice_id'];
+				}
+			}
+			if ( empty( $remote_notice_id ) ) {
+				/* Translators: Displays the hardcoded ID that is missing. */
+				wp_send_json_error( sprintf( __( 'Missing values from `%s`.', 'all-in-one-seo-pack' ), 'remote_notice_id' ) );
+			}
+
+			$this->dismissed_notices[ 'remote_' . $remote_notice_id ] = time();
+
+			$this->obj_update_options();
+			wp_send_json_success( __( 'Notice updated successfully.', 'all-in-one-seo-pack' ) );
+		}
+
 	}
+
 	// CLASS INITIALIZATION.
 	// Should this be a singleton class instead of a global?
 	global $aioseop_notices;

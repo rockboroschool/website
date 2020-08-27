@@ -293,30 +293,12 @@ class aiosp_common {
 			if ( false !== strpos( $url, $uploads_dir['baseurl'] . '/' ) ) {
 				// Results_1 query looks for URLs with the original guid that is uncropped and unedited.
 				if ( is_null( $results_1 ) ) {
-					$results_1 = aiosp_common::attachment_url_to_postid_query_1();
+					$results_1 = aiosp_common::attachment_url_to_postid_query();
 				}
 
 				if ( isset( $results_1[ $url_md5 ] ) ) {
 					$id = intval( $results_1[ $url_md5 ] );
 				}
-
-				// phpcs:disable Squiz.Commenting.InlineComment.InvalidEndChar
-				// TODO Add setting to enable; this is TOO MEMORY INTENSE which could result in 1 or more crashes,
-				// TODO however some may still need custom image URLs.
-				// TODO NOTE: Transient data does prevent continual crashes.
-				// else {
-				// Results_2 query looks for the URL that is cropped and edited. This searches JSON strings
-				// and returns the original attachment ID (there is no custom attachment IDs).
-				//
-				// if ( is_null( $results_2 ) ) {
-				// $results_2 = aiosp_common::attachment_url_to_postid_query_2();
-				// }
-				//
-				// if ( isset( $results_2[ $url_md5 ] ) ) {
-				// $id = intval( $results_2[ $url_md5 ] );
-				// }
-				// }
-				// phpcs:enable
 			}
 
 			self::$attachment_url_postids[ $url_md5 ] = $id;
@@ -362,11 +344,11 @@ class aiosp_common {
 	 *
 	 * @return array
 	 */
-	public static function attachment_url_to_postid_query_1() {
+	public static function attachment_url_to_postid_query() {
 		global $wpdb;
 
-		$results_1 = $wpdb->get_results(
-			"SELECT ID, MD5(guid) AS guid FROM $wpdb->posts WHERE post_type='attachment' AND post_status='inherit' AND post_mime_type LIKE 'image/%';",
+		$results_1 = $wpdb->get_results( 
+			$wpdb->prepare( "SELECT ID, MD5(guid) AS guid FROM {$wpdb->posts} WHERE post_type='attachment' AND post_status='inherit' AND post_mime_type LIKE %s;", 'image/%' ), 
 			ARRAY_A
 		);
 
@@ -380,87 +362,6 @@ class aiosp_common {
 		}
 
 		return $results_1;
-	}
-
-	/**
-	 * Attachment URL to Post ID - Query 2
-	 *
-	 * Unused/Conceptual function. This is intended to work solely with `aiosp_common::attachment_url_to_post_id()`.
-	 * Calling this multiple times is memory intense. It's intended to query for custom images, and data for those types
-	 * of images only exists in the postmeta database table
-	 *
-	 * @todo Investigate unserialize() memory consumption/leak.
-	 * @link https://www.evonide.com/breaking-phps-garbage-collection-and-unserialize/
-	 *
-	 * @see aiosp_common::attachment_url_to_postid()
-	 * @see unserialize()
-	 * @link http://php.net/manual/en/function.unserialize.php
-	 * @see wpdb::get_results()
-	 * @link https://developer.wordpress.org/reference/classes/wpdb/get_results/
-	 * @see wp_upload_dir()
-	 * @link https://developer.wordpress.org/reference/functions/wp_upload_dir/
-	 *
-	 * @return array
-	 */
-	public static function attachment_url_to_postid_query_2() {
-		global $wpdb;
-
-		$tmp_arr = array();
-		// @codingStandardsIgnoreStart WordPress.WP.PreparedSQL.NotPrepared
-		$results_2 = $wpdb->get_results(
-			"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE `meta_key` = '_wp_attachment_metadata' AND `meta_value` != '" . serialize( array() ) . "';",
-			ARRAY_A
-		);
-		// @codingStandardsIgnoreStop WordPress.WP.PreparedSQL.NotPrepared
-		if ( $results_2 ) {
-			for ( $i = 0; $i < count( $results_2 ); $i++ ) {
-				// TODO Investigate potentual memory leak(s); currently with unserialize.
-				$meta_value = maybe_unserialize( $results_2[ $i ]['meta_value'] );
-
-				// TODO Needs Discussion: Should this be added? To handle errors better instead of suspecting aioseop is at fault and lessen support threads.
-				/**
-				 * This currently handles "warning" notices with unserialize which normally can't be handled with a try/catch.
-				 * However, this notice should be identified and corrected; which is seperate from the plugin, but
-				 * can also triggered by the plugin.
-				 *
-				 * @see aiosp_common::error_handle_images()
-				 * @see set_error_handler()
-				 * @link http://php.net/manual/en/function.set-error-handler.php
-				 * @see restore_error_handler()
-				 * @link http://php.net/manual/en/function.restore-error-handler.php
-				 */
-				/*
-				set_error_handler( 'aiosp_common::error_handle_images' );
-				try {
-					$meta_value = unserialize( $results_2[ $i ]['meta_value'] );
-				} catch ( Exception $e ) {
-					unset( $meta_value );
-					restore_error_handler();
-					continue;
-				}
-				restore_error_handler();
-				*/
-
-				// Images and Videos use different variable structures.
-				if ( false === $meta_value || ! isset( $meta_value['file'] ) && ! isset( $meta_value['sizes'] ) ) {
-					continue;
-				}
-
-				// Set the URL => PostIDs.
-				$uploads_dir = wp_upload_dir();
-				$custom_img_base_url = $uploads_dir['baseurl'] . '/' . str_replace( wp_basename( $meta_value['file'] ), '', $meta_value['file'] );
-				foreach ( $meta_value['sizes'] as $image_size_arr ) {
-					$tmp_arr[ md5( ( $custom_img_base_url . $image_size_arr['file'] ) ) ] = $results_2[ $i ]['post_id'];
-				}
-
-				unset( $meta_value );
-			}
-		}
-
-		$results_2 = $tmp_arr;
-		unset( $tmp_arr );
-
-		return $results_2;
 	}
 
 	/**

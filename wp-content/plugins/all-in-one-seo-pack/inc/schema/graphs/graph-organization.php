@@ -134,9 +134,20 @@ class AIOSEOP_Graph_Organization extends AIOSEOP_Graph {
 	 * @return array
 	 */
 	protected function prepare_logo() {
-		$rtn_data = array();
+		global $aioseop_options;
 
-		$logo_id = $this->get_logo_id();
+		$homeUrl = home_url();
+		$logoUrl = isset( $aioseop_options['aiosp_schema_organization_logo'] ) ? $aioseop_options['aiosp_schema_organization_logo'] : '';
+		if ( $logoUrl && ! preg_match( "#$homeUrl.*#", $logoUrl ) ) {
+			return array(
+				'@type' => 'ImageObject',
+				'@id'   => home_url() . '/#logo',
+				'url'   => $aioseop_options['aiosp_schema_organization_logo'],
+			);
+		}
+
+		$rtn_data = array();
+		$logo_id  = $this->get_logo_id();
 		if ( ! empty( $logo_id ) ) {
 			$rtn_data = array(
 				'@type' => 'ImageObject',

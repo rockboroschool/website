@@ -115,15 +115,17 @@ class AIOSEOP_Context {
 	}
 
 	/**
-	 * Logs Error when WP_DEBUG(_LOG) is Enabled.
+	 * Logs Error when General Settings > 'Log important events' is Enabled.
 	 *
 	 * @since 3.5.2
+	 *
+	 * @param string $message Message to prepend at the beginning of a Stack Trace.
 	 */
-	public function log_error() {
+	public function log_error( $message = 'An error has occurred.' ) {
 		global $aioseop_options;
 		if ( 'on' === $aioseop_options['aiosp_do_log'] ) {
 			$e = new Exception;
-			error_log( $e->getTraceAsString() );
+			error_log( $message . "\n" . $e->getTraceAsString() );
 		}
 	}
 
@@ -456,6 +458,8 @@ class AIOSEOP_Context {
 				// $wp_props['user_login'] = $object->user_login;
 				$wp_props['site_id'] = $object->site_id;
 				break;
+			default:
+				break;
 		}
 
 		// Also get only the object properties that match in $context['wp_props'] | $context->wp_props.
@@ -579,42 +583,52 @@ class AIOSEOP_Context {
 	 */
 	public function get_display_name() {
 		$display_name = '';
+
+		// Set object, and validate WP types.
+		$wp_obj          = false;
+		$wp_object_types = array(
+			'WP_Site',
+			'WP_Post',
+			'WP_Post_Type',
+			'WP_Taxonomy',
+			'WP_Term',
+			'WP_User',
+		);
+		if ( in_array( $this->context_type, $wp_object_types ) ) {
+			// Get object, and check if it exists (false value if it does not).
+			$wp_obj = self::get_object( $this->context_type, $this->context_key, $this->wp_props );
+			if ( ! $wp_obj ) {
+				$this->log_error( "AIOSEOP_Context: Object '" . $this->context_type . "' Key '" . $this->context_key . "' doesn't exist." );
+				return $display_name;
+			}
+		}
+
 		switch ( $this->context_type ) {
 			case 'var_site':
 				$display_name = get_bloginfo( 'name' );
 				break;
 
 			case 'WP_Site':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key );
 				$display_name = $wp_obj->blogname;
 				break;
 
 			case 'WP_Post':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key );
-				if ( ! $wp_obj ) {
-					$this->log_error();
-					return $display_name;
-				}
 				$display_name = $wp_obj->post_title;
 				break;
 
 			case 'WP_Post_Type':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key );
 				$display_name = $wp_obj->label;
 				break;
 
 			case 'WP_Taxonomy':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key );
 				$display_name = $wp_obj->label;
 				break;
 
 			case 'WP_Term':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key, $this->wp_props );
 				$display_name = $wp_obj->name;
 				break;
 
 			case 'WP_User':
-				$wp_obj       = self::get_object( $this->context_type, $this->context_key, $this->wp_props );
 				$display_name = $wp_obj->display_name;
 				break;
 
@@ -661,6 +675,22 @@ class AIOSEOP_Context {
 		}
 
 		$url = '';
+
+		// Set object, and validate WP types.
+		$wp_obj          = false;
+		$wp_object_types = array(
+			'WP_Post',
+			'WP_Term',
+		);
+		if ( in_array( $this->context_type, $wp_object_types ) ) {
+			// Get object, and check if it exists (false value if it does not).
+			$wp_obj = self::get_object( $this->context_type, $this->context_key, $this->wp_props );
+			if ( ! $wp_obj ) {
+				$this->log_error( "AIOSEOP_Context: Object '" . $this->context_type . "' Key '" . $this->context_key . "' doesn't exist." );
+				return $url;
+			}
+		}
+
 		switch ( $this->context_type ) {
 			case 'var_site':
 				$url = home_url();
@@ -671,19 +701,7 @@ class AIOSEOP_Context {
 				break;
 
 			case 'WP_Post':
-				$wp_obj = self::get_object( $this->context_type, $this->context_key );
-				if ( ! $wp_obj ) {
-					$s_url[ $this->context_type ][ $this->context_key ] = $url;
-					$this->log_error();
-					return $url;
-				}
-
 				if ( 'attachment' === $wp_obj->post_type ) {
-					// Source URL.
-					// May need to check setting for attachment redirect.
-					// Use $this->get_images() to get attachment link.
-					// $url = wp_get_attachment_url( $wp_obj->ID );
-					// (Attachment) Post URL.
 					$url = get_permalink( $wp_obj );
 				} else {
 					$url = wp_get_canonical_url( $wp_obj );
@@ -705,7 +723,6 @@ class AIOSEOP_Context {
 				break;
 
 			case 'WP_Term':
-				$wp_obj   = self::get_object( $this->context_type, $this->context_key );
 				$taxonomy = isset( $this->wp_props['taxonomy'] ) ? $this->wp_props['taxonomy'] : '';
 				$url      = get_term_link( $wp_obj, $taxonomy );
 
@@ -749,6 +766,23 @@ class AIOSEOP_Context {
 	public function get_description() {
 		$desc = '';
 		global $aioseop_options;
+
+		// Set object, and validate WP types.
+		$wp_obj          = false;
+		$wp_object_types = array(
+			'WP_Post',
+			'WP_Post_Type',
+			'WP_Taxonomy',
+			'WP_Term',
+		);
+		if ( in_array( $this->context_type, $wp_object_types ) ) {
+			// Get object, and check if it exists (false value if it does not).
+			$wp_obj = self::get_object( $this->context_type, $this->context_key, $this->wp_props );
+			if ( ! $wp_obj ) {
+				$this->log_error( "AIOSEOP_Context: Object '" . $this->context_type . "' Key '" . $this->context_key . "' doesn't exist." );
+				return $desc;
+			}
+		}
 
 		switch ( $this->context_type ) {
 			case 'var_site':
@@ -832,46 +866,6 @@ class AIOSEOP_Context {
 	}
 
 	/**
-	 * Get Image Context
-	 *
-	 * Returns Image ID (Context Key) if possible, and Image URL.
-	 *
-	 * This is used to get the Image WP_Post object via $context.
-	 *
-	 * attachment post parent.
-	 * registered images to post.
-	 * post content.
-	 *
-	 * @param string|array
-	 * @return array {
-	 *     @type int|string $id
-	 *     @type string     $url
-	 * }
-	 */
-	public function get_images( $sources = 'all' ) {
-		$image = array();
-		switch ( $this->context_type ) {
-			case 'WP_Post':
-				$wp_obj = self::get_object( $this->context_type, $this->context_key );
-				if ( ! $wp_obj ) {
-					$this->log_error();
-					return $image;
-				}
-
-				if ( 'attachment' === $wp_obj->post_type ) {
-					$images['attachments'][] = array(
-						'id'  => $wp_obj->ID,
-						'url' => wp_get_attachment_url( $wp_obj->ID ),
-					);
-				}
-
-				$media_list = get_attached_media( 'image', $wp_obj );
-
-				break;
-		}
-	}
-
-	/**
 	 * Get Breadcrumb
 	 *
 	 * @since 3.4.0
@@ -941,7 +935,9 @@ class AIOSEOP_Context {
 					);
 
 					$object  = self::get_object( $context->context_type, $object->parent, $context->wp_props );
-					$context = self::get_instance( $context );
+					if ( $object ) {
+						$context->context_key = $object->term_id;
+					}
 				} while ( $object );
 				break;
 
@@ -984,6 +980,8 @@ class AIOSEOP_Context {
 						'url'  => $context->get_url(),
 					)
 				);
+				break;
+			default:
 				break;
 		}
 

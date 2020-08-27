@@ -207,6 +207,7 @@ label[for=aioseop_edit_profile_header] {
 /** Taxonomies upsell **/
 
 .aioseop-preview-wrapper {
+    clear: both;
     max-width: 800px;
     margin-top: 30px;
 }
@@ -480,12 +481,75 @@ label[for=aioseop_edit_profile_header] {
 
 /* Fixes the default CSS for the Classic Editor link modal. */
 
-#wp-link-wrap {
-    height: 530px !important;
-    margin-top: -265px !important;
+body #most-recent-results {
+	margin-top: 0 !important;
+}
+body #wp-link .query-results {
+	position: initial;
+}
+body #wp-link .query-results ul {
+	max-height: 200px;
+	overflow: scroll;
+}
+body #wp-link-wrap #link-selector {
+	overflow: auto;
 }
 
-#search-results,
-#most-recent-results {
-    margin-top: 55px !important;
+@media (max-width: 782px) {
+    body #wp-link-wrap {
+        top: 30%;
+    }
+    body #wp-link .link-target label {
+        line-height: 30px;
+    }
 }
+
+#wpadminbar .aioseo-menu-notification-counter {
+    display: inline-block !important;
+    vertical-align: top !important;
+    box-sizing: border-box !important;
+    margin: 7px 0 0 2px !important;
+    padding: 0 5px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    border-radius: 9px !important;
+    background-color: #ca4a1f !important;
+    color: #fff !important;
+    font-size: 11px !important;
+    line-height: 1.6 !important;
+    text-align: center !important;
+  }
+  
+  #wpadminbar .aioseo-menu-notification-counter span {
+    line-height: 1 !important;
+    font-size: 11px !important;
+  }
+  
+  #wpadminbar .aioseo-menu-notification-indicator {
+    float: right;
+    margin: 10px 0 0;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background-color: #ca4a1f !important;
+    line-height: 1.6 !important;
+    animation: aioseo-menu-notification-indicator-pulse 1.5s infinite !important;
+  }
+
+  #wpbody .All_in_One_SEO_Pack_Importer_Exporter .aioseop_option_div ul {
+      margin: 20px 30px;
+      list-style: disc;
+  }
+
+  #aiosp_rss_content_metabox .inside .aiosp_settings .aioseop-rss-content-description {
+      margin: 20px;
+  }
+
+  #aiosp_rss_content_metabox .inside .aiosp_settings .aioseop-rss-content-tags {
+      margin: 10px 20px
+  }
+
+  #wpbody .aioseop_options_wrapper .postbox .handle-order-higher,
+  #wpbody .aioseop_options_wrapper .postbox .handle-order-lower {
+    display: none;
+  }

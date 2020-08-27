@@ -72,6 +72,8 @@ var aioseopQuickEdit;
 		 * @param	Object		previousElements	The initial column elements (dashicon + span).
 		 */
 		handle_post_meta: function(postId, value, columnName, nonce, previousElements) {
+			value = aioseopQuickEdit.sanitize(value);
+
 			let field = $(`div#aioseop_${columnName}_${postId}`);
 
 			let message = document.createElement('span');
@@ -124,7 +126,20 @@ var aioseopQuickEdit;
 					});
 				});
 			});
-		}
+		},
+
+		sanitize: function (string) {
+			const map = {
+				'&': '&amp;',
+				'<': '&lt;',
+				'>': '&gt;',
+				'"': '&quot;',
+				"'": '&#x27;',
+				"/": '&#x2F;',
+			};
+			const reg = /[&<>"'/]/ig;
+			return string.replace(reg, (match)=>(map[match])).trim();
+		  }
 	}
 
 })(jQuery);

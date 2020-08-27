@@ -132,6 +132,14 @@
 	max-width: 600px;
 }
 
+.aioseop input:disabled {
+	background: #3f3e3e1a;
+}
+
+.aioseop_input input[type="checkbox"]:disabled:before {
+	display: none !important;
+}
+
 .aioseop textarea {
 	color: #515151;
 	padding: 10px;
@@ -357,12 +365,12 @@
 	line-height: 29px;
 }
 
-#aioseop-about {
+#aioseop-welcome {
 	width: 443px;
 	margin-bottom: 20px;
 }
 
-#aioseop-about .aioseop_metabox_text #mc-embedded-subscribe-form h2 {
+#aioseop-welcome .aioseop_metabox_text #mc-embedded-subscribe-form h2 {
 	font-size: 13px;
 }
 
@@ -370,7 +378,7 @@
 	padding: 0px 10px;
 }
 
-#aioseop-about .aioseop_metabox_text ul {
+#aioseop-welcome .aioseop_metabox_text ul {
 	list-style-type: disc;
 	padding-left: 15px;
 }
@@ -1533,6 +1541,7 @@ div#aiosp_sitemap_status_metabox .toggle-indicator {
 	font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif !important;
 }
 
+.aioseop_options_wrapper .ui-sortable-handle,
 .aioseop_options_wrapper .ui-sortable-handle span {
 	font-size: 16px;
 	font-weight: 600;
@@ -1641,4 +1650,47 @@ body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.
 body[class*="all-in-one-seo_page_all-in-one-seo-pack"] #ui-datepicker-div table.ui-datepicker-calendar td a:hover {
 	border: 1px solid #8d96a0;
 	padding: 5px 7px;
+}
+
+.aioseop_label_street_address,
+.aioseop_label_address_locality,
+.aioseop_label_address_region,
+.aioseop_label_postal_code,
+.aioseop_label_address_country {
+	float: left;
+	width: 90px;
+	margin-left: 9px;
+	padding-top: 12px;
+}
+
+.aioseop_label_street_address,
+.aioseop_label_address_locality,
+.aioseop_label_address_region,
+.aioseop_label_address_country {
+	clear: left;
+}
+
+.aioseop_label_postal_code {
+
+}
+
+.aioseop_postal_address input.aioseop_input_street_address,
+.aioseop_postal_address input.aioseop_input_address_locality,
+.aioseop_postal_address input.aioseop_input_address_region,
+.aioseop_postal_address input.aioseop_input_postal_code,
+.aioseop_postal_address input.aioseop_input_address_country {
+	float: left;
+}
+
+.aioseop_postal_address input.aioseop_input_street_address,
+.aioseop_postal_address input.aioseop_input_address_locality,
+.aioseop_postal_address input.aioseop_input_address_country {
+	width: calc( 95% - 99px );
+	max-width: 510px;
+}
+
+.aioseop_postal_address input.aioseop_input_address_region,
+.aioseop_postal_address input.aioseop_input_postal_code {
+	width: calc( 47% - 98px );
+	max-width: 209px;
 }

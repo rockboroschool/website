@@ -11,7 +11,7 @@
 	<div class="welcome-panel-content">
 		<div class="welcome-panel-column-container">
 			<div>
-				<h3><a href="https://semperplugins.com/all-in-one-seo-pack-3-4/" target="_blank"><?php echo esc_html( __( "Check out what's new in our latest release post!", 'all-in-one-seo-pack' ) ); ?></a></h3>
+				<h3><a href="https://semperplugins.com/new-local-business-schema/" target="_blank"><?php echo esc_html( __( "Check out what's new in our latest release post!", 'all-in-one-seo-pack' ) ); ?></a></h3>
 			</div>
 			<div class="welcome-panel-column">
 				<h3>

@@ -3458,6 +3458,7 @@ body.rtl #aioseop-entries-list .wp-list-table div[data-field-type="phone"] {
     font-size: 16px;
 }
 
+
 #aioseop-admin-about .aioseop-admin-about-section p {
     margin-bottom: 20px;
 }
@@ -3472,6 +3473,11 @@ body.rtl #aioseop-entries-list .wp-list-table div[data-field-type="phone"] {
 
 #aioseop-admin-about .aioseop-admin-about-section p:last-child {
     margin-bottom: 0;
+}
+
+#aioseop-admin-about .aioseop-admin-about-section ul {
+    list-style: disc;
+    list-style-position: inside;
 }
 
 #aioseop-admin-about .aioseop-admin-about-section hr {

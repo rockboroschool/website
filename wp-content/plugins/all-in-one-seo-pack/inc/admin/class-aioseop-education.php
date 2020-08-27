@@ -37,8 +37,6 @@ class AIOSEOP_Education {
 
 			return;
 		}
-
-		add_filter( 'admin_bar_menu', array( 'AIOSEOP_Education', 'wp_admin_bar_menu' ) );
 	}
 
 	/**
@@ -161,7 +159,7 @@ class AIOSEOP_Education {
 	 * @since   3.4.0
 	 */
 	private static function enqueue_news_sitemap_upsell_script() {
-		if ( 
+		if (
 			'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_sitemap' !== get_current_screen()->id &&
 			'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/pro/class-aioseop-pro-sitemap' !== get_current_screen()->id
 		) {
@@ -431,7 +429,7 @@ class AIOSEOP_Education {
 		$link    = __( 'Upgrade to Pro to unlock this feature.', 'all-in-one-seo-pack' );
 		if( AIOSEOPPRO && !aioseop_is_addon_allowed('news_sitemap') ) {
 			$message = __( 'Did you know that Business & Agency plan users also have access to Google News sitemaps?&nbsp;', 'all-in-one-seo-pack' );
-			$link    = __( 'Upgrade to a higher tier to unlock this feature.', 'all-in-one-seo-pack' );
+			$link    = __( 'Upgrade to our Business or Agency plans to unlock this feature.', 'all-in-one-seo-pack' );
 		}
 
 		printf(
@@ -594,8 +592,9 @@ class AIOSEOP_Education {
 	 *
 	 * @param   Object   $wp_admin_bar
 	 */
-	public static function wp_admin_bar_menu( $wp_admin_bar ) {
-		$url = get_permalink();
+	public static function external_tools( $wp_admin_bar ) {
+		global $wp;
+		$url = home_url( $wp->request );
 
 		if ( ! $url ) {
 			return;
@@ -625,12 +624,12 @@ class AIOSEOP_Education {
 			array(
 				'id'    => 'aioseop-external-tools-structureddata',
 				'title' => __( 'Google Structured Data Test', 'all-in-one-seo-pack' ),
-				'href'  => 'https://search.google.com/structured-data/testing-tool#url=' . $url,
+				'href'  => 'https://search.google.com/test/rich-results?url=' . $url,
 			),
 			array(
 				'id'    => 'aioseop-external-tools-facebookdebug',
 				'title' => __( 'Facebook Debugger', 'all-in-one-seo-pack' ),
-				'href'  => '//developers.facebook.com/tools/debug/og/object?q=' . $url,
+				'href'  => 'https://developers.facebook.com/tools/debug/?q=' . $url,
 			),
 			array(
 				'id'    => 'aioseop-external-tools-pinterestvalidator',
@@ -657,6 +656,11 @@ class AIOSEOP_Education {
 				'title' => __( 'Mobile-Friendly Test', 'all-in-one-seo-pack' ),
 				'href'  => 'https://www.google.com/webmasters/tools/mobile-friendly/?url=' . $url,
 			),
+			array(
+				'id'    => 'aioseo-external-tools-linkedin-post-inspector',
+				'title' => __( 'LinkedIn Post Inspector', 'all-in-one-seo-pack' ),
+				'href'  => "https://www.linkedin.com/post-inspector/inspect/$url"
+			)
 		);
 
 		foreach ( $submenu_items as $menu_item ) {
@@ -742,26 +746,26 @@ class AIOSEOP_Education {
 
 	/**
 	 * Checks if new conflicting plugins were found and resets notice status.
-	 * 
+	 *
 	 * @since 3.4.3
-	 * 
+	 *
 	 * @param array $conflicting_plugins
 	 */
 	private static function check_new_conflicting_plugins( $conflicting_plugins ) {
 		// get_option() doesn't work here because it returns false if the option is blank, and we need to know if it exists.
 		global $wpdb;
-		$count = (int) $wpdb->get_var( "select count(*) from {$wpdb->prefix}options where option_name = 'aioseop_detected_conflicting_plugins'");
-	
+		$count = (int) $wpdb->get_var( "SELECT count(*) FROM {$wpdb->options} WHERE option_name = 'aioseop_detected_conflicting_plugins'" );
+
 		$stored = array();
-		if( 0 !== $count ) {
+		if ( 0 !== $count ) {
 			$stored = get_option( 'aioseop_detected_conflicting_plugins' );
 			update_option( 'aioseop_detected_conflicting_plugins', $conflicting_plugins );
 		} else {
 			add_option( 'aioseop_detected_conflicting_plugins', $conflicting_plugins );
 		}
-		
+
 		if ( count( $stored ) < count( $conflicting_plugins ) ) {
-			if( get_user_meta( get_current_user_id(), 'aioseop_notice_display_time_conflicting_plugin' ) ) {
+			if ( get_user_meta( get_current_user_id(), 'aioseop_notice_display_time_conflicting_plugin' ) ) {
 				delete_user_meta( get_current_user_id(), 'aioseop_notice_display_time_conflicting_plugin' );
 			}
 		}
@@ -814,8 +818,7 @@ class AIOSEOP_Education {
 
 		sprintf(
 			__(
-				'<strong>Warning</strong>: %s has detected other active SEO or sitemap plugins. 
-                We recommend that you deactivate the following plugins to prevent any conflicts:',
+				'<strong>Warning</strong>: %s has detected other active SEO or sitemap plugins. We recommend that you deactivate the following plugins to prevent any conflicts:',
 				'all-in-one-seo-pack'
 			),
 			AIOSEOP_PLUGIN_NAME

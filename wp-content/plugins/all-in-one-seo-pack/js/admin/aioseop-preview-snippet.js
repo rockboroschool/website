@@ -139,7 +139,11 @@ jQuery(function($){
 	 * @param string postContent
 	 * @return string description
 	 */
-	function aioseopGetDescription(postContent) {		
+	function aioseopGetDescription(postContent) {
+		if('undefined' === typeof postContent) {
+			return postContent;
+		}
+
 		if( 'on' === dontShortenDescriptions ) {
 			return aioseopStripMarkup(postContent);
 		}
