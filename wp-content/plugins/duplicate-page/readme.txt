@@ -2,8 +2,8 @@
 Contributors: mndpsingh287
 Tags: Page Duplicate, Post duplicate, duplicate custom posts, duplicate page, duplicate post, duplicate ,custom posts, post, page, duplicate this, duplicate, content duplicate, duplicate content, data duplicate, duplicate data, copy page, clone page,wordpress page duplicate, wordpress post duplicate, Copy post, wordpress page duplicator, wordpress post duplicator, Cloner, duplicate post
 Requires at least: 3.4
-Tested up to: 5.2.2
-Stable tag: 3.9
+Tested up to: 5.4
+Stable tag: 4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,11 +25,11 @@ Duplicate Posts, Pages and Custom Posts easily using single click. You can dupli
 * **Post Suffix:** Option to add Post Suffix.
 * **Editor**: And Many More Filters and Features.
 
-> <strong>[Buy Pro Version](https://duplicatepro.com/pro/)</strong> with various features & support.
+> <strong>[Buy Pro Version](https://duplicatepro.com/pro/?utm_source=Wordpress.org&utm_medium=Website&utm_campaign=Duplicate%20Page%20Pro)</strong> with various features & support.
 
-> <strong>[Contact us](https://duplicatepro.com/support/)</strong> for Support Only Pro Version Users.
+> <strong>[Contact us](https://duplicatepro.com/contact/?utm_source=Wordpress.org&utm_medium=Website&utm_campaign=Duplicate%20Page%20Pro)</strong> for Support Only Pro Version Users.
 
-**[Upgrade to Pro Version](https://duplicatepro.com/pro/)**
+**[Upgrade to Pro Version](https://duplicatepro.com/pro/?utm_source=Wordpress.org&utm_medium=Website&utm_campaign=Duplicate%20Page%20Pro)**
 
 https://www.youtube.com/watch?v=Fj8BHxvebXs&feature=youtu.be
 
@@ -56,6 +56,18 @@ https://www.youtube.com/watch?v=Fj8BHxvebXs&feature=youtu.be
 5. Duplicate Post / Page will Appear. 
 
 == Changelog ==
+
+= 4.2(26th March, 2020) =
+
+* Fixed Translations string issue
+
+= 4.1(20th Feb, 2020) =
+
+* Fixed Translations issue
+
+= 4.0(20th Sep, 2019) =
+
+* Fixed slug duplication issue
 
 = 3.9 (6th Aug, 2019) =
 
@@ -155,5 +167,3 @@ https://www.youtube.com/watch?v=Fj8BHxvebXs&feature=youtu.be
 *   Wordpress 3.3+
 *   PHP 5.x
 *   MySQL 5.x
-
-If any problem occurs, please contact us at [mandeep.singh@mysenseinc.com](mailto:mandeep.singh@mysenseinc.com).

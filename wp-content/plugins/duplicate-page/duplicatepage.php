@@ -4,7 +4,7 @@ Plugin Name: Duplicate Page
 Plugin URI: https://wordpress.org/plugins/duplicate-page/
 Description: Duplicate Posts, Pages and Custom Posts using single click.
 Author: mndpsingh287
-Version: 3.9
+Version: 4.2
 Author URI: https://profiles.wordpress.org/mndpsingh287/
 License: GPLv2
 Text Domain: duplicate-page
@@ -143,7 +143,7 @@ if (!class_exists('duplicate_page')):
                      'post_author' => $new_post_author,
                      'post_content' => (isset($opt['duplicate_post_editor']) && $opt['duplicate_post_editor'] == 'gutenberg') ? wp_slash($post->post_content) : $post->post_content,
                      'post_excerpt' => $post->post_excerpt,
-                     'post_name' => $post->post_name,
+                     //'post_name' => $post->post_name,
                      'post_parent' => $post->post_parent,
                      'post_password' => $post->post_password,
                      'post_status' => $post_status,
@@ -208,9 +208,9 @@ if (!class_exists('duplicate_page')):
             $opt = get_option('duplicate_page_options');
             $post_status = !empty($opt['duplicate_post_status']) ? $opt['duplicate_post_status'] : 'draft';
             if (current_user_can('edit_posts')) {
-                $actions['duplicate'] = '<a href="admin.php?action=dt_duplicate_post_as_draft&amp;post='.$post->ID.'&amp;nonce='.wp_create_nonce( 'dt-duplicate-page-'.$post->ID ).'" title="Duplicate this as '.$post_status.'" rel="permalink">'.__('Duplicate This', 'duplicate-page').'</a>';
+                $actions['duplicate'] = '<a href="admin.php?action=dt_duplicate_post_as_draft&amp;post='.$post->ID.'&amp;nonce='.wp_create_nonce( 'dt-duplicate-page-'.$post->ID ).'" title="'.__('Duplicate this as '.$post_status, 'duplicate-page').'" rel="permalink">'.__('Duplicate This', 'duplicate-page').'</a>';
             }
-
+            
             return $actions;
         }
 
