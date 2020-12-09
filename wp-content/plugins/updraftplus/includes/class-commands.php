@@ -643,37 +643,37 @@ class UpdraftPlus_Commands {
 	}
 
 	public function delete_key($key_id) {
-		global $updraftplus_updraftcentral_main;
+		global $updraftcentral_main;
 
-		if (!is_a($updraftplus_updraftcentral_main, 'UpdraftPlus_UpdraftCentral_Main')) {
-			return new WP_Error('error', '', 'UpdraftPlus_UpdraftCentral_Main object not found');
+		if (!is_a($updraftcentral_main, 'UpdraftCentral_Main')) {
+			return new WP_Error('error', '', 'UpdraftCentral_Main object not found');
 		}
 		
-		$response = $updraftplus_updraftcentral_main->delete_key($key_id);
+		$response = $updraftcentral_main->delete_key($key_id);
 		return $response;
 		
 	}
 	
 	public function create_key($data) {
-		global $updraftplus_updraftcentral_main;
+		global $updraftcentral_main;
 
-		if (!is_a($updraftplus_updraftcentral_main, 'UpdraftPlus_UpdraftCentral_Main')) {
-			return new WP_Error('error', '', 'UpdraftPlus_UpdraftCentral_Main object not found');
+		if (!is_a($updraftcentral_main, 'UpdraftCentral_Main')) {
+			return new WP_Error('error', '', 'UpdraftCentral_Main object not found');
 		}
 		
-		$response = call_user_func(array($updraftplus_updraftcentral_main, 'create_key'), $data);
+		$response = call_user_func(array($updraftcentral_main, 'create_key'), $data);
 		
 		return $response;
 	}
 	
 	public function fetch_log($data) {
-		global $updraftplus_updraftcentral_main;
+		global $updraftcentral_main;
 
-		if (!is_a($updraftplus_updraftcentral_main, 'UpdraftPlus_UpdraftCentral_Main')) {
-			return new WP_Error('error', '', 'UpdraftPlus_UpdraftCentral_Main object not found');
+		if (!is_a($updraftcentral_main, 'UpdraftCentral_Main')) {
+			return new WP_Error('error', '', 'UpdraftCentral_Main object not found');
 		}
 		
-		$response = call_user_func(array($updraftplus_updraftcentral_main, 'get_log'), $data);
+		$response = call_user_func(array($updraftcentral_main, 'get_log'), $data);
 		return $response;
 	}
 
@@ -772,7 +772,7 @@ class UpdraftPlus_Commands {
 	public function updraftplus_com_login_submit($data) {
 		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		
-		global $updraftplus_addons2;
+		global $updraftplus_addons2, $updraftplus;
 
 		$options = $updraftplus_addons2->get_option(UDADDONS2_SLUG.'_options');
 		$new_options = $data['data'];
@@ -798,11 +798,7 @@ class UpdraftPlus_Commands {
 			$result = false;
 		}
 		if ($result && isset($new_options['auto_update'])) {
-			if (1 == $new_options['auto_update']) {
-				UpdraftPlus_Options::update_updraft_option('updraft_auto_updates', 1);
-			} else {
-				UpdraftPlus_Options::update_updraft_option('updraft_auto_updates', 0);
-			}
+			$updraftplus->set_automatic_updates($new_options['auto_update']);
 		}
 		if ($result) {
 			return array(
@@ -900,12 +896,12 @@ class UpdraftPlus_Commands {
 			$content .= '</div>';
 			
 			if (0 != $response['tokens']) {
-				$is_admin_user = isset($response['is_admin_user']) ? $response['is_admin_user'] : false;
+				$is_vps_tester = !empty($response['is_vps_tester']);
 				$supported_wp_versions = isset($response['supported_wp_versions']) ? $response['supported_wp_versions'] : array();
 				$supported_packages = isset($response['supported_packages']) ? $response['supported_packages'] : array();
 				$supported_regions = isset($response['supported_regions']) ? $response['supported_regions'] : array();
 				$content .= '<div class="updraftclone_action_box">';
-				$content .= $updraftplus_admin->updraftplus_clone_ui_widget($is_admin_user, $supported_wp_versions, $supported_packages, $supported_regions);
+				$content .= $updraftplus_admin->updraftplus_clone_ui_widget($is_vps_tester, $supported_wp_versions, $supported_packages, $supported_regions);
 				$content .= '<p class="updraftplus_clone_status"></p>';
 				$content .= '<button id="updraft_migrate_createclone" class="button button-primary button-hero" data-clone_id="'.$response['clone_info']['id'].'" data-secret_token="'.$response['clone_info']['secret_token'].'">'. __('Create clone', 'updraftplus') . '</button>';
 				$content .= '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span><br>';
@@ -941,6 +937,11 @@ class UpdraftPlus_Commands {
 		if (isset($response['data'])) {
 			$tokens = isset($response['data']['tokens']) ? $response['data']['tokens'] : 0;
 			$url = isset($response['data']['url']) ? $response['data']['url'] : '';
+			
+			if (isset($response['data']['secret_token'])) {
+				$response['secret_token'] = $response['data']['secret_token'];
+				unset($response['data']['secret_token']);
+			}
 
 			$content .= '<div class="updraftclone-main-row">';
 

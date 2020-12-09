@@ -134,6 +134,34 @@ function updraft_remote_storage_tab_activation(the_method){
 }
 
 /**
+ * Set the email report's setting to a different interface when email storage is selected
+ *
+ * @param {boolean} value True to set the email report setting to another interface, false otherwise
+ */
+function set_email_report_storage_interface(value) {
+	jQuery('#cb_not_email_storage_label').css('display', true === value ? 'none' : 'inline');
+	jQuery('#cb_email_storage_label').css('display', true === value ? 'inline' : 'none');
+	if (true === value) {
+		jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').click(function(e) {
+			return false;
+		});
+	} else {
+		jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').prop("onclick", null).off("click");
+	}
+	if (!jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').is(':checked')) {
+		jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').prop('checked', value);
+	}
+	jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').prop('disabled', value);
+
+	var updraft_email = jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon input#updraft_email').val();
+
+	jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon label.email_report input[type="hidden"]').remove();
+	if (true === value) {
+		jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon label.email_report input#updraft_email').after('<input type="hidden" name="updraft_email" value="'+updraft_email+'">');
+	}
+}
+
+/**
  * Check how many cron jobs are overdue, and display a message if it is several (as determined by the back-end)
  */
 function updraft_check_overduecrons() {
@@ -192,6 +220,7 @@ function updraft_remote_storage_tabs_setup() {
 					anychecked++;
 					jQuery('.remote-tab-'+serv).fadeIn();
 					updraft_remote_storage_tab_activation(serv);
+					if (jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon').length && 'email' === serv) set_email_report_storage_interface(true);
 				} else {
 					anychecked--;
 					jQuery('.remote-tab-'+serv).hide();
@@ -199,6 +228,7 @@ function updraft_remote_storage_tabs_setup() {
 					if (jQuery('.remote-tab-'+serv).data('active') == true) {
 						updraft_remote_storage_tab_activation(jQuery('.remote-tab:visible').last().attr('name'));
 					}
+					if (jQuery('#updraft-navtab-settings-content #updraft_report_row_no_addon').length && 'email' === serv) set_email_report_storage_interface(false);
 				}
 			}
 		}
@@ -214,12 +244,16 @@ function updraft_remote_storage_tabs_setup() {
 	
 	// Add stuff for free version
 	jQuery('.updraft_servicecheckbox:not(.multi)').change(function() {
+		set_email_report_storage_interface(false);
 		var svalue = jQuery(this).attr('value');
 		if (jQuery(this).is(':not(:checked)')) {
 			jQuery('.updraftplusmethod.'+svalue).hide();
 			jQuery('.updraftplusmethod.none').fadeIn();
 		} else {
 			jQuery('.updraft_servicecheckbox').not(this).prop('checked', false);
+			if ('email' === svalue) {
+				set_email_report_storage_interface(true);
+			}
 		}
 	});
 	
@@ -1855,7 +1889,7 @@ function updraft_backupnow_go(backupnow_nodb, backupnow_nofiles, backupnow_noclo
 	});
 }
 
-jQuery(document).ready(function($) {
+jQuery(function($) {
 	
 	// actioned When the checkout embed is complete
 	$(document).on('udp/checkout/done', function(e, data) {
@@ -2216,6 +2250,7 @@ jQuery(document).ready(function($) {
 		var updraftclone_branch = $('#updraft-navtab-migrate-content .updraft_migrate_widget_module_content #updraftplus_clone_updraftclone_branch').val();
 		var updraftplus_branch = $('#updraft-navtab-migrate-content .updraft_migrate_widget_module_content #updraftplus_clone_updraftplus_branch').val();
 		var admin_only = $('.updraftplus_clone_admin_login_options').is(':checked');
+		var use_queue = $('#updraftplus_clone_use_queue').is(':checked') ? 1 : 0;
 
 		var backup_nonce = 'current';
 		var backup_timestamp = 'current';
@@ -2237,7 +2272,8 @@ jQuery(document).ready(function($) {
 					package: package,
 					admin_only: admin_only,
 					updraftclone_branch: ('undefined' === typeof updraftclone_branch) ? '' : updraftclone_branch,
-					updraftplus_branch: ('undefined' === typeof updraftplus_branch) ? '' : updraftplus_branch
+					updraftplus_branch: ('undefined' === typeof updraftplus_branch) ? '' : updraftplus_branch,
+					use_queue: ('undefined' === typeof use_queue) ? 1 : use_queue
 				}
 			}
 		};
@@ -2618,6 +2654,11 @@ jQuery(document).ready(function($) {
 						// remove the clone timeout as the clone has now been created
 						if (temporary_clone_timeout) clearTimeout(temporary_clone_timeout);
 
+						// check if the response includes a secret token, if it does we have claimed a clone from the queue and need to update our current secret token to the one that belongs to the claimed clone
+						if (response.hasOwnProperty('secret_token')) {
+							secret_token = response.secret_token;
+						}
+
 						if ('wp_only' === backup_nonce) {
 							jQuery('#updraft_clone_progress .updraftplus_spinner.spinner').addClass('visible');
 							temporary_clone_poll(clone_id, secret_token);
@@ -2789,6 +2830,14 @@ jQuery(document).ready(function($) {
 		context['instance_id'] = 's-' + generate_instance_id(32);
 		context['instance_enabled'] = 1;
 		context['instance_label'] = method_name + ' (' + (jQuery('.' + method + '_updraft_remote_storage_border').length + 1) + ')';
+		context['instance_conditional_logic'] = {
+			type: '', // always by default
+			rules: [],
+			day_of_the_week_options: updraftlion.conditional_logic.day_of_the_week_options,
+			logic_options: updraftlion.conditional_logic.logic_options,
+			operand_options: updraftlion.conditional_logic.operand_options,
+			operator_options: updraftlion.conditional_logic.operator_options,
+		};
 		var html = template(context);
 		jQuery(html).hide().insertAfter('.' + method + '_add_instance_container:first').show('slow');
 	}
@@ -2818,6 +2867,66 @@ jQuery(document).ready(function($) {
 		} else {
 			jQuery(this).siblings('label').html(updraftlion.instance_disabled);
 		}
+	});
+
+	jQuery('#updraft-navtab-settings-content #remote-storage-holder').on("change", "select[class='logic_type']", function () {
+		updraft_settings_form_changed = true;
+		if ('' !== this.value) {
+			jQuery('div.logic', jQuery(this).parents('tr.updraftplusmethod')).show();
+			jQuery(this).parents('tr.updraftplusmethod').find('div.logic ul.rules > li').each(function() {
+				jQuery(this).find('select').each(function() {
+					jQuery(this).prop('disabled', false);
+				})
+			});
+		} else {
+			jQuery(this).parents('tr.updraftplusmethod').find('div.logic ul.rules > li').each(function() {
+				jQuery(this).find('select').each(function() {
+					jQuery(this).prop('disabled', true);
+				})
+			});
+			jQuery(this).parents('tr.updraftplusmethod').find('div.logic').hide();
+		}
+	});
+
+	jQuery('#updraft-navtab-settings-content #remote-storage-holder').on("change", "select[class='conditional_logic_operand']", function () {
+		updraft_settings_form_changed = true;
+		jQuery(this).parent().find('select:nth(2)').empty();
+		if ('day_of_the_week' === jQuery(this).val()) {
+			for (i=0; i<updraftlion.conditional_logic.day_of_the_week_options.length; i++) {
+				jQuery(this).parent().find('select:nth(2)').append(jQuery('<option value="'+updraftlion.conditional_logic.day_of_the_week_options[i].index+'"></option>').text(updraftlion.conditional_logic.day_of_the_week_options[i].value));
+			}
+		} else if ('day_of_the_month' === jQuery(this).val()) {
+			for (i=1; i<=31; i++) {
+				jQuery(this).parent().find('select:nth(2)').append(jQuery('<option value="'+i+'"></option>').text(i));
+			}
+		}
+	});
+
+	jQuery('#updraft-navtab-settings-content #remote-storage-holder').on("click", "div.conditional_remote_backup ul.rules li span", function () {
+		updraft_settings_form_changed = true;
+		var $ul = jQuery(this).parents('ul.rules');
+		if (jQuery(this).hasClass('remove-rule')) {
+			jQuery(this).parent().slideUp(function() {
+				jQuery(this).remove();
+				if (jQuery($ul).find('> li').length < 2) {
+					jQuery('li:nth(0) span.remove-rule', $ul).remove();
+				}
+			});
+		}
+	});
+
+	jQuery('#updraft-navtab-settings-content #remote-storage-holder').on("click", "div.conditional_remote_backup input.add-new-rule", function () {
+		var $ul = jQuery(this).parent().find('ul.rules');
+		if (jQuery($ul).find('> li').length < 2) {
+			jQuery($ul).find('li:nth(0)').append('<span class="remove-rule"><svg viewbox="0 0 25 25"><line x1="6.5" y1="18.5" x2="18.5" y2="6.5" fill="none" stroke="#FF6347" stroke-width="3" vector-effect="non-scaling-stroke" ></line><line y1="6.5" x1="6.5" y2="18.5" x2="18.5" fill="none" stroke="#FF6347" stroke-width="3" vector-effect="non-scaling-stroke" ></line></svg></span>');
+		}
+		$cloned_item = jQuery($ul).find('> li').last().clone();
+		jQuery($cloned_item).find('> select').each(function() {
+			jQuery(this).prop('name', jQuery(this).prop('name').replace(/\[instance_conditional_logic\]\[rules\]\[[0-9]+\]/gi, '[instance_conditional_logic][rules]['+jQuery($ul).data('rules')+']'));
+		});
+		jQuery($ul).append($cloned_item);
+		jQuery($ul).data('rules', parseInt(jQuery($ul).data('rules')) + 1);
+		jQuery($cloned_item).find('select[name*="[operand]"]').trigger('change');
 	});
 	
 	jQuery('#updraft-navtab-settings-content #remote-storage-holder').on('click', '.updraftplusmethod button.updraft-test-button', function() {
@@ -3510,6 +3619,16 @@ jQuery(document).ready(function($) {
 		var onlythesetableentities = backupnow_whichtables_checked('');
 		var always_keep = jQuery('#always_keep').is(':checked') ? 1 : 0;
 		var incremental = ('incremental' == jQuery('#updraft-backupnow-modal').data('backup-type')) ? 1 : 0;
+
+		if (updraftlion.hosting_restriction.includes('only_one_backup_per_month') && !incremental) {
+			alert(updraftlion.hosting_restriction_one_backup_permonth);
+			return;
+		}
+
+		if (updraftlion.hosting_restriction.includes('only_one_incremental_per_day') && incremental) {
+			alert(updraftlion.hosting_restriction_one_incremental_perday);
+			return;
+		}
 
 		if ('' == onlythesetableentities && 0 == backupnow_nodb) {
 			alert(updraftlion.notableschosen);
@@ -4236,10 +4355,20 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	jQuery('#backupnow_database_moreoptions').on('click', 'div.backupnow-db-tables > a', function(e) {
+		e.preventDefault();
+		jQuery('> input', jQuery(this).parents('div.backupnow-db-tables')).prop('checked', false);
+		if (jQuery(this).hasClass('backupnow-select-all-table')) {
+			jQuery('> input', jQuery(this).parents('div.backupnow-db-tables')).prop('checked', true);
+		} else if (jQuery(this).hasClass('backupnow-select-all-this-site')) {
+			jQuery('> input', jQuery(this).parents('div.backupnow-db-tables')).not('[data-non_wp_table]').prop('checked', true);
+			
+		}
+	});
 });
 
 // UpdraftPlus Vault
-jQuery(document).ready(function($) {
+jQuery(function($) {
 	
 	var settings_css_prefix = '#updraft-navtab-settings-content ';
 	
@@ -4408,7 +4537,7 @@ jQuery(document).ready(function($) {
 }); // End ready Vault
 
 // Next: the encrypted database pluploader
-jQuery(document).ready(function($) {
+jQuery(function($) {
 	
 	try {
 		if (typeof updraft_plupload_config2 !== 'undefined') {
@@ -4550,6 +4679,91 @@ jQuery(document).ready(function($) {
 		return encodeURIComponent(uri);
 	});
 
+	/**
+	 * Handlebars helper function to compare two values using a specifed operator
+	 *
+	 * @see https://stackoverflow.com/questions/8853396/logical-operator-in-a-handlebars-js-if-conditional#answer-16315366
+	 *
+	 * @param {mixed} v1 the first value to compare
+	 * @param {mixed} v2 the second value to compare
+	 *
+	 * @return {boolean} true if the first value matched against the second value, false otherwise
+	 */
+	Handlebars.registerHelper('ifCond', function(v1, operator, v2, options) {
+		switch (operator) {
+			case '==':
+				return (v1 == v2) ? options.fn(this) : options.inverse(this);
+			case '===':
+				return (v1 === v2) ? options.fn(this) : options.inverse(this);
+			case '!=':
+				return (v1 != v2) ? options.fn(this) : options.inverse(this);
+			case '!==':
+				return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+			case '<':
+				return (v1 < v2) ? options.fn(this) : options.inverse(this);
+			case '<=':
+				return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+			case '>':
+				return (v1 > v2) ? options.fn(this) : options.inverse(this);
+			case '>=':
+				return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+			case '&&':
+				return (v1 && v2) ? options.fn(this) : options.inverse(this);
+			case '||':
+				return (v1 || v2) ? options.fn(this) : options.inverse(this);
+			case 'typeof':
+				return (v1 === typeof v2) ? options.fn(this) : options.inverse(this);
+			case 'not_typeof':
+				return (v1 !== typeof v2) ? options.fn(this) : options.inverse(this);
+			default:
+				return options.inverse(this);
+		}
+	});
+
+	/**
+	 * Handlebars helper function for looping through a block of code a specified number of times
+	 *
+	 * @param {mixed} from the start value
+	 * @param {mixed} to   the end value where the loop will stop
+	 * @param {mixed} incr the increment number
+	 *
+	 * @return {mixed} the current processing number
+	 */
+	Handlebars.registerHelper('for', function(from, to, incr, block) {
+		var accum = '';
+		for (var i = from; i < to; i += incr)
+			accum += block.fn(i);
+		return accum;
+	});
+
+	/**
+	 * Assign value into a variable
+	 *
+	 * @param {string} name the variable name
+	 * @param {mixed}  val  the value
+	 */
+	Handlebars.registerHelper('set_var', function(name, val, options) {
+		if (!options.data.root) {
+			options.data.root = {};
+		}
+		options.data.root[name] = val;
+	});
+
+	/**
+	 * Get length of an array/object
+	 *
+	 * @param {mixed} object the object
+	 */
+	Handlebars.registerHelper('get_length', function(object) {
+		if ("undefined" !== typeof object && false === object instanceof Array) {
+			return Object.keys(object).length;
+		} else if (true === object instanceof Array) {
+			return object.length;
+		} else {
+			return 0;
+		}
+	});
+
 	// Add remote methods html using handlebarjs
 	if ($('#remote-storage-holder').length) {
 		var html = '';
@@ -4562,6 +4776,31 @@ jQuery(document).ready(function($) {
 					if ('default' === instance_id) continue;
 					
 					var context = updraftlion.remote_storage_options[method][instance_id];
+
+					if ('undefined' == typeof context['instance_conditional_logic']) {
+						context['instance_conditional_logic'] = {
+							type: '', // always by default
+							rules: [],
+						};
+					}
+					context['instance_conditional_logic'].day_of_the_week_options = updraftlion.conditional_logic.day_of_the_week_options;
+					context['instance_conditional_logic'].logic_options = updraftlion.conditional_logic.logic_options;
+					context['instance_conditional_logic'].operand_options = updraftlion.conditional_logic.operand_options;
+					context['instance_conditional_logic'].operator_options = updraftlion.conditional_logic.operator_options;
+					// work around the UpdraftVault conditional logic
+					if ("updraftvault" === method && "object" === typeof context.settings) {
+						for (var ins_id in context['settings']) {
+							if (context['settings'][ins_id]['instance_conditional_logic']['rules'] instanceof Array && context.settings[ins_id]['instance_conditional_logic']['rules'].length > 0) {
+								context['instance_conditional_logic']['rules'] = context.settings[ins_id]['instance_conditional_logic']['rules'];
+							}
+							if ("string" === typeof context['settings'][ins_id]['instance_conditional_logic']['type'] && context.settings[ins_id]['instance_conditional_logic']['type'].length > 0) {
+								context['instance_conditional_logic']['type'] = context.settings[ins_id]['instance_conditional_logic']['type'];
+							}
+							break;
+						}
+					}
+					// #end updraftvault
+
 					context['first_instance'] = first_instance;
 					if ('undefined' == typeof context['instance_enabled']) {
 						context['instance_enabled'] = 1;
@@ -4593,7 +4832,7 @@ jQuery(document).ready(function($) {
 });
 
 // Save/Export/Import settings via AJAX
-jQuery(document).ready(function($) {
+jQuery(function($) {
 	// Pre-load the image so that it doesn't jerk when first used
 	var my_image = new Image();
 	my_image.src = updraftlion.ud_url+'/images/notices/updraft_logo.png';
@@ -4692,8 +4931,8 @@ jQuery(document).ready(function($) {
 		
 		var date_now = new Date();
 		
+		// The 'version' attribute indicates the last time the format changed - i.e. do not update this unless there is a format change
 		form_data = JSON.stringify({
-			// Indicate the last time the format changed - i.e. do not update this unless there is a format change
 			version: '1.12.40',
 			epoch_date: date_now.getTime(),
 			local_date: date_now.toLocaleString(),
@@ -4710,19 +4949,18 @@ jQuery(document).ready(function($) {
 	}
 	
 	function import_settings(updraft_file_result) {
-		var data = decodeURIComponent(updraft_file_result);
 		var parsed;
 		try {
-			parsed = ud_parse_json(data);
+			parsed = ud_parse_json(updraft_file_result);
 		} catch (e) {
 			$.unblockUI();
 			jQuery('#import_settings').val('');
-			console.log(data);
+			console.log(updraft_file_result);
 			console.log(e);
 			alert(updraftlion.import_invalid_json_file);
 			return;
 		}
-		if (window.confirm(updraftlion.importing_data_from + ' ' + data['network_site_url'] + "\n" + updraftlion.exported_on + ' ' + data['local_date'] + "\n" + updraftlion.continue_import)) {
+		if (window.confirm(updraftlion.importing_data_from + ' ' + parsed['network_site_url'] + "\n" + updraftlion.exported_on + ' ' + parsed['local_date'] + "\n" + updraftlion.continue_import)) {
 			// GET the settings back to the AJAX handler
 			var stringified = JSON.stringify(parsed['data']);
 			updraft_send_command('importsettings', {
@@ -4910,7 +5148,7 @@ jQuery(document).ready(function($) {
 });
 
 // For When character set and collate both are unsupported at restoration time and if user change anyone substitution dropdown from both, Other substitution select box value should be change respectively.
-jQuery(document).ready(function($) {
+jQuery(function($) {
 	jQuery('#updraft-restore-modal').on('change', '#updraft_restorer_charset', function(e) {
 		if ($('#updraft_restorer_charset').length && $('#updraft_restorer_collate').length && $('#collate_change_on_charset_selection_data').length) {
 			var updraft_restorer_charset = $('#updraft_restorer_charset').val();
@@ -5320,6 +5558,26 @@ function updraft_process_status_check(resp, response_raw, original_parameters) {
 			} else {
 				jQuery('#updraft_lastlogmessagerow').hide();
 				jQuery('#updraft_lastlogcontainer').html('('+updraftlion.nothing_yet_logged+')');
+			}
+		}
+
+		// hosting restrictions
+		if (updraftlion.hasOwnProperty('hosting_restriction') && updraftlion.hosting_restriction instanceof Array) {
+			updraftlion.hosting_restriction.length = 0;
+			if (resp.hasOwnProperty('hosting_restriction')) {
+				if (resp.hosting_restriction && resp.hosting_restriction.includes('only_one_backup_per_month')) {
+					updraftlion.hosting_restriction.push('only_one_backup_per_month');
+				}
+				if (resp.hosting_restriction && resp.hosting_restriction.includes('only_one_incremental_per_day')) {
+					updraftlion.hosting_restriction.push('only_one_incremental_per_day');
+				}
+			}
+		}
+
+		if (!jQuery('#updraft-wrap #updraft-navtab-settings-content').is(':hidden')) {
+			// auto-updates synchronised setting
+			if (resp.hasOwnProperty('automatic_updates')) {
+				jQuery('input[name="updraft_auto_updates"]').prop('checked', resp.automatic_updates);
 			}
 		}
 		
