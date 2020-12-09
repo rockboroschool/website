@@ -273,6 +273,11 @@ class WPCOM_JSON_API_Update_Post_v1_2_Endpoint extends WPCOM_JSON_API_Update_Pos
 			if ( $reset_draft_date || $reset_scheduled_date ) {
 				$input['date_gmt'] = gmdate( 'Y-m-d H:i:s' );
 			}
+
+			// Untrash a post so that the proper hooks get called as well as the comments get untrashed.
+			if ( $this->should_untrash_post( $last_status, $new_status, $post ) ) {
+				$input = $this->untrash_post( $post, $input );
+			}
 		}
 
 		if ( function_exists( 'wpcom_switch_to_blog_locale' ) ) {
@@ -530,7 +535,7 @@ class WPCOM_JSON_API_Update_Post_v1_2_Endpoint extends WPCOM_JSON_API_Update_Pos
 			$insert['ID'] = $post->ID;
 
 			// wp_update_post ignores date unless edit_date is set
-			// See: http://codex.wordpress.org/Function_Reference/wp_update_post#Scheduling_posts
+			// See: https://codex.wordpress.org/Function_Reference/wp_update_post#Scheduling_posts
 			// See: https://core.trac.wordpress.org/browser/tags/3.9.2/src/wp-includes/post.php#L3302
 			if ( isset( $input['date_gmt'] ) || isset( $input['date'] ) ) {
 				$insert['edit_date'] = true;

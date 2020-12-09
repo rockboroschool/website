@@ -1,6 +1,8 @@
 <?php
 
 use Automattic\Jetpack\Assets;
+use Automattic\Jetpack\Redirect;
+use Automattic\Jetpack\Device_Detection\User_Agent_Info;
 
 class Jetpack_Custom_CSS {
 	static function init() {
@@ -23,10 +25,10 @@ class Jetpack_Custom_CSS {
 		define(
 			'SAFECSS_USE_ACE',
 			! jetpack_is_mobile() &&
-			! Jetpack_User_Agent_Info::is_ipad() &&
+			! User_Agent_Info::is_ipad() &&
 			/**
 			 * Should the Custom CSS module use ACE to process CSS.
-			 * @see http://ace.c9.io/
+			 * @see https://ace.c9.io/
 			 *
 			 * @module custom-css
 			 *
@@ -128,7 +130,7 @@ class Jetpack_Custom_CSS {
 
 		// Prevent content filters running on CSS when restoring revisions
 		if ( isset( $_REQUEST[ 'action' ] ) && 'restore' === $_REQUEST[ 'action' ] && false !== strstr( $_SERVER[ 'REQUEST_URI' ], 'revision.php' ) ) {
-			$parent_post = get_post( wp_get_post_parent_id( intval( $_REQUEST[ 'revision' ] ) ) );
+			$parent_post = get_post( wp_get_post_parent_id( (int) $_REQUEST['revision'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			if ( $parent_post && ! is_wp_error( $parent_post ) && 'safecss' === $parent_post->post_type ) {
 				// Remove wp_filter_post_kses, this causes CSS escaping issues
 				remove_filter( 'content_save_pre', 'wp_filter_post_kses' );
@@ -165,10 +167,18 @@ class Jetpack_Custom_CSS {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		if ( $args['content_width'] && intval( $args['content_width']) > 0 && ( ! isset( $GLOBALS['content_width'] ) || $args['content_width'] != $GLOBALS['content_width'] ) )
-			$args['content_width'] = intval( $args['content_width'] );
-		else
+		if (
+			$args['content_width']
+			&& (int) $args['content_width'] > 0
+			&& (
+				! isset( $GLOBALS['content_width'] )
+				|| $args['content_width'] !== $GLOBALS['content_width']
+			)
+		) {
+			$args['content_width'] = (int) $args['content_width'];
+		} else {
 			$args['content_width'] = false;
+		}
 
 		// Remove wp_filter_post_kses, this causes CSS escaping issues
 		remove_filter( 'content_save_pre', 'wp_filter_post_kses' );
@@ -279,7 +289,7 @@ class Jetpack_Custom_CSS {
 			$safecss_revision_id = Jetpack_Custom_CSS::save_revision( $css, true, $args['preprocessor'] );
 
 			// Cache Buster
-			update_option( 'safecss_preview_rev', intval( get_option( 'safecss_preview_rev' ) ) + 1);
+			update_option( 'safecss_preview_rev', (int) get_option( 'safecss_preview_rev' ) + 1 );
 
 			update_metadata( 'post', $safecss_revision_id, 'custom_css_add', $add_to_existing );
 			update_metadata( 'post', $safecss_revision_id, 'content_width', $args['content_width'] );
@@ -307,7 +317,7 @@ class Jetpack_Custom_CSS {
 
 		$safecss_post_revision = Jetpack_Custom_CSS::get_current_revision();
 
-		update_option( 'safecss_rev', intval( get_option( 'safecss_rev' ) ) + 1 );
+		update_option( 'safecss_rev', (int) get_option( 'safecss_rev' ) + 1 );
 
 		update_post_meta( $safecss_post_id, 'custom_css_add', $add_to_existing );
 		update_post_meta( $safecss_post_id, 'content_width', $args['content_width'] );
@@ -634,7 +644,7 @@ class Jetpack_Custom_CSS {
 					apply_filters(
 						'safecss_default_css',
 						__(
-							"Welcome to Custom CSS!\n\nTo learn how this works, see http://wp.me/PEmnE-Bt",
+							"Welcome to Custom CSS!\n\nTo learn how this works, see https://wp.me/PEmnE-Bt",
 							'jetpack'
 						)
 					)
@@ -1006,7 +1016,7 @@ class Jetpack_Custom_CSS {
 						 *
 						 * @param string $str Intro text appearing above the Custom CSS editor.
 						 */
-						echo apply_filters( 'safecss_intro_text', __( 'New to CSS? Start with a <a href="http://www.htmldog.com/guides/cssbeginner/" rel="noopener noreferrer" target="_blank">beginner tutorial</a>. Questions?
+						echo apply_filters( 'safecss_intro_text', __( 'New to CSS? Start with a <a href="https://www.htmldog.com/guides/css/beginner/" rel="noopener noreferrer" target="_blank">beginner tutorial</a>. Questions?
 		Ask in the <a href="https://wordpress.org/support/forum/themes-and-templates" rel="noopener noreferrer" target="_blank">Themes and Templates forum</a>.', 'jetpack' ) );
 					?></p>
 					<p class="css-support"><?php echo __( 'Note: Custom CSS will be reset when changing themes.', 'jetpack' ); ?></p>
@@ -1066,7 +1076,9 @@ class Jetpack_Custom_CSS {
 						 *
 						 * @param string $url Custom CSS limited width's support doc URL.
 						 */
-						apply_filters( 'safecss_limit_width_link', 'http://jetpack.com/support/custom-css/#limited-width' )
+						esc_url(
+							apply_filters( 'safecss_limit_width_link', Redirect::get_url( 'jetpack-support-custom-css', array( 'anchor' => 'limited-width' ) ) )
+						)
 					);
 
 					?>
@@ -1080,7 +1092,23 @@ class Jetpack_Custom_CSS {
 					$current_theme = wp_get_theme()->Name;
 
 					?>
-					<p><?php printf( _n( 'The default content width for the %s theme is %d pixel.', 'The default content width for the %s theme is %d pixels.', intval( $GLOBALS['content_width'] ), 'jetpack' ), $current_theme, intval( $GLOBALS['content_width'] ) ); ?></p>
+					<p>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %1$s is the theme name, %2$d is an amount of pixels. */
+							_n(
+								'The default content width for the %1$s theme is %2$d pixel.',
+								'The default content width for the %1$s theme is %2$d pixels.',
+								(int) $GLOBALS['content_width'],
+								'jetpack'
+							),
+							$current_theme,
+							(int) $GLOBALS['content_width']
+						)
+					);
+					?>
+					</p>
 					<?php
 				}
 
@@ -1090,7 +1118,7 @@ class Jetpack_Custom_CSS {
 			</div>
 			<script type="text/javascript">
 				jQuery( function ( $ ) {
-					var defaultContentWidth = <?php echo isset( $GLOBALS['content_width'] ) ? json_encode( intval( $GLOBALS['content_width'] ) ) : 0; ?>;
+					var defaultContentWidth = <?php echo isset( $GLOBALS['content_width'] ) ? json_encode( (int) $GLOBALS['content_width'] ) : 0; ?>;
 
 					$( '.edit-content-width' ).bind( 'click', function ( e ) {
 						e.preventDefault();
@@ -1328,7 +1356,7 @@ class Jetpack_Custom_CSS {
 		$safecss_post_id = Jetpack_Custom_CSS::save_revision( '' );
 		$safecss_revision = Jetpack_Custom_CSS::get_current_revision();
 
-		update_option( 'safecss_rev', intval( get_option( 'safecss_rev' ) ) + 1 );
+		update_option( 'safecss_rev', (int) get_option( 'safecss_rev' ) + 1 );
 
 		update_post_meta( $safecss_post_id, 'custom_css_add', 'yes' );
 		update_post_meta( $safecss_post_id, 'content_width', false );
@@ -1565,11 +1593,11 @@ class Jetpack_Custom_CSS {
 
 		if ( Jetpack_Custom_CSS::is_preview() ) {
 			$safecss_post = Jetpack_Custom_CSS::get_current_revision();
-			$custom_content_width = intval( get_post_meta( $safecss_post['ID'], 'content_width', true ) );
+			$custom_content_width = (int) get_post_meta( $safecss_post['ID'], 'content_width', true );
 		} else if ( ! Jetpack_Custom_CSS::is_freetrial() ) {
 			$custom_css_post_id = Jetpack_Custom_CSS::post_id();
 			if ( $custom_css_post_id )
-				$custom_content_width = intval( get_post_meta( $custom_css_post_id, 'content_width', true ) );
+				$custom_content_width = (int) get_post_meta( $custom_css_post_id, 'content_width', true );
 		}
 
 		if ( $custom_content_width > 0 )

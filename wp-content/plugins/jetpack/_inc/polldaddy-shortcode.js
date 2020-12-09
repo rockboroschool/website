@@ -1,12 +1,11 @@
-/* jshint ignore:start */
-( function( $ ) {
+( function ( $ ) {
 	window.polldaddyshortcode = {
-		render: function() {
+		render: function () {
 			var ratings = $( 'div.pd-rating[data-settings]' );
 			var polls = $( 'div.PDS_Poll[data-settings]' );
 
 			if ( polls ) {
-				$.each( polls, function() {
+				$.each( polls, function () {
 					var poll = $( this ).data( 'settings' );
 
 					if ( poll ) {
@@ -35,7 +34,7 @@
 			if ( ratings ) {
 				var script = '';
 
-				$.each( ratings, function() {
+				$.each( ratings, function () {
 					var rating = $( this ).data( 'settings' );
 
 					if ( rating ) {
@@ -68,9 +67,8 @@
 		},
 	};
 
-	$( 'body' ).on( 'post-load pd-script-load', function() {
+	$( 'body' ).on( 'post-load pd-script-load', function () {
 		window.polldaddyshortcode.render();
 	} );
 	$( 'body' ).trigger( 'pd-script-load' );
 } )( jQuery );
-/* jshint ignore:end */

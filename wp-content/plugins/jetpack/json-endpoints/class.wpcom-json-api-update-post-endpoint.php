@@ -301,6 +301,16 @@ class WPCOM_JSON_API_Update_Post_Endpoint extends WPCOM_JSON_API_Post_Endpoint {
 			if ( 'publish' === $new_status && 'draft' === $last_status && ! isset( $input['date_gmt'] ) && $date_in_past ) {
 				$input['date_gmt'] = gmdate( 'Y-m-d H:i:s' );
 			}
+
+			// Untrash a post so that the proper hooks get called as well as the comments get untrashed.
+			if ( 'trash' === $last_status && 'trash' !== $new_status && isset( $post->ID ) ) {
+				wp_untrash_post( $post->ID );
+				$untashed_post = get_post( $post->ID );
+				// Lets make sure that we use the revert the slug.
+				if ( isset( $untashed_post->post_name ) && $untashed_post->post_name . '__trashed' === $input['slug'] ) {
+					unset( $input['slug'] );
+				}
+			}
 		}
 
 		if ( function_exists( 'wpcom_switch_to_locale' ) ) {
@@ -484,7 +494,7 @@ class WPCOM_JSON_API_Update_Post_Endpoint extends WPCOM_JSON_API_Post_Endpoint {
 			$insert['ID'] = $post->ID;
 
 			// wp_update_post ignores date unless edit_date is set
-			// See: http://codex.wordpress.org/Function_Reference/wp_update_post#Scheduling_posts
+			// See: https://codex.wordpress.org/Function_Reference/wp_update_post#Scheduling_posts
 			// See: https://core.trac.wordpress.org/browser/tags/3.9.2/src/wp-includes/post.php#L3302
 			if ( isset( $input['date_gmt'] ) || isset( $input['date'] ) ) {
 				$insert['edit_date'] = true;

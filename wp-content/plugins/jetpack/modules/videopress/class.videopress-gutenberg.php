@@ -5,6 +5,9 @@
  * @package Jetpack
  */
 
+use Automattic\Jetpack\Assets;
+use Automattic\Jetpack\Blocks;
+
 /**
  * Register a VideoPress extension to replace the default Core Video block.
  */
@@ -31,6 +34,7 @@ class VideoPress_Gutenberg {
 	private function __construct() {
 		add_action( 'init', array( $this, 'register_video_block_with_videopress' ) );
 		add_action( 'jetpack_register_gutenberg_extensions', array( $this, 'set_extension_availability' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'override_video_upload' ) );
 	}
 
 	/**
@@ -105,7 +109,7 @@ class VideoPress_Gutenberg {
 	 * It defines a server-side rendering that adds VideoPress support to the core video block.
 	 */
 	public function register_video_block_with_videopress() {
-		jetpack_register_block(
+		Blocks::jetpack_register_block(
 			'core/video',
 			array(
 				'render_callback' => array( $this, 'render_video_block_with_videopress' ),
@@ -162,6 +166,30 @@ class VideoPress_Gutenberg {
 			),
 			$content,
 			1
+		);
+	}
+
+	/**
+	 * Replaces the video uploaded in the block editor.
+	 *
+	 * Enqueues a script that registers an API fetch middleware replacing the video uploads in Gutenberg so they are
+	 * uploaded against the WP.com API media endpoint and thus transcoded by VideoPress.
+	 */
+	public function override_video_upload() {
+		// Bail if Jetpack or VideoPress is not active.
+		if ( ! Jetpack::is_active() || ! Jetpack::is_module_active( 'videopress' ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'jetpack-videopress-gutenberg-override-video-upload',
+			Assets::get_file_url_for_environment(
+				'_inc/build/videopress/js/gutenberg-video-upload.min.js',
+				'modules/videopress/js/gutenberg-video-upload.js'
+			),
+			array( 'wp-api-fetch', 'wp-polyfill', 'lodash' ),
+			JETPACK__VERSION,
+			false
 		);
 	}
 }

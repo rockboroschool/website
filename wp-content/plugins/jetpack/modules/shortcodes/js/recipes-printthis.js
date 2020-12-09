@@ -1,4 +1,3 @@
-// jshint ignore: start
 /*
  * printThis v1.9.0
  * @desc Printing plug-in for jQuery
@@ -36,11 +35,10 @@
  * Notes:
  *  - the loadCSS will load additional css (with or without @media print) into the iframe, adjusting layout
  *
- * jshint onevar: false, smarttabs: true, devel: true
  */
-( function( $ ) {
+( function ( $ ) {
 	var opt;
-	$.fn.printThis = function( options ) {
+	$.fn.printThis = function ( options ) {
 		opt = $.extend( {}, $.fn.printThis.defaults, options );
 		var $element = this instanceof jQuery ? this : $( this );
 
@@ -79,7 +77,7 @@
 			} );
 
 		// $iframe.ready() and $iframe.load were inconsistent between browsers
-		setTimeout( function() {
+		setTimeout( function () {
 			// Add doctype to fix the style difference between printing and render
 			function setDocType( $iframe, doctype ) {
 				var win, doc;
@@ -116,7 +114,7 @@
 
 			// import page stylesheets
 			if ( opt.importCSS )
-				$( 'link[rel=stylesheet]' ).each( function() {
+				$( 'link[rel=stylesheet]' ).each( function () {
 					var href = $( this ).attr( 'href' );
 					if ( href ) {
 						var media = $( this ).attr( 'media' ) || 'all';
@@ -128,10 +126,8 @@
 
 			// import style tags
 			if ( opt.importStyle )
-				$( 'style' ).each( function() {
-					$( this )
-						.clone()
-						.appendTo( $head );
+				$( 'style' ).each( function () {
+					$( this ).clone().appendTo( $head );
 				} );
 
 			// add title of the page
@@ -140,7 +136,7 @@
 			// import additional stylesheet(s)
 			if ( opt.loadCSS ) {
 				if ( $.isArray( opt.loadCSS ) ) {
-					jQuery.each( opt.loadCSS, function( index, value ) {
+					jQuery.each( opt.loadCSS, function ( index, value ) {
 						$head.append( "<link type='text/css' rel='stylesheet' href='" + this + "'>" );
 					} );
 				} else {
@@ -154,7 +150,7 @@
 			if ( opt.canvas ) {
 				// add canvas data-ids for easy access after the cloning.
 				var canvasId = 0;
-				$element.find( 'canvas' ).each( function() {
+				$element.find( 'canvas' ).each( function () {
 					$( this ).attr( 'data-printthis', canvasId++ );
 				} );
 			}
@@ -163,13 +159,13 @@
 			if ( opt.printContainer ) $body.append( $element.outer() );
 			// otherwise just print interior elements of container
 			else
-				$element.each( function() {
+				$element.each( function () {
 					$body.append( $( this ).html() );
 				} );
 
 			if ( opt.canvas ) {
 				// Re-draw new canvases by referencing the originals
-				$body.find( 'canvas' ).each( function() {
+				$body.find( 'canvas' ).each( function () {
 					var cid = $( this ).data( 'printthis' ),
 						$src = $( '[data-printthis="' + cid + '"]' );
 
@@ -185,7 +181,7 @@
 				// loop through inputs
 				var $input = $element.find( 'input' );
 				if ( $input.length ) {
-					$input.each( function() {
+					$input.each( function () {
 						var $this = $( this ),
 							$name = $( this ).attr( 'name' ),
 							$checker = $this.is( ':checkbox' ) || $this.is( ':radio' ),
@@ -210,7 +206,7 @@
 				// loop through selects
 				var $select = $element.find( 'select' );
 				if ( $select.length ) {
-					$select.each( function() {
+					$select.each( function () {
 						var $this = $( this ),
 							$name = $( this ).attr( 'name' ),
 							$value = $this.val();
@@ -221,7 +217,7 @@
 				// loop through textareas
 				var $textarea = $element.find( 'textarea' );
 				if ( $textarea.length ) {
-					$textarea.each( function() {
+					$textarea.each( function () {
 						var $this = $( this ),
 							$name = $( this ).attr( 'name' ),
 							$value = $this.val();
@@ -243,7 +239,7 @@
 			// print "footer"
 			if ( opt.footer ) $body.append( opt.footer );
 
-			setTimeout( function() {
+			setTimeout( function () {
 				if ( $iframe.hasClass( 'MSIE' ) ) {
 					// check if the iframe was created with the ugly hack
 					// and perform another ugly hack out of neccessity
@@ -261,7 +257,7 @@
 
 				// remove iframe after print
 				if ( ! opt.debug ) {
-					setTimeout( function() {
+					setTimeout( function () {
 						$iframe.remove();
 					}, 1000 );
 				}
@@ -288,7 +284,7 @@
 	};
 
 	// $.selector container
-	jQuery.fn.outer = function() {
+	jQuery.fn.outer = function () {
 		return $( $( '<div></div>' ).html( this.clone() ) ).html();
 	};
 } )( jQuery );
