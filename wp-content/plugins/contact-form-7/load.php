@@ -18,6 +18,7 @@ require_once WPCF7_PLUGIN_DIR . '/includes/upgrade.php';
 require_once WPCF7_PLUGIN_DIR . '/includes/integration.php';
 require_once WPCF7_PLUGIN_DIR . '/includes/config-validator.php';
 require_once WPCF7_PLUGIN_DIR . '/includes/rest-api.php';
+require_once WPCF7_PLUGIN_DIR . '/includes/block-editor/block-editor.php';
 
 if ( is_admin() ) {
 	require_once WPCF7_PLUGIN_DIR . '/admin/admin.php';
@@ -34,6 +35,7 @@ class WPCF7 {
 		self::load_module( 'constant-contact' );
 		self::load_module( 'count' );
 		self::load_module( 'date' );
+		self::load_module( 'disallowed-list' );
 		self::load_module( 'file' );
 		self::load_module( 'flamingo' );
 		self::load_module( 'hidden' );
@@ -56,11 +58,19 @@ class WPCF7 {
 			return false;
 		}
 
-		$file = path_join( $dir, $mod . '.php' );
+		$files = array(
+			path_join( $dir, $mod . '/' . $mod . '.php' ),
+			path_join( $dir, $mod . '.php' ),
+		);
 
-		if ( file_exists( $file ) ) {
-			include_once $file;
+		foreach ( $files as $file ) {
+			if ( file_exists( $file ) ) {
+				include_once $file;
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 	public static function get_option( $name, $default = false ) {
@@ -88,7 +98,6 @@ class WPCF7 {
 add_action( 'plugins_loaded', 'wpcf7', 10, 0 );
 
 function wpcf7() {
-	wpcf7_load_textdomain();
 	WPCF7::load_modules();
 
 	/* Shortcodes */
@@ -129,7 +138,6 @@ function wpcf7_install() {
 		return;
 	}
 
-	wpcf7_load_textdomain();
 	wpcf7_register_post_types();
 	wpcf7_upgrade();
 
