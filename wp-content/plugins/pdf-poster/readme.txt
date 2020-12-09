@@ -1,10 +1,10 @@
 === PDF Poster - PDF Embedder Plugin for Wordpress ===
-Contributors: abuhayat
+Contributors: abuhayat, shehabulislam
 Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate
 Requires at least: 5.0
 Tested up to: 5.5
-Stable tag: 1.6
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,7 +15,7 @@ Embed pdf files in wordress post, page, widget area, page blocks and theme templ
 Embed pdf files in wordress post, page, widget area, page blocks and theme templates. Very easy to use, user friendly & lite weight plugin. Gutenberg PDF Viewer Block Available
 
 == Demo==
-[Click Here To see demo ](https://bit.ly/3akaUZB "See Demo") 
+[Click Here To see demo ](https://links.bplugins.com/pdf-poster "See Demo") 
 
 = How to Use ? =
 See, How easy Pdf Poster to use ! 

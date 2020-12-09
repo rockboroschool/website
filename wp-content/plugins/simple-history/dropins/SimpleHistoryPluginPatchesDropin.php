@@ -1,4 +1,5 @@
 <?php
+
 defined('ABSPATH') or die();
 
 /*
@@ -13,7 +14,7 @@ class SimpleHistoryPluginPatchesDropin
 
     private $sh;
 
-    function __construct($sh)
+    public function __construct($sh)
     {
 
         $this->sh = $sh;
@@ -54,7 +55,7 @@ class SimpleHistoryPluginPatchesDropin
      * Plugin also gives lots of errors, reported by me here:
      * https://wordpress.org/support/topic/errors-has_cap-deprecated-strict-standards-warning
      */
-    function patch_captcha_on_login()
+    public function patch_captcha_on_login()
     {
 
         add_action('simple_history/log/do_log', array( $this, 'patch_captcha_on_login_on_log' ), 10, 5);
@@ -62,7 +63,7 @@ class SimpleHistoryPluginPatchesDropin
 
     // Detect that this log message is being called from Captha on login
     // and that the message is "user_logged_out"
-    function patch_captcha_on_login_on_log($doLog, $level = null, $message = null, $context = null, $loggerInstance = null)
+    public function patch_captcha_on_login_on_log($doLog, $level = null, $message = null, $context = null, $loggerInstance = null)
     {
 
         if (empty($context) || ! isset($context['_message_key']) || 'user_logged_out' != $context['_message_key']) {
@@ -167,4 +168,4 @@ class SimpleHistoryPluginPatchesDropin
 
         return $doLog;
     }
-} // end class
+}

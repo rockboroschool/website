@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logger for privacy/GDPR related things.
  *
@@ -415,4 +416,4 @@ class SH_Privacy_Logger extends SimpleLogger
             )
         );
     }
-} // class
+}

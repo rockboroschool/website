@@ -3,9 +3,9 @@ Contributors: eskapism
 Donate link: https://www.paypal.me/eskapism
 Tags: history, log, changes, changelog, audit, audit log, event log, user tracking, trail, pages, attachments, users, dashboard, admin, syslog, feed, activity, stream, audit trail, brute-force
 Requires at least: 5.2
-Tested up to: 5.4
+Tested up to: 5.5
 Requires PHP: 5.6
-Stable tag: 2.34.0
+Stable tag: 2.38.0
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -147,7 +147,7 @@ to your language then read about how this is done over at the [Polyglots handboo
 #### Contribute at GitHub
 
 Development of this plugin takes place at GitHub. Please join in with feature requests, bug reports, or even pull requests!
-https://github.com/bonny/WordPress-Simple-History
+<a href="https://github.com/bonny/WordPress-Simple-History">https://github.com/bonny/WordPress-Simple-History</a>
 
 #### Donation
 
@@ -189,11 +189,51 @@ Events in the log are stored for 60 days by default. Events older than this will
 
 == Changelog ==
 
-## Changelog
+= 2.38.0 Unreleased =
 
-### [Unreleased]
+- Changed: It's now possible to log things before the `after_setup_theme` hook by using the `SimpleLogger()` function. Before this change calling `SimpleLogger()` before `after_setup_theme`, or on `after_setup_theme` with a prio smaller than 10, would result in a fatal error (`Fatal error: Uncaught Error: Class 'SimpleLogger' not found`). Props https://github.com/JoryHogeveen.
 
-= 2.34 (January 2020) =
+- Changed: More custom post types that use the block editor ("Gutenberg") should now have their changes logged. Props https://github.com/claytoncollie.
+
+= 2.37.2 (September 2020) =
+
+- Fixed: Even more code that was to new for PHP 5.6 (I do have some tests, I just didn't look at them `¯\_(ツ)_/¯`.)
+
+= 2.37.1 (September 2020) =
+
+- Fixed: Some code was to new for PHP 5.6.
+
+= 2.37 (September 2020) =
+
+- Added: Enabling or disabling plugin auto-updates is now logged.
+- Added: Function `sh_d()` that echoes any number of variables to the screen.
+- Fixed: User logouts did show "other" instead of username of user logging out. Fixes #206, https://wordpress.org/support/topic/suspicious-logged-out-events/, https://wordpress.org/support/topic/login-logout-tracking/.
+- Updated: lots of code to be formatted more according to PSR12.
+
+= 2.36 (August 2020) =
+
+- Fix plus and minus icons in quick diff.
+- Add filter for Post Logger context. (https://github.com/bonny/WordPress-Simple-History/pull/216)
+- Add link to my [GitHub sponsors page](https://github.com/sponsors/bonny/) in the sidebar.
+- Misc code cleanups and smaller fixes.
+
+= 2.35.1 (August 2020) =
+
+Minor update to correct readme.
+
+= 2.35 (August 2020) =
+
+You can now [sponsor the developer of this plugin at GitHub](https://github.com/sponsors/bonny/).
+
+**Fixed**
+
+- Fix PHP Warning when bulk editing items in the Redirection plugin. Fixes https://github.com/bonny/WordPress-Simple-History/issues/207, https://wordpress.org/support/topic/crashes-with-redirection-plugin/. (https://github.com/bonny/WordPress-Simple-History/commit/e8be051c4d95e598275a7ba17a01f76008eb7a5b)
+
+**Changed**
+
+- Welcome text updated to be more correct. (https://github.com/bonny/WordPress-Simple-History/pull/211)
+
+= 2.34 (June 2020) =
 
 **Changed**
 

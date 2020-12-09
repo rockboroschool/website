@@ -15,7 +15,6 @@
 	"require": {
 		"php": ">=5.2.0"
 	},
-	"version": "2.33.2",
 	"authors": [
 		{
 			"name": "Pär Thernström",
@@ -27,5 +26,10 @@
 	"dist": {
 		"url": "https://downloads.wordpress.org/plugin/simple-history.zip",
 		"type": "zip"
+	},
+	"scripts": {
+		"lint": "./vendor/bin/phpcs .",
+		"lint-fix": "./vendor/bin/phpcbf .",
+		"test": "./vendor/bin/phpunit"
 	}
 }

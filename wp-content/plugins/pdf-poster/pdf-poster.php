@@ -3,8 +3,8 @@
  * Plugin Name: PDF Poster 
  * Plugin URI:  https://bplugins.com/pdf-poster-pro-demo/
  * Description: You can easily Embed pdf file in wordress post, page, widget area and theme template file. 
- * Version:     1.6
- * Author:      bPlugins
+ * Version:     1.6.3
+ * Author:      bPlugins LLC
  * Author URI:  https://bplugins.com
  * License:     GPLv3
  * Text Domain: pdf-poste
@@ -13,7 +13,7 @@
 
 /*Some Set-up*/
 define('PDFP_PLUGIN_DIR', WP_PLUGIN_URL . '/' . plugin_basename( dirname(__FILE__) ) . '/' ); 
-define('PDFP_PLUGIN_VERSION',  '1.5' ); 
+define('PDFP_PLUGIN_VERSION',  '1.6.3' ); 
 
 function pdfp_load_textdomain() {
     load_plugin_textdomain( 'pdf-poste', false, dirname( __FILE__ ) . "/languages" );
@@ -164,7 +164,7 @@ function pdfp_cpt_content_func($atts){
   $viewer_base_url= plugins_url()."/pdf-poster/pdfjs/web/viewer.php"; $final_url = $viewer_base_url."?file=".$file_name."&download=".$pdf_download."&print=".$print."&openfile=".$openfile;
   
 	?>
-	<a href="<?php echo $final_url; ?>"><button>View Fullscreen</button></a><br /><iframe width="<?php echo $pdf_width;?>" height="<?php echo $pdf_height;?>" src="<?php echo $final_url;?>"></iframe>
+	<a href="<?php echo $final_url; ?>"><button>View Fullscreen</button></a><br /><iframe loading="lazy" width="<?php echo $pdf_width;?>" height="<?php echo $pdf_height;?>" src="<?php echo $final_url;?>"></iframe>
 
 	</div>
 <?php } else { echo "<h3>Oops ! You forgot to select a pdf file. </h3>";}?>

@@ -3,13 +3,12 @@
 defined('ABSPATH') || die();
 
 /**
- * Logs plugin installs, updates, and deletions.
+ * Logs plugin related things, for example installs, updates, and deletions.
  */
 class SimplePluginLogger extends SimpleLogger
 {
-
     /**
-     * The logger slug. Defaulting to the class name is nice and logical I think.
+     * The logger slug.
      *
      * @var string $slug
      */
@@ -31,7 +30,6 @@ class SimplePluginLogger extends SimpleLogger
      */
     public function getInfo()
     {
-
         $arr_info = array(
             'name'        => 'Plugin Logger',
             'description' => 'Logs plugin installs, uninstalls and updates',
@@ -94,6 +92,17 @@ class SimplePluginLogger extends SimpleLogger
                     'simple-history'
                 ),
 
+                'plugin_auto_updates_enabled' => _x(
+                    'Enabled auto-updates for plugin "{plugin_name}"',
+                    'Plugin was enabled for auto-updates',
+                    'simple-history'
+                ),
+                'plugin_auto_updates_disabled' => _x(
+                    'Disabled auto-updates for plugin "{plugin_name}"',
+                    'Plugin was enabled for auto-updates',
+                    'simple-history'
+                ),
+
             ), // Messages.
             'labels'      => array(
                 'search' => array(
@@ -132,11 +141,10 @@ class SimplePluginLogger extends SimpleLogger
     }
 
     /**
-     * Plugin loaded
+     * Plugin loaded.
      */
     public function loaded()
     {
-
         /**
          * At least the plugin bulk upgrades fires this action before upgrade
          * We use it to fetch the current version of all plugins, before they are upgraded
@@ -182,6 +190,175 @@ class SimplePluginLogger extends SimpleLogger
         // So we hook into gettext and look for the usage of the error that is returned when this happens.
         add_filter('gettext', array( $this, 'on_gettext_detect_plugin_error_deactivation_reason' ), 10, 3);
         add_filter('gettext', array( $this, 'on_gettext' ), 10, 3);
+
+        // Detect plugin auto update change.
+        add_action("load-plugins.php", [$this, 'handleAutoUpdateChange']);
+        add_action("wp_ajax_toggle-auto-updates", [$this, 'handleAutoUpdateChange'], 1, 1);
+    }
+
+    /**
+     * Detect when a plugin is enable or disabled to be auto updated.
+     * This can be changed from the plugins-page, either from a GET request to
+     * the plugins-page or via an AJAX call.
+     *
+     * The result of the action is stored in
+     * site_option 'auto_update_plugins'.
+     * Check the value of that option after the option is updated.
+     */
+    public function handleAutoUpdateChange()
+    {
+        $option = 'auto_update_plugins';
+
+        add_filter("update_option_{$option}", function ($old_value, $value, $option) {
+            /**
+             * Option contains array with plugin that are set to be auto updated.
+             * Example:
+             * Array
+             *   (
+             *       [1] => query-monitor/query-monitor.php
+             *       [2] => akismet/akismet.php
+             *       [3] => wp-crontrol/wp-crontrol.php
+             *       [4] => redirection/redirection.php
+             *   )
+             *
+             * $_GET when opening single item enable/disable auto update link in plugin list in new window
+             *   Array
+             *   (
+             *       [action] => disable-auto-update | enable-auto-update
+             *       [plugin] => akismet/akismet.php
+             *   )
+             *
+             *
+             * $_POST from ajax call when clicking single item enable/disable link in plugin list
+             *    [action] => toggle-auto-updates
+             *    [state] => disable | enable
+             *    [type] => plugin
+             *    [asset] => redirection/redirection.php
+             *
+             *
+             * $_POST when selecting multiple plugins and choosing Enable auto updates or Disable auto updates
+             *     [action] => enable-auto-update-selected | disable-auto-update-selected
+             *     [checked] => Array
+             *         (
+             *             [0] => query-monitor/query-monitor.php
+             *             [1] => redirection/redirection.php
+             *         )
+             */
+
+            $action = isset($_GET['action']) ? $_GET['action'] : null;
+            if (!$action) {
+                $action = isset($_POST['action']) ? $_POST['action'] : null;
+            }
+            
+            // Bail if doing ajax and
+            // - action is not toggle-auto-updates
+            // - type is not plugin
+            if (wp_doing_ajax()) {
+                if ($action !== 'toggle-auto-updates') {
+                    return;
+                }
+
+                $type = isset($_POST['type']) ? $_POST['type'] : null;
+                if ($type !== 'plugin') {
+                    return;
+                }
+            }
+
+            // Bail if screen and not plugin screen
+            $current_screen = get_current_screen();
+            if (is_a($current_screen, 'WP_Screen') && ($current_screen->base !== 'plugins')) {
+                return;
+            }
+
+            // Enable or disable, string "enable" or "disable".
+            $enableOrDisable = null;
+            
+            // Plugin slugs that actions are performed against.
+            $plugins = [];
+
+            if (in_array($action, ['enable-auto-update', 'disable-auto-update'])) {
+                // Opening single item enable/disable auto update link in plugin list in new window.
+                $plugin = isset($_GET['plugin']) ? $_GET['plugin'] : null;
+                
+                if ($plugin) {
+                    $plugins[] = sanitize_text_field(urldecode($plugin));
+                }
+
+                if ($action === 'enable-auto-update') {
+                    $enableOrDisable = 'enable';
+                } elseif ($action === 'disable-auto-update') {
+                    $enableOrDisable = 'disable';
+                }
+            } elseif ($action === 'toggle-auto-updates') {
+                // Ajax post call when clicking single item enable/disable link in plugin list.
+                // *    [action] => toggle-auto-updates
+                // *    [state] => disable | enable
+                // *    [type] => plugin
+                // *    [asset] => redirection/redirection.php
+                $state = isset($_POST['state']) ? $_POST['state'] : null;
+                $asset = isset($_POST['asset']) ? $_POST['asset'] : null;
+
+                if ($state === 'enable') {
+                    $enableOrDisable = 'enable';
+                } elseif ($state === 'disable') {
+                    $enableOrDisable = 'disable';
+                }
+
+                if ($asset) {
+                    $plugins[] = sanitize_text_field(urldecode($asset));
+                }
+            } elseif (in_array($action, ['enable-auto-update-selected', 'disable-auto-update-selected'])) {
+                // $_POST when checking multiple plugins and choosing Enable auto updates or Disable auto updates.
+                $checked = isset($_POST['checked']) ? $_POST['checked'] : null;
+                if ($checked) {
+                    $plugins = (array) $checked;
+                }
+
+                if ($action === 'enable-auto-update-selected') {
+                    $enableOrDisable = 'enable';
+                } elseif ($action === 'disable-auto-update-selected') {
+                    $enableOrDisable = 'disable';
+                }
+            }
+
+            // Now we have:
+            // - an array of plugin slugs in $plugins
+            // - if plugin auto updates is to be enabled or disabled din $enableOrDisable
+
+            // Bail if required values not set.
+            if (!$plugins || !$enableOrDisable) {
+                return;
+            }
+
+            // Finally log each plugin.
+            foreach ($plugins as $onePluginSlug) {
+                $this->logPluginAutoUpdateEnableOrDisable($onePluginSlug, $enableOrDisable);
+            }
+        }, 10, 3);
+    }
+
+    /**
+     * Log plugin that is enable or disabled for auto updates.
+     *
+     * @param string $onePluginSlug slug of plugin, i.e. "hello-dolly/hello.php"
+     * @param string $enableOrDisable String "enable" or "disable"
+     */
+    public function logPluginAutoUpdateEnableOrDisable($onePluginSlug, $enableOrDisable)
+    {
+        $pluginFile = WP_PLUGIN_DIR . '/' . $onePluginSlug;
+        $pluginData = get_plugin_data($pluginFile, true, false);
+
+        $context = [
+            'plugin_slug'        => $onePluginSlug,
+            'plugin_name'        => isset($pluginData['Name']) ? $pluginData['Name'] : null,
+            'plugin_version'     => isset($pluginData['Version']) ? $pluginData['Version'] : null,
+        ];
+
+        if ($enableOrDisable === 'enable') {
+            $this->infoMessage('plugin_auto_updates_enabled', $context);
+        } elseif ($enableOrDisable === 'disable') {
+            $this->infoMessage('plugin_auto_updates_disabled', $context);
+        }
     }
 
     /**
@@ -191,7 +368,7 @@ class SimplePluginLogger extends SimpleLogger
      * @param string $text Text.
      * @param string $domain Domin.
      */
-    function on_gettext_detect_plugin_error_deactivation_reason($translation, $text, $domain)
+    public function on_gettext_detect_plugin_error_deactivation_reason($translation, $text, $domain)
     {
 
         global $pagenow;
@@ -246,7 +423,7 @@ class SimplePluginLogger extends SimpleLogger
      * @param string $text Text.
      * @param string $domain Domin.
      */
-    function on_gettext($translation, $text, $domain)
+    public function on_gettext($translation, $text, $domain)
     {
 
         global $pagenow;
@@ -302,12 +479,12 @@ class SimplePluginLogger extends SimpleLogger
         );
 
         return $translation;
-    } // on_gettext
+    }
 
     /**
      * Show readme from github in a modal win
      */
-    function ajax_GetGitHubPluginInfo()
+    public function ajax_GetGitHubPluginInfo()
     {
 
         if (! current_user_can('install_plugins')) {
@@ -404,7 +581,7 @@ class SimplePluginLogger extends SimpleLogger
      * the real name of the plugin, only the dir and main index file.
      * So before a plugin is deleted we save all needed info in a transient
      */
-    function on_action_delete_selected()
+    public function on_action_delete_selected()
     {
 
         // Same as in plugins.php
@@ -431,7 +608,7 @@ class SimplePluginLogger extends SimpleLogger
      * Saves info about all installed plugins to an option.
      * When we are done logging then we remove the option.
      */
-    function save_versions_before_update($bool = null, $hook_extra = null)
+    public function save_versions_before_update($bool = null, $hook_extra = null)
     {
 
         $plugins = get_plugins();
@@ -464,11 +641,12 @@ class SimplePluginLogger extends SimpleLogger
         }
 
         // We found the transient we were looking for
-        if (isset($_POST['action'])
+        if (
+            isset($_POST['action'])
                 && 'delete-selected' == $_POST['action']
                 && isset($_POST['checked'])
                 && is_array($_POST['checked'])
-                ) {
+        ) {
             /*
             [checked] => Array
                 (
@@ -566,7 +744,7 @@ class SimplePluginLogger extends SimpleLogger
      * @param array           $data {
      *     Array of bulk item update data.
      */
-    function on_upgrader_process_complete($plugin_upgrader_instance, $arr_data)
+    public function on_upgrader_process_complete($plugin_upgrader_instance, $arr_data)
     {
 
         // Can't use get_plugins() here to get version of plugins updated from
@@ -914,14 +1092,13 @@ class SimplePluginLogger extends SimpleLogger
         }
 
         $this->remove_saved_versions();
-    } // on upgrader_process_complete
-
+    }
 
     /**
      * Plugin is activated
      * plugin_name is like admin-menu-tree-page-view/index.php
      */
-    function on_activated_plugin($plugin_name, $network_wide)
+    public function on_activated_plugin($plugin_name, $network_wide)
     {
 
         /*
@@ -956,13 +1133,13 @@ class SimplePluginLogger extends SimpleLogger
         }
 
         $this->infoMessage('plugin_activated', $context);
-    } // on_activated_plugin
+    }
 
     /**
      * Plugin is deactivated
      * plugin_name is like admin-menu-tree-page-view/index.php
      */
-    function on_deactivated_plugin($plugin_name)
+    public function on_deactivated_plugin($plugin_name)
     {
 
         $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_name, true, false);
@@ -983,13 +1160,13 @@ class SimplePluginLogger extends SimpleLogger
         }
 
         $this->infoMessage('plugin_deactivated', $context);
-    } // on_deactivated_plugin
+    }
 
 
     /**
      * Get output for detailed log section
      */
-    function getLogRowDetailsOutput($row)
+    public function getLogRowDetailsOutput($row)
     {
 
         $context     = $row->context;
@@ -1119,8 +1296,7 @@ class SimplePluginLogger extends SimpleLogger
                         admin_url("plugin-install.php?tab=plugin-information&amp;plugin={$plugin_slug}&amp;section=&amp;TB_iframe=true&amp;width=640&amp;height=550"),
                         esc_html_x('View plugin info', 'plugin logger: plugin info thickbox title view all info', 'simple-history')
                     );
-                } // End if().
-                elseif (isset($context['plugin_install_source']) && $context['plugin_install_source'] == 'upload' && ! empty($context['plugin_github_url'])) {
+                } elseif (isset($context['plugin_install_source']) && $context['plugin_install_source'] == 'upload' && ! empty($context['plugin_github_url'])) {
                     // Can't embed iframe
                     // Must use API instead
                     // https://api.github.com/repos/<username>/<repo>/readme?callback=<callbackname>
@@ -1175,5 +1351,5 @@ class SimplePluginLogger extends SimpleLogger
         } // End if().
 
         return $output;
-    } // getLogRowDetailsOutput
-} // class SimplePluginLogger
+    }
+}

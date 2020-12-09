@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Google Сaptcha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 11:04+0300\n"
+"POT-Creation-Date: 2020-11-06 14:43+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: bestwebsoft.com <plugin@bestwebsoft.com>\n"
 "Language-Team: Cloudzeroxyz <cloudzeroxyz@gmail.com>\n"
@@ -13,24 +13,28 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: bws_menu\n"
 
-#: google-captcha.php:39 google-captcha.php:49 google-captcha.php:485
-#: includes/class-gglcptch-settings-tabs.php:149
-msgid "Google Captcha Settings"
+#: google-captcha.php:39 google-captcha.php:49 google-captcha.php:496
+#: includes/class-gglcptch-settings-tabs.php:147
+#, fuzzy
+#| msgid "Google Captcha Settings"
+msgid "reCaptcha Settings"
 msgstr "Google Captcha Ajustes"
 
-#: google-captcha.php:50 google-captcha.php:1070 google-captcha.php:1083
-#: includes/class-gglcptch-settings-tabs.php:25
+#: google-captcha.php:50 google-captcha.php:1081 google-captcha.php:1094
+#: includes/class-gglcptch-settings-tabs.php:22
 msgid "Settings"
 msgstr "Configuraciónes"
 
 #: google-captcha.php:58 includes/whitelist.php:46
-msgid "Google Captcha Whitelist"
-msgstr ""
+#, fuzzy
+#| msgid "Whitelist"
+msgid "reCaptcha Whitelist"
+msgstr "Lista Blanca"
 
 #: google-captcha.php:59
 msgid "Whitelist"
@@ -40,11 +44,11 @@ msgstr "Lista Blanca"
 msgid "Upgrade to Pro"
 msgstr "Actualizar a Pro"
 
-#: google-captcha.php:264
+#: google-captcha.php:268
 msgid "Please wait until Google reCAPTCHA is loaded."
 msgstr "Por favor espere hasta que se carga Google reCAPTCHA."
 
-#: google-captcha.php:265
+#: google-captcha.php:269
 msgid ""
 "Failed to load Google reCAPTCHA. Please check your internet connection and "
 "reload this page."
@@ -56,83 +60,85 @@ msgstr ""
 msgid "Warning"
 msgstr "Atención"
 
-#: google-captcha.php:389
+#: google-captcha.php:398
 msgid "You are in the whitelist"
 msgstr "Estás en la lista blanca"
 
-#: google-captcha.php:486
+#: google-captcha.php:497
 msgid "Please enable JavaScript in your browser."
 msgstr ""
 
-#: google-captcha.php:562
+#: google-captcha.php:579
 msgid "This site is protected by reCAPTCHA and the Google "
-msgstr ""
+msgstr "Este sitio está protegido por reCaptcha y se aplican la "
 
-#: google-captcha.php:563
+#: google-captcha.php:580
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Política de privacidad"
 
-#: google-captcha.php:564
+#: google-captcha.php:581
 msgid " and "
-msgstr ""
+msgstr " y los "
 
-#: google-captcha.php:565
+#: google-captcha.php:582
 msgid "Terms of Service"
-msgstr ""
+msgstr "Términos de servicio"
 
-#: google-captcha.php:566
+#: google-captcha.php:583
 msgid " apply."
-msgstr ""
+msgstr "  de Google"
 
-#: google-captcha.php:573 google-captcha.php:1105
-msgid "To use Google Captcha you must get the keys from"
+#: google-captcha.php:590
+#, fuzzy
+#| msgid "To use Google Captcha you must get the keys from"
+msgid "To use reCaptcha you must get the keys from"
 msgstr "Para utilizar Google Captcha debe obtener las claves de"
 
-#: google-captcha.php:574 google-captcha.php:1106
+#: google-captcha.php:591
 msgid "here"
 msgstr "aquí"
 
-#: google-captcha.php:575 google-captcha.php:1107
+#: google-captcha.php:592
 msgid "and enter them on the"
 msgstr "e introducirlas en"
 
-#: google-captcha.php:577 google-captcha.php:1109
+#: google-captcha.php:594
 msgid "plugin setting page"
 msgstr "página de configuración de plugin"
 
-#: google-captcha.php:848 includes/forms.php:352
+#: google-captcha.php:859 includes/forms.php:350
 msgid "Error"
-msgstr "Error "
+msgstr "Error"
 
-#: google-captcha.php:970
+#: google-captcha.php:981
 msgid "User response is missing."
 msgstr "Respuesta del usuario está ausente."
 
-#: google-captcha.php:972
+#: google-captcha.php:983
 msgid "Secret Key is missing."
 msgstr "Clave Secreta está ausente."
 
-#: google-captcha.php:975
+#: google-captcha.php:986
 msgid "Secret Key is invalid."
 msgstr ""
 
-#: google-captcha.php:976
+#: google-captcha.php:987
 msgid "Check your domain configurations"
 msgstr ""
 
-#: google-captcha.php:977
+#: google-captcha.php:988
 msgid "and enter it again"
 msgstr "e introducirle otra vez"
 
-#: google-captcha.php:979
+#: google-captcha.php:990
 msgid "User response is invalid"
 msgstr "Respuesta del usuario no es válido"
 
-#: google-captcha.php:980
+#: google-captcha.php:991
 msgid "You have entered an incorrect reCAPTCHA value."
 msgstr "Ha introducido un valor incorrecto de reCAPTCHA."
 
-#: google-captcha.php:981
+#: google-captcha.php:992
 msgid ""
 "More than one reCAPTCHA has been found in the current form. Please remove "
 "all unnecessary reCAPTCHA fields to make it work properly."
@@ -140,194 +146,210 @@ msgstr ""
 "Más de un reCAPTCHA se ha encontrado en la forma actual. Por favor, elimine "
 "todos los campos de reCAPTCHA innecesarios para que funcione correctamente."
 
-#: google-captcha.php:983
-msgid "reCAPTCHA v3 test failed"
+#: google-captcha.php:994
+msgid "reCaptcha v3 test failed"
 msgstr ""
 
-#: google-captcha.php:1021
+#: google-captcha.php:1032
 msgid "Please submit \"Test verification\""
 msgstr ""
 
-#: google-captcha.php:1023
+#: google-captcha.php:1034
 msgid "Please complete the captcha and submit \"Test verification\""
 msgstr ""
 
-#: google-captcha.php:1029
+#: google-captcha.php:1040
 msgid "Test verification"
 msgstr "Test de verificación"
 
-#: google-captcha.php:1050
+#: google-captcha.php:1061
 msgid "The verification is successfully completed."
 msgstr ""
 
-#: google-captcha.php:1085
+#: google-captcha.php:1096
 msgid "FAQ"
 msgstr "Preguntas Frecuentes"
 
-#: google-captcha.php:1086
+#: google-captcha.php:1097
 msgid "Support"
 msgstr "Soporte"
 
-#: includes/class-gglcptch-settings-tabs.php:26
+#: includes/class-gglcptch-settings-tabs.php:23
 msgid "Misc"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:27
+#: includes/class-gglcptch-settings-tabs.php:24
 msgid "Custom Code"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:28
+#: includes/class-gglcptch-settings-tabs.php:25
 msgid "License Key"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:51
+#: includes/class-gglcptch-settings-tabs.php:46
 msgid "Site Key"
 msgstr "Clave del sitio"
 
-#: includes/class-gglcptch-settings-tabs.php:56
+#: includes/class-gglcptch-settings-tabs.php:51
 msgid "Secret Key"
 msgstr "Clave Secreta"
 
-#: includes/class-gglcptch-settings-tabs.php:63
-#: includes/class-gglcptch-settings-tabs.php:64
+#: includes/class-gglcptch-settings-tabs.php:58
+#: includes/class-gglcptch-settings-tabs.php:59
 msgid "Version"
 msgstr "Versión"
 
-#: includes/class-gglcptch-settings-tabs.php:65
+#: includes/class-gglcptch-settings-tabs.php:60
 msgid "Invisible"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:94
+#: includes/class-gglcptch-settings-tabs.php:91
 msgid "Enter site key"
 msgstr "Introduce la clave de sitio"
 
-#: includes/class-gglcptch-settings-tabs.php:95
-#: includes/class-gglcptch-settings-tabs.php:102
+#: includes/class-gglcptch-settings-tabs.php:92
+#: includes/class-gglcptch-settings-tabs.php:99
 msgid "WARNING: The captcha will not be displayed until you fill key fields."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:101
+#: includes/class-gglcptch-settings-tabs.php:98
 msgid "Enter secret key"
 msgstr "Introduce la clave secreta"
 
-#: includes/class-gglcptch-settings-tabs.php:137
+#: includes/class-gglcptch-settings-tabs.php:135
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:152
+#: includes/class-gglcptch-settings-tabs.php:150
 msgid "Authentication"
 msgstr "Autentificación"
 
-#: includes/class-gglcptch-settings-tabs.php:153
+#: includes/class-gglcptch-settings-tabs.php:151
 msgid ""
-"Register your website with Google to get required API keys and enter them "
-"below."
+"Register your domain name with Google reCaptcha service and add the keys to "
+"the fields below."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:153
+#: includes/class-gglcptch-settings-tabs.php:151
 msgid "Get the API Keys"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:170
+#: includes/class-gglcptch-settings-tabs.php:168
 #, fuzzy
-msgid "Test reCAPTCHA"
-msgstr "Invisible reCAPTCHA"
+#| msgid "Google Captcha"
+msgid "Test reCaptcha"
+msgstr "Google Captcha"
 
-#: includes/class-gglcptch-settings-tabs.php:176
+#: includes/class-gglcptch-settings-tabs.php:174
 msgid "General"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:179
-msgid "reCAPTCHA Version"
+#: includes/class-gglcptch-settings-tabs.php:177
+#, fuzzy
+#| msgid "reCAPTCHA Version"
+msgid "reCaptcha Version"
 msgstr "reCAPTCHA Versión"
 
-#: includes/class-gglcptch-settings-tabs.php:192
-msgid "Enable reCAPTCHA for"
-msgstr "Permite reCAPTCHA para"
+#: includes/class-gglcptch-settings-tabs.php:190
+#, fuzzy
+#| msgid "Enable Google Captcha for:"
+msgid "Enable reCaptcha for"
+msgstr "Habilitar Google Captcha para:"
 
-#: includes/class-gglcptch-settings-tabs.php:238
-#: includes/class-gglcptch-settings-tabs.php:300 includes/pro_banners.php:20
+#: includes/class-gglcptch-settings-tabs.php:236
+#: includes/class-gglcptch-settings-tabs.php:298 includes/pro_banners.php:20
 msgid "Close"
 msgstr "Сerrar"
 
-#: includes/class-gglcptch-settings-tabs.php:247
+#: includes/class-gglcptch-settings-tabs.php:245
 #, fuzzy
-msgid "Hide reCAPTCHA for"
+#| msgid "Hide captcha for:"
+msgid "Hide reCaptcha for"
+msgstr "Ocultar captcha para:"
+
+#: includes/class-gglcptch-settings-tabs.php:264
+#, fuzzy
+msgid "Hide reCaptcha Badge"
 msgstr "Permite reCAPTCHA para"
 
-#: includes/class-gglcptch-settings-tabs.php:266
-#, fuzzy
-msgid "Hide reCAPTCHA Badge"
-msgstr "Permite reCAPTCHA para"
-
-#: includes/class-gglcptch-settings-tabs.php:271
-msgid "Enable to hide reCAPTCHA Badge for Version 3 and Invisble reCAPTCHA."
+#: includes/class-gglcptch-settings-tabs.php:269
+msgid "Enable to hide reCaptcha Badge for Version 3 and Invisble reCaptcha."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:277
+#: includes/class-gglcptch-settings-tabs.php:275
 msgid "Theme"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:281
+#: includes/class-gglcptch-settings-tabs.php:279
 msgid "Light"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:282
+#: includes/class-gglcptch-settings-tabs.php:280
 msgid "Dark"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:288
+#: includes/class-gglcptch-settings-tabs.php:286
 msgid "Score"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:293
-msgid "Set the minimum verification score from 0 to 1"
+#: includes/class-gglcptch-settings-tabs.php:291
+#, php-format
+msgid "Set the minimum verification score from %s to %s (default is %s)."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:309
+#: includes/class-gglcptch-settings-tabs.php:308
+msgid "Use reCaptcha Globally"
+msgstr ""
+
+#: includes/class-gglcptch-settings-tabs.php:313
+msgid ""
+"Enable to use reCaptcha when Google is not accessible or blocked in your "
+"country."
+msgstr ""
+
+#: includes/class-gglcptch-settings-tabs.php:318
 msgid "Whitelist Notification"
 msgstr "Notificaciones de la Lista Blanca"
 
-#: includes/class-gglcptch-settings-tabs.php:312
+#: includes/class-gglcptch-settings-tabs.php:321
 #, fuzzy
-msgid "This message will be displayed instead of the reCAPTCHA."
+msgid "This message will be displayed instead of the reCaptcha."
 msgstr ""
 "Este mensaje se visualizará en lugar del reCAPTCHA si la IP del usuario se "
 "agrega a la lista blanca"
 
-#: includes/class-gglcptch-settings-tabs.php:316
+#: includes/class-gglcptch-settings-tabs.php:325
 msgid "Advanced Protection"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:320
+#: includes/class-gglcptch-settings-tabs.php:329
 msgid ""
-"Enable to keep submit button disabled until reCAPTCHA is loaded (do not use "
-"this option if you see \"Failed to load Google reCAPTCHA\" message)."
+"Enable to keep submit button disabled until reCaptcha is loaded (do not use "
+"this option if you see \"Failed to load Google reCaptcha\" message)."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:326
+#: includes/class-gglcptch-settings-tabs.php:335
 msgid "Disabled Submit Button"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:331
+#: includes/class-gglcptch-settings-tabs.php:340
 msgid ""
-"Enable to keep submit button disabled until user passes the reCAPTCHA test "
+"Enable to keep submit button disabled until user passes the reCaptcha test "
 "(for Version 2)."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:345
+#: includes/class-gglcptch-settings-tabs.php:354
 msgid ""
-"reCAPTCHA version was changed. Please submit \"Test reCAPTCHA\" and "
+"reCaptcha version was changed. Please submit \"Test reCaptcha\" and "
 "regenerate Site and Secret keys if necessary."
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:358
-msgid "Google Captcha Shortcode"
+#: includes/class-gglcptch-settings-tabs.php:367
+msgid "reCaptcha Shortcode"
 msgstr ""
 
-#: includes/class-gglcptch-settings-tabs.php:361
-msgid ""
-"Add Google Captcha to your posts or pages using the following shortcode:"
+#: includes/class-gglcptch-settings-tabs.php:370
+msgid "Add reCaptcha to your posts or pages using the following shortcode:"
 msgstr ""
 
 #: includes/forms.php:11
@@ -363,7 +385,7 @@ msgid "Custom Forms"
 msgstr ""
 
 #: includes/forms.php:78
-msgid "Google Captcha Plugin"
+msgid "reCaptcha Plugin"
 msgstr ""
 
 #: includes/forms.php:116 includes/forms.php:140
@@ -375,11 +397,11 @@ msgstr "Activar"
 msgid "Install Now"
 msgstr ""
 
-#: includes/forms.php:265
+#: includes/forms.php:262
 msgid "Authentication failed."
 msgstr ""
 
-#: includes/forms.php:354
+#: includes/forms.php:352
 msgid "Click the BACK button on your browser and try again."
 msgstr ""
 
@@ -482,32 +504,32 @@ msgstr "Formulario de contacto"
 
 #: includes/pro_banners.php:71
 #, fuzzy
-msgid "Divi Login Forms"
+msgid "Divi Login Form"
 msgstr "Formulario de acceso"
 
-#: includes/pro_banners.php:173
+#: includes/pro_banners.php:167
 msgid "Size"
 msgstr ""
 
-#: includes/pro_banners.php:177
+#: includes/pro_banners.php:171
 msgid "Normal"
 msgstr "Normal"
 
-#: includes/pro_banners.php:178
+#: includes/pro_banners.php:172
 msgid "Compact"
 msgstr "Compacto"
 
-#: includes/pro_banners.php:183
+#: includes/pro_banners.php:177
 msgid "Language"
 msgstr ""
 
-#: includes/pro_banners.php:191
+#: includes/pro_banners.php:185
 msgid "Multilanguage"
 msgstr ""
 
-#: includes/pro_banners.php:194
+#: includes/pro_banners.php:188
 msgid ""
-"Enable to switch language automatically on multilingual website using "
+"Enable to switch language automatically on multilingual website using the "
 "Multilanguage plugin."
 msgstr ""
 
@@ -557,40 +579,51 @@ msgstr ""
 msgid "Delete"
 msgstr "Eliminar"
 
-#: includes/whitelist.php:318
+#: includes/whitelist.php:319
 msgid "IP added to the whitelist successfully."
 msgstr ""
 
-#: includes/whitelist.php:320 includes/whitelist.php:342
-#: includes/whitelist.php:352
+#: includes/whitelist.php:321 includes/whitelist.php:347
+#: includes/whitelist.php:361
 msgid "Some errors occurred."
 msgstr ""
 
-#: includes/whitelist.php:323
+#: includes/whitelist.php:324
 msgid "IP is already in the whitelist."
 msgstr ""
 
-#: includes/whitelist.php:326
+#: includes/whitelist.php:327
 msgid "Invalid IP. See allowed formats."
 msgstr "IP es no válido. Ver formatos permitidos."
 
-#: includes/whitelist.php:348
+#: includes/whitelist.php:357
 #, fuzzy
 msgid "One IP was deleted successfully."
 msgstr "Una dirección IP se ha eliminado correctamente"
 
-#: includes/whitelist.php:355
+#: includes/whitelist.php:364
 #, fuzzy
 msgid "You have not entered any IP."
 msgstr "No se ha introducido ningún IP"
 
-#: includes/whitelist.php:358
+#: includes/whitelist.php:367
 msgid "You have not entered any IP in to the search form."
 msgstr ""
 
-#: includes/whitelist.php:360
+#: includes/whitelist.php:369
 msgid "Search results for"
 msgstr "Resultados de la búsqueda para"
+
+#, fuzzy
+#~ msgid "Test reCAPTCHA"
+#~ msgstr "Invisible reCAPTCHA"
+
+#~ msgid "Enable reCAPTCHA for"
+#~ msgstr "Permite reCAPTCHA para"
+
+#, fuzzy
+#~ msgid "Hide reCAPTCHA for"
+#~ msgstr "Permite reCAPTCHA para"
 
 #, fuzzy
 #~| msgid "Contact form"
@@ -801,15 +834,6 @@ msgstr "Resultados de la búsqueda para"
 
 #~ msgid "Download contact form"
 #~ msgstr "Descargar formulario de contacto"
-
-#~ msgid "Google Captcha"
-#~ msgstr "Google Captcha"
-
-#~ msgid "Enable Google Captcha for:"
-#~ msgstr "Habilitar Google Captcha para:"
-
-#~ msgid "Hide captcha for:"
-#~ msgstr "Ocultar captcha para:"
 
 #~ msgid "Theme:"
 #~ msgstr "Tema:"
