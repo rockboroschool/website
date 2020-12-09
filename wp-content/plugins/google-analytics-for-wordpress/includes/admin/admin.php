@@ -47,6 +47,9 @@ function monsterinsights_admin_menu() {
 
     $submenu_base = add_query_arg( 'page', 'monsterinsights_settings', admin_url( 'admin.php' ) );
 
+	// Add Popular Posts menu item.
+	add_submenu_page( $hook, __( 'Popular Posts:', 'google-analytics-for-wordpress' ), __( 'Popular Posts', 'google-analytics-for-wordpress' ), 'monsterinsights_save_settings', $submenu_base . '#/popular-posts' );
+
     // then tools
     add_submenu_page( $hook, __( 'Tools:', 'google-analytics-for-wordpress' ), __( 'Tools', 'google-analytics-for-wordpress' ), 'manage_options', $submenu_base . '#/tools' );
 
@@ -192,8 +195,6 @@ function monsterinsights_add_action_links( $links ) {
 add_filter( 'plugin_action_links_' . plugin_basename( MONSTERINSIGHTS_PLUGIN_FILE ), 'monsterinsights_add_action_links' );
 add_filter( 'network_admin_plugin_action_links_' . plugin_basename( MONSTERINSIGHTS_PLUGIN_FILE ), 'monsterinsights_add_action_links' );
 
-
-
 /**
  * Loads a partial view for the Administration screen
  *
@@ -332,19 +333,19 @@ function monsterinsights_admin_setup_notices() {
     if ( current_user_can( 'update_core' ) ) {
         global $wp_version;
 
-        // PHP 5.2/5.3
-        if ( version_compare( phpversion(), '5.4', '<' ) ) {
+        // PHP 5.2-5.5
+        if ( version_compare( phpversion(), '5.6', '<' ) ) {
             $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-php/' );
             // Translators: Placeholders add the PHP version, a link to the MonsterInsights blog and a line break.
-            $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress will stop supporting your PHP version in April, 2019.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+            $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress stopped supporting your PHP version in April, 2019.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
             echo '<div class="error"><p>'. $message.'</p></div>';
             return;
         }
         // WordPress 3.0 - 4.5
-        else if ( version_compare( $wp_version, '4.6', '<' ) ) {
+        else if ( version_compare( $wp_version, '4.9', '<' ) ) {
             $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-wordpress/' );
             // Translators: Placeholders add the current WordPress version and links to the MonsterInsights blog
-            $message = sprintf( esc_html__( 'Your site is running an outdated version of WordPress (%1$s).%4$sMonsterInsights will stop supporting WordPress versions lower than 4.6 in April, 2019.%4$sUpdating WordPress takes just a few minutes and will also solve many bugs that exist in your WordPress install.%4$s%2$sLearn more about updating WordPress%3$s', 'google-analytics-for-wordpress' ), $wp_version, '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+            $message = sprintf( esc_html__( 'Your site is running an outdated version of WordPress (%1$s).%4$sMonsterInsights will stop supporting WordPress versions lower than 4.9 in 2020.%4$sUpdating WordPress takes just a few minutes and will also solve many bugs that exist in your WordPress install.%4$s%2$sLearn more about updating WordPress%3$s', 'google-analytics-for-wordpress' ), $wp_version, '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
             echo '<div class="error"><p>'. $message.'</p></div>';
             return;
         }
@@ -461,6 +462,7 @@ function monsterinsights_admin_setup_notices() {
                     echo '<img class="monsterinsights-wooedd-upsell-image monsterinsights-wooedd-upsell-image-large" src="' . trailingslashit( MONSTERINSIGHTS_PLUGIN_URL ) . 'assets/images/upsell/woo-edd-upsell.png">';
                 echo '</div>';
             echo '</div>';
+            echo '<style type="text/css">.monsterinsights-wooedd-upsell-left{width:50%;display:table-cell;float:left}.monsterinsights-wooedd-upsell-right{width:50%;display:table-cell;float:left}.monsterinsights-wooedd-upsell-image{width:100%;height:auto;padding:20px}.monsterinsights-wooedd-upsell-image-small{display:none}.monsterinsights-wooedd-upsell-row{display:table}.monsterinsights-wooedd-upsell-left p{margin:1em 0;font-size:16px}@media (max-width:900px){.monsterinsights-wooedd-upsell-left{width:100%}.monsterinsights-wooedd-upsell-right{display:none}.monsterinsights-wooedd-upsell-image-small{display:block}.monsterinsights-wooedd-upsell-image-large{display:none}}</style>';
             return;
         }
     }
@@ -535,4 +537,4 @@ function monsterinsights_admin_menu_inline_styles() {
 	<?php
 }
 
-add_action( 'admin_footer', 'monsterinsights_admin_menu_inline_styles', 300 );
+add_action( 'admin_head', 'monsterinsights_admin_menu_inline_styles', 300 );

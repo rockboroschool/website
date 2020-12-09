@@ -38,7 +38,7 @@ class MonsterInsights_Connect {
 		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
 
 		// Check for permissions.
-		if ( ! current_user_can( 'install_plugins' ) ) {
+		if ( ! monsterinsights_can_install_plugins() ) {
 			wp_send_json_error( array( 'message' => esc_html__( 'You are not allowed to install plugins.', 'google-analytics-for-wordpress' ) ) );
 		}
 
@@ -155,8 +155,7 @@ class MonsterInsights_Connect {
 			wp_send_json_error( $error );
 		}
 		// We do not need any extra credentials if we have gotten this far, so let's install the plugin.
-		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/licensing/plugin-upgrader.php';
-		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/licensing/skin.php';
+		monsterinsights_require_upgrader();
 		// Do not allow WordPress to search/download translations, as this will break JS output.
 		remove_action( 'upgrader_process_complete', array( 'Language_Pack_Upgrader', 'async_upgrade' ), 20 );
 		// Create the plugin upgrader with our custom skin.

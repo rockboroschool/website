@@ -6,8 +6,9 @@
  * Author:              MonsterInsights
  * Author URI:          https://www.monsterinsights.com/?utm_source=liteplugin&utm_medium=pluginheader&utm_campaign=authoruri&utm_content=7%2E0%2E0
  *
- * Version:             7.11.0
+ * Version:             7.13.2
  * Requires at least:   3.8.0
+ * Requires PHP:        5.2
  *
  * License:             GPL v3
  *
@@ -68,7 +69,7 @@ final class MonsterInsights_Lite {
 	 * @access public
 	 * @var string $version Plugin version.
 	 */
-	public $version = '7.11.0';
+	public $version = '7.13.2';
 
 	/**
 	 * Plugin file.
@@ -132,6 +133,15 @@ final class MonsterInsights_Lite {
 	 * @var MonsterInsights_Notifications $notifications Instance of Notifications class.
 	 */
 	public $notifications;
+
+	/**
+	 * Holds instance of MonsterInsights Notification Events
+	 *
+	 * @since 7.12.3
+	 * @access public
+	 * @var MonsterInsights_Notification_Event $notification_event Instance of MonsterInsights_Notification_Event class.
+	 */
+	public $notification_event;
 
 	/**
 	 * Holds instance of MonsterInsights Auth class.
@@ -215,7 +225,7 @@ final class MonsterInsights_Lite {
 
 			// This does the version to version background upgrade routines and initial install
 			$mi_version = get_option( 'monsterinsights_current_version', '5.5.3' );
-			if ( version_compare( $mi_version, '7.11.0', '<' ) ) {
+			if ( version_compare( $mi_version, '7.13.0', '<' ) ) {
 				monsterinsights_lite_call_install_and_upgrade();
 			}
 
@@ -224,15 +234,16 @@ final class MonsterInsights_Lite {
 			}
 
 			// Load the plugin textdomain.
-			add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ) );
+			add_action( 'plugins_loaded', array( self::$instance, 'load_plugin_textdomain' ), 15 );
 
 			// Load admin only components.
 			if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
-				self::$instance->notices       = new MonsterInsights_Notice_Admin();
-				self::$instance->reporting     = new MonsterInsights_Reporting();
-				self::$instance->api_auth      = new MonsterInsights_API_Auth();
-				self::$instance->routes        = new MonsterInsights_Rest_Routes();
-				self::$instance->notifications = new MonsterInsights_Notifications();
+				self::$instance->notices            = new MonsterInsights_Notice_Admin();
+				self::$instance->reporting          = new MonsterInsights_Reporting();
+				self::$instance->api_auth           = new MonsterInsights_API_Auth();
+				self::$instance->routes             = new MonsterInsights_Rest_Routes();
+				self::$instance->notifications      = new MonsterInsights_Notifications();
+				self::$instance->notification_event = new MonsterInsights_Notification_Event();
 			}
 
 			if ( monsterinsights_is_pro_version() ) {
@@ -525,11 +536,17 @@ final class MonsterInsights_Lite {
 			// Routes used by Vue
 			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/routes.php';
 
+			// Load gutenberg editor functions
+			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/gutenberg/gutenberg.php';
+
 			// Emails
 			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/emails/class-emails.php';
 
 			// Notifications class.
 			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/notifications.php';
+			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/notification-event.php';
+			// Add notification manual events for lite version.
+			require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/admin/notifications/notification-events.php';
 		}
 
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/api-request.php';
@@ -638,6 +655,18 @@ function monsterinsights_lite_uninstall_hook() {
 
 		// Delete data
 		$instance->reporting->delete_aggregate_data('site');
+	}
+
+	// Clear notification cron schedules
+	$schedules = wp_get_schedules();
+
+	if  ( is_array( $schedules ) && ! empty( $schedules ) ) {
+		foreach ( $schedules as $key => $value ) {
+			if ( 0 === strpos($key, "monsterinsights_notification_") ) {
+				$cron_hook = implode("_", explode( "_", $key, -2 ) ) . '_cron';
+				wp_clear_scheduled_hook( $cron_hook );
+			}
+		}
 	}
 
 }

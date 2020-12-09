@@ -927,28 +927,6 @@ if ( ! function_exists( 'aioseop_ajax_save_meta' ) ) {
 	}
 }
 
-if ( ! function_exists( 'aioseop_unprotect_meta' ) ) {
-
-	/**
-	 * AIOSEOP Unprotect Meta
-	 *
-	 * @since ?
-	 *
-	 * @param $protected
-	 * @param $meta_key
-	 * @param $meta_type
-	 *
-	 * @return bool
-	 */
-	function aioseop_unprotect_meta( $protected, $meta_key, $meta_type ) {
-		if ( isset( $meta_key ) && ( substr( $meta_key, 0, 9 ) === '_aioseop_' ) ) {
-			return false;
-		}
-
-		return $protected;
-	}
-}
-
 if ( ! function_exists( 'aioseop_mrt_exclude_this_page' ) ) {
 
 	/**

@@ -153,7 +153,7 @@ class AIOSEOP_Usage {
 	 * @return string The url.
 	 */
 	private function get_url() {
-		$url = 'https://usage.aioseo.com/v1/track';
+		$url = 'https://aiousage.com/v1/track';
 		if ( defined( 'AIOSEO_USAGE_TRACKING_URL' ) ) {
 			$url = AIOSEO_USAGE_TRACKING_URL;
 		}

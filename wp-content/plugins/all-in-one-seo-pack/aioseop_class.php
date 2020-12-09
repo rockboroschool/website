@@ -832,11 +832,6 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				'name'    => __( 'Never Shorten Long Descriptions', 'all-in-one-seo-pack' ),
 				'default' => 0,
 			),
-			'unprotect_meta'              => array(
-				/* translators: This is a setting that allows users to unprotect internal postmeta fields for use with XML-RPC. */
-				'name'    => __( 'Unprotect Post Meta Fields', 'all-in-one-seo-pack' ),
-				'default' => 0,
-			),
 			'redirect_attachement_parent' => array(
 				/* translators: This is the name of a setting. By enabling it, the plugin will redirect attachment page requests to the post parent, or in other words, the post/page where the media is embedded. */
 				'name'    => __( 'Redirect Attachments to Post Parent', 'all-in-one-seo-pack' ),
@@ -847,34 +842,6 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				'name'    => __( 'Exclude Pages', 'all-in-one-seo-pack' ),
 				'type'    => 'textarea',
 				'default' => '',
-			),
-			'post_meta_tags'              => array(
-				/* translators: This is a setting that allows users to ouput additional code, such as references to stylesheets or JavaScript libraries, into the HEAD section of each post. */
-				'name'     => __( 'Additional Post Headers', 'all-in-one-seo-pack' ),
-				'type'     => 'textarea',
-				'default'  => '',
-				'sanitize' => 'default',
-			),
-			'page_meta_tags'              => array(
-				/* translators: This is a setting that allows users to ouput additional HTML tags, such as references to stylesheets or JavaScript libraries, into the HEAD section of each page. */
-				'name'     => __( 'Additional Page Headers', 'all-in-one-seo-pack' ),
-				'type'     => 'textarea',
-				'default'  => '',
-				'sanitize' => 'default',
-			),
-			'front_meta_tags'             => array(
-				/* translators: This is a setting that allows users to ouput additional HTML tags, such as references to stylesheets or JavaScript libraries, into the HEAD section of the frontpage/homepage. */
-				'name'     => __( 'Additional Front Page Headers', 'all-in-one-seo-pack' ),
-				'type'     => 'textarea',
-				'default'  => '',
-				'sanitize' => 'default',
-			),
-			'home_meta_tags'              => array(
-				/* translators: This is a setting that allows users to ouput additional HTML tags, such as references to stylesheets or JavaScript libraries, into the HEAD section of the static Posts page (see Settings > Reading). */
-				'name'     => __( 'Additional Posts Page Headers', 'all-in-one-seo-pack' ),
-				'type'     => 'textarea',
-				'default'  => '',
-				'sanitize' => 'default',
 			),
 			'do_log'                      => array(
 				/* translators: This is a setting that enables All in One SEO Pack to log important events to help with debugging. */
@@ -1211,13 +1178,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 					'run_shortcodes',
 					'hide_paginated_descriptions',
 					'dont_truncate_descriptions',
-					'unprotect_meta',
 					'redirect_attachement_parent',
-					'ex_pages',
-					'post_meta_tags',
-					'page_meta_tags',
-					'front_meta_tags',
-					'home_meta_tags',
+					'ex_pages'
 				),
 			),
 			'keywords'  => array(
@@ -1627,7 +1589,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				$description = $opts['aiosp_description'];
 			}
 			if ( empty( $description ) ) {
-				$description = term_description();
+				$description = wp_strip_all_tags( term_description() );
 			}
 			$description = $this->internationalize( $description );
 		}
@@ -2755,7 +2717,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 			$desc = '';
 		}
 		if ( empty( $desc ) ) {
-			$desc = term_description( '', $tax );
+			$desc = wp_strip_all_tags( term_description( '', $tax ) );
 		}
 
 		return $this->internationalize( $desc );
@@ -2949,7 +2911,7 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				$description = $opts['aiosp_description'];
 			}
 			if ( empty( $description ) ) {
-				$description = term_description();
+				$description = wp_strip_all_tags( term_description() );
 			}
 			$description = $this->internationalize( $description );
 		}
@@ -4698,40 +4660,6 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				if ( ! empty( $aioseop_options[ "aiosp_{$k}_verify" ] ) ) {
 					$meta_string .= '<meta name="' . $v . '" content="' . trim( strip_tags( $aioseop_options[ "aiosp_{$k}_verify" ] ) ) . '" />' . "\n";
 				}
-			}
-		}
-		// Handle extra meta fields.
-		foreach ( array( 'page_meta', 'post_meta', 'home_meta', 'front_meta' ) as $meta ) {
-			if ( ! empty( $aioseop_options[ "aiosp_{$meta}_tags" ] ) ) {
-				$$meta = html_entity_decode( stripslashes( $aioseop_options[ "aiosp_{$meta}_tags" ] ), ENT_QUOTES, 'UTF-8' );
-			} else {
-				$$meta = '';
-			}
-		}
-		if ( is_page() && isset( $page_meta ) && ! empty( $page_meta ) && ( ! is_front_page() || empty( $front_meta ) ) ) {
-			if ( isset( $meta_string ) ) {
-				$meta_string .= "\n";
-			}
-			$meta_string .= $page_meta;
-		}
-		if ( is_single() && isset( $post_meta ) && ! empty( $post_meta ) ) {
-			if ( isset( $meta_string ) ) {
-				$meta_string .= "\n";
-			}
-			$meta_string .= $post_meta;
-		}
-
-		if ( is_front_page() && ! empty( $front_meta ) ) {
-			if ( isset( $meta_string ) ) {
-				$meta_string .= "\n";
-			}
-			$meta_string .= $front_meta;
-		} else {
-			if ( is_home() && ! empty( $home_meta ) ) {
-				if ( isset( $meta_string ) ) {
-					$meta_string .= "\n";
-				}
-				$meta_string .= $home_meta;
 			}
 		}
 		$prev_next = $this->get_prev_next_links( $post );

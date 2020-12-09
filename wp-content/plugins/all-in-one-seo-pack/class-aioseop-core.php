@@ -141,6 +141,7 @@ class AIOSEOP_Core {
 		AIOSEOP_Flyout::init();
 
 		new AIOSEOP_Usage();
+		new AIOSEOP_Site_Health();
 
 		// TODO Move this add_action to All_in_One_SEO_Pack::__construct().
 		add_action( 'init', array( $aiosp, 'add_hooks' ) );
@@ -340,6 +341,7 @@ class AIOSEOP_Core {
 		require_once( AIOSEOP_PLUGIN_DIR . 'inc/admin/views/class-aioseop-flyout.php' );
 		require_once( AIOSEOP_PLUGIN_DIR . 'inc/admin/views/class-aioseop-about.php' );
 		require_once( AIOSEOP_PLUGIN_DIR . 'inc/class-aioseop-rss.php' );
+		require_once( AIOSEOP_PLUGIN_DIR . 'inc/admin/class-aioseop-site-health.php' );
 
 		// Loads pro files and other pro init stuff.
 		if ( AIOSEOPPRO ) {
@@ -409,10 +411,6 @@ class AIOSEOP_Core {
 		add_action( 'plugins_loaded', array( $this, 'add_cap' ) );
 
 		add_action( 'init', 'aioseop_load_modules', 1 );
-
-		if ( aioseop_option_isset( 'aiosp_unprotect_meta' ) ) {
-			add_filter( 'is_protected_meta', 'aioseop_unprotect_meta', 10, 3 );
-		}
 
 		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
 		// add_action( 'after_setup_theme', 'aioseop_load_modules' );

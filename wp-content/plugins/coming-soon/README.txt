@@ -2,29 +2,51 @@
 Contributors: seedprod, smub
 Donate link: http://www.seedprod.com
 Tags: maintenance mode, coming soon page, coming soon, under construction, landing page, launch, maintenance, construction, offline, unavailable, under construction page, launch page
-Requires at least: 3.5.1
-Tested up to: 5.2
-Stable tag: 5.1.2
+Requires at least: 5.0
+Tested up to: 5.6
+Requires PHP: 5.6
+Stable tag: 6.0.9.0
 Text Domain: coming-soon
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPress.
+The #1 Coming Soon Page, Maintenance Mode & Landing Page plugin for WordPress.
 
 == Description ==
 
-Create a simple Coming Soon Page, Under Construction or Maintenance Mode Page. Work on your site in private while visitors see a "Coming Soon" or "Maintenance Mode" page.
+Create a Coming Soon Page, Maintenance Mode Page, Landing Pages and Custom 404 pages. Work on your site in private while visitors see a "Coming Soon" or "Maintenance Mode" page.
 
-*   [Upgrade to Coming Soon Page Pro to Unlock All the Features	! &raquo;](http://www.seedprod.com?utm_source=wordpress.org&utm_medium=link&utm_campaign=coming-soon-pro-from-wordpress.org "Coming Soon Page Pro Version")
-*   [View a Coming Soon Page Live Demo &raquo;](http://demo.seedprod.com/coming-soon-pro/ "Coming Soon Page Demo")
+*   [Upgrade to Landing Page Pro to Unlock All the Features	! &raquo;](http://www.seedprod.com?utm_source=wordpress.org&utm_medium=link&utm_campaign=coming-soon-pro-from-wordpress.org "Landing Page Pro Version")
 
 ### Benefits, Features and Options:
 
 *   Works with any WordPress Theme
-*   Responsive
+* 	Drag & Drop Page Builder
+*	Create a Variety of Landing Pages
+*	Create Sales Pages
+*	Create Opt-In Pages
+*	Create Lead Pages
+*	Create Squeeze Pages
+*	Create Coming Soon Pages
+*	Create Maintenance Mode Pages
+*	Create Webinar Pages
+*	Create Thank You Pages
+*	Create 404 Pages
+*   Page Builder
+*	Headline Block
+*	Text Block
+*	List Block
+*	Button Block
+*	Image Block
+*	Video Block
+*	Divider Block
+*	Spacer Block
+*	Column Block
+*	Giveaway Block
+*	Contact Form Block
+*   Responsive and Mobile Ready
 *   Customize the Look and Feel
 *   Easily add Custom CSS and HTML
-*   Uses HTML5 &amp; CSS3
 *   Translation Ready, i18n Support
 *   Multisite Support
 *   BuddyPress Support
@@ -33,36 +55,24 @@ Create a simple Coming Soon Page, Under Construction or Maintenance Mode Page. W
 ### Pro Version Features:
 
 *	Works with any WordPress theme
-*	Visible only to non logged in users
-*	Secret bypass link for your clients to view the upcoming website without logging in
-*	Search Engine Optimized with customizable meta tags
-*	Mobile Ready responsive design and layout
-*	Maintenance Mode with Automatic Screenshot
-*	Custom Look & Feel with no coding
-*	Integrated Google and Typekit fonts
-*	Full Browser Backgrounds option
-*	Option to capture first and last name
-*	Videos can be embedded in the description just be entering the URL
-*	Display an Incentive after Sign Up
-*	Social Profiles & Social Sharing Buttons
-*	MailChimp, AWeber, Get Response, Constant Contact and Campaign Monitor integration
-*	Gravity Forms integration to collect info from visitors
-*	Built-in referral system to keep track referrered subscribers and how many of those convert
-*	Store Emails in the WordPress Database to export to any email service
-*	Progress bar with automatic completion calculation
-*	Google Analytics Support
-*	Automatic Easy Updates
-*	Shortcode Support
-*	Option to enable template responsiveness
-*	Option to control access by IP
-*	Custom Footer Branding
-*	Custom Favicon
-*	Custom CSS Support
-*	Import/Export Settings for backup or re-use purposes
-*	Multisite Support
-*	HTML5 & CSS3 which degrades gracefully for older browsers
-*	Translation Ready i18n Support
-*	Option to exclude specific URLs from displaying Coming Soon page
+*	100+ Professionaly Designed Landing Page Templates, Layout Sections
+*   Subscriber Management
+*   Premium Integrations - MailChimp, AWeber, ActiveCampaign GetResponse, ConvertKit, Zapier and more...
+*	Spam Protection - Recaptcha
+*	Access Controls
+*	Pro Blocks
+*	Opt-In Block
+*	Countdown Block
+*	Social Profiles Block
+*	Social Sharing Block
+*	Progess Bar Block
+*	Icon Block
+*	Featured Image Block
+*	Featured Icon Block
+*	Nav Block
+*	Anchor Block
+*	Star Rating Block
+*	Shortcode Block
 *	Plus lots more...
 
 *   [Upgrade to the Pro Version Now!&raquo;](http://www.seedprod.com/?utm_source=wordpress.org&utm_medium=link&utm_campaign=coming-soon-from-wordpress.org)
@@ -93,6 +103,17 @@ Create a simple Coming Soon Page, Under Construction or Maintenance Mode Page. W
 
 
 == Frequently Asked Questions ==
+= What kind of landing pages can I create? =
+You can create a variety of landing pages including but not limited to:
+*	Sales Pages
+*	Opt-In Pages
+*	Coming Soon Pages
+*	Maintenance Mode Pages
+*	Webinar Pages
+*	Thank You Pages
+*	404 Pages
+
+
 = What's the difference between Coming Soon Page Mode and Maintenance Mode? =
 
 Coming Soon Page Mode returns a http status 200 and allows your site to be indexed by Google and other searching engine while under construction. You should always using Coming Soon Page mode when your site is under construction. 
@@ -107,14 +128,63 @@ Only logged in visitors can see the website while you website is under construct
 This is always a caching issue. Go to the caching plugin's setting page and clear the cache.
 [More Info &raquo;](http://support.seedprod.com/article/83-how-to-clear-wp-super-caches-cache)
 
+
 == Screenshots ==
 
-1. Coming Soon Page Example
-2. Maintenance Mode Example
-3. Content Page
-4. Design Page
+1. Page Builder Example
+2. Coming Soon Page Example
+3. Maintenance Mode Example
+4. Sales Landing Page Example
+5. Optin Lead Squeeze Landing Page Example
+6. Webinar Landing Page Example
+7. Thank You Page Example
+8. 404 Page Example
+
 
 == Changelog ==
+= 6.0.9.0 =
+* Added - Ability to link an image
+* Tweak - HTML 5 Email Validation
+* Tweak - css fix in admin
+
+= 6.0.8.5 =
+* Added - debug tools
+* Tweak - make sure wp-mediaelement gets loaded in the builder
+* Tweak - feedback request
+
+= 6.0.8.4 =
+* Fixed - Landing page preview link
+* Fixed - Duplicate Page
+* Tweak - removed deprecated function
+
+= 6.0.8.3 =
+* Tweak - menus require manage_options capability
+
+= 6.0.8.2 =
+* Reverted - Preview link ad added flush permalink
+
+= 6.0.8.1 =
+* Tweak - Added preview_nonce to preview link
+
+= 6.0.8 =
+* Fixed - PHP warning in admin to undefined database table 
+* Tweak - How Preview links are constructed
+
+= 6.0.7 =
+* Tweak - Flush Permalinks Programmatically so Previews Work
+
+= 6.0.0 =
+* New - Complete rebuild of the plugin. 
+* New - Drag and Drop Page Builder
+* New - Page Blocks
+* New - Coming Soon Pages
+* New - Maintenance Pages
+* New - Landing Pages
+* New - Custom 404 Pages
+
+= 5.1.3 =
+* Tweak - Prepping for upcoming new version
+
 = 5.1.2 =
 * Tweak - Escape logo and custom css fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
 
@@ -242,6 +312,44 @@ This is always a caching issue. Go to the caching plugin's setting page and clea
 * Initial Commit
 
 == Upgrade Notice ==
+= 6.0.9.0 =
+* Added - Ability to link an image
+* Tweak - HTML 5 Email Validation
+* Tweak - css fix in admin
+
+= 6.0.8.5 =
+* Added - Debug tools
+* Tweak - make sure wp-mediaelement gets loaded in the builder
+* Tweak - feedback request
+
+= 6.0.8.3 =
+* Tweak - menus require manage_options capability
+
+= 6.0.8.2 =
+* Reverted - Preview link ad added flush permalink
+
+= 6.0.8.1 =
+* Tweak - Added preview_nonce to preview link
+
+= 6.0.8 =
+* Fixed - PHP warning in admin to undefined database table
+* Tweak - How Preview links are constructed
+
+= 6.0.7 =
+* Tweak - Flush Permalinks Programmatically
+
+= 6.0.0 =
+* New - Complete rebuild of the plugin. 
+* New - Drag and Drop Page Builder
+* New - Page Blocks
+* New - Coming Soon Pages
+* New - Maintenance Pages
+* New - Landing Pages
+* New - Custom 404 Pages
+
+= 5.1.3 =
+* Tweak - Prepping for upcoming new version
+
 = 5.1.2 =
 * Tweak - Escape logo and custom css fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
 
@@ -355,3 +463,4 @@ This is always a caching issue. Go to the caching plugin's setting page and clea
 
 = 4.0.0 =
 Initial Commit
+

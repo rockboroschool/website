@@ -814,6 +814,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 
 				$taxonomy_terms_tmp = get_terms( apply_filters( 'aioseop_sitemap_add_post_types_taxonomy_terms_args', $args_terms ) );
 				foreach ( $taxonomy_terms_tmp as $k2_id => $v2_term ) {
+					if ( ! is_string( $v2_term ) ) {
+						continue;
+					}
 					$excl_terms_init_opts[ $v1_taxonomy . '-' . $k2_id ] = $v2_term . ' (' . $v1_taxonomy . ')';
 				}
 			}
@@ -1685,12 +1688,16 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 				// if the sitemap has no content, it's probabaly invalid and is being called directly.
 				// @issue ( https://github.com/awesomemotive/all-in-one-seo-pack/issues/2190 ).
 				if ( empty( $content ) ) {
-					$query->set_404();
-					status_header( 404 );
-					header( "Content-Type: text/html; charset=$blog_charset", true );
-					nocache_headers();
-					include( get_404_template() );
-					exit();
+					return add_action( 'template_redirect', function() {
+						global $wp_query;
+						$wp_query->set_404();
+						status_header( 404 );
+						$blog_charset = get_option( 'blog_charset' );
+						header( "Content-Type: text/html; charset=$blog_charset", true );
+						nocache_headers();
+						include( get_404_template() );
+						exit();
+					});
 				}
 
 				echo $content;

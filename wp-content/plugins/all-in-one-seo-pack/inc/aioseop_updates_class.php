@@ -18,13 +18,6 @@
 class AIOSEOP_Updates {
 
 	/**
-	 * Constructor
-	 */
-	function __construct() {
-
-	}
-
-	/**
 	 * Updates version.
 	 *
 	 * @global $aiosp , $aioseop_options.
@@ -168,6 +161,10 @@ class AIOSEOP_Updates {
 
 		if ( version_compare( $old_version, '3.7.0', '<' ) ) {
 			$this->rssContent();
+		}
+
+		if ( version_compare( $old_version, '3.7.1', '<' ) ) {
+			$this->deprecateSettings();
 		}
 	}
 
@@ -463,6 +460,29 @@ class AIOSEOP_Updates {
 			);
 		}
 		update_option( 'aioseop_options', $aioseop_options );
+	}
+
+	/**
+	 * Registers notices for deprecated settings if they were being used.
+	 *
+	 * @since 3.7.1
+	 *
+	 * @return void
+	 */
+	private function deprecateSettings() {
+		global $aioseop_options, $aioseop_notices;
+		if (
+			! empty( $aioseop_options['aiosp_post_meta_tags'] ) ||
+			! empty( $aioseop_options['aiosp_page_meta_tags'] ) ||
+			! empty( $aioseop_options['aiosp_front_meta_tags'] ) ||
+			! empty( $aioseop_options['aiosp_home_meta_tags'] )
+		) {
+			$aioseop_notices->activate_notice( 'deprecated_additional_headers_settings' );
+		}
+
+		if ( isset( $aioseop_options['aiosp_unprotect_meta'] ) && $aioseop_options['aiosp_unprotect_meta'] ) {
+			$aioseop_notices->activate_notice( 'deprecated_unprotect_post_meta_setting' );
+		}
 	}
 
 }
