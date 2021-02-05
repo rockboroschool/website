@@ -57,6 +57,7 @@ $.extend( CZRSocialModuleMths, {
                 'facebook-square',
                 'firefox',
                 'flickr',
+                'flipboard',
                 'fonticons',
                 'fort-awesome',
                 'forumbee',
@@ -94,6 +95,7 @@ $.extend( CZRSocialModuleMths, {
                 //'linkedin-square', //<-  removed in fa5
                 'linkedin-in', //<- added in fa5
                 'linux',
+                'mastodon',
                 'maxcdn',
                 //'meanpath', <- removed in fa5
                 'meetup',
@@ -151,6 +153,7 @@ $.extend( CZRSocialModuleMths, {
                 'strava',
                 'telegram',
                 'tencent-weibo',
+                'tiktok',
                 'trello',
                 'tripadvisor',
                 'tumblr',
@@ -160,6 +163,7 @@ $.extend( CZRSocialModuleMths, {
                 'twitter-square',
                 'usb',
                 'viacoin',
+                'viber',
                 'vimeo',
                 'vimeo-square',
                 'vine',

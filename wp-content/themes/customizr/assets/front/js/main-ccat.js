@@ -587,11 +587,11 @@ var czrapp = czrapp || {};
                     return;
 
                   $_imgs.map( function( _ind, _img ) {
-                    $(_img).load( function () {
+                    $(_img).on('load', function () {
                       $(_img).trigger('simple_load');
                     });//end load
                     if ( $(_img)[0] && $(_img)[0].complete )
-                      $(_img).load();
+                      $(_img).trigger('load');
                   } );//end map
             },//end of fn
 
@@ -602,7 +602,7 @@ var czrapp = czrapp || {};
             isSelectorAllowed : function( $_el, skip_selectors, requested_sel_type ) {
                   var sel_type = 'ids' == requested_sel_type ? 'id' : 'class',
                   _selsToSkip   = skip_selectors[requested_sel_type];
-                  if ( 'object' != typeof(skip_selectors) || ! skip_selectors[requested_sel_type] || ! $.isArray( skip_selectors[requested_sel_type] ) || 0 === skip_selectors[requested_sel_type].length )
+                  if ( 'object' != typeof(skip_selectors) || ! skip_selectors[requested_sel_type] || ! _.isArray( skip_selectors[requested_sel_type] ) || 0 === skip_selectors[requested_sel_type].length )
                     return true;
                   if ( $_el.parents( _selsToSkip.map( function( _sel ){ return 'id' == sel_type ? '#' + _sel : '.' + _sel; } ).join(',') ).length > 0 )
                     return false;
@@ -668,6 +668,24 @@ var czrapp = czrapp || {};
                   _timer_();
             },
             scriptLoadingStatus : {},
+            observeAddedNodesOnDom : function(containerSelector, elementSelector, callback) {
+                var onMutationsObserved = function(mutations) {
+                        mutations.forEach(function(mutation) {
+                            if (mutation.addedNodes.length) {
+                                var elements = $(mutation.addedNodes).find(elementSelector);
+                                for (var i = 0, len = elements.length; i < len; i++) {
+                                    callback(elements[i]);
+                                }
+                            }
+                        });
+                    },
+                    target = $(containerSelector)[0],
+                    config = { childList: true, subtree: true },
+                    MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+                    observer = new MutationObserver(onMutationsObserved);
+
+                observer.observe(target, config);
+          }
       };//_methods{}
 
       czrapp.methods.Base = czrapp.methods.Base || {};
@@ -678,6 +696,8 @@ var czrapp = czrapp || {};
 (function($, czrapp) {
   var _methods =  {
     addBrowserClassToBody : function() {
+          if ( !$.browser )
+            return;
           if ( $.browser.chrome )
               czrapp.$_body.addClass("chrome");
           else if ( $.browser.webkit )
@@ -736,12 +756,24 @@ var czrapp = czrapp || {};
             },
             imgSmartLoad : function() {
                   var smartLoadEnabled = 1 == czrapp.localized.imgSmartLoadEnabled,
-                      _where           = czrapp.localized.imgSmartLoadOpts.parentSelectors.join();
-                  if (  smartLoadEnabled ) {
-                        $( _where ).imgSmartLoad(
-                            _.size( czrapp.localized.imgSmartLoadOpts.opts ) > 0 ? czrapp.localized.imgSmartLoadOpts.opts : {}
-                        );
-                  }
+                      _where = czrapp.localized.imgSmartLoadOpts.parentSelectors.join(),
+                      _params = _.size( czrapp.localized.imgSmartLoadOpts.opts ) > 0 ? czrapp.localized.imgSmartLoadOpts.opts : {};
+                  var _doLazyLoad = function() {
+                        if ( !smartLoadEnabled )
+                          return;
+
+                        $(_where).each( function() {
+                              if ( !$(this).data('smartLoadDone') ) {
+                                    $(this).imgSmartLoad(_params);
+                              } else {
+                                    $(this).trigger('trigger-smartload');
+                              }
+                        });
+                  };
+                  _doLazyLoad();
+                  this.observeAddedNodesOnDom('body', 'img', _.debounce( function(element) {
+                        _doLazyLoad();
+                  }, 50 ));
                   if ( 1 == czrapp.localized.centerAllImg ) {
                         var self                   = this,
                             $_to_center;
@@ -854,12 +886,15 @@ var czrapp = czrapp || {};
                   );
             },
             czrMagnificPopup : function( $lightBoxCandidate, params ) {
+                  if ( !CZRParams.isLightBoxEnabled )
+                    return;
+
                   if ( 1 > $lightBoxCandidate.length )
                     return;
 
                   var _scrollHandle = function() {},//abstract that we can unbind
                       _do = function() {
-                        czrapp.$_window.unbind( 'scroll', _scrollHandle );
+                        czrapp.$_window.off( 'scroll', _scrollHandle );
 
                         if ( 'function' == typeof $.fn.magnificPopup ) {
                                 $lightBoxCandidate.magnificPopup( params );
@@ -909,28 +944,34 @@ var czrapp = czrapp || {};
             lightBox : function() {
                   var self = this,
                       _arrowMarkup = '<span class="czr-carousel-control btn btn-skin-dark-shaded inverted mfp-arrow-%dir% icn-%dir%-open-big"></span>';
-                  this.czrMagnificPopup( $( '[class*="grid-container__"]' ), {
-                    delegate: 'a.expand-img', // child items selector, by clicking on it popup will open
-                    type: 'image'
-                  });
-                  $( '.czr-gallery' ).each( function(){
-                        self.czrMagnificPopup( $(this), {
-                              delegate: '[data-lb-type="grouped-gallery"]', // child items selector, by clicking on it popup will open
+                  if ( $('a.expand-img').length > 0 ) {
+                        this.czrMagnificPopup( $( '[class*="grid-container__"]' ), {
+                          delegate: 'a.expand-img', // child items selector, by clicking on it popup will open
+                          type: 'image'
+                        });
+                  }
+                  if ( $('[data-lb-type="grouped-gallery"]').length > 0 ) {
+                        $( '.czr-gallery' ).each( function(){
+                              self.czrMagnificPopup( $(this), {
+                                    delegate: '[data-lb-type="grouped-gallery"]', // child items selector, by clicking on it popup will open
+                                    type: 'image',
+                                    gallery: {
+                                          enabled: true,
+                                          arrowMarkup: _arrowMarkup
+                                    }
+                              });
+                        });
+                  }
+                  if ( $('[data-lb-type="grouped-post"]').length > 0 ) {
+                        this.czrMagnificPopup( $('#content'), {
+                              delegate: '[data-lb-type="grouped-post"]',
                               type: 'image',
                               gallery: {
-                                    enabled: true,
-                                    arrowMarkup: _arrowMarkup
+                                   enabled: true,
+                                   arrowMarkup: _arrowMarkup
                               }
                         });
-                  });
-                  this.czrMagnificPopup( $('#content'), {
-                        delegate: '[data-lb-type="grouped-post"]',
-                        type: 'image',
-                        gallery: {
-                             enabled: true,
-                             arrowMarkup: _arrowMarkup
-                        }
-                  });
+                  }
                   czrapp.$_body.on( 'click', '[class*="grid-container__"] .expand-img-gallery', function(e) {
                         e.preventDefault();
 
@@ -1042,7 +1083,7 @@ var czrapp = czrapp || {};
                         });
                   });
                   self._css_loader = '<div class="czr-css-loader czr-mr-loader" style="display:none"><div></div><div></div><div></div></div>';
-                  czrapp.$_window.scroll( _.throttle( function() {
+                  czrapp.$_window.on('scroll', _.throttle( function() {
                         $( self.slidersSelectorMap.galleries ).each( function() {
                               if ( czrapp.base.isInWindow( $(this) ) ){
                                     $(this).trigger( 'czr-is-in-window', { el : $(this) } );
@@ -1056,7 +1097,7 @@ var czrapp = czrapp || {};
 
                   var _scrollHandle = function() {};//abstract that we can unbind
                   var _do = function() {
-                        czrapp.$_window.unbind( 'scroll', _scrollHandle );
+                        czrapp.$_window.off( 'scroll', _scrollHandle );
 
                         if ( 'function' == typeof $.fn.flickity ) {
                               if ( ! $_sliderCandidate.data( 'flickity' ) )
@@ -1558,8 +1599,8 @@ var czrapp = czrapp || {};
                     }
                     self.scrollDirection( to >= from ? 'down' : 'up' );
               });
-              czrapp.$_window.resize( _.throttle( function() { self.windowWidth( czrapp.$_window.width() ); }, 10 ) );
-              czrapp.$_window.scroll( _.throttle( function() {
+              czrapp.$_window.on('resize', _.throttle( function() { self.windowWidth( czrapp.$_window.width() ); }, 10 ) );
+              czrapp.$_window.on('scroll', _.throttle( function() {
                     self.isScrolling( true );
                     self.scrollPosition( czrapp.$_window.scrollTop() );
                     clearTimeout( $.data( this, 'scrollTimer') );
@@ -1634,7 +1675,7 @@ var czrapp = czrapp || {};
                                       if ( $_header_logo[0].complete ) {
                                             $_header_logo.trigger('header-logo-loaded');
                                       } else {
-                                        $_header_logo.load( function() {
+                                        $_header_logo.on('load', function() {
                                               $_header_logo.trigger('header-logo-loaded');
                                         } );
                                       }
@@ -2130,7 +2171,8 @@ var czrapp = czrapp || {};
   czrapp.methods.UserXP = czrapp.methods.UserXP || {};
   $.extend( czrapp.methods.UserXP , _methods );
 
-})(jQuery, czrapp);var czrapp = czrapp || {};
+})(jQuery, czrapp);// global CZRParams
+var czrapp = czrapp || {};
 
 (function($, czrapp) {
    var _methods =   {
@@ -2321,6 +2363,13 @@ var czrapp = czrapp || {};
                 _mobile_menu_sel                = '.mobile-nav__nav';
             czrapp.$_body.on( _search_toggle_event, _search_overlay_toggler_sel, function(evt) {
                   evt.preventDefault();
+                  var search_icon = $(_search_overlay_toggler_sel),
+                      rect = search_icon[0].getBoundingClientRect(),
+                      winWidth = $(window).width(),
+                      isLeftSide = rect.left < winWidth/2;
+
+                  czrapp.$_body.removeClass( 'search-icon-left').removeClass('search-icon-right');
+                  czrapp.$_body.toggleClass( isLeftSide ? 'search-icon-left' : 'search-icon-right' );
                   czrapp.$_body.toggleClass( _search_overlay_toggle_class );
             });
             czrapp.$_body.on( transitionEnd, _transitioning_el_sel, function( evt ) {
@@ -2373,13 +2422,22 @@ var czrapp = czrapp || {};
             );
             czrapp.userXP.windowWidth.bind( function() {
                   self.headerSearchExpanded( false );
+                  _.delay( function() {
+                     czrapp.$_body.removeClass( _search_overlay_toggle_class );
+                  }, 250 );
             });
             czrapp.$_body.on( _mobile_menu_opened_event, _mobile_menu_sel, function() {
                   self.headerSearchExpanded( false );
+                  _.delay( function() {
+                     czrapp.$_body.removeClass( _search_overlay_toggle_class );
+                  }, 250 );
             });
             if ( czrapp.userXP.stickyHeaderAnimating ) {
                   czrapp.userXP.stickyHeaderAnimating.bind( function() {
                         self.headerSearchExpanded( false );
+                        _.delay( function() {
+                           czrapp.$_body.removeClass( _search_overlay_toggle_class );
+                        }, 250 );
                   });
             }
       },//toggleHeaderSearch
@@ -2561,7 +2619,7 @@ var czrapp = czrapp || {};
                   });
             }
 
-            $(_links).click( function () {
+            $(_links).on('click', function () {
                   var anchor_id = $(this).attr("href");
                   if ( ! $(anchor_id).length )
                     return;
@@ -2639,7 +2697,71 @@ var czrapp = czrapp || {};
                   }
                   $_style.html( _selector + '{width:'+ newElementWidth +'px}' );
             }
-      }
+      },
+
+      mayBeLoadFontAwesome : function() {
+            jQuery( function() {
+                  if ( ! CZRParams.deferFontAwesome )
+                    return;
+                  var $candidates = $('[class*=fa-]');
+                  if ( $candidates.length < 1 )
+                    return;
+                  var _inject_in_progress = false;
+                  var _inject = function(type) {
+                      _inject_in_progress = true;
+                      if ( $('head').find( '[href*="fontawesome-all.min.css"]' ).length > 0 )
+                        return;
+                      var link = document.createElement('link');
+                      link.setAttribute('href', CZRParams.fontAwesomeUrl ); // assets/shared/fonts/fa/css/fontawesome-all.min.css?
+                      link.setAttribute('id', 'czr-font-awesome');
+                      link.setAttribute('rel', 'stylesheet' );
+                      document.getElementsByTagName('head')[0].appendChild(link);
+                  };
+                  setTimeout( function() {
+                        if ( !_inject_in_progress ) {_inject('timeout'); }
+                  }, 3000 );
+
+                  czrapp.$_window
+                      .one('scroll', function() {
+                          if ( !_inject_in_progress ) {_inject('scroll'); }
+                      })
+                      .one('mousemove', function() {
+                          if ( !_inject_in_progress ) {_inject('mousemove'); }
+                      });
+
+            });
+      },
+      maybePreloadGoogleFonts : function() {
+            if ( !window.CZRParams || !CZRParams.preloadGfonts || _.isEmpty(CZRParams.googleFonts) )
+              return;
+            var _hasPreloadSupport = function( browser ) {
+                  var link = document.createElement('link');
+                  var relList = link.relList;
+                  if (!relList || !relList.supports)
+                    return false;
+                  return relList.supports('preload');
+                },
+                headTag = document.getElementsByTagName('head')[0],
+                link = document.createElement('link'),
+                _injectFinalAsset = function() {
+                    var link = this;
+                    link.setAttribute('rel', 'stylesheet');
+                };
+
+            link.setAttribute('href', '//fonts.googleapis.com/css?family=' + CZRParams.googleFonts + '&display=swap');
+            link.setAttribute('rel', _hasPreloadSupport() ? 'preload' : 'stylesheet' );
+            link.setAttribute('id', 'czr-gfonts-css-preloaded' );
+            link.setAttribute('as', 'style');
+            link.onload = function() {
+                this.onload=null;
+                _injectFinalAsset.call(link);
+            };
+            link.onerror = function(er) {
+                console.log('Customizr preloadAsset error', er );
+            };
+            headTag.appendChild(link);
+
+      }//maybePreloadGoogleFonts
 
    };//_methods{}
 
@@ -2759,7 +2881,7 @@ var czrapp = czrapp || {};
     },//init()
     sideNavEventListener : function() {
       var self = this;
-      czrapp.$_body.on( this._toggle_event, '[data-toggle="sidenav"]', function( evt ) {
+      czrapp.$_body.on( this._toggle_event, this._toggler_selector, function( evt ) {
         evt.preventDefault(); //<- avoid on link click reaction which adds '#' to the browser history
         self.sideNavEventHandler( evt, 'toggle' );
       });
@@ -2773,7 +2895,7 @@ var czrapp = czrapp || {};
         self.sideNavEventHandler( evt, 'resize');
       });
 
-      czrapp.$_window.scroll( function( evt ) {
+      czrapp.$_window.on('scroll', function( evt ) {
         self.sideNavEventHandler( evt, 'scroll');
       });
 
@@ -2798,8 +2920,13 @@ var czrapp = czrapp || {};
                             href : czrapp.localized.assetsPath + 'css/jquery.mCustomScrollbar.min.css'
                       }) );
                 }
+
+                var _url = czrapp.localized.assetsPath + 'js/libs/jquery-mCustomScrollbar.min.js?v=' + czrapp.localized.version;
+                if ( czrapp.localized.isDevMode ) {
+                    _url = czrapp.localized.assetsPath + 'js/libs/jquery-mCustomScrollbar.js?v=' + czrapp.localized.version;
+                }
                 $.ajax( {
-                      url : ( czrapp.localized.assetsPath + 'js/libs/jquery-mCustomScrollbar.min.js'),
+                      url : _url,
                       cache : true,// use the browser cached version when availabl
                       dataType: "script"
                 }).done(function() {
@@ -2830,6 +2957,7 @@ var czrapp = czrapp || {};
 
                       case 'sn-open'  :
                           self._end_visibility_toggle();
+                          $( self._toggler_selector, self._sidenav_selector ).trigger( "focus" );
                       break;
 
                       case 'sn-close' :
@@ -2962,229 +3090,246 @@ var czrapp = czrapp || {};
   var _methods =  {
 
     initOnCzrReady : function() {
-      this.DATA_KEY  = 'czr.czrDropdown';
-      this.EVENT_KEY = '.' + this.DATA_KEY;
-      this.Event     = {
-        PLACE_ME  : 'placeme'+ this.EVENT_KEY,
-        PLACE_ALL : 'placeall' + this.EVENT_KEY,
-        SHOWN     : 'shown' + this.EVENT_KEY,
-        SHOW      : 'show' + this.EVENT_KEY,
-        HIDDEN    : 'hidden' + this.EVENT_KEY,
-        HIDE      : 'hide' + this.EVENT_KEY,
-        CLICK     : 'click' + this.EVENT_KEY,
-      };
-      this.ClassName = {
-        DROPDOWN                : 'czr-dropdown-menu',
-        SHOW                    : 'show',
-        PARENTS                 : 'menu-item-has-children',
-        MCUSTOMSB               : 'mCustomScrollbar',
-        ALLOW_POINTER_ON_SCROLL : 'allow-pointer-events-on-scroll'
-      };
 
-      this.Selector = {
-        DATA_TOGGLE              : '[data-toggle="czr-dropdown"]',
-        DATA_SHOWN_TOGGLE_LINK   : '.' +this.ClassName.SHOW+ '> a[data-toggle="czr-dropdown"]',
-        HOVER_MENU               : '.czr-open-on-hover',
-        CLICK_MENU               : '.czr-open-on-click',
-        HOVER_PARENT             : '.czr-open-on-hover .menu-item-has-children, .nav__woocart',
-        CLICK_PARENT             : '.czr-open-on-click .menu-item-has-children',
-        PARENTS                  : '.tc-header .menu-item-has-children',
-        SNAKE_PARENTS            : '.regular-nav .menu-item-has-children',
-        VERTICAL_NAV_ONCLICK     : '.czr-open-on-click .vertical-nav',
-      };
+            this.DATA_KEY  = 'czr.czrDropdown';
+            this.EVENT_KEY = '.' + this.DATA_KEY;
+            this.Event     = {
+              PLACE_ME  : 'placeme'+ this.EVENT_KEY,
+              PLACE_ALL : 'placeall' + this.EVENT_KEY,
+              SHOWN     : 'shown' + this.EVENT_KEY,
+              SHOW      : 'show' + this.EVENT_KEY,
+              HIDDEN    : 'hidden' + this.EVENT_KEY,
+              HIDE      : 'hide' + this.EVENT_KEY,
+              CLICK     : 'click' + this.EVENT_KEY,
+            };
+            this.ClassName = {
+              DROPDOWN                : 'czr-dropdown-menu',
+              SHOW                    : 'show',
+              PARENTS                 : 'menu-item-has-children',
+              MCUSTOMSB               : 'mCustomScrollbar',
+              ALLOW_POINTER_ON_SCROLL : 'allow-pointer-events-on-scroll'
+            };
+
+            this.Selector = {
+              DATA_TOGGLE              : '[data-toggle="czr-dropdown"]',
+              DATA_SHOWN_TOGGLE_LINK   : '.' +this.ClassName.SHOW+ '> a[data-toggle="czr-dropdown"]',
+              HOVER_MENU               : '.czr-open-on-hover',
+              CLICK_MENU               : '.czr-open-on-click',// selector used on vertical mobile menus
+              HOVER_PARENT             : '.czr-open-on-hover .menu-item-has-children, .nav__woocart',
+              CLICK_PARENT             : '.czr-open-on-click .menu-item-has-children',// selector used on vertical mobile menus
+              HAS_SUBMENU              : '.menu-item-has-children',
+              PARENTS                  : '.tc-header .menu-item-has-children',
+              SNAKE_PARENTS            : '.regular-nav .menu-item-has-children',
+              VERTICAL_NAV_ONCLICK     : '.czr-open-on-click .vertical-nav',
+            };
     },
     dropdownMenuOnHover : function() {
-      var _dropdown_selector = this.Selector.HOVER_PARENT,
-          self               = this;
+            var _dropdown_selector = this.Selector.HOVER_PARENT,
+                self               = this;
 
-      enableDropdownOnHover();
+            enableDropdownOnHover();
 
-      function _addOpenClass () {
+            function _addOpenClass( evt ) {
+              var $_el = $(this);
+              var _debounced_addOpenClass = _.debounce( function() {
+                if( 'static' == $_el.find( '.'+self.ClassName.DROPDOWN ).css( 'position' ) )
+                  return false;
 
-        var $_el = $(this);
-        var _debounced_addOpenClass = _.debounce( function() {
-          if( 'static' == $_el.find( '.'+self.ClassName.DROPDOWN ).css( 'position' ) )
-            return false;
+                if ( !$_el.hasClass(self.ClassName.SHOW) ) {
+                      czrapp.$_body.addClass( self.ClassName.ALLOW_POINTER_ON_SCROLL );
+                      if ( !czrapp.$_body.hasClass('is-touch-device') ) {
+                            $_el.trigger( self.Event.SHOW )
+                                .addClass(self.ClassName.SHOW)
+                                .trigger(self.Event.SHOWN);
+                      }
+                      var $_data_toggle = $_el.children( self.Selector.DATA_TOGGLE );
 
-          if ( ! $_el.hasClass(self.ClassName.SHOW) ) {
-            czrapp.$_body.addClass( self.ClassName.ALLOW_POINTER_ON_SCROLL );
-            $_el.trigger( self.Event.SHOW )
-                .addClass(self.ClassName.SHOW)
-                .trigger(self.Event.SHOWN);
+                      if ( $_data_toggle.length ) {
+                          $_data_toggle[0].setAttribute('aria-expanded', 'true');
+                      }
+                }
 
-            var $_data_toggle = $_el.children( self.Selector.DATA_TOGGLE );
+              }, 30);// april 2020 => this delay is important because when on touch device, the "is-touch-device" class must be added before this function is fired
 
-            if ( $_data_toggle.length )
-                $_data_toggle[0].setAttribute('aria-expanded', 'true');
-          }
-
-        }, 30);
-
-        _debounced_addOpenClass();
-      }
-
-      function _removeOpenClass () {
-
-        var $_el = $(this);
-        var _debounced_removeOpenClass = _.debounce( function() {
-          if ( $_el.find("ul li:hover").length < 1 && ! $_el.closest('ul').find('li:hover').is( $_el ) ) {
-            $_el.trigger( self.Event.HIDE )
-                .removeClass(self.ClassName.SHOW)
-                .trigger( self.Event.HIDDEN );
-            if ( $_el.closest( self.Selector.HOVER_MENU ).find( '.' + self.ClassName.SHOW ).length < 1 ) {
-              czrapp.$_body.removeClass( self.ClassName.ALLOW_POINTER_ON_SCROLL );
+              _debounced_addOpenClass();
             }
 
-            var $_data_toggle = $_el.children( self.Selector.DATA_TOGGLE );
+            function _removeOpenClass () {
 
-            if ( $_data_toggle.length )
-                $_data_toggle[0].setAttribute('aria-expanded', 'false');
-          }
+              var $_el = $(this);
+              var _debounced_removeOpenClass = _.debounce( function() {
+                if ( $_el.find("ul li:hover").length < 1 && ! $_el.closest('ul').find('li:hover').is( $_el ) ) {
+                      if ( !czrapp.$_body.hasClass('is-touch-device') ) {
+                            $_el.trigger( self.Event.HIDE )
+                                .removeClass(self.ClassName.SHOW)
+                                .trigger( self.Event.HIDDEN );
+                      }
+                      if ( $_el.closest( self.Selector.HOVER_MENU ).find( '.' + self.ClassName.SHOW ).length < 1 ) {
+                        czrapp.$_body.removeClass( self.ClassName.ALLOW_POINTER_ON_SCROLL );
+                      }
 
-        }, 30);
+                      var $_data_toggle = $_el.children( self.Selector.DATA_TOGGLE );
 
-        _debounced_removeOpenClass();
-      }
+                      if ( $_data_toggle.length ) {
+                          $_data_toggle[0].setAttribute('aria-expanded', 'false');
+                      }
+                }
 
-      function enableDropdownOnHover() {
+              }, 30);// april 2020 => this delay is important because when on touch device, the "is-touch-device" class must be added before this function is fired
 
-        czrapp.$_body.on( 'mouseenter', _dropdown_selector, _addOpenClass );
-        czrapp.$_body.on( 'mouseleave', _dropdown_selector , _removeOpenClass );
+              _debounced_removeOpenClass();
+            }
 
-      }
+            function enableDropdownOnHover() {
+                  czrapp.$_body.on('touchstart', function() {
+                        if ( !$(this).hasClass('is-touch-device') ) {
+                              $(this).addClass('is-touch-device');
+                        }
+                  });
+                  czrapp.$_body.on( 'mouseenter', _dropdown_selector, _addOpenClass );
+                  czrapp.$_body.on( 'mouseleave', _dropdown_selector , _removeOpenClass );
+            }
 
-    },
+    },//dropdownMenuOnHover
+
+
+
+
+
+
+
+
 
     dropdownOpenGoToLinkOnClick : function() {
-      var self = this;
-      czrapp.$_body.on( this.Event.CLICK, this.Selector.DATA_SHOWN_TOGGLE_LINK, function(evt) {
+          var self = this;
+          czrapp.$_body.on( this.Event.CLICK, this.Selector.DATA_SHOWN_TOGGLE_LINK, function(evt) {
+                var $_el = $(this);
+                if( 'static' == $_el.find( '.'+self.ClassName.DROPDOWN ).css( 'position' ) )
+                  return false;
 
-            var $_el = $(this);
-            if( 'static' == $_el.find( '.'+self.ClassName.DROPDOWN ).css( 'position' ) )
-              return false;
+                evt.preventDefault();
 
-            evt.preventDefault();
+                var _href = $_el.attr( 'href' );
 
-            var _href = $_el.attr( 'href' );
+                if ( _href && '#' != _href ) {
+                  window.location = _href;
+                }
 
-            if ( _href && '#' != _href ) {
-              window.location = _href;
-            }
+                else {
+                  return true;
+                }
 
-            else {
-              return true;
-            }
-
-      });//.on()
+          });//.on()
 
     },
     dropdownPlacement : function() {
-      var self = this,
-          doingAnimation = false;
+          var self = this,
+              doingAnimation = false;
 
-      czrapp.$_window
-          .on( 'resize', function() {
-                  if ( ! doingAnimation ) {
-                        doingAnimation = true;
-                        window.requestAnimationFrame(function() {
-                          $( self.Selector.SNAKE_PARENTS+'.'+self.ClassName.SHOW)
+          czrapp.$_window
+              .on( 'resize', function() {
+                      if ( ! doingAnimation ) {
+                            doingAnimation = true;
+                            window.requestAnimationFrame(function() {
+                              $( self.Selector.SNAKE_PARENTS+'.'+self.ClassName.SHOW)
+                                  .trigger(self.Event.PLACE_ME);
+                              doingAnimation = false;
+                            });
+                      }
+
+              });
+
+          czrapp.$_body
+              .on( this.Event.PLACE_ALL, function() {
+                          $( self.Selector.SNAKE_PARENTS )
                               .trigger(self.Event.PLACE_ME);
-                          doingAnimation = false;
+              })
+              .on( this.Event.SHOWN+' '+this.Event.PLACE_ME, this.Selector.SNAKE_PARENTS, function(evt) {
+                evt.stopPropagation();
+                _do_snake( $(this), evt );
+              });
+          function _do_snake( $_el, evt ) {
+
+            if ( !( evt && evt.namespace && self.DATA_KEY === evt.namespace ) )
+              return;
+
+            var $_this       = $_el,
+                $_dropdown   = $_this.children( '.'+self.ClassName.DROPDOWN );
+
+            if ( !$_dropdown.length )
+              return;
+            $_el.css( 'overflow', 'hidden' );
+            $_dropdown.css( {
+              'zIndex'  : '-100',
+              'display' : 'block'
+            });
+
+            _maybe_move( $_dropdown, $_el );
+            $_dropdown.css({
+              'zIndex'  : '',
+              'display' : ''
+            });
+            $_el.css( 'overflow', '' );
+          }
+
+
+          function _maybe_move( $_dropdown, $_el ) {
+              var Direction          = czrapp.isRTL ? {
+                        _DEFAULT          : 'left',
+                        _OPPOSITE         : 'right'
+                  } : {
+                        _DEFAULT          : 'right',
+                        _OPPOSITE         : 'left'
+                  },
+                  ClassName          = {
+                        OPEN_PREFIX       : 'open-',
+                        DD_SUBMENU        : 'czr-dropdown-submenu',
+                        CARET_TITLE_FLIP  : 'flex-row-reverse',
+                        CARET             : 'caret__dropdown-toggler'
+                  },
+                  _caret_title_maybe_flip = function( $_el, _direction, _old_direction ) {
+                        $.each( $_el, function() {
+                            var $_el               = $(this),
+                                $_a                = $_el.find( self.Selector.DATA_TOGGLE ).first(),
+                                $_caret            = $_el.find( '.' + ClassName.CARET).first();
+                            if ( 1 == $_caret.length ) {
+                                  $_caret.removeClass( ClassName.OPEN_PREFIX + _old_direction ).addClass( ClassName.OPEN_PREFIX + _direction );
+                                  if ( 1 == $_a.length ) {
+                                        $_a.toggleClass( ClassName.CARET_TITLE_FLIP, _direction == Direction._OPPOSITE  );
+                                  }
+                            }
                         });
-                  }
+                  },
+                  _setOpenDirection       = function( _direction ) {
+                        var _old_direction = _direction == Direction._OPPOSITE ? Direction._DEFAULT : Direction._OPPOSITE;
+                        $_dropdown.removeClass( ClassName.OPEN_PREFIX + _old_direction ).addClass( ClassName.OPEN_PREFIX + _direction );
 
-          });
-
-      czrapp.$_body
-          .on( this.Event.PLACE_ALL, function() {
-                      $( self.Selector.SNAKE_PARENTS )
-                          .trigger(self.Event.PLACE_ME);
-          })
-          .on( this.Event.SHOWN+' '+this.Event.PLACE_ME, this.Selector.SNAKE_PARENTS, function(evt) {
-            evt.stopPropagation();
-            _do_snake( $(this), evt );
-          });
-      function _do_snake( $_el, evt ) {
-
-        if ( !( evt && evt.namespace && self.DATA_KEY === evt.namespace ) )
-          return;
-
-        var $_this       = $_el,
-            $_dropdown   = $_this.children( '.'+self.ClassName.DROPDOWN );
-
-        if ( !$_dropdown.length )
-          return;
-        $_el.css( 'overflow', 'hidden' );
-        $_dropdown.css( {
-          'zIndex'  : '-100',
-          'display' : 'block'
-        });
-
-        _maybe_move( $_dropdown, $_el );
-        $_dropdown.css({
-          'zIndex'  : '',
-          'display' : ''
-        });
-        $_el.css( 'overflow', '' );
-      }
-
-
-      function _maybe_move( $_dropdown, $_el ) {
-          var Direction          = czrapp.isRTL ? {
-                    _DEFAULT          : 'left',
-                    _OPPOSITE         : 'right'
-              } : {
-                    _DEFAULT          : 'right',
-                    _OPPOSITE         : 'left'
-              },
-              ClassName          = {
-                    OPEN_PREFIX       : 'open-',
-                    DD_SUBMENU        : 'czr-dropdown-submenu',
-                    CARET_TITLE_FLIP  : 'flex-row-reverse',
-                    CARET             : 'caret__dropdown-toggler'
-              },
-              _caret_title_maybe_flip = function( $_el, _direction, _old_direction ) {
-                    $.each( $_el, function() {
-                        var $_el               = $(this),
-                            $_a                = $_el.find( self.Selector.DATA_TOGGLE ).first(),
-                            $_caret            = $_el.find( '.' + ClassName.CARET).first();
-                        if ( 1 == $_caret.length ) {
-                              $_caret.removeClass( ClassName.OPEN_PREFIX + _old_direction ).addClass( ClassName.OPEN_PREFIX + _direction );
-                              if ( 1 == $_a.length ) {
-                                    $_a.toggleClass( ClassName.CARET_TITLE_FLIP, _direction == Direction._OPPOSITE  );
-                              }
+                        if ( $_el.hasClass( ClassName.DD_SUBMENU ) ) {
+                              _caret_title_maybe_flip( $_el, _direction, _old_direction );
+                              _caret_title_maybe_flip( $_dropdown.children( '.' + ClassName.DD_SUBMENU ), _direction, _old_direction );
                         }
-                    });
-              },
-              _setOpenDirection       = function( _direction ) {
-                    var _old_direction = _direction == Direction._OPPOSITE ? Direction._DEFAULT : Direction._OPPOSITE;
-                    $_dropdown.removeClass( ClassName.OPEN_PREFIX + _old_direction ).addClass( ClassName.OPEN_PREFIX + _direction );
-
-                    if ( $_el.hasClass( ClassName.DD_SUBMENU ) ) {
-                          _caret_title_maybe_flip( $_el, _direction, _old_direction );
-                          _caret_title_maybe_flip( $_dropdown.children( '.' + ClassName.DD_SUBMENU ), _direction, _old_direction );
-                    }
-              };
-          if ( $_dropdown.parent().closest( '.'+self.ClassName.DROPDOWN ).hasClass( ClassName.OPEN_PREFIX + Direction._OPPOSITE ) ) {
-                _setOpenDirection( Direction._OPPOSITE );
-          } else {
-                _setOpenDirection( Direction._DEFAULT );
+                  };
+              if ( $_dropdown.parent().closest( '.'+self.ClassName.DROPDOWN ).hasClass( ClassName.OPEN_PREFIX + Direction._OPPOSITE ) ) {
+                    _setOpenDirection( Direction._OPPOSITE );
+              } else {
+                    _setOpenDirection( Direction._DEFAULT );
+              }
+              if ( $_dropdown.offset().left + $_dropdown.width() > czrapp.$_window.width() ) {
+                    _setOpenDirection( 'left' );
+              } else if ( $_dropdown.offset().left < 0 ) {
+                    _setOpenDirection( 'right' );
+              }
           }
-          if ( $_dropdown.offset().left + $_dropdown.width() > czrapp.$_window.width() ) {
-                _setOpenDirection( 'left' );
-          } else if ( $_dropdown.offset().left < 0 ) {
-                _setOpenDirection( 'right' );
-          }
-      }
-    },
+    },//dropdownPlacement
     dropdownOnClickVerticalNav : function() {
         var self = this;
-
         czrapp.$_body
-              .on( 'click', self.Selector.VERTICAL_NAV_ONCLICK +' a[href="#"]', function(evt) {
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    $(this).closest( '.nav__link-wrapper' ).children(self.Selector.DATA_TOGGLE).trigger( self.Event.CLICK );
+              .on( self.Event.CLICK, [self.Selector.VERTICAL_NAV_ONCLICK, self.Selector.HAS_SUBMENU, 'a'].join(' '), function(evt) {
+                    if ( '#' === $(this).attr('href') || !$(this).attr('href') ) {
+                          evt.preventDefault();
+                          evt.stopPropagation();
+                          $(this).closest( '.nav__link-wrapper' ).children(self.Selector.DATA_TOGGLE).trigger( self.Event.CLICK );
+                    }
               })
               .on( self.Event.SHOW +' '+ self.Event.HIDE, self.Selector.VERTICAL_NAV_ONCLICK, function(evt) {
                         $(evt.target).children('.'+self.ClassName.DROPDOWN)
@@ -3200,7 +3345,7 @@ var czrapp = czrapp || {};
                                               }
                                         });
               });
-    },
+    },//dropdownOnClickVerticalNav
 
 
   };//_methods{}
@@ -3210,19 +3355,19 @@ var czrapp = czrapp || {};
 
 
     var _createClass = function () {
-     function defineProperties(target, props) {
-       for (var i = 0; i < props.length; i++) {
-         var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-       }
-     }return function (Constructor, protoProps, staticProps) {
-       if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-     };
-    }();
+         function defineProperties(target, props) {
+           for (var i = 0; i < props.length; i++) {
+             var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+           }
+         }return function (Constructor, protoProps, staticProps) {
+           if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+         };
+        }();
 
-    function _classCallCheck(instance, Constructor) {
-     if (!(instance instanceof Constructor)) {
-       throw new TypeError("Cannot call a class as a function");
-     }
+        function _classCallCheck(instance, Constructor) {
+         if (!(instance instanceof Constructor)) {
+           throw new TypeError("Cannot call a class as a function");
+         }
     }
 
     var NAME = 'czrDropdown';
@@ -3245,7 +3390,9 @@ var czrapp = czrapp || {};
       SHOW: 'show' + EVENT_KEY,
       SHOWN: 'shown' + EVENT_KEY,
       CLICK: 'click' + EVENT_KEY,
-      CLICK_DATA_API: 'click' + EVENT_KEY + DATA_API_KEY,
+      CLICK_DATA_API: 'click' + EVENT_KEY + DATA_API_KEY, // 'click.czr.czrDropdown.data-api'
+      FOCUSOUT_DATA_API: 'focusout' + EVENT_KEY + DATA_API_KEY,
+      FOCUSIN_DATA_API: 'focusin' + EVENT_KEY + DATA_API_KEY,
       KEYDOWN_DATA_API: 'keydown' + EVENT_KEY + DATA_API_KEY,
       KEYUP_DATA_API: 'keyup' + EVENT_KEY + DATA_API_KEY
     };
@@ -3268,179 +3415,194 @@ var czrapp = czrapp || {};
 
       var czrDropdown = function () {
         function czrDropdown(element) {
-          _classCallCheck(this, czrDropdown);
+              _classCallCheck(this, czrDropdown);
 
-          this._element = element;
+              this._element = element;
 
-          this._addEventListeners();
+              this._addEventListeners();
         }
+        czrDropdown.prototype.toggle = function(evt) {
+              if (this.disabled || $(this).hasClass(ClassName.DISABLED)) {
+                return false;
+              }
 
-        czrDropdown.prototype.toggle = function() {
+              var parent = czrDropdown._getParentFromElement(this);
+              var isActive = $(parent).hasClass(ClassName.SHOW);
+              var _parentsToNotClear = $.makeArray( $(parent).parents(Selector.PARENTS) );
 
-          if (this.disabled || $(this).hasClass(ClassName.DISABLED)) {
-            return false;
-          }
+              czrDropdown._clearMenus('', _parentsToNotClear );
 
-          var parent = czrDropdown._getParentFromElement(this);
-          var isActive = $(parent).hasClass(ClassName.SHOW);
-          var _parentsToNotClear = $.makeArray( $(parent).parents(Selector.PARENTS) );
+              if (isActive) {
+                return false;
+              }
 
-          czrDropdown._clearMenus('', _parentsToNotClear );
+              var relatedTarget = {
+                relatedTarget: this
+              };
+              var showEvent = $.Event(Event.SHOW, relatedTarget);
 
-          if (isActive) {
-            return false;
-          }
+              $(parent).trigger(showEvent);
 
-          var relatedTarget = {
-            relatedTarget: this
-          };
-          var showEvent = $.Event(Event.SHOW, relatedTarget);
+              if (showEvent.isDefaultPrevented()) {
+                return false;
+              }
+              if ('ontouchstart' in document.documentElement && !$(parent).closest(Selector.NAVBAR_NAV).length) {
+                $('body').children().on('mouseover', null, $.noop);
+              }
+              $(this).trigger( "focus" );
+              this.setAttribute('aria-expanded', 'true');
 
-          $(parent).trigger(showEvent);
+              $(parent).toggleClass(ClassName.SHOW);
+              $(parent).trigger($.Event(Event.SHOWN, relatedTarget));
 
-          if (showEvent.isDefaultPrevented()) {
-            return false;
-          }
-          if ('ontouchstart' in document.documentElement && !$(parent).closest(Selector.NAVBAR_NAV).length) {
-            $('body').children().on('mouseover', null, $.noop);
-          }
+              return false;
+        };//toggle
 
-          this.focus();
-          this.setAttribute('aria-expanded', 'true');
 
-          $(parent).toggleClass(ClassName.SHOW);
-          $(parent).trigger($.Event(Event.SHOWN, relatedTarget));
 
-          return false;
-        };
+
+
+
 
         czrDropdown.prototype.dispose = function() {
-          $.removeData(this._element, DATA_KEY);
-          $(this._element).off(EVENT_KEY);
-          this._element = null;
+              $.removeData(this._element, DATA_KEY);
+              $(this._element).off(EVENT_KEY);
+              this._element = null;
         };
-
         czrDropdown.prototype._addEventListeners = function() {
-          $(this._element).on(Event.CLICK, this.toggle);
+              $(this._element).on(Event.CLICK, this.toggle);
         };
-
         czrDropdown._jQueryInterface = function(config) {
-          return this.each(function () {
-            var data = $(this).data(DATA_KEY);
+              return this.each(function () {
+                var data = $(this).data(DATA_KEY);
 
-            if (!data) {
-              data = new czrDropdown(this);
-              $(this).data(DATA_KEY, data);
-            }
+                if (!data) {
+                  data = new czrDropdown(this);
+                  $(this).data(DATA_KEY, data);
+                }
 
-            if (typeof config === 'string') {
-              if ( _.isUndefined( data[config] ) ) {
-                throw new Error('No method named "' + config + '"');
-              }
-              data[config].call(this);
-            }
-          });
+                if (typeof config === 'string') {
+                  if ( _.isUndefined( data[config] ) ) {
+                    throw new Error('No method named "' + config + '"');
+                  }
+                  data[config].call(this);
+                }
+              });
         };
+
+
 
         czrDropdown._clearMenus = function(event, _parentsToNotClear ) {
 
-          if (event && (event.which === RIGHT_MOUSE_BUTTON_WHICH || event.type === 'keyup' && event.which !== TAB_KEYCODE)) {
-            return;
-          }
+              if (event && (event.which === RIGHT_MOUSE_BUTTON_WHICH || event.type === 'keyup' && event.which !== TAB_KEYCODE)) {
+                return;
+              }
 
 
-          var toggles = $.makeArray($(Selector.DATA_TOGGLE));
+              var toggles = $.makeArray($(Selector.DATA_TOGGLE));
 
 
-          for (var i = 0; i < toggles.length; i++) {
-            var parent = czrDropdown._getParentFromElement(toggles[i]);
-            var relatedTarget = { relatedTarget: toggles[i] };
+              for (var i = 0; i < toggles.length; i++) {
+                var parent = czrDropdown._getParentFromElement(toggles[i]);
+                var relatedTarget = { relatedTarget: toggles[i] };
 
-            if (!$(parent).hasClass(ClassName.SHOW) || $.inArray(parent, _parentsToNotClear ) > -1 ){
-              continue;
-            }
+                if (!$(parent).hasClass(ClassName.SHOW) || $.inArray(parent, _parentsToNotClear ) > -1 ){
+                  continue;
+                }
 
-            if (event && ( event.type === 'click' &&
-                /input|textarea/i.test(event.target.tagName) || event.type === 'keyup' && event.which === TAB_KEYCODE) && $.contains(parent, event.target)) {
-              continue;
-            }
+                if (event && ( event.type === 'click' &&
+                    /input|textarea/i.test(event.target.tagName) || event.type === 'keyup' && event.which === TAB_KEYCODE) && $.contains(parent, event.target)) {
+                  continue;
+                }
 
-            var hideEvent = $.Event(Event.HIDE, relatedTarget);
-            $(parent).trigger(hideEvent);
-            if (hideEvent.isDefaultPrevented()) {
-              continue;
-            }
-            if ('ontouchstart' in document.documentElement) {
-              $('body').children().off('mouseover', null, $.noop);
-            }
+                var hideEvent = $.Event(Event.HIDE, relatedTarget);
+                $(parent).trigger(hideEvent);
+                if (hideEvent.isDefaultPrevented()) {
+                  continue;
+                }
+                if ('ontouchstart' in document.documentElement) {
+                  $('body').children().off('mouseover', null, $.noop);
+                }
 
 
-            toggles[i].setAttribute('aria-expanded', 'false');
+                toggles[i].setAttribute('aria-expanded', 'false');
 
-            $(parent).removeClass(ClassName.SHOW).trigger($.Event(Event.HIDDEN, relatedTarget));
-          }
+                $(parent).removeClass(ClassName.SHOW).trigger($.Event(Event.HIDDEN, relatedTarget));
+              }
         };
+
+
 
         czrDropdown._getParentFromElement = function(element) {
-          var _parentNode = void 0;
-          var $_parent = $(element).closest(Selector.PARENTS);
+              var _parentNode = void 0;
+              var $_parent = $(element).closest(Selector.PARENTS);
 
-          if ( $_parent.length ) {
-            _parentNode = $_parent[0];
-          }
+              if ( $_parent.length ) {
+                _parentNode = $_parent[0];
+              }
 
-          return _parentNode || element.parentNode;
+              return _parentNode || element.parentNode;
         };
+
+
+
+        czrDropdown._dataApiFocusinHandler = function(evt) {
+              var self = this;
+              _.delay( function() {
+                var parent = czrDropdown._getParentFromElement(self),
+                    isActive = $(parent).hasClass(ClassName.SHOW);
+                if ( ! isActive ) {
+                  $(self).trigger('click');
+                }
+          }, 150); // a little delay so that we avoid a race condition when both focus and click events are triggered on mouse click.
+        };
+
+
 
         czrDropdown._dataApiKeydownHandler = function(event) {
-          if (!REGEXP_KEYDOWN.test(event.which) || /button/i.test(event.target.tagName) && event.which === SPACE_KEYCODE ||
-             /input|textarea/i.test(event.target.tagName)) {
-            return;
-          }
+              if (!REGEXP_KEYDOWN.test(event.which) || /button/i.test(event.target.tagName) && event.which === SPACE_KEYCODE ||
+                 /input|textarea/i.test(event.target.tagName)) {
+                return;
+              }
 
-          event.preventDefault();
-          event.stopPropagation();
+              event.preventDefault();
+              event.stopPropagation();
 
-          if (this.disabled || $(this).hasClass(ClassName.DISABLED)) {
-            return;
-          }
+              if (this.disabled || $(this).hasClass(ClassName.DISABLED)) {
+                return;
+              }
 
-          var parent = czrDropdown._getParentFromElement(this);
-          var isActive = $(parent).hasClass(ClassName.SHOW);
+              var parent = czrDropdown._getParentFromElement(this);
+              var isActive = $(parent).hasClass(ClassName.SHOW);
 
-          if (!isActive && ( event.which !== ESCAPE_KEYCODE || event.which !== SPACE_KEYCODE ) ||
-               isActive && ( event.which !== ESCAPE_KEYCODE || event.which !== SPACE_KEYCODE ) ) {
+              if (!isActive && ( event.which !== ESCAPE_KEYCODE || event.which !== SPACE_KEYCODE ) ||
+                   isActive && ( event.which !== ESCAPE_KEYCODE || event.which !== SPACE_KEYCODE ) ) {
+                $(this).trigger('click');
+                return;
+              }
+              var items = $(parent).find(Selector.VISIBLE_ITEMS).get();
 
-            if (event.which === ESCAPE_KEYCODE) {
-              var toggle = $(parent).find(Selector.DATA_TOGGLE)[0];
-              $(toggle).trigger('focus');
-            }
+              if (!items.length) {
+                return;
+              }
 
-            $(this).trigger('click');
-            return;
-          }
-          var items = $(parent).find(Selector.VISIBLE_ITEMS).get();
+              var index = items.indexOf(event.target);
 
-          if (!items.length) {
-            return;
-          }
+              if (event.which === ARROW_UP_KEYCODE && index > 0) {
+                index--;
+              }
 
-          var index = items.indexOf(event.target);
+              if (event.which === ARROW_DOWN_KEYCODE && index < items.length - 1) {
+                index++;
+              }
 
-          if (event.which === ARROW_UP_KEYCODE && index > 0) {
-            index--;
-          }
+              if (index < 0) {
+                index = 0;
+              }
 
-          if (event.which === ARROW_DOWN_KEYCODE && index < items.length - 1) {
-            index++;
-          }
-
-          if (index < 0) {
-            index = 0;
-          }
-
-          items[index].focus();
+              items[index].trigger( "focus" );
         };
+
 
         _createClass(czrDropdown, null, [{
           key: 'VERSION',
@@ -3451,12 +3613,12 @@ var czrapp = czrapp || {};
 
         return czrDropdown;
       }();
-
       $(document)
         .on(Event.KEYDOWN_DATA_API, Selector.DATA_TOGGLE, czrDropdown._dataApiKeydownHandler)
         .on(Event.KEYDOWN_DATA_API, Selector.MENU, czrDropdown._dataApiKeydownHandler)
-        .on(Event.CLICK_DATA_API + ' ' + Event.KEYUP_DATA_API, czrDropdown._clearMenus)
-        .on(Event.CLICK_DATA_API, Selector.DATA_TOGGLE, czrDropdown.prototype.toggle)
+        .on(Event.CLICK_DATA_API + ' ' + Event.KEYUP_DATA_API + Event.FOCUSOUT_DATA_API , czrDropdown._clearMenus)
+        .on(Event.CLICK_DATA_API, Selector.DATA_TOGGLE, czrDropdown.prototype.toggle) //click on [data-toggle="czr-dropdown"]
+        .on(Event.FOCUSIN_DATA_API, Selector.NAVBAR_NAV + ' ' + Selector.DATA_TOGGLE, czrDropdown._dataApiFocusinHandler)
         .on(Event.CLICK_DATA_API, Selector.FORM_CHILD, function (e) {
           e.stopPropagation();
       });
@@ -3503,6 +3665,9 @@ var czrapp = czrapp || {};
       czrapp.Base           = czrapp.Root.extend( czrapp.methods.Base );
       czrapp.ready          = $.Deferred();
       czrapp.bind( 'czrapp-ready', function() {
+            var _evt = document.createEvent('Event');
+            _evt.initEvent('czrapp-is-ready', true, true); //can bubble, and is cancellable
+            document.dispatchEvent(_evt);
             czrapp.ready.resolve();
       });
       var _instantianteAndFireOnDomReady = function( newMap, previousMap, isInitial ) {
@@ -3552,10 +3717,9 @@ var czrapp = czrapp || {};
       };//_instantianteAndFireOnDomReady()
       czrapp.appMap = new czrapp.Value( {} );
       czrapp.appMap.bind( _instantianteAndFireOnDomReady );//<=THE MAP IS LISTENED TO HERE
+
       czrapp.customMap = new czrapp.Value( {} );
       czrapp.customMap.bind( _instantianteAndFireOnDomReady );//<=THE CUSTOM MAP IS LISTENED TO HERE
-
-
 })( czrapp, jQuery, _ );var czrapp = czrapp || {};
 ( function ( czrapp ) {
       czrapp.localized = CZRParams || {};
@@ -3624,6 +3788,9 @@ var czrapp = czrapp || {};
                             'anchorSmoothScroll',
 
                             'mayBePrintFrontNote',
+                            'mayBeLoadFontAwesome',
+
+                            'maybePreloadGoogleFonts'
                       ]
                 },
                 stickyFooter : {

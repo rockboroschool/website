@@ -1076,7 +1076,6 @@ function czr_fn_is_loop_end() {
 * @since Customizr 1.0
 */
 function czr_fn_get_thumbnail_model( $args = array() ) {
-
     $defaults = array(
       'requested_size'            => null,
       'post_id'                   => null,
@@ -1089,17 +1088,27 @@ function czr_fn_get_thumbnail_model( $args = array() ) {
     $args = wp_parse_args( $args, $defaults);
     extract( $args );
 
+    $post_id = is_null($post_id) ? get_the_ID() : $post_id;
+
+    $cached_index = empty( $post_id ) ? 'post_id__no_post_id' : 'post_id_'.$post_id;
+    if ( array_key_exists($cached_index, CZR_BASE::$cached_thumbnail_models) ) {
+        return CZR_BASE::$cached_thumbnail_models[$cached_index];
+    }
+
+    CZR_BASE::$cached_thumbnail_models[$cached_index] = array();
+
     //czr_fn_has_thumb() checks if there is a thumbnail or an attachment img ( typically img embedded in single post ) that we can use
     //=> the check on the attachement is done if true == czr_fn_opt( 'tc_post_list_use_attachment_as_thumb' )
-    if ( ! czr_fn_has_thumb( $post_id, $custom_thumb_id ) ) {
-      if ( ! $placeholder )
+    if ( !czr_fn_has_thumb( $post_id, $custom_thumb_id ) ) {
+      if ( !$placeholder ) {
         return array();
-      else
-        return array( 'tc_thumb' => czr_fn_get_placeholder_thumb(), 'is_placeholder' => true );
+      } else {
+        CZR_BASE::$cached_thumbnail_models[$cached_index] = array( 'tc_thumb' => czr_fn_get_placeholder_thumb(), 'is_placeholder' => true );
+        return CZR_BASE::$cached_thumbnail_models[$cached_index];
+      }
     }
 
     $tc_thumb_size              = is_null($requested_size) ? apply_filters( 'czr_thumb_size_name' , 'tc-thumb' ) : $requested_size;
-    $post_id                    = is_null($post_id) ? get_the_ID() : $post_id;
 
     $filtered_thumb_size_name   = ! is_null( $filtered_thumb_size_name ) ? $filtered_thumb_size_name : 'tc_thumb_size';
     $_filtered_thumb_size       = apply_filters( $filtered_thumb_size_name, $filtered_thumb_size_name ? CZR___::$instance -> $filtered_thumb_size_name : null );
@@ -1173,9 +1182,10 @@ function czr_fn_get_thumbnail_model( $args = array() ) {
     }
     //used for smart load when enabled
     $tc_thumb = apply_filters( 'czr_thumb_html', $tc_thumb, $requested_size, $post_id, $custom_thumb_id, $_img_attr, $tc_thumb_size );
+    CZR_BASE::$cached_thumbnail_models[$cached_index] = ( isset($tc_thumb) && ! empty($tc_thumb) && false != $tc_thumb ) ? compact( "tc_thumb" , "tc_thumb_height" , "tc_thumb_width", "_thumb_id" ) : array();
 
     return apply_filters( 'czr_get_thumbnail_model',
-      isset($tc_thumb) && ! empty($tc_thumb) && false != $tc_thumb ? compact( "tc_thumb" , "tc_thumb_height" , "tc_thumb_width", "_thumb_id" ) : array(),
+      CZR_BASE::$cached_thumbnail_models[$cached_index],
       $post_id,
       $_thumb_id,
       $enable_wp_responsive_imgs
@@ -1263,7 +1273,7 @@ function czr_fn_get_id_from_attachment( $post_id ) {
     //define a filtrable boolean to set if attached images can be used as thumbnails
     //1) must be a non single post context
     //2) user option should be checked in customizer
-    $_bool = 0 != esc_attr( czr_fn_opt( 'tc_post_list_use_attachment_as_thumb' ) );
+    $_bool = czr_fn_is_checked('tc_post_list_use_attachment_as_thumb' );
 
     if ( ! is_admin() )
       $_bool = ! czr_fn_is_single_post() && $_bool;
@@ -1371,12 +1381,6 @@ if ( ! function_exists( 'czr_fn_get_placeholder_thumb' ) ) {
         ob_start();
         ?>
         <svg class="czr-svg-placeholder <?php echo $_size; ?>" id="<?php echo $_unique_id; ?>" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M928 832q0-14-9-23t-23-9q-66 0-113 47t-47 113q0 14 9 23t23 9 23-9 9-23q0-40 28-68t68-28q14 0 23-9t9-23zm224 130q0 106-75 181t-181 75-181-75-75-181 75-181 181-75 181 75 75 181zm-1024 574h1536v-128h-1536v128zm1152-574q0-159-112.5-271.5t-271.5-112.5-271.5 112.5-112.5 271.5 112.5 271.5 271.5 112.5 271.5-112.5 112.5-271.5zm-1024-642h384v-128h-384v128zm-128 192h1536v-256h-828l-64 128h-644v128zm1664-256v1280q0 53-37.5 90.5t-90.5 37.5h-1536q-53 0-90.5-37.5t-37.5-90.5v-1280q0-53 37.5-90.5t90.5-37.5h1536q53 0 90.5 37.5t37.5 90.5z"/></svg>
-
-        <script type="text/javascript">
-          jQuery( function($){
-            $( '#<?php echo $_unique_id; ?>' ).animateSvg( { svg_opacity : 0.3, filter_opacity : 0.5 } );
-          });
-        </script>
         <?php
         $_svg_placeholder = ob_get_clean();
     }
@@ -1542,7 +1546,9 @@ if ( ! function_exists( 'czr_fn_lighten_hsl' ) ) {
 if ( ! function_exists( 'czr_fn_hex2rgb' ) ) {
    function czr_fn_hex2rgb( $hex, $array = false, $make_prop_value = false ) {
 
-      $hex = trim( $hex, '# ' );
+      //$hex = trim( $hex, '# ' );
+      // Nov 2020 => fixes https://github.com/presscustomizr/customizr/issues/1866
+      $hex = preg_replace("/[^A-Za-z0-9]/","",$hex);
 
       if ( 3 == strlen( $hex ) ) {
 
@@ -1599,7 +1605,7 @@ if ( ! function_exists( 'czr_fn_rgb2rgba' ) ) {
 
       $rgb   = is_array( $rgb ) ? $rgb : explode( ',', $rgb );
       $rgb   = is_array( $rgb) ? $rgb : array( $rgb );
-      $rgb   = count( $rgb ) < 3 ? array_pad( $rgb, 3, 255 ) : $rgb;
+      $rgb   = $rgba = count( $rgb ) < 3 ? array_pad( $rgb, 3, 255 ) : $rgb;
 
       $rgba[] = $alpha;
 
@@ -1808,13 +1814,13 @@ function czr_fn_rgb_invert( $rgb )  {
       255 - $rgb[1],
       255 - $rgb[2]
    );
-   
+
    return $rgb_inverted;
 }
 
 /* Returns the complementary hsl color
 /* ------------------------------------ */
-function czr_fn_hex_invert( $hex, $make_prop_value = true )  {   
+function czr_fn_hex_invert( $hex, $make_prop_value = true )  {
    $rgb           = czr_fn_hex2rgb( $hex, $array = true );
    $rgb_inverted  = czr_fn_rgb_invert( $rgb );
 

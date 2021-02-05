@@ -425,13 +425,13 @@ if ( ! class_exists( 'CZR_init' ) ) :
       * @since Customizr 3.2.0
       */
       function czr_fn_set_body_classes( $_classes ) {
-          if ( 0 != esc_attr( czr_fn_opt( 'tc_link_hover_effect' ) ) )
+          if ( czr_fn_is_checked( 'tc_link_hover_effect' ) )
             array_push( $_classes, 'tc-fade-hover-links' );
           if ( czr_fn_is_customizing() )
             array_push( $_classes, 'is-customizing' );
           if ( wp_is_mobile() )
             array_push( $_classes, 'tc-is-mobile' );
-          if ( 0 != esc_attr( czr_fn_opt( 'tc_enable_dropcap' ) ) )
+          if ( czr_fn_is_checked( 'tc_enable_dropcap' ) )
             array_push( $_classes, esc_attr( czr_fn_opt( 'tc_dropcap_design' ) ) );
 
           //adds the layout
@@ -451,6 +451,16 @@ if ( ! class_exists( 'CZR_init' ) ) :
           $_skin = sprintf( 'skin-%s' , basename( $this -> czr_fn_get_style_src() ) );
           array_push( $_classes, substr( $_skin , 0 , strpos($_skin, '.') ) );
 
+          //THEME VER + child theme info
+          $ver = str_replace('.', '-', CUSTOMIZR_VER );
+          $prefix = (defined('CZR_IS_PRO' ) && CZR_IS_PRO) ? 'customizr-pro-' : 'customizr-';
+          $theme_class = $prefix . $ver;
+          $_classes[] = get_template_directory() === get_stylesheet_directory() ? $theme_class : $theme_class.'-with-child-theme';
+
+          // Nov 2020 : opt-out for underline on links
+          if ( !(bool)esc_attr( czr_fn_opt( 'tc_link_underline') ) ){
+              $_classes = array_merge( $_classes , array( 'tc-link-not-underlined' ) );
+          }
           return $_classes;
       }
   }//end of class
@@ -2272,7 +2282,6 @@ class CZR_utils_settings_map {
                                     'section'       => 'formatting_sec' ,
                                     'type'          => 'nimblecheck' ,
                                     'notice'    => __( 'This will be applied to the links included in post or page content only.' , 'customizr' ),
-                                    'transport'     => 'postMessage'
                   ),
 
                   'tc_ext_link_target'  =>  array(
@@ -2282,7 +2291,6 @@ class CZR_utils_settings_map {
                                     'section'       => 'formatting_sec' ,
                                     'type'          => 'nimblecheck' ,
                                     'notice'    => __( 'This will be applied to the links included in post or page content only.' , 'customizr' ),
-                                    'transport'     => 'postMessage'
                   ),
                   'tc_enable_dropcap'  =>  array(
                                     'default'       => 0,
@@ -4082,7 +4090,7 @@ if ( ! class_exists( 'CZR_resources' ) ) :
               'tc-scripts' => array(
                 'path' => $_front_path,
                 'files' => array( 'tc-scripts.js' , 'tc-scripts.min.js' ),
-                'dependencies' =>  $this -> czr_fn_is_fancyboxjs_required() ? array( 'jquery', 'tc-fancybox' ) : array( 'jquery' )
+                'dependencies' =>  $this -> czr_fn_is_fancyboxjs_required() ? array( 'underscore', 'jquery', 'tc-fancybox' ) : array( 'underscore', 'jquery' )
               )
           );//end of scripts map
 
@@ -4262,6 +4270,7 @@ if ( ! class_exists( 'CZR_resources' ) ) :
                         'Permanently dismiss' => __('Permanently dismiss', 'customizr')
                     )
                 ),
+                'version' => CUSTOMIZR_VER,
 
                 //FRONT NOTIFICATIONS
                 //ordered by priority
@@ -4284,7 +4293,7 @@ if ( ! class_exists( 'CZR_resources' ) ) :
 
   	    //holder.js is loaded when featured pages are enabled AND FP are set to show images and at least one holder should be displayed.
         $tc_show_featured_pages 	         = class_exists('CZR_featured_pages') && CZR_featured_pages::$instance -> czr_fn_show_featured_pages();
-      	if ( 0 != $tc_show_featured_pages && $this -> czr_fn_maybe_is_holder_js_required() ) {
+      	if ( (bool)$tc_show_featured_pages && $this -> czr_fn_maybe_is_holder_js_required() ) {
   	    	wp_enqueue_script(
   	    		'holder',
   	    		sprintf( '%1$sassets/front/js/libs/holder.min.js' , TC_BASE_URL ),
@@ -4369,7 +4378,7 @@ if ( ! class_exists( 'CZR_resources' ) ) :
       function czr_fn_enqueue_gfonts() {
         $_font_pair         = esc_attr( czr_fn_opt( 'tc_fonts' ) );
         $_all_font_pairs    = CZR___::$instance -> font_pairs;
-        if ( ! $this -> czr_fn_is_gfont( $_font_pair , '_g_') )
+        if ( ! czr_fn_is_gfont( $_font_pair , '_g_') )
           return;
 
         wp_enqueue_style(
@@ -4419,7 +4428,7 @@ if ( ! class_exists( 'CZR_resources' ) ) :
 
           foreach ($_selector_fonts as $_key => $_raw_font) {
             //create the $_family and $_weight vars
-            extract( $this -> czr_fn_get_font_css_prop( $_raw_font , $this -> czr_fn_is_gfont( $_font_pair ) ) );
+            extract( $this -> czr_fn_get_font_css_prop( $_raw_font , czr_fn_is_gfont( $_font_pair ) ) );
 
             switch ($_key) {
               case 0 : //titles font
@@ -4452,19 +4461,6 @@ if ( ! class_exists( 'CZR_resources' ) ) :
 
         return $_css;
       }//end of fn
-
-
-      /**
-      * Helper to check if the requested font code includes the Google font identifier : _g_
-      * @return bool
-      *
-      * @package Customizr
-      * @since Customizr 3.3.2
-      */
-      private function czr_fn_is_gfont($_font , $_gfont_id = null ) {
-        $_gfont_id = $_gfont_id ? $_gfont_id : '_g_';
-        return false !== strpos( $_font , $_gfont_id );
-      }
 
 
       /**
@@ -4788,7 +4784,7 @@ if ( ! function_exists( 'czr_fn_render_main_header' ) ) {
   function czr_fn_render_main_header() {
     CZR_header_main::$instance->czr_fn_set_header_options();
   ?>
-    <header class="<?php echo implode( " ", apply_filters('tc_header_classes', array('tc-header' ,'clearfix', 'row-fluid') ) ) ?>" role="banner">
+    <header class="<?php echo implode( " ", apply_filters('tc_header_classes', array('tc-header' ,'clearfix', 'row-fluid') ) ) ?>">
     <?php
       // The '__header' hook is used with the following callback functions (ordered by priorities) :
       //CZR_header_main::$instance->tc_logo_title_display(), CZR_header_main::$instance->czr_fn_tagline_display(), CZR_header_main::$instance->czr_fn_navbar_display()

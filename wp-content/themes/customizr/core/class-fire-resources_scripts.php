@@ -5,9 +5,9 @@
 *
 * @package            Customizr
 */
-if ( ! class_exists( 'CZR_resources_scripts' ) ) :
+if ( !class_exists( 'CZR_resources_scripts' ) ) :
    class CZR_resources_scripts {
-         //Access any method or var of the class with classname::$instance -> var or method():
+         //Access any method or var of the class with classname::$instance->var or method():
          static $instance;
 
          private $_resources_version;
@@ -25,10 +25,16 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
               add_action( 'czr_ajax_dismiss_welcome_note_front'   , array( $this , 'czr_fn_dismiss_welcome_note_front' ) );
 
               //stores the front scripts map in a property
-              $this -> tc_script_map = $this -> czr_fn_get_script_map();
+              $this->tc_script_map = $this->czr_fn_get_script_map();
 
+              // Adds `async` and `defer` support for scripts registered or enqueued
+              // NOT USED IN DEV MODE
+              // and for which we've added an attribute with wp_script_add_data( $_hand, 'async', true );
+              // inspired from Twentytwenty WP theme
+              // @see https://core.trac.wordpress.org/ticket/12009
+              // commented after first implementation because of a suspition of regression with Customizr Pro masonry grid.
+              add_filter( 'script_loader_tag', array( $this, 'czr_fn_filter_script_loader_tag' ), 10, 2 );
          }
-
 
 
          /**
@@ -71,14 +77,14 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                      //magnific popup
                      'tc-mfp' => array(
                           'path' => $_libs_path,
-                          'files' => array( 'jquery-magnific-popup.js', 'jquery-magnific-popup.min.js' ),
+                          'files' => array( 'jquery-magnific-popup.min.js' ),
                           'dependencies' => array( 'jquery' ),
                           'in_footer' => true,
                      ),
                      //flickity
                      'tc-flickity' => array(
                           'path' => $_libs_path,
-                          'files' => array( 'flickity-pkgd.js' ),
+                          'files' => array( 'flickity-pkgd.min.js' ),
                           'dependencies' => array( 'jquery' )
                      ),
                      //waypoints
@@ -96,13 +102,13 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                      //holder
                      'tc-holder' => array(
                           'path' => $_libs_path,
-                          'files' => array( 'holder.min.js', 'holder.min.js' ),
+                          'files' => array( 'holder.min.js' ),
                           'dependencies' => array( 'jquery' )
                      ),
                      //mcustom scrollbar
                      'tc-mcs' => array(
                           'path' => $_libs_path,
-                          'files' => array( 'jquery-mCustomScrollbar.js', 'jquery-mCustomScrollbar.min.js' ),
+                          'files' => array( 'jquery-mCustomScrollbar.min.js' ),
                           'dependencies' => array( 'jquery' ),
                      ),
                      /*
@@ -134,12 +140,12 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                           'files' => array( 'jqueryParallax.js' ),
                           'dependencies' => array( 'tc-js-arraymap-proto', 'jquery' , 'tc-js-params', 'underscore' )
                      ),
-
-                     'tc-animate-svg' => array(
-                          'path' => $_libs_path . 'jquery-plugins/',
-                          'files' => array( 'jqueryAnimateSvg.js' ),
-                          'dependencies' => array( 'tc-js-arraymap-proto', 'jquery' , 'tc-js-params', 'tc-bootstrap', 'underscore' )
-                     ),
+                     // FEB 2020 => NOT ENQUEUED ANYMORE for performance considerations
+                     // 'tc-animate-svg' => array(
+                     //      'path' => $_libs_path . 'jquery-plugins/',
+                     //      'files' => array( 'jqueryAnimateSvg.js' ),
+                     //      'dependencies' => array( 'tc-js-arraymap-proto', 'jquery' , 'tc-js-params', 'tc-bootstrap', 'underscore' )
+                     // ),
                      'tc-center-images' => array(
                           'path' => $_libs_path . 'jquery-plugins/',
                           'files' => array( 'jqueryCenterImages.js' ),
@@ -169,7 +175,7 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                      'tc-scripts' => array(
                           'path' => $_front_path,
                           'files' => array( 'tc-scripts.js' , 'tc-scripts.min.js' ),
-                          'dependencies' => array( 'jquery' )
+                          'dependencies' => array('underscore', 'jquery' )
                      )
                );//end of scripts map
 
@@ -201,6 +207,19 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                wp_enqueue_script( 'jquery' );
                wp_enqueue_script( 'jquery-ui-core' );
 
+               $main_script_injected_on_dom_ready = czr_fn_is_checked( 'tc_defer_front_script' );
+
+               if ( $main_script_injected_on_dom_ready ) {
+                   // March 2020 for https://github.com/presscustomizr/customizr/issues/1812
+                   wp_enqueue_script(
+                       'czr-init',
+                       sprintf( '%1$s%2$s', CZR_BASE_URL . CZR_ASSETS_PREFIX . 'front/js/', ( CZR_DEBUG_MODE || CZR_DEV_MODE ) ? 'tc-init.js' : 'tc-init.min.js' ),
+                       array( 'underscore' ),
+                       $this->_resouces_version,
+                       false
+                   );
+                }
+
                wp_enqueue_script(
                    'modernizr',
                    CZR_BASE_URL . CZR_ASSETS_PREFIX . 'front/js/libs/modernizr.min.js',
@@ -209,57 +228,60 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                    false
                );
 
-               if ( $this -> czr_fn_load_concatenated_front_scripts() ) {
-                     // if ( $this -> czr_fn_is_lightbox_required() ) {
-                     //       $this -> czr_fn_enqueue_script( 'tc-mfp' );
-                     // }
-                     //!!tc-scripts includes underscore, tc-js-arraymap-proto
-                     $this -> czr_fn_enqueue_script( 'tc-scripts' );
-               }
-               else {
+               if ( !$main_script_injected_on_dom_ready ) {
+                   // load concatenated js script when not in CZR_DEBUG_MODE or CZR_DEV
+                   if ( $this->czr_fn_load_concatenated_front_scripts() ) {
+                         // if ( $this->czr_fn_is_lightbox_required() ) {
+                         //       $this->czr_fn_enqueue_script( 'tc-mfp' );
+                         // }
+                         //!!tc-scripts includes underscore, tc-js-arraymap-proto
+                         $this->czr_fn_enqueue_script( 'tc-scripts' );
+                         wp_script_add_data( 'tc-scripts', 'defer', true );
+                   }
+                   else {
 
-                  wp_enqueue_script( 'underscore' );
+                      wp_enqueue_script( 'underscore' );
 
-                  //!!mind the dependencies
-                  $this -> czr_fn_enqueue_script( array(
-                     'tc-js-params',
-                     'tc-js-arraymap-proto',
-                     //libs
-                     'tc-bootstrap',
-                     'tc-smoothscroll',//fired if  $('body').hasClass( 'czr-infinite-scroll-on' ) || ( CZRParams.SmoothScroll && CZRParams.SmoothScroll.Enabled && ! czrapp.base.matchMedia( 1024 )
-                     'tc-outline',
-                     'tc-waypoints',
-                     //'tc-mcs',//mCustomScrollBar will be loaded on demand
-                     //'tc-flickity',//flickity will be loaded when needed
-                     'tc-vivus',
-                     'tc-raf',
-                  ) );
+                      //!!mind the dependencies
+                      $this->czr_fn_enqueue_script( array(
+                         'tc-js-params',
+                         'tc-js-arraymap-proto',
+                         //libs
+                         'tc-bootstrap',
+                         'tc-smoothscroll',//fired if  $('body').hasClass( 'czr-infinite-scroll-on' ) || ( CZRParams.SmoothScroll && CZRParams.SmoothScroll.Enabled && !czrapp.base.matchMedia( 1024 )
+                         'tc-outline',
+                         'tc-waypoints',
+                         //'tc-mcs',//mCustomScrollBar will be loaded on demand
+                         //'tc-flickity',//flickity will be loaded when needed
+                         'tc-vivus',
+                         'tc-raf',
+                      ) );
 
-                  // if ( $this -> czr_fn_is_lightbox_required() )
-                  //       $this -> czr_fn_enqueue_script( 'tc-mfp' );
+                      // if ( $this->czr_fn_is_lightbox_required() )
+                      //       $this->czr_fn_enqueue_script( 'tc-mfp' );
 
-                  //plugins and main front
-                  $this -> czr_fn_enqueue_script( array(
-                     'tc-dropcap' ,
-                     'tc-img-smartload',
-                     'tc-img-original-sizes',
-                     'tc-ext-links',
-                     'tc-center-images',
-                     'tc-parallax',
-                     'tc-animate-svg',
-                     'tc-fittext',
+                      //plugins and main front
+                      $this->czr_fn_enqueue_script( array(
+                         'tc-dropcap' ,
+                         'tc-img-smartload',
+                         'tc-img-original-sizes',
+                         'tc-ext-links',
+                         'tc-center-images',
+                         'tc-parallax',
+                         //'tc-animate-svg', // FEB 2020 => NOT ENQUEUED ANYMORE for performance considerations
+                         'tc-fittext',
 
-                     'tc-main-front',
-                  ) );
+                         'tc-main-front',
+                      ) );
 
-               }//end load concatenated
-
+                  }//end load concatenated
+              }
 
 
 
                //has the post comments ? adds a boolean parameter in js
                global $wp_query;
-               $has_post_comments   = ( 0 != $wp_query -> post_count && comments_open() && get_comments_number() != 0 ) ? true : false;
+               $has_post_comments   = ( 0 != $wp_query->post_count && comments_open() && get_comments_number() != 0 ) ? true : false;
 
                if ( false != esc_attr( czr_fn_opt( 'tc_link_scroll') ) )
                      wp_enqueue_script('jquery-effects-core');
@@ -296,28 +318,36 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
               //Welcome note preprocess
               $is_welcome_note_on = false;
               $welcome_note_content = '';
-              if ( ! czr_fn_is_pro() && czr_fn_user_started_with_current_version() ) {
+              if ( !czr_fn_is_pro() && czr_fn_user_started_with_current_version() ) {
                   $is_welcome_note_on = apply_filters(
                       'czr_is_welcome_front_notification_on',
                       false
-                      //czr_fn_user_can_see_customize_notices_on_front() && ! czr_fn_is_customizing() && ! czr_fn_isprevdem() && 'dismissed' != get_transient( 'czr_welcome_note_status' )
+                      //czr_fn_user_can_see_customize_notices_on_front() && !czr_fn_is_customizing() && !czr_fn_isprevdem() && 'dismissed' != get_transient( 'czr_welcome_note_status' )
                   );
                   if ( $is_welcome_note_on ) {
-                      $welcome_note_content =  $this -> czr_fn_get_welcome_note_content();
+                      $welcome_note_content =  $this->czr_fn_get_welcome_note_content();
                   }
               }
 
+              $dependant_script_for_localize = $this->czr_fn_load_concatenated_front_scripts() ? 'tc-scripts' : 'tc-js-params';
+              if ( $main_script_injected_on_dom_ready ) {
+                  $dependant_script_for_localize = 'czr-init';
+              }
+
               wp_localize_script(
-                  $this -> czr_fn_load_concatenated_front_scripts() ? 'tc-scripts' : 'tc-js-params',
+                  $dependant_script_for_localize,
                   'CZRParams',
                   apply_filters( 'tc_customizr_script_params' , array(
 
                       'assetsPath'      => czr_fn_get_theme_file_url( CZR_ASSETS_PREFIX . 'front/' ),
+                      'mainScriptUrl' => sprintf( '%1$s%2$s%3$s', CZR_BASE_URL . CZR_ASSETS_PREFIX . 'front/js/', ( CZR_DEBUG_MODE || CZR_DEV_MODE ) ? 'tc-scripts.js?' : 'tc-scripts.min.js?', CUSTOMIZR_VER ),
+                      'deferFontAwesome' => czr_fn_is_checked( 'tc_defer_font_awesome' ),
+                      'fontAwesomeUrl' => CZR_BASE_URL . CZR_ASSETS_PREFIX . 'shared/fonts/fa/css/fontawesome-all.min.css?' . CUSTOMIZR_VER,
 
                       '_disabled'          => apply_filters( 'czr_disabled_front_js_parts', array() ),
                       'centerSliderImg'   => esc_attr( czr_fn_opt( 'tc_center_slider_img') ),
 
-                      'isLightBoxEnabled'  => $this -> czr_fn_is_lightbox_required(),
+                      'isLightBoxEnabled'  => $this->czr_fn_is_lightbox_required(),
 
                       'SmoothScroll'      => array(
                           'Enabled' => $smooth_scroll_enabled,
@@ -382,6 +412,11 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                                 'dismissAction' => 'dismiss_welcome_note_front'
                             )
                       ),
+                      // March 2020 : gfonts can be preloaded since https://github.com/presscustomizr/customizr/issues/1816
+                      'preloadGfonts' => czr_fn_is_checked( 'tc_preload_gfonts' ),
+                      'googleFonts' => CZR_resources_fonts::czr_fn_get_gfont_candidates(),
+                      'version' => ( CZR_DEBUG_MODE || CZR_DEV_MODE ) ? time() : CUSTOMIZR_VER
+
                   ), czr_fn_get_id() )//end of filter
 
               );
@@ -408,7 +443,7 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
               //enqueue placeholders style
               if ( apply_filters(  'czr_enqueue_placeholders_resources', false ) ) {
                   //no need to minify this
-                  wp_enqueue_script( 'customizr-front-placholders', CZR_FRONT_ASSETS_URL . 'js/libs/customizr-placeholders.js', array(), $this-> _resouces_version, $in_footer = true );
+                  wp_enqueue_script( 'customizr-front-placeholders', CZR_FRONT_ASSETS_URL . 'js/libs/customizr-placeholders.js', array(), $this-> _resouces_version, $in_footer = true );
               }
          }
 
@@ -421,16 +456,13 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
          * @since Customizr 3.3+
          */
          function czr_fn_enqueue_script( $_handles = array() ) {
-
                if ( empty($_handles) )
                  return;
 
-               $_map = $this -> tc_script_map;
+               $_map = $this->tc_script_map;
                //Picks the requested handles from map
                if ( 'string' == gettype($_handles) && isset($_map[$_handles]) ) {
-
                      $_scripts = array( $_handles => $_map[$_handles] );
-
                }
                else {
 
@@ -445,12 +477,44 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
                }
 
                //Enqueue the scripts with normalizes args
-               foreach ( $_scripts as $_hand => $_params )
-                     call_user_func_array( 'wp_enqueue_script',  $this -> czr_fn_normalize_script_args( $_hand, $_params ) );
+               foreach ( $_scripts as $_hand => $_params ) {
+                  call_user_func_array( 'wp_enqueue_script',  $this->czr_fn_normalize_script_args( $_hand, $_params ) );
+                  //wp_script_add_data( $_hand, 'async', true );
+                }
 
          }//end of fn
 
 
+         /**
+         * Fired @'script_loader_tag'
+         * Adds async/defer attributes to enqueued / registered scripts.
+         * based on a solution found in Twentytwenty
+         * NOT USED IN DEV MODE
+         * and for which we've added an attribute with wp_script_add_data( $_hand, 'async', true );
+         * If #12009 lands in WordPress, this function can no-op since it would be handled in core.
+         *
+         * @param string $tag    The script tag.
+         * @param string $handle The script handle.
+         * @return string Script HTML string.
+         */
+          public function czr_fn_filter_script_loader_tag( $tag, $handle ) {
+            // load concatenated js script when not in CZR_DEBUG_MODE or CZR_DEV
+            // if ( !$this->czr_fn_load_concatenated_front_scripts() )
+            //   return $tag;
+
+            foreach ( [ 'async', 'defer' ] as $attr ) {
+              if ( !wp_scripts()->get_data( $handle, $attr ) ) {
+                continue;
+              }
+              // Prevent adding attribute when already added in #12009.
+              if ( !preg_match( ":\s$attr(=|>|\s):", $tag ) ) {
+                $tag = preg_replace( ':(?=></script>):', " $attr", $tag, 1 );
+              }
+              // Only allow async or defer, not both.
+              break;
+            }
+            return $tag;
+          }
 
 
 
@@ -463,12 +527,12 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
          * @since Customizr 3.3+
          */
          private function czr_fn_normalize_script_args( $_handle, $_params ) {
-
                //Do we load the minified version if available ?
-               if ( count( $_params['files'] ) > 1 )
-                     $_filename = !$this->_minify_js ? $_params['files'][0] : $_params['files'][1];
-               else
-                     $_filename = $_params['files'][0];
+               if ( count( $_params['files'] ) > 1 ) {
+                    $_filename = !$this->_minify_js ? $_params['files'][0] : $_params['files'][1];
+                } else {
+                    $_filename = $_params['files'][0];
+                }
 
                //default is false
                $_params[ 'in_footer' ] = isset( $_params[ 'in_footer' ] ) ? $_params[ 'in_footer' ] : false;
@@ -496,15 +560,18 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
 
          /**
          * Helper
+         * 'CZR_DEBUG_MODE' = isset( $_GET['czr_debug'] ) && 1 == $_GET['czr_debug']
          *
          * @return boolean
          * @package Customizr
          * @since v3.3+
          */
          function czr_fn_load_concatenated_front_scripts() {
+              if ( defined( 'CZR_LOAD_CONCATENATED_SCRIPTS' ) && true === CZR_LOAD_CONCATENATED_SCRIPTS )
+                return true;
               if ( defined( 'CZR_DEBUG_MODE' ) && true === CZR_DEBUG_MODE )
                 return false;
-              return apply_filters( 'tc_load_concatenated_front_scripts' , ! defined('CZR_DEV')  || ( defined('CZR_DEV') && false == CZR_DEV ) );
+              return apply_filters( 'tc_load_concatenated_front_scripts' , !defined('CZR_DEV')  || ( defined('CZR_DEV') && false == CZR_DEV ) );
          }
 
 
@@ -512,8 +579,8 @@ if ( ! class_exists( 'CZR_resources_scripts' ) ) :
          *  WELCOME NOTE
         /* ------------------------------------------------------------------------- */
         //This function is invoked only when :
-        //1) ! czr_fn_is_pro() && czr_fn_user_started_with_current_version()
-        //2) AND if the welcome note can be displayed : czr_fn_user_can_see_customize_notices_on_front() && ! czr_fn_is_customizing() && ! czr_fn_isprevdem() && 'dismissed' != get_transient( 'czr_welcome_note_status' )
+        //1) !czr_fn_is_pro() && czr_fn_user_started_with_current_version()
+        //2) AND if the welcome note can be displayed : czr_fn_user_can_see_customize_notices_on_front() && !czr_fn_is_customizing() && !czr_fn_isprevdem() && 'dismissed' != get_transient( 'czr_welcome_note_status' )
         //It returns a welcome note html string that will be localized in the front js
         //@return html string
         function czr_fn_get_welcome_note_content() {

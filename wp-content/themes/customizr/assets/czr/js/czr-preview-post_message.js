@@ -24,7 +24,6 @@
                 }
           }
     };
-
     _settingsCbsExtend = {
         /******************************************
         * GLOBAL SETTINGS
@@ -76,30 +75,6 @@
               $_body.removeClass('tc-fade-hover-links');
             else
               $_body.addClass('tc-fade-hover-links');
-          },
-          'tc_ext_link_style' : function( to ) {
-            if ( false !== to ) {
-              $('a' , '.entry-content').each( function() {
-                var _thisHref = $.trim( $(this).attr('href'));
-                if( _is_external( _thisHref ) && 'IMG' != $(this).children().first().prop("tagName") ) {
-                    $(this).after('<span class="tc-external">');
-                }
-              });
-            } else {
-              $( '.tc-external' , '.entry-content' ).remove();
-            }
-          },
-          'tc_ext_link_target' : function( to ) {
-            if ( false !== to ) {
-              $('a' , '.entry-content').each( function() {
-                var _thisHref = $.trim( $(this).attr('href'));
-                if( _is_external( _thisHref ) && 'IMG' != $(this).children().first().prop("tagName") ) {
-                  $(this).attr('target' , '_blank');
-                }
-              });
-            } else {
-              $(this).removeAttr('target');
-            }
           },
           //All icons
           'tc_show_title_icon' :  function( to ) {
@@ -469,10 +444,10 @@
       }); /* end contextual post metas*/
 
       var _post_nav_context = [
+        { _context : 'home', _container : 'body.home' },
         { _context : 'page', _container : 'body.page' },
-        { _context : 'home', _container : 'body.blog.home' },
         { _context : 'single', _container: 'body.single' },
-        { _context : 'archive', _container: 'body.archive' }
+        { _context : 'archive', _container: 'body.archive, body.blog:not(.home)' }
       ];
 
       //add callbacks dynamically

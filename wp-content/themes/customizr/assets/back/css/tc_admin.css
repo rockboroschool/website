@@ -9,7 +9,9 @@
        url("../../../assets/shared/fonts/fa/webfonts/fa-regular-400.ttf") format("truetype"),
        url("../../../assets/shared/fonts/fa/webfonts/fa-regular-400.svg#fontawesome") format("svg");
 }
-
+.tc-config-info {
+  clear: both;
+}
 .about-wrap h3 {
 	line-height: 26px;
 }
@@ -192,7 +194,7 @@ h1.need-help-title:before {
   line-height: 24px;*/
   height: 40px;
   font-size: 1.2em;
-  padding: 5px 22px;
+  padding: 2px 22px;
   display: inline-block;
   color: #de8200;
   color: #fff;
@@ -329,6 +331,9 @@ credits : Gutenberg team @wordpress */
 }
 .czr-rec-text-block {
   width: calc( 100% - 252px );
+}
+.czr-rec-text-block p {
+  font-size: 14px;
 }
 .czr-rec-button {
   display: block;

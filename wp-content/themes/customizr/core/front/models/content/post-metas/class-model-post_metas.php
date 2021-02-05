@@ -4,23 +4,23 @@ class CZR_post_metas_model_class extends CZR_Model {
 
   /* PUBLIC GETTERS */
   public function czr_fn_get_cat_list( $limit = false, $sep = '' ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_categories' ) ) ? $this -> czr_fn_get_meta( 'categories', $limit, $sep ) : '';
+    return czr_fn_is_checked( 'tc_show_post_metas_categories' ) ? $this -> czr_fn_get_meta( 'categories', $limit, $sep ) : '';
   }
 
   public function czr_fn_get_tag_list( $limit = false, $sep = '' ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_tags' ) ) ? $this -> czr_fn_get_meta( 'tags', $limit, $sep ) : '';
+    return czr_fn_is_checked( 'tc_show_post_metas_tags' ) ? $this -> czr_fn_get_meta( 'tags', $limit, $sep ) : '';
   }
 
   public function czr_fn_get_author( $before = null ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_author' ) ) ? $this -> czr_fn_get_meta( 'author', array( $before ) ) : '';
+    return czr_fn_is_checked( 'tc_show_post_metas_author' ) ? $this -> czr_fn_get_meta( 'author', array( $before ) ) : '';
   }
 
   public function czr_fn_get_author_with_avatar( $before = null ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_author' ) ) ? $this -> czr_fn_get_meta( 'author_with_avatar', array( $before ) ) : '';
+    return czr_fn_is_checked( 'tc_show_post_metas_author' ) ? $this -> czr_fn_get_meta( 'author_with_avatar', array( $before ) ) : '';
   }
 
   public function czr_fn_get_publication_date( $permalink = false, $before = null, $only_text = false ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_publication_date' ) ) ? $this -> czr_fn_get_meta( 'pub_date', array(
+    return czr_fn_is_checked( 'tc_show_post_metas_publication_date' ) ? $this -> czr_fn_get_meta( 'pub_date', array(
         '',
         $permalink,
         $before,
@@ -29,9 +29,7 @@ class CZR_post_metas_model_class extends CZR_Model {
 
 
   public function czr_fn_get_update_date( $permalink = false, $before = null, $only_text = false ) {
-    return 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_update_date' ) ) &&
-           false !== czr_fn_post_has_update() ?
-                $this -> czr_fn_get_meta( 'up_date', array( '', $permalink, $before, $only_text ) ) : '';
+    return ( czr_fn_is_checked( 'tc_show_post_metas_update_date' ) && false !== czr_fn_post_has_update() ) ? $this -> czr_fn_get_meta( 'up_date', array( '', $permalink, $before, $only_text ) ) : '';
   }
 
   public function czr_fn_get_attachment_image_info( $permalink = false, $before = null ) {
@@ -126,10 +124,11 @@ class CZR_post_metas_model_class extends CZR_Model {
   * @package Customizr
   * @since Customizr 3.2.6
   */
-  protected function czr_fn_get_meta_date( $pub_or_update = 'publication', $_format = '', $permalink = false, $only_text ) {
+  protected function czr_fn_get_meta_date( $pub_or_update = 'publication', $_format = '', $permalink = false, $only_text = false ) {
     if ( 'short' == $_format ) {
         $_format = 'j M, Y';
     }
+    $user_date_format = get_option('date_format');
 
     $_format = apply_filters( 'czr_meta_date_format' , $_format );
     $_use_post_mod_date = apply_filters( 'czr_use_the_post_modified_date' , 'publication' != $pub_or_update );
@@ -137,7 +136,7 @@ class CZR_post_metas_model_class extends CZR_Model {
     //time
     $date_meta = sprintf( '<time class="entry-date %1$s" datetime="%2$s">%3$s</time>',
         'publication' == $pub_or_update ? 'published updated' : 'updated',
-        $_use_post_mod_date ? esc_attr( get_the_modified_date('c') ) : esc_attr( get_the_date( 'c' ) ),
+        $_use_post_mod_date ? esc_attr( get_the_modified_date($user_date_format) ) : esc_attr( get_the_date( $user_date_format ) ),
         $_use_post_mod_date ? esc_html( get_the_modified_date( $_format ) ) : esc_html( get_the_date( $_format ) )
     );
 

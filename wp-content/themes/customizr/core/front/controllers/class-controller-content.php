@@ -169,13 +169,13 @@ if ( ! class_exists( 'CZR_controller_content' ) ) :
 
 
       elseif ( is_singular() && ! is_page() && ! czr_fn_is_real_home() )
-        $post_metas = ( 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_single_post' ) ) );
+        $post_metas = ( czr_fn_is_checked( 'tc_show_post_metas_single_post' ) );
 
       elseif ( ! is_singular() && ! czr_fn_is_real_home() && ! is_page() )
-        $post_metas = ( 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_post_lists' ) ) );
+        $post_metas = ( czr_fn_is_checked( 'tc_show_post_metas_post_lists' ) );
 
       elseif ( czr_fn_is_real_home() )
-        $post_metas = ( 0 != esc_attr( czr_fn_opt( 'tc_show_post_metas_home' ) ) );
+        $post_metas = ( czr_fn_is_checked( 'tc_show_post_metas_home' ) );
       else
         $post_metas = false;
 
@@ -198,7 +198,7 @@ if ( ! class_exists( 'CZR_controller_content' ) ) :
     function czr_fn_display_view_posts_navigation() {
       global $wp_query;
 
-      $bool  = $wp_query -> post_count > 0;
+      $bool  = $wp_query->post_count > 0;
       $bool  = is_singular() ? $bool && ! is_attachment() : $bool;
 
       if ( ! $bool )
@@ -209,12 +209,13 @@ if ( ! class_exists( 'CZR_controller_content' ) ) :
         return true;
       */
 
-      if ( ! $this->czr_fn_is_posts_navigation_enabled() )
+      if ( ! $this->czr_fn_is_posts_navigation_enabled() ) {
         return false;
+      }
 
-      $_context = $this -> czr_fn_get_post_navigation_context();
+      $_context = $this->czr_fn_get_post_navigation_context();
 
-      return $this -> czr_fn_is_posts_navigation_context_enabled( $_context );
+      return $this->czr_fn_is_posts_navigation_context_enabled( $_context );
     }
 
 
@@ -246,9 +247,8 @@ if ( ! class_exists( 'CZR_controller_content' ) ) :
 
     function czr_fn_display_view_rights_social_block() {
       return czr_fn_has_social_links() && czr_fn_opt( 'tc_social_in_right-sidebar' );
-
-
     }
+
    /******************************
     VARIOUS HELPERS
     *******************************/
@@ -298,14 +298,18 @@ if ( ! class_exists( 'CZR_controller_content' ) ) :
     *
     */
     function czr_fn_get_post_navigation_context(){
-      if ( is_page() )
-        return 'page';
-      if ( is_single() && ! is_attachment() )
-        return 'single'; // exclude attachments
-      if ( is_home() && 'posts' == get_option('show_on_front') )
+      if ( is_front_page() ) {
         return 'home';
-      if ( !is_404() && ! czr_fn_is_home_empty() )
+      }
+      if ( is_page() ) {
+        return 'page';
+      }
+      if ( is_single() && ! is_attachment() ) {
+        return 'single'; // exclude attachments.
+      }
+      if ( !is_404() && ! czr_fn_is_home_empty() ) {
         return 'archive';
+      }
       return false;
     }
 

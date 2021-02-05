@@ -27,7 +27,7 @@ if ( null != $prev_link || null != $next_link ) :
 
 ?>
 <div class="row post-navigation <?php czr_fn_echo( 'element_class' ) ?>" <?php czr_fn_echo('element_attributes') ?>>
-  <nav id="nav-below" class="col-12" role="navigation">
+  <nav id="nav-below" class="col-12">
     <h2 class="sr-only"><?php _e('Posts navigation', 'customizr') ?></h2>
     <ul class="czr_pager row flex-row flex-no-wrap">
       <li class="next col-2 col-sm-4 <?php echo $tnext_align_class ?> ">
@@ -44,8 +44,10 @@ if ( null != $prev_link || null != $next_link ) :
             'mid_size'  => 1,
             'type'      => 'array',
           ));
-          foreach ( $_paginate_links as $_page ) {
-            echo "<li class='pag-item'>$_page</li>";
+          if ( is_array( $_paginate_links ) ) {
+            foreach ( $_paginate_links as $_page ) {
+              echo "<li class='pag-item'>$_page</li>";
+            }
           }
         ?>
         </ul>
