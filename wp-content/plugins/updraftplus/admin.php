@@ -21,6 +21,8 @@ class UpdraftPlus_Admin {
 
 	private $storage_service_without_settings;
 
+	private $storage_service_with_partial_settings;
+
 	/**
 	 * Constructor
 	 */
@@ -225,15 +227,27 @@ class UpdraftPlus_Admin {
 		if ($this->disk_space_check(1048576*35) === false) add_action('all_admin_notices', array($this, 'show_admin_warning_diskspace'));
 
 		$all_services = UpdraftPlus_Storage_Methods_Interface::get_enabled_storage_objects_and_ids($updraftplus->get_canonical_service_list());
+		
 		$this->storage_service_without_settings = array();
+		$this->storage_service_with_partial_settings = array();
+		
 		foreach ($all_services as $method => $sinfo) {
 			if (empty($sinfo['object']) || empty($sinfo['instance_settings']) || !is_callable(array($sinfo['object'], 'options_exist'))) continue;
 			foreach ($sinfo['instance_settings'] as $opt) {
 				if (!$sinfo['object']->options_exist($opt)) {
-					$this->storage_service_without_settings[] = $updraftplus->backup_methods[$method];
+					if (isset($opt['CSRF'])) {
+						$this->storage_service_with_partial_settings[$method] = $updraftplus->backup_methods[$method];
+					} else {
+						$this->storage_service_without_settings[] = $updraftplus->backup_methods[$method];
+					}
 				}
 			}
 		}
+		
+		if (!empty($this->storage_service_with_partial_settings)) {
+			add_action('all_admin_notices', array($this, 'show_admin_warning_if_remote_storage_with_partial_setttings'));
+		}
+
 		if (!empty($this->storage_service_without_settings)) {
 			add_action('all_admin_notices', array($this, 'show_admin_warning_if_remote_storage_settting_are_empty'));
 		}
@@ -760,15 +774,16 @@ class UpdraftPlus_Admin {
 
 		// Defeat other plugins/themes which dump their jQuery UI CSS onto our settings page
 		wp_deregister_style('jquery-ui');
-		$jquery_ui_css_enqueue_version = $updraftplus->use_unminified_scripts() ? '1.11.4.0'.'.'.time() : '1.11.4.0';
-		wp_enqueue_style('jquery-ui', UPDRAFTPLUS_URL.'/includes/jquery-ui.custom'.$updraft_min_or_not.'.css', array(), $jquery_ui_css_enqueue_version);
+		$jquery_ui_version = version_compare($updraftplus->get_wordpress_version(), '5.6', '>=') ? '1.12.1' : '1.11.4';
+		$jquery_ui_css_enqueue_version = $updraftplus->use_unminified_scripts() ? $jquery_ui_version.'.0'.'.'.time() : $jquery_ui_version.'.0';
+		wp_enqueue_style('jquery-ui', UPDRAFTPLUS_URL."/includes/jquery-ui.custom-v$jquery_ui_version$updraft_min_or_not.css", array(), $jquery_ui_css_enqueue_version);
 	
 		wp_enqueue_style('updraft-admin-css', UPDRAFTPLUS_URL.'/css/updraftplus-admin'.$updraft_min_or_not.'.css', array(), $enqueue_version);
 		// add_filter('style_loader_tag', array($this, 'style_loader_tag'), 10, 2);
 
 		$this->ensure_sufficient_jquery_and_enqueue();
-		$jquery_blockui_enqueue_version = $updraftplus->use_unminified_scripts() ? '2.70.0'.'.'.time() : '2.70.0';
-		wp_enqueue_script('jquery-blockui', UPDRAFTPLUS_URL.'/includes/jquery.blockUI'.$updraft_min_or_not.'.js', array('jquery'), $jquery_blockui_enqueue_version);
+		$jquery_blockui_enqueue_version = $updraftplus->use_unminified_scripts() ? '2.71.0'.'.'.time() : '2.71.0';
+		wp_enqueue_script('jquery-blockui', UPDRAFTPLUS_URL.'/includes/blockui/jquery.blockUI'.$updraft_min_or_not.'.js', array('jquery'), $jquery_blockui_enqueue_version);
 	
 		wp_enqueue_script('jquery-labelauty', UPDRAFTPLUS_URL.'/includes/labelauty/jquery-labelauty'.$updraft_min_or_not.'.js', array('jquery'), $enqueue_version);
 		wp_enqueue_style('jquery-labelauty', UPDRAFTPLUS_URL.'/includes/labelauty/jquery-labelauty'.$updraft_min_or_not.'.css', array(), $enqueue_version);
@@ -777,6 +792,9 @@ class UpdraftPlus_Admin {
 		$handlebars_js_enqueue_version = $updraftplus->use_unminified_scripts() ? '4.1.2'.'.'.time() : '4.1.2';
 		wp_enqueue_script('handlebars', UPDRAFTPLUS_URL.'/includes/handlebars/handlebars'.$min_or_not.'.js', array(), $handlebars_js_enqueue_version);
 		$this->enqueue_jstree();
+
+		$jqueryui_dialog_extended_version = $updraftplus->use_unminified_scripts() ? '1.0.3'.'.'.time() : '1.0.3';
+		wp_enqueue_script('jquery-ui.dialog.extended', UPDRAFTPLUS_URL.'/includes/jquery-ui.dialog.extended/jquery-ui.dialog.extended'.$min_or_not.'.js', array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-dialog'), $jqueryui_dialog_extended_version);
 		
 		do_action('updraftplus_admin_enqueue_scripts');
 		
@@ -907,6 +925,7 @@ class UpdraftPlus_Admin {
 			'forbackupsolderthan' => __('For backups older than', 'updraftplus'),
 			'ud_url' => UPDRAFTPLUS_URL,
 			'processing' => __('Processing...', 'updraftplus'),
+			'loading' => __('Loading...', 'updraftplus'),
 			'pleasefillinrequired' => __('Please fill in the required information.', 'updraftplus'),
 			'test_settings' => __('Test %s Settings', 'updraftplus'),
 			'testing_settings' => __('Testing %s Settings...', 'updraftplus'),
@@ -1069,7 +1088,7 @@ class UpdraftPlus_Admin {
 		?>
 		<script>
 		jQuery(function() {
-			jQuery('.updraft-ad-container').appendTo('.wrap p:first');
+			jQuery('.updraft-ad-container').appendTo(jQuery('.wrap p').first());
 		});
 		</script>
 		<?php
@@ -1162,7 +1181,7 @@ class UpdraftPlus_Admin {
 		if (null !== ($filtered_result = apply_filters('updraftplus_disk_space_check', null, $space))) return $filtered_result;
 		global $updraftplus;
 		$updraft_dir = $updraftplus->backups_dir_location();
-		$disk_free_space = @disk_free_space($updraft_dir);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$disk_free_space = function_exists('disk_free_space') ? @disk_free_space($updraft_dir) : false;// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		if (false == $disk_free_space) return -1;
 		return ($disk_free_space > $space) ? true : false;
 	}
@@ -1562,7 +1581,7 @@ class UpdraftPlus_Admin {
 
 			restore_error_handler();
 
-			@fclose($updraftplus->logfile_handle);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+			if ($debug_mode) @fclose($updraftplus->logfile_handle);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 			if (!$debug_mode) @unlink($updraftplus->logfile_name);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		}
 
@@ -2825,7 +2844,20 @@ class UpdraftPlus_Admin {
 
 				if (!class_exists('UpdraftPlus_Notices')) include_once(UPDRAFTPLUS_DIR.'/includes/updraftplus-notices.php');
 				global $updraftplus_notices;
-				$updraftplus_notices->do_notice();
+				
+				$backup_history = UpdraftPlus_Backup_History::get_history();
+				$review_dismiss = UpdraftPlus_Options::get_updraft_option('dismissed_review_notice', 0);
+				$backup_dir = $updraftplus->backups_dir_location();
+				// N.B. Not an exact proxy for the installed time; they may have tweaked the expert option to move the directory
+				$installed = @filemtime($backup_dir.'/index.html');// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+				$installed_for = time() - $installed;
+
+				$advert = false;
+				if (!empty($backup_history) && $installed && time() > $review_dismiss && $installed_for > 28*86400 && $installed_for < 84*86400) {
+					$advert = 'rate';
+				}
+
+				$updraftplus_notices->do_notice($advert);
 			}
 
 			if (!$updraftplus->memory_check(64)) {
@@ -3078,9 +3110,9 @@ class UpdraftPlus_Admin {
 		if ($exclude_js) {
 			$html .= '<button id="updraft_restore_resume" type="submit" class="button-primary">'.__('Continue restoration', 'updraftplus').'</button>';
 		} else {
-			$html .= '<button id="updraft_restore_resume" onclick="jQuery(\'#updraft_restore_continue_action\').val(\'updraft_restore_continue\'); jQuery(this).parent(\'form\').submit();" type="submit" class="button-primary">'.__('Continue restoration', 'updraftplus').'</button>';
+			$html .= '<button id="updraft_restore_resume" onclick="jQuery(\'#updraft_restore_continue_action\').val(\'updraft_restore_continue\'); jQuery(this).parent(\'form\').trigger(\'submit\');" type="submit" class="button-primary">'.__('Continue restoration', 'updraftplus').'</button>';
 		}
-		$html .= '<button id="updraft_restore_abort" onclick="jQuery(\'#updraft_restore_continue_action\').val(\'updraft_restore_abort\'); jQuery(this).parent(\'form\').submit();" class="button-secondary">'.__('Dismiss', 'updraftplus').'</button>';
+		$html .= '<button id="updraft_restore_abort" onclick="jQuery(\'#updraft_restore_continue_action\').val(\'updraft_restore_abort\'); jQuery(this).parent(\'form\').trigger(\'submit\');" class="button-secondary">'.__('Dismiss', 'updraftplus').'</button>';
 
 		$html .= '</form></div>';
 
@@ -4277,7 +4309,7 @@ class UpdraftPlus_Admin {
 			$rawbackup .= '</p><strong>'.__('Total backup size:', 'updraftplus').'</strong> '.UpdraftPlus_Manipulation_Functions::convert_numeric_size_to_text($total_size).'<p>';
 		}
 		
-		$rawbackup .= '</p><hr><p><pre>'.print_r($backup, true).'</p></pre>';
+		$rawbackup .= '</p><hr><p><pre>'.print_r($backup, true).'</pre></p>';
 
 		if (!empty($job_data) && is_array($job_data)) {
 			$rawbackup .= '<p><pre>'.htmlspecialchars(print_r($job_data, true)).'</pre></p>';
@@ -5857,7 +5889,7 @@ ENDHERE;
 	 *
 	 * @return string - the clone UI widget
 	 */
-	public function updraftplus_clone_ui_widget($include_testing_ui = false, $supported_wp_versions, $supported_packages, $supported_regions) {
+	public function updraftplus_clone_ui_widget($include_testing_ui, $supported_wp_versions, $supported_packages, $supported_regions) {
 		global $updraftplus;
 
 		$output = '<p class="updraftplus-option updraftplus-option-inline php-version">';
@@ -5924,6 +5956,8 @@ ENDHERE;
 		$output .= '<input type="checkbox" class="updraftplus_clone_admin_login_options" id="updraftplus_clone_admin_login_options" name="updraftplus_clone_admin_login_options" value="1" checked="checked">';
 		$output .= '<label for="updraftplus_clone_admin_login_options" class="updraftplus_clone_admin_login_options_label">'.__('Forbid non-administrators to login to WordPress on your clone', 'updraftplus').'</label>';
 		$output .= '</p>';
+
+		$output = apply_filters('updraftplus_clone_additional_ui', $output);
 
 		return $output;
 	}
@@ -6023,6 +6057,24 @@ ENDHERE;
 		}
 		
 		return $version;
+	}
+
+	/**
+	 * Show which remote storage settings are partially setup error, or if manual auth is supported show the manual auth UI
+	 */
+	public function show_admin_warning_if_remote_storage_with_partial_setttings() {
+		if ((isset($_REQUEST['page']) && 'updraftplus' == $_REQUEST['page']) || (defined('DOING_AJAX') && DOING_AJAX)) {
+			$enabled_services = UpdraftPlus_Storage_Methods_Interface::get_enabled_storage_objects_and_ids(array_keys($this->storage_service_with_partial_settings));
+			foreach ($this->storage_service_with_partial_settings as $method => $method_name) {
+				if (empty($enabled_services[$method]['object']) || empty($enabled_services[$method]['instance_settings']) || !$enabled_services[$method]['object']->supports_feature('manual_authentication')) {
+					$this->show_admin_warning(sprintf(__('The following remote storage (%s) have only been partially configured, manual authorization is not supported with this remote storage, please try again and if the problem persists contact support.', 'updraftplus'), $method), 'error');
+				} else {
+					$this->show_admin_warning($enabled_services[$method]['object']->get_manual_authorisation_template(), 'error');
+				}
+			}
+		} else {
+			$this->show_admin_warning('UpdraftPlus: '.sprintf(__('The following remote storage (%s) have only been partially configured, if you are having problems you can try to manually authorise at the UpdraftPlus settings page.', 'updraftplus'), implode(', ', $this->storage_service_with_partial_settings)).' <a href="'.UpdraftPlus_Options::admin_page_url().'?page=updraftplus&amp;tab=settings">'.__('Return to UpdraftPlus configuration', 'updraftplus').'</a>', 'error');
+		}
 	}
 
 	/**

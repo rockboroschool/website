@@ -1360,6 +1360,10 @@ input[id^="updraft_include_more_path_restore_"] {
 	color: #DE3C3C;
 }
 
+p[id^="updraftplus_manual_authentication_error_"] {
+	color: #DE3C3C;
+}
+
 #updraft-wrap .form-table th {
 	width: 230px;
 }
@@ -2118,6 +2122,10 @@ small.ud_massactions-tip {
 
 #updraft-authenticate-modal p {
 	font-size: 16px;
+}
+
+div.ui-dialog.ui-widget.ui-widget-content {
+	z-index: 99999 !important;
 }
 
 #updraft_delete_form p {
@@ -3070,6 +3078,10 @@ div#updraft-wrap a {
 	margin-top: 13px;
 }
 
+body.update-core-php #updraft_inpage_backup h2:nth-child(1) {
+	margin-top: 1em !important;
+}
+
 /* Restoration page */
 
 .updraft_restore_container {
@@ -3350,7 +3362,6 @@ ul.updraft-restore--stages li.active {
 	border-top: 1px solid #EEE;
 	padding: 20px;
 	text-align: center;
-	position: -webkit-sticky;
 	position: sticky;
 	bottom: 0;
 	background: #FFF;

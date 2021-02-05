@@ -9,9 +9,9 @@
  *
  * See more documentation about our views templating system.
  *
- * @link    http://m.tri.be/1aiy
+ * @link    http://evnt.is/1aiy
  *
- * @version TBD
+ * @version 5.3.0
  *
  * @var string              $label       Title for the fieldset.
  * @var string              $description Description for the fieldset.

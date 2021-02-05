@@ -169,7 +169,7 @@ class Widget_List extends Widget_Abstract {
 	/**
 	 * Get the options to use in a the limit dropdown.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @return array<string,mixed> An array of options with the text and value included.
 	 */
@@ -177,7 +177,7 @@ class Widget_List extends Widget_Abstract {
 		/**
 		 * Filter the max limit of events to display in the List Widget.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param int The max limit of events to display in the List Widget, default 10.
 		 */
@@ -218,7 +218,7 @@ class Widget_List extends Widget_Abstract {
 		/**
 		 * Applies a filter to the args to context.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param array<string,mixed> $alterations The alterations to make to the context.
 		 * @param array<string,mixed> $arguments   Current set of arguments.
@@ -227,30 +227,9 @@ class Widget_List extends Widget_Abstract {
 	}
 
 	/**
-	 * Empties the json_ld_data if jsonld_enable is false,
-	 * removing the need for additional checks in the template.
-	 *
-	 * @since TBD
-	 *
-	 * @param array<string,mixed> $template_vars The current template variables.
-	 *
-	 * @return array<string,mixed> The modified template variables.
-	 */
-	public function disable_json_data( $template_vars ) {
-		if (
-			isset( $template_vars['jsonld_enable'] )
-			&& ! tribe_is_truthy( $template_vars['jsonld_enable'] )
-		) {
-			$template_vars['json_ld_data'] = '';
-		}
-
-		return $template_vars;
-	}
-
-	/**
 	 * Add full events list widget stylesheets to customizer styles array to check.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @param array<string> $sheets       Array of sheets to search for.
 	 * @param string        $css_template String containing the inline css to add.

@@ -89,7 +89,7 @@ class UpdraftPlus {
 			'UpdraftPlus_Manipulation_Functions' => 'includes/class-manipulation-functions.php',
 			'UpdraftPlus_Filesystem_Functions' => 'includes/class-filesystem-functions.php',
 			'UpdraftPlus_Storage_Methods_Interface' => 'includes/class-storage-methods-interface.php',
-			'UpdraftPlus_Job_Scheduler' => 'includes/class-job-scheduler.php'
+			'UpdraftPlus_Job_Scheduler' => 'includes/class-job-scheduler.php',
 		);
 		
 		foreach ($load_classes as $class => $relative_path) {
@@ -973,7 +973,7 @@ class UpdraftPlus {
 			$quota_free = '';
 		}
 
-		$disk_free_space = @disk_free_space($updraft_dir);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$disk_free_space = function_exists('disk_free_space') ? @disk_free_space($updraft_dir) : false;// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 		// == rather than === here is deliberate; support experience shows that a result of (int)0 is not reliable. i.e. 0 can be returned when the real result should be false.
 		if (false == $disk_free_space) {
 			call_user_func($logging_function, "Free space on disk containing Updraft's temporary directory: Unknown".$quota_free);
@@ -2123,6 +2123,11 @@ class UpdraftPlus {
 			$warnings = $this->jobdata_get('warnings');
 			
 			$this->logfile_open($this->file_nonce);
+
+			if (!$this->get_backup_job_semaphore_lock($this->nonce, $resumption_no)) {
+				$this->log('Failed to get backup job lock; possible overlapping resumptions - will abort this instance');
+				die;
+			}
 			
 			// Import existing warnings. The purpose of this is so that when save_backup_to_history() is called, it has a complete set - because job data expires quickly, whilst the warnings of the last backup run need to persist
 			if (is_array($warnings)) {
@@ -2275,7 +2280,8 @@ class UpdraftPlus {
 		
 			// We're in over-time - we only reschedule if something useful happened last time (used to be that we waited for it to happen this time - but that meant that temporary errors, e.g. Google 400s on uploads, scuppered it all - we'd do better to have another chance
 			// 'useful_checkin' is < 1.16.35 (Nov 2020). It is only supported here for resumptions that span upgrades. Later it can be removed.
-			$useful_checkin = max($this->jobdata_get('useful_checkin', 0), max($this->jobdata_get('useful_checkins', 0)));
+			$useful_checkin = max($this->jobdata_get('useful_checkin', 0), max((array) $this->jobdata_get('useful_checkins', 0)));
+			
 			$last_resumption = $resumption_no - 1;
 			$fail_on_resume = $this->jobdata_get('fail_on_resume');
 			
@@ -2369,6 +2375,8 @@ class UpdraftPlus {
 			}
 
 		}
+
+		do_action('pre_database_backup_setup');
 
 		$backup_databases = $this->jobdata_get('backup_database');
 
@@ -2935,7 +2943,7 @@ class UpdraftPlus {
 		// doing_action() was added in WP 3.9
 		// wp_cron() can be called from the 'init' action
 		
-		if (function_exists('doing_action') && (doing_action('init') || @constant('DOING_CRON')) && (doing_action('updraft_backup_database') || doing_action('updraft_backup'))) {// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		if (function_exists('doing_action') && (doing_action('init') || (defined('DOING_CRON') && DOING_CRON)) && (doing_action('updraft_backup_database') || doing_action('updraft_backup'))) {// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 			$last_scheduled_action_called_at = get_option("updraft_last_scheduled_$semaphore");
 			// 11 minutes - so, we're assuming that they haven't custom-modified their schedules to run scheduled backups more often than that. If they have, they need also to use the filter to over-ride this check.
 			$seconds_ago = time() - $last_scheduled_action_called_at;
@@ -2961,6 +2969,37 @@ class UpdraftPlus {
 		if (!$this->semaphore->lock()) {
 			$this->log('Failed to gain semaphore lock ('.$semaphore.') - another backup of this type is apparently already active - aborting (if this is wrong - i.e. if the other backup crashed without removing the lock, then another can be started after 3 minutes)');
 			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * This function will try and get a lock for the backup job, it will return false if it fails to get a lock.
+	 *
+	 * @param string  $job_nonce     - the backup job nonce
+	 * @param integer $resumption_no - the current resumption
+	 *
+	 * @return boolean - boolean to indicate if we got a lock or not
+	 */
+	public function get_backup_job_semaphore_lock($job_nonce, $resumption_no) {
+
+		$semaphore = $job_nonce;
+		
+		if (!class_exists('Updraft_Semaphore_3_0')) include_once(UPDRAFTPLUS_DIR.'/includes/class-updraft-semaphore.php');
+
+		if (empty($this->backup_semaphore)) {
+			$this->backup_semaphore = new Updraft_Semaphore_3_0($semaphore, 30, array($this));
+		}
+
+		if (1 <= $resumption_no) {
+
+			$this->log('Requesting backup semaphore lock ('.$semaphore.')');
+
+			if (!$this->backup_semaphore->lock()) {
+				$this->log('Failed to gain semaphore lock ('.$semaphore.') - another resumption for this job is apparently already active');
+				return false;
+			}
 		}
 
 		return true;
@@ -3074,7 +3113,7 @@ class UpdraftPlus {
 			
 			$sched_log_extra = '';
 			
-			if ('manual' != $files_schedule) {
+			if ('manual' != $files_schedule && false !== $files_schedule) {
 				if ($files_schedule == $db_schedule || UpdraftPlus_Options::get_updraft_option('updraft_interval_database', 'xyz') == 'xyz') {
 					$sched_log_extra = 'Combining jobs from identical schedules. ';
 					$backup_database = (true == $backup_files) ? true : false;
@@ -3334,6 +3373,7 @@ class UpdraftPlus {
 	public function backup_finish($do_cleanup, $allow_email, $force_abort = false) {
 
 		if (!empty($this->semaphore)) $this->semaphore->unlock();
+		if (!empty($this->backup_semaphore)) $this->backup_semaphore->release();
 
 		$delete_jobdata = false;
 
@@ -3748,6 +3788,7 @@ class UpdraftPlus {
 	private function save_last_backup($backup_array) {
 		$success = ($this->error_count() == 0) ? 1 : 0;
 		$last_backup = UpdraftPlus_Options::get_updraft_option('updraft_last_backup', array());
+		if (empty($last_backup)) $last_backup = array();
 		if ('incremental' === $this->jobdata_get('job_type')) {
 			$last_backup['incremental_backup_time'] = $this->backup_time; // the incremental_backup_time index is used only for storing time of the incremental job type
 		} else {
@@ -5281,6 +5322,7 @@ class UpdraftPlus {
 			'updraftplus_tmp_googledrive_access_token',
 			'updraftplus_dismissedautobackup',
 			'dismissed_general_notices_until',
+			'dismissed_review_notice',
 			'dismissed_clone_php_notices_until',
 			'dismissed_clone_wc_notices_until',
 			'dismissed_season_notices_until',
@@ -5501,6 +5543,9 @@ class UpdraftPlus {
 			case 'shop_vault_50':
 				return apply_filters('updraftplus_com_shop_vault_50', 'https://updraftplus.com/shop/updraftplus-vault-storage-50-gb/');
 				break;
+			case 'anon_backups':
+				return apply_filters('updraftplus_com_anon_backups', 'https://updraftplus.com/upcoming-updraftplus-feature-clone-data-anonymisation/');
+				break;
 			default:
 				return 'URL not found ('.$which_page.')';
 		}
@@ -5682,6 +5727,7 @@ class UpdraftPlus {
 	public function is_hosting_backup_limit_reached() {
 		$res = array();
 		$last_backup = UpdraftPlus_Options::get_updraft_option('updraft_last_backup', array());
+		if (empty($last_backup)) $last_backup = array();
 		$current_time = time();
 		if (!empty($last_backup['incremental_backup_time'])) {
 			// $next_day_from_last_backup = strtotime(gmdate('Y-m-d', (int) $last_backup['backup_time'])) + 86400;

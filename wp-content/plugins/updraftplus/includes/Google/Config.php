@@ -55,7 +55,7 @@ class UDP_Google_Config
 
       // Definition of class specific values, like file paths and so on.
       'classes' => array(
-        'Google_IO_Abstract' => array(
+        'UDP_Google_IO_Abstract' => array(
           'request_timeout_seconds' => 100,
         ),
         'Google_Logger_Abstract' => array(
@@ -69,7 +69,7 @@ class UDP_Google_Config
           'mode' => 0640,
           'lock' => false,
         ),
-        'Google_Http_Request' => array(
+        'UDP_Google_Http_Request' => array(
           // Disable the use of gzip on calls if set to true. Defaults to false.
           'disable_gzip' => self::GZIP_ENABLED,
 
@@ -117,7 +117,7 @@ class UDP_Google_Config
           // Maximum number of retries allowed
           'retries' => 0
         ),
-        'Google_Service_Exception' => array(
+        'UDP_Google_Service_Exception' => array(
           'retry_map' => array(
             '500' => self::TASK_RETRY_ALWAYS,
             '503' => self::TASK_RETRY_ALWAYS,
@@ -125,7 +125,7 @@ class UDP_Google_Config
             'userRateLimitExceeded' => self::TASK_RETRY_ALWAYS
           )
         ),
-        'Google_IO_Exception' => array(
+        'UDP_Google_IO_Exception' => array(
           'retry_map' => !extension_loaded('curl') ? array() : array(
             CURLE_COULDNT_RESOLVE_HOST => self::TASK_RETRY_ALWAYS,
             CURLE_COULDNT_CONNECT => self::TASK_RETRY_ALWAYS,

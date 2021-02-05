@@ -33,7 +33,7 @@ class UDP_Google_Client
   private $auth;
 
   /**
-   * @var Google_IO_Abstract $io
+   * @var UDP_Google_IO_Abstract $io
    */
   private $io;
 
@@ -86,16 +86,16 @@ class UDP_Google_Client
 
       if (version_compare(phpversion(), "5.3.4", "<=") || $this->isAppEngine()) {
         // Automatically disable compress.zlib, as currently unsupported.
-        $config->setClassConfig('Google_Http_Request', 'disable_gzip', true);
+        $config->setClassConfig('UDP_Google_Http_Request', 'disable_gzip', true);
       }
     }
 
     if ($config->getIoClass() == UDP_Google_Config::USE_AUTO_IO_SELECTION) {
       if (function_exists('curl_version') && function_exists('curl_exec')
           && !$this->isAppEngine()) {
-        $config->setIoClass("Google_IO_Curl");
+        $config->setIoClass("UDP_Google_IO_Curl");
       } else {
-        $config->setIoClass("Google_IO_Stream");
+        $config->setIoClass("UDP_Google_IO_Stream");
       }
     }
 
@@ -229,9 +229,9 @@ class UDP_Google_Client
 
   /**
    * Set the IO object
-   * @param Google_IO_Abstract $io
+   * @param UDP_Google_IO_Abstract $io
    */
-  public function setIo(Google_IO_Abstract $io)
+  public function setIo(UDP_Google_IO_Abstract $io)
   {
     $this->config->setIoClass(get_class($io));
     $this->io = $io;
@@ -577,17 +577,17 @@ class UDP_Google_Client
    */
   public function execute($request)
   {
-    if ($request instanceof Google_Http_Request) {
+    if ($request instanceof UDP_Google_Http_Request) {
       $request->setUserAgent(
           $this->getApplicationName()
           . " " . self::USER_AGENT_SUFFIX
           . $this->getLibraryVersion()
       );
-      if (!$this->getClassConfig("Google_Http_Request", "disable_gzip")) {
+      if (!$this->getClassConfig("UDP_Google_Http_Request", "disable_gzip")) {
         $request->enableGzip();
       }
       $request->maybeMoveParametersToBody();
-      return Google_Http_REST::execute($this, $request);
+      return UDP_Google_Http_REST::execute($this, $request);
     } else if ($request instanceof Google_Http_Batch) {
       return $request->execute();
     } else {
@@ -617,7 +617,7 @@ class UDP_Google_Client
   }
 
   /**
-   * @return Google_IO_Abstract IO implementation
+   * @return UDP_Google_IO_Abstract IO implementation
    */
   public function getIo()
   {

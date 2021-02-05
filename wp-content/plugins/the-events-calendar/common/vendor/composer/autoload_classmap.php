@@ -114,6 +114,7 @@ return array(
     'Psr\\Log\\Test\\DummyTest' => $vendorDir . '/psr/log/Psr/Log/Test/DummyTest.php',
     'Psr\\Log\\Test\\LoggerInterfaceTest' => $vendorDir . '/psr/log/Psr/Log/Test/LoggerInterfaceTest.php',
     'Psr\\Log\\Test\\TestLogger' => $vendorDir . '/psr/log/Psr/Log/Test/TestLogger.php',
+    'Tribe\\Admin\\Notice\\WP_Version' => $baseDir . '/src/Tribe/Admin/Notice/WP_Version.php',
     'Tribe\\Customizer\\Control' => $baseDir . '/src/Tribe/Customizer/Control.php',
     'Tribe\\Customizer\\Controls\\Heading' => $baseDir . '/src/Tribe/Customizer/Controls/Heading.php',
     'Tribe\\DB_Lock' => $baseDir . '/src/Tribe/DB_Lock.php',

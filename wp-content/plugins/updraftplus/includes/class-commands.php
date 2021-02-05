@@ -120,6 +120,13 @@ class UpdraftPlus_Commands {
 			add_filter('updraftplus_initial_jobdata', array($updraftplus, 'updraftplus_clone_backup_jobdata'), 10, 3);
 		}
 
+		if (!empty($params['db_anon_all']) || !empty($params['db_anon_non_staff'])) {
+			if (!class_exists('UpdraftPlus_Anonymisation_Functions')) include_once(UPDRAFTPLUS_DIR.'/addons/anonymisation.php');
+
+			add_filter('updraft_backupnow_options', 'UpdraftPlus_Anonymisation_Functions::updraftplus_backup_anonymisation_options', 10, 2);
+			add_filter('updraftplus_initial_jobdata', 'UpdraftPlus_Anonymisation_Functions::updraftplus_backup_anonymisation_jobdata', 10, 2);
+		}
+
 		$background_operation_started_method_name = empty($params['background_operation_started_method_name']) ? '_updraftplus_background_operation_started' : $params['background_operation_started_method_name'];
 		$updraftplus_admin->request_backupnow($params, array($this->_uc_helper, $background_operation_started_method_name));
 		
@@ -706,6 +713,67 @@ class UpdraftPlus_Commands {
 		$response = $updraftplus_admin->deauth_remote_method($data);
 		return $response;
 	}
+
+	/**
+	 * A handler method to call the relevant remote storage manual authentication methods and return the authentication result
+	 *
+	 * @param array $data - an array of authentication data, normally includes the state and auth code
+	 *
+	 * @return array - an array response to be sent back to the frontend
+	 */
+	public function manual_remote_storage_authentication($data) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+
+		$response = array(
+			'result' => 'success'
+		);
+
+		$method = $data['method'];
+
+		$enabled_services = UpdraftPlus_Storage_Methods_Interface::get_enabled_storage_objects_and_ids(array($method));
+		
+		if (empty($enabled_services[$method]['object']) || empty($enabled_services[$method]['instance_settings']) || !$enabled_services[$method]['object']->supports_feature('manual_authentication')) {
+			$response['result'] = 'error';
+			$response['data'] = __('Manual authentication is not available for this remote storage method', 'updraftplus') . '(' . $method . ')';
+			return $response;
+		}
+
+		$backup_obj = $enabled_services[$method]['object'];
+
+		$auth_data = json_decode(base64_decode($data['auth_data']), true);
+		$instance_id = '';
+
+		$state = isset($auth_data['state']) ? urldecode($auth_data['state']) : '';
+		$code = isset($auth_data['code']) ? urldecode($auth_data['code']) : '';
+
+		if (empty($state) || empty($code)) {
+			$response['result'] = 'error';
+			$response['data'] = __('Missing authentication data:', 'updraftplus') . " ({$state}) ({$code})";
+			return $response;
+		}
+
+		if (false !== strpos($state, ':')) {
+			$parts = explode(':', $state);
+			$instance_id = $parts[1];
+		}
+
+		if (empty($instance_id)) {
+			$response['result'] = 'error';
+			$response['data'] = __('Missing instance id:', 'updraftplus') . " ($state)";
+			return $response;
+		}
+
+		if (isset($enabled_services[$method]['instance_settings'][$instance_id])) {
+			$opts = $enabled_services[$method]['instance_settings'][$instance_id];
+			$backup_obj->set_options($opts, false, $instance_id);
+		}
+
+		$result = $backup_obj->complete_authentication($state, $code, true);
+		
+		$response['data'] = $result;
+
+		return $response;
+	}
 	
 	/**
 	 * A handler method to call the UpdraftPlus admin wipe settings method
@@ -789,7 +857,7 @@ class UpdraftPlus_Commands {
 		if (true !== $result) {
 			if (is_wp_error($result)) {
 				$connection_errors = array();
-				foreach ($result->get_error_messages() as $key => $msg) {
+				foreach ($result->get_error_messages() as $msg) {
 					$connection_errors[] = $msg;
 				}
 			} else {

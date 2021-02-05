@@ -48,13 +48,18 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	public function setup() {
 		// Add the admin template class for the widget admin form.
 		$this->set_admin_template( tribe( Admin_Template::class ) );
+
+		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'filter_widget_template_vars' ], 20, 2 );
+		add_filter( "tribe_events_views_v2_view{$this->view_slug}_template_vars", [ $this, 'filter_widget_template_vars' ], 20, 2 );
+		// Dequeue and enqueue manager JS to ensure it is the last JS file to be added.
+		add_action( 'tribe_events_views_v2_widget_after_enqueue_assets', [ $this, 'action_enqueue_manager' ], 10, 3 );
 	}
 
 	/**
 	 * Setup the view for the widget.
 	 *
 	 * @since 5.2.1
-	 * @since TBD Correct asset enqueue method.
+	 * @since 5.3.0 Correct asset enqueue method.
 	 *
 	 * @param array<string,mixed> $arguments The widget arguments, as set by the user in the widget string.
 	 */
@@ -95,7 +100,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	/**
 	 * Encapsulates and handles the logic for asset enqueues in it's own method.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @param \Tribe__Context $context Context we are using to build the view.
 	 * @param View_Interface  $view    Which view we are using the template on.
@@ -106,7 +111,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Run an action before we start enqueuing widget assets.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $should_enqueue Whether assets are enqueued or not.
 		 * @param \Tribe__Context $context        Context we are using to build the view.
@@ -122,7 +127,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Run an action for a specific widget before we start enqueuing widget assets.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $should_enqueue Whether assets are enqueued or not.
 		 * @param \Tribe__Context $context        Context we are using to build the view.
@@ -142,7 +147,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Run an action after we start enqueuing widget assets.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $should_enqueue Whether assets are enqueued or not.
 		 * @param \Tribe__Context $context        Context we are using to build the view.
@@ -158,7 +163,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Run an action for a specific widget after we start enqueuing widget assets.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $should_enqueue Whether assets are enqueued or not.
 		 * @param \Tribe__Context $context        Context we are using to build the view.
@@ -175,7 +180,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	/**
 	 * Enqueues the assets for widgets.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @param \Tribe__Context $context Context we are using to build the view.
 	 * @param View_Interface  $view    Which view we are using the template on.
@@ -186,9 +191,27 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	}
 
 	/**
-	 * Determines whether to enqueue assets for widgets.
+	 * Dequeues and enqueues the manager JS.
 	 *
 	 * @since TBD
+	 *
+	 * @param boolean         $should_enqueue Whether assets are enqueued or not.
+	 * @param \Tribe__Context $context        Context we are using to build the view.
+	 * @param View_Interface  $view           Which view we are using the template on.
+	 */
+	public function action_enqueue_manager( $should_enqueue, $context, $view ) {
+		if ( ! $should_enqueue ) {
+			return;
+		}
+
+		wp_dequeue_script( 'tribe-events-views-v2-manager' );
+		tribe_asset_enqueue( 'tribe-events-views-v2-manager' );
+	}
+
+	/**
+	 * Determines whether to enqueue assets for widgets.
+	 *
+	 * @since 5.3.0
 	 *
 	 * @param \Tribe__Context $context Context we are using to build the view.
 	 * @param View_Interface  $view    Which view we are using the template on.
@@ -199,7 +222,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Allow other plugins to hook in here to alter the enqueue.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $enqueue Should the widget assets be enqueued. Defaults to true.
 		 * @param \Tribe__Context $context Context we are using to build the view.
@@ -215,7 +238,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		/**
 		 * Allow other plugins to hook in here to alter the enqueue for a specific widget type.
 		 *
-		 * @since TBD
+		 * @since 5.3.0
 		 *
 		 * @param boolean         $enqueue Should the widget assets be enqueued.
 		 * @param \Tribe__Context $context Context we are using to build the view.
@@ -267,7 +290,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	/**
 	 * Returns the widget slug.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @return string The widget slug.
 	 */
@@ -328,7 +351,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	/**
 	 * Handles gathering the data for admin fields.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @param array<string,mixed> $arguments Current set of arguments.
 	 * @param int                 $field_name    The ID of the field.
@@ -372,7 +395,7 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 	/**
 	 * Massages the data before asking tribe_format_field_dependency() to create the dependency attributes.
 	 *
-	 * @since TBD
+	 * @since 5.3.0
 	 *
 	 * @param array <string,mixed> $field The field info.
 	 *
@@ -397,5 +420,43 @@ abstract class Widget_Abstract extends \Tribe\Widget\Widget_Abstract {
 		$deps['id'] = $this->get_field_id( $deps['id'] );
 
 		return tribe_format_field_dependency( $deps );
+	}
+
+	/**
+	 * Filters the template vars for widget-specific items.
+	 *
+	 * @since 5.3.0
+	 *
+	 * @param array<string,mixed> $template_vars The current template variables.
+	 *
+	 * @return array<string,mixed> The modified template variables.
+	 */
+	public function filter_widget_template_vars( $template_vars, $view ) {
+		if ( $view->get_slug() !== $this->view_slug ) {
+			return $template_vars;
+		}
+
+		return $this->disable_json_data( $template_vars );
+	}
+
+	/**
+	 * Empties the json_ld_data if jsonld_enable is false,
+	 * removing the need for additional checks in the template.
+	 *
+	 * @since 5.3.0
+	 *
+	 * @param array<string,mixed> $template_vars The current template variables.
+	 *
+	 * @return array<string,mixed> The modified template variables.
+	 */
+	public function disable_json_data( $template_vars ) {
+		if (
+			isset( $template_vars['jsonld_enable'] )
+			&& ! tribe_is_truthy( $template_vars['jsonld_enable'] )
+		) {
+			$template_vars['json_ld_data'] = '';
+		}
+
+		return $template_vars;
 	}
 }

@@ -3,7 +3,7 @@ Contributors: Backup with UpdraftPlus, DavidAnderson, DNutbourne, aporter, snigh
 Tags: backup, restore, database backup, wordpress backup, cloud backup, s3, dropbox, google drive, onedrive, ftp, backups
 Requires at least: 3.2
 Tested up to: 5.6
-Stable tag: 1.16.41
+Stable tag: 1.16.47
 Author URI: https://updraftplus.com
 Donate link: https://david.dw-perspective.org.uk/donate
 License: GPLv3 or later
@@ -167,6 +167,63 @@ Unfortunately not; since this is free software, there’s no warranty and no gua
 The <a href="https://updraftplus.com/news/">UpdraftPlus backup blog</a> is the best place to learn in more detail about any important changes.
 
 N.B. Paid versions of UpdraftPlus Backup / Restore have a version number which is 1 higher in the first digit, and has an extra component on the end, but the changelog below still applies. i.e. changes listed for 1.16.32.x of the free version correspond to changes made in 2.16.32.x of the paid version.
+
+= 1.16.47 - 25/Jan/2021 =
+
+* FEATURE: added the ability to anonymise personal data in database backups from the "Backup Now" dialog (Premium / add-on)
+* FEATURE: Add page management module for UpdraftCentral
+* FIX: 1.16.42 Introduced a regression (truncation) when listing files from Dropbox when there were multiple pages of results
+* TWEAK: Force host-style bucket access when backing up via S3 generic to Alibabacloud
+* TWEAK: Remove unneeded Google SDK files from our fork of the SDK taking the size from 6MB to 800KB
+* TWEAK: Incorrect jQuery UI dialog extended filename
+* TWEAK: Change some class names to improve compatibility with other plugins using the Google SDK and auto-loading their version unconditionally
+* TWEAK: Update the delete file Dropbox API call to version 2
+* TWEAK: Change the S3 test settings form names to match the saved setting names
+* TWEAK: Check the Content-Type on the response from an S3-compatible provider slightly less strictly, improving compatibility with at least one otherwise-working implementation
+* TWEAK: Update the Dropbox SDK to use scopes
+* TWEAK: Handle hosts that have removed disk_free_space() (now that on PHP 8 disabling functions removes them)
+
+= 1.16.46 - 05/Jan/2021 =
+
+* FIX: Prevent some deprecation-related errors when backing up to some remote storage locations in PHP 8
+* FIX: Adding new remote storage instance (Premium) doesn't bring up the UI
+* TWEAK: Fix some modal dialog alignment/resizing issues
+
+= 1.16.45 - 04/Jan/2021 =
+
+* FIX: Prevent some fatal errors due to language behaviour changes when running under PHP 8
+* TWEAK: Replace deprecated calls to jQuery fn.focus(), fn.ready(), fn.submit(), fn.click() and fn.blur() methods in internal libraries
+* TWEAK: Replace deprecated calls to jQuery (:first) and (:eq) pseudo-classes in internal libraries
+* TWEAK: Prevent several PHP deprecation log notices on PHP 8
+* TWEAK: Rename some further classes in our fork of the Google SDK to prevent conflicts
+* TWEAK: When running under cron, do not combine schedules when there are no schedules
+* TWEAK: Revert a jQuery change in 1.16.44 which made notices on the 'updates' page appear multiple times.
+
+= 1.16.43 - 17/Dec/2020 =
+
+* TWEAK: Replace deprecated calls to jQuery.trim(), jQuery.fn.change(), jQuery.fn.bind(), jQuery.fn.unbind(), jQuery.fn.keyup(), jQuery.fn.removeAttr() and `jQuery.fn.removeProp() in internal libraries
+* TWEAK: Reduce excessive vertical margin above the header within Autobackup dialog box
+* TWEAK: Improve user experience in the case of some rare UpdraftVault conditions
+* TWEAK: Fix the exclude fields, which were unable to switch their mode from read-only to edit mode
+* TWEAK: Added new files needed for abstracting UpdraftCentral's client code
+* TWEAK: Update the review notice
+* TWEAK: When attempting to delete a Backblaze file and discovering it does not exist, do not log that as an error (presumably already deleted)
+* TWEAK: Fetch history log data in the popup using AJAX, instead of using embedded data attributes.
+* TWEAK: Be less quick to switch to PclZip when BinZip has not completed the job
+
+= 1.16.42 - 10/Dec/2020 =
+
+* FEATURE: Added the ability to manually complete authentication with Dropbox (Avoids issues where security modules/plugins break the authentication flow)
+* TWEAK: Replace BlockUI's deprecated jQuery functions and/or shorthand events with the appropriate method accordingly
+* TWEAK: Replace /2/files/search Dropbox API calls with /2/files/search_v2
+* TWEAK: Replace Labelauty's deprecated jQuery functions and/or shorthand events with the appropriate method accordingly
+* TWEAK: Fix broken multiple range selection's highlighters due to the absence of jquery-migrate in the WordPress core on version 5.5
+* TWEAK: Add the latest jQuery UI CSS framework for compatibility with WordPress 5.6 and all ongoing versions of WordPress
+* TWEAK: Add support for PHP 8.0 in UpdraftClone
+* TWEAK: Prevent a couple of PHP coding notices on PHP 8.0
+* TWEAK: Tweak in the backing up of tables to reduce PHP memory use when working with very long row contents
+* TWEAK: Prevent a PHP warning when starting a backup
+* TWEAK: Fix a UI issue in the "send backup to remote site" options
 
 = 1.16.41 - 27/Nov/2020 =
 
@@ -1172,4 +1229,4 @@ Reliance upon any non-English translation is at your own risk; UpdraftPlus can g
 We recognise and thank those mentioned at https://updraftplus.com/acknowledgements/ for code and/or libraries used and/or modified under the terms of their open source licences.
 
 == Upgrade Notice ==
-* 1.16.41: Update the Dropbox client ID (necessary for new authentications). Prevent unnecessary resumptions when creating a clone. A recommended update for all.
+* 1.16.47: Various compatibility tweaks and improvements. A recommended update for all.

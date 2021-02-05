@@ -95,7 +95,7 @@ public function updraftplus_getResumeUri() { return $this->resumeUri; }
    */
   public function __construct(
       UDP_Google_Client $client,
-      Google_Http_Request $request,
+      UDP_Google_Http_Request $request,
       $mimeType,
       $data,
       $resumable = false,
@@ -169,14 +169,14 @@ public function updraftplus_getResumeUri() { return $this->resumeUri; }
       'expect' => '',
     );
 
-    $httpRequest = new Google_Http_Request(
+    $httpRequest = new UDP_Google_Http_Request(
         $this->resumeUri,
         'PUT',
         $headers,
         $chunk
     );
 
-    if ($this->client->getClassConfig("Google_Http_Request", "enable_gzip_for_uploads")) {
+    if ($this->client->getClassConfig("UDP_Google_Http_Request", "enable_gzip_for_uploads")) {
       $httpRequest->enableGzip();
     } else {
       $httpRequest->disableGzip();
@@ -201,7 +201,7 @@ public function updraftplus_getResumeUri() { return $this->resumeUri; }
       // No problems, but upload not complete.
       return false;
     } else {
-      return Google_Http_REST::decodeHttpResponse($response, $this->client);
+      return UDP_Google_Http_REST::decodeHttpResponse($response, $this->client);
     }
   }
 
