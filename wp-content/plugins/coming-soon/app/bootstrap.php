@@ -162,7 +162,7 @@ function seedprod_lite_admin_enqueue_scripts($hook_suffix)
         wp_enqueue_editor();
     }
 }
-add_action('admin_enqueue_scripts', 'seedprod_lite_admin_enqueue_scripts');
+add_action('admin_enqueue_scripts', 'seedprod_lite_admin_enqueue_scripts',99999);
 
 
 
@@ -229,7 +229,7 @@ function seedprod_lite_deregister_backend_styles()
         if (empty($seedprod_builder_debug)) {
         global $wp_styles;
         // list of styles to keep else remove
-        $keep_styles = "media-views|editor-buttons|imgareaselect|buttons|wp-auth-check|wpforms-full|thickbox|wp-mediaelement";
+        $keep_styles = "media-views|editor-buttons|imgareaselect|buttons|wp-auth-check|wpforms-full|thickbox|wp-mediaelement|wp-util";
         $s = explode("|", $keep_styles);
 
         $wpforms_url = plugins_url('wpforms');
@@ -262,7 +262,7 @@ function seedprod_lite_deregister_backend_styles()
 
         // remove scripts
 
-            $s = 'admin-bar|common|utils|wp-auth-check|media-upload|jquery|media-editor|media-audiovideo|mce-view|image-edit|wp-tinymce|editor|quicktags|wplink|jquery-ui-autocomplete|thickbox|svg-painter|jquery-ui-core|jquery-ui-mouse|jquery-ui-accordion|jquery-ui-datepicker|jquery-ui-dialog|jquery-ui-slider|jquery-ui-sortable|jquery-ui-droppable|jquery-ui-tabs|jquery-ui-widget|wp-mediaelement';
+            $s = 'admin-bar|common|utils|wp-auth-check|media-upload|jquery|media-editor|media-audiovideo|mce-view|image-edit|wp-tinymce|editor|quicktags|wplink|jquery-ui-autocomplete|thickbox|svg-painter|jquery-ui-core|jquery-ui-mouse|jquery-ui-accordion|jquery-ui-datepicker|jquery-ui-dialog|jquery-ui-slider|jquery-ui-sortable|jquery-ui-droppable|jquery-ui-tabs|jquery-ui-widget|wp-mediaelement|wp-util|underscore|wp-dom-ready|wp-components|wp-element|wp-i18n|wp-polyfill';
             $d = explode("|", urldecode($s));
 
             global $wp_scripts;

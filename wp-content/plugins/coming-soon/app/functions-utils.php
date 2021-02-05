@@ -162,9 +162,12 @@ function seedprod_lite_block_options()
 
 
         array('name'=>__('Shortcode','coming-soon'),'is_pro'=> true  ,'cat'=>'adv','type'=>'shortcode', 'id'=>21, 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="sp-w-6 sp-fill-current"><path d="M256 8C119.3 8 8 119.2 8 256c0 136.7 111.3 248 248 248s248-111.3 248-248C504 119.2 392.7 8 256 8zM33 256c0-32.3 6.9-63 19.3-90.7l106.4 291.4C84.3 420.5 33 344.2 33 256zm223 223c-21.9 0-43-3.2-63-9.1l66.9-194.4 68.5 187.8c.5 1.1 1 2.1 1.6 3.1-23.1 8.1-48 12.6-74 12.6zm30.7-327.5c13.4-.7 25.5-2.1 25.5-2.1 12-1.4 10.6-19.1-1.4-18.4 0 0-36.1 2.8-59.4 2.8-21.9 0-58.7-2.8-58.7-2.8-12-.7-13.4 17.7-1.4 18.4 0 0 11.4 1.4 23.4 2.1l34.7 95.2L200.6 393l-81.2-241.5c13.4-.7 25.5-2.1 25.5-2.1 12-1.4 10.6-19.1-1.4-18.4 0 0-36.1 2.8-59.4 2.8-4.2 0-9.1-.1-14.4-.3C109.6 73 178.1 33 256 33c58 0 110.9 22.2 150.6 58.5-1-.1-1.9-.2-2.9-.2-21.9 0-37.4 19.1-37.4 39.6 0 18.4 10.6 33.9 21.9 52.3 8.5 14.8 18.4 33.9 18.4 61.5 0 19.1-7.3 41.2-17 72.1l-22.2 74.3-80.7-239.6zm81.4 297.2l68.1-196.9c12.7-31.8 17-57.2 17-79.9 0-8.2-.5-15.8-1.5-22.9 17.4 31.8 27.3 68.2 27.3 107 0 82.3-44.6 154.1-110.9 192.7z"/></svg>'),
+
+         array('name'=>__('Login Form','coming-soon'),'is_pro'=> true  ,'cat'=>'adv','type'=>'login', 'id'=>33, 'icon' => '
+         <svg xmlns="http://www.w3.org/2000/svg" class="sp-w-6 sp-fill-current " enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,7L9.6,8.4l2.6,2.6H2v2h10.2l-2.6,2.6L11,17l5-5L11,7z M20,19h-8v2h8c1.1,0,2-0.9,2-2V5c0-1.1-0.9-2-2-2h-8v2h8V19z"/></g></svg>'),
        
         array('name'=>__('Custom HTML','coming-soon'),'is_pro'=> false  ,'cat'=>'adv','type'=>'custom-html', 'id'=>20, 'icon' => '
-        <svg xmlns="http://www.w3.org/2000/svg"class="sp-w-6 sp-fill-current " viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>'),
+        <svg xmlns="http://www.w3.org/2000/svg" class="sp-w-6 sp-fill-current " viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>'),
 
 
        
@@ -706,6 +709,7 @@ function seedprod_lite_get_expire_times(){
 }
 
 
+
  function seedprod_lite_get_system_info() {
 
     global $wpdb;
@@ -857,4 +861,11 @@ function seedprod_lite_get_expire_times(){
     return $return;
 }
 
-
+/**
+ * If site uses WP Rocket, disable minify for CSS & JS
+ */
+function seedprod_lite_wprocket_disable_minify() {
+    if ( function_exists( 'rocket_define_donotminify_constants' ) ) {
+        rocket_define_donotminify_constants( 'true' );
+    }
+}

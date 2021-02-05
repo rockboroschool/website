@@ -28,28 +28,37 @@ function seedprod_lite_create_menus()
     add_menu_page(
         'SeedProd',
         'SeedProd'.$notification,
-        'edit_others_posts',
+        apply_filters('seedprod_main_menu_capability', 'edit_others_posts'),
         'seedprod_lite',
         'seedprod_lite_dashboard_page',
         'data:image/svg+xml;base64,' . 'PHN2ZyB3aWR0aD0iMTI1IiBoZWlnaHQ9IjEzMiIgdmlld0JveD0iMCAwIDEyNSAxMzIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBDMCAwIDIuOTE2NjQgMC4xOTc4OTQgNjIuODIxMiA4LjAyNjgzQzEyMi43MjYgMTUuODU1OCAxNDMuNDU5IDc2LjYwNjQgMTA2Ljc4MSAxMjkuNjI4QzExMi40NTQgODIuMjUyNyAxMDIuMDcgMzMuMTA2MiA2MC4zNjA1IDI3LjM2MDZDMTguNjUwNSAyMS42MTUxIDIyLjI4MzQgMjIuNDk1NCAyMi4yODM0IDIyLjQ5NTRDMjIuMjgzNCAyMi40OTU0IDIyLjk3NDUgMzIuOTI5OSAyNi44ODgzIDYwLjk3OTlDMzAuODAyMSA4OS4wMjk5IDUyLjcwMzUgMTAyLjc4NiA3MS44NzA0IDEwOS44NjhDNzEuODcwNCAxMDkuODY4IDcyLjk5NDUgNzcuMDQwMSA2Mi4zMDA3IDYyLjU5MDlDNTEuNjA2OSA0OC4xNDE4IDM4LjMwMjYgMzguNTQ2IDM4LjMwMjYgMzguNTQ2QzM4LjMwMjYgMzguNTQ2IDY5LjU2OCA0Mi4yOTYgODEuMzcyMiA2NC4xMDE5QzkzLjE3NjQgODUuOTA3OCA5Mi4wMjY1IDEzMiA5Mi4wMjY1IDEzMkw3OS4yOTI1IDEzMS4zNDFDNDUuMDI4NCAxMjcuMjI1IDEzLjAxNzIgMTA2LjU5MSA3LjU3NDIzIDYzLjNDMi4xMzEzIDIwLjAwODggMCAwIDAgMFoiIGZpbGw9ImJsYWNrIi8+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDBDMCAwIDIuOTE2NjQgMC4xOTc4OTQgNjIuODIxMiA4LjAyNjgzQzEyMi43MjYgMTUuODU1OCAxNDMuNDU5IDc2LjYwNjQgMTA2Ljc4MSAxMjkuNjI4QzExMi40NTQgODIuMjUyNyAxMDIuMDcgMzMuMTA2MiA2MC4zNjA1IDI3LjM2MDZDMTguNjUwNSAyMS42MTUxIDIyLjI4MzQgMjIuNDk1NCAyMi4yODM0IDIyLjQ5NTRDMjIuMjgzNCAyMi40OTU0IDIyLjk3NDUgMzIuOTI5OSAyNi44ODgzIDYwLjk3OTlDMzAuODAyMSA4OS4wMjk5IDUyLjcwMzUgMTAyLjc4NiA3MS44NzA0IDEwOS44NjhDNzEuODcwNCAxMDkuODY4IDcyLjk5NDUgNzcuMDQwMSA2Mi4zMDA3IDYyLjU5MDlDNTEuNjA2OSA0OC4xNDE4IDM4LjMwMjYgMzguNTQ2IDM4LjMwMjYgMzguNTQ2QzM4LjMwMjYgMzguNTQ2IDY5LjU2OCA0Mi4yOTYgODEuMzcyMiA2NC4xMDE5QzkzLjE3NjQgODUuOTA3OCA5Mi4wMjY1IDEzMiA5Mi4wMjY1IDEzMkw3OS4yOTI1IDEzMS4zNDFDNDUuMDI4NCAxMjcuMjI1IDEzLjAxNzIgMTA2LjU5MSA3LjU3NDIzIDYzLjNDMi4xMzEzIDIwLjAwODggMCAwIDAgMFoiIGZpbGw9IndoaXRlIi8+PC9zdmc+',
-        200
+        58
     );
 
     add_submenu_page(
         'seedprod_lite',
         __("Pages", 'coming-soon'),
         __("Pages", 'coming-soon'),
-        'edit_others_posts',
+        apply_filters('seedprod_dashboard_menu_capability', 'edit_others_posts'),
         'seedprod_lite',
         'seedprod_lite_dashboard_page'
     );
 
+    add_submenu_page(
+        'seedprod_lite',
+        __("Templates", 'coming-soon'),
+        __("Templates", 'coming-soon'),
+        apply_filters('seedprod_templates_menu_capability', 'edit_others_posts'),
+        'seedprod_lite_templates',
+        'seedprod_lite_templates_page'
+    );
+
 
     add_submenu_page(
         'seedprod_lite',
         __("Subscribers", 'coming-soon'),
         __("Subscribers", 'coming-soon'),
-        'edit_others_posts',
+        apply_filters('seedprod_subscribers_menu_capability', 'edit_others_posts'),
         'seedprod_lite_subscribers',
         'seedprod_lite_subscribers_page'
     );
@@ -58,7 +67,7 @@ function seedprod_lite_create_menus()
         'seedprod_lite',
         __("Settings", 'coming-soon'),
         __("Settings", 'coming-soon'),
-        'edit_others_posts',
+        apply_filters('seedprod_settings_menu_capability', 'edit_others_posts'),
         'seedprod_lite_settings',
         'seedprod_lite_settings_page'
     );
@@ -67,7 +76,7 @@ function seedprod_lite_create_menus()
       'seedprod_lite',
       __("Growth Tools", 'coming-soon'),
       __("Growth Tools", 'coming-soon'),
-      'edit_others_posts',
+      apply_filters('seedprod_growthtools_menu_capability', 'edit_others_posts'),
       'seedprod_lite_growth_tools',
       'seedprod_lite_growth_tools_page'
   );
@@ -76,7 +85,7 @@ function seedprod_lite_create_menus()
         'seedprod_lite',
         __("About Us", 'coming-soon'),
         __("About Us", 'coming-soon'),
-        'manage_options',
+        apply_filters('seedprod_aboutus_menu_capability', 'edit_others_posts'),
         'seedprod_lite_about_us',
         'seedprod_lite_about_us_page'
     );
@@ -86,7 +95,7 @@ function seedprod_lite_create_menus()
             'seedprod_lite',
             __("Get Pro", 'coming-soon'),
             '<span id="sp-lite-admin-menu__upgrade" style="color:#ff845b">'.__("Get Pro", 'coming-soon').'</span>',
-            'manage_options',
+            apply_filters('seedprod_gopro_menu_capability', 'edit_others_posts'),
             'seedprod_lite_get_pro',
             'seedprod_lite_get_pro_page'
         );
@@ -96,7 +105,7 @@ function seedprod_lite_create_menus()
         'seedprod_lite',
         __("Templates", 'coming-soon'),
         __("Templates", 'coming-soon'),
-        'manage_options',
+        apply_filters('seedprod_templates_menu_capability', 'edit_others_posts'),
         'seedprod_lite_template',
         'seedprod_lite_template_page'
     );
@@ -105,7 +114,7 @@ function seedprod_lite_create_menus()
         'seedprod_lite',
         __("Builder", 'coming-soon'),
         __("Builder", 'coming-soon'),
-        'manage_options',
+        apply_filters('seedprod_builder_menu_capability', 'edit_others_posts'),
         'seedprod_lite_builder',
         'seedprod_lite_builder_page'
     );
@@ -115,7 +124,7 @@ function seedprod_lite_create_menus()
       'seedprod_lite',
       __("Import/Export", 'coming-soon'),
       __("Import/Export", 'coming-soon'),
-      'manage_options',
+      apply_filters('seedprod_exportimport_menu_capability', 'edit_others_posts'),
       'sp_pro_importexport',
       'seedprod_lite_importexport_page'
   );
@@ -124,7 +133,7 @@ function seedprod_lite_create_menus()
     'seedprod_lite',
     __("Debug", 'coming-soon'),
     __("Debug", 'coming-soon'),
-    'manage_options',
+    apply_filters('seedprod_debug_menu_capability', 'edit_others_posts'),
     'sp_pro_debug',
     'seedprod_lite_debug_page'
 );
@@ -183,6 +192,13 @@ function seedprod_lite_redirect_to_site()
         wp_redirect('admin.php?page=seedprod_lite#/settings');
         exit();
     }
+
+    // subscribers
+    if (isset($_GET['page']) && $_GET['page'] == 'seedprod_lite_templates') {
+        wp_redirect('admin.php?page=seedprod_lite_template&id=0&from=sidebar#/template');
+        exit();
+    }
+
     // subscribers
     if (isset($_GET['page']) && $_GET['page'] == 'seedprod_lite_subscribers') {
         wp_redirect('admin.php?page=seedprod_lite#/subscribers/0');
@@ -223,6 +239,7 @@ function seedprod_lite_redirect_to_site()
  }
 
 if (defined('DOING_AJAX')) {
+
     add_action('wp_ajax_seedprod_lite_render_shortcode', 'seedprod_lite_render_shortcode');
 
     add_action('wp_ajax_seedprod_lite_dismiss_settings_lite_cta', 'seedprod_lite_dismiss_settings_lite_cta');
@@ -231,6 +248,7 @@ if (defined('DOING_AJAX')) {
     add_action('wp_ajax_seedprod_lite_save_api_key', 'seedprod_lite_save_api_key');
 
 
+    add_action('wp_ajax_seedprod_lite_template_subscribe', 'seedprod_lite_template_subscribe');
     add_action('wp_ajax_seedprod_lite_save_template', 'seedprod_lite_save_template');
     add_action('wp_ajax_seedprod_lite_save_lpage', 'seedprod_lite_save_lpage');
     add_action('wp_ajax_seedprod_lite_get_revisions', 'seedprod_lite_get_revisisons');
@@ -270,6 +288,7 @@ if (defined('DOING_AJAX')) {
 
 
     add_action('wp_ajax_seedprod_lite_dismiss_upsell', 'seedprod_lite_dismiss_upsell');
+
 
 
 }
@@ -352,3 +371,4 @@ function seedprod_lite_get_rafflepress_code() {
       return wp_send_json($code);
     }
   }
+

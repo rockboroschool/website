@@ -9,7 +9,12 @@ global $wpdb;
 // current user
 $current_user = wp_get_current_user();
 $current_user_name = $current_user->display_name;
+$current_user_email = $current_user->user_email;
 $current_user_email_hash = md5($current_user->user_email);
+$free_templates_subscribed = get_option('seedprod_free_templates_subscribed');
+if($free_templates_subscribed){
+    $free_templates_subscribed = '1'; 
+}
 $seedprod_nonce = wp_create_nonce('seedprod_nonce');
 
 
@@ -146,11 +151,20 @@ h1.mce-content-body,h2.mce-content-body,h3.mce-content-body,h4.mce-content-body,
 var seedprod_nonce = "<?php echo $seedprod_nonce; ?>";
 var seedprod_page = "<?php echo $_GET['page']; ?>";
 var seedprod_remote_api = "<?php echo SEEDPROD_API_URL; ?>";
-
+<?php
+$from = '';
+if(!empty($_GET['from'])){
+ $form = $_GET['from'];
+}
+?>
+var seedprod_from = "<?php echo $from; ?>";
 <?php 
 // see if we need below
 $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_save_template', 'seedprod_lite_save_template')); ?>
 var seedprod_template_save_url = "<?php echo $ajax_url; ?>";
+
+<?php $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_template_subscribe', 'seedprod_lite_template_subscribe')); ?>
+var seedprod_template_subscribe_url = "<?php echo $ajax_url; ?>";
 
 <?php $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_save_page', 'seedprod_lite_save_page')); ?>
 var seedprod_save_lpage_url = "<?php echo $ajax_url; ?>";
@@ -237,7 +251,9 @@ $seedprod_data = array(
 	'analytics_plugins_installed' => seedprod_lite_get_analytics_plugins_list(),
 	'page_type' => $settings['page_type'],
 	'current_user_name' => $current_user_name,
-	'current_user_email_hash' => $current_user_email_hash,
+    'current_user_email_hash' => $current_user_email_hash,
+    'current_user_email' => $current_user_email,
+    'free_templates_subscribed' => $free_templates_subscribed,
 	'preview_link' => $preview_link,
 	'icons' => $icons,
 	'googlefonts' => $fonts,

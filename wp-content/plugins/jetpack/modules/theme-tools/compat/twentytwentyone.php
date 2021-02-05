@@ -10,12 +10,56 @@
  * Add Jetpack extra functionality to Twenty Twenty One.
  */
 function twentytwentyone_jetpack_setup() {
+
+	/**
+	 * Add theme support for Infinite Scroll.
+	 */
+	add_theme_support(
+		'infinite-scroll',
+		array(
+			'type'      => 'click',
+			'container' => 'main',
+			'render'    => 'twentytwentyone_infinite_scroll_render',
+			'footer'    => 'main',
+		)
+	);
+
 	/**
 	 * Add theme support for geo-location.
 	 */
 	add_theme_support( 'jetpack-geo-location' );
+
+	/**
+	 * Add theme support for Content Options.
+	 */
+	add_theme_support(
+		'jetpack-content-options',
+		array(
+			'blog-display'    => array( 'content', 'excerpt' ),
+			'post-details'    => array(
+				'stylesheet' => 'twenty-twenty-one-style',
+				'date'       => '.posted-on',
+				'categories' => '.cat-links',
+			),
+			'featured-images' => array(
+				'archive' => true,
+				'post'    => true,
+				'page'    => true,
+			),
+		)
+	);
 }
 add_action( 'after_setup_theme', 'twentytwentyone_jetpack_setup' );
+
+/**
+ * Custom render function for Infinite Scroll.
+ */
+function twentytwentyone_infinite_scroll_render() {
+	while ( have_posts() ) {
+		the_post();
+		get_template_part( 'template-parts/content/content', get_theme_mod( 'display_excerpt_or_full_post', 'excerpt' ) );
+	}
+}
 
 /**
  * Add our compat CSS file for custom styles.

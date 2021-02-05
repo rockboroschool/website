@@ -3,7 +3,7 @@
 Plugin Name: Coming Soon Page, Maintenance Mode & Landing Pages by SeedProd
 Plugin URI: https://www.seedprod.com
 Description: The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPress.
-Version:  6.0.9.0
+Version:  6.0.11.1
 Author: SeedProd
 Author URI: https://www.seedprod.com
 TextDomain: coming-soon
@@ -16,7 +16,7 @@ License: GPLv2 or later
  */
 define('SEEDPROD_BUILD', 'lite');
 define('SEEDPROD_SLUG', 'coming-soon/coming-soon.php');
-define('SEEDPROD_VERSION', '6.0.9.0');
+define('SEEDPROD_VERSION', '6.0.11.1');
 define('SEEDPROD_PLUGIN_PATH', plugin_dir_path(__FILE__));
 // Example output: /Applications/MAMP/htdocs/wordpress/wp-content/plugins/seedprod/
 define('SEEDPROD_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -112,4 +112,7 @@ require_once(SEEDPROD_PLUGIN_PATH.'app/load_controller.php');
  */
 add_action('upgrader_process_complete', 'seedprod_lite_check_for_free_version');
 add_action('init', 'seedprod_lite_check_for_free_version');
+
+
+
 

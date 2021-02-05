@@ -15,9 +15,8 @@ if (empty($settings)) {
 // mapped domain settings
 $plugin_url = SEEDPROD_PLUGIN_URL;
 if(!empty($is_mapped)){
-    global $seedprod_page_mapped_url;
-    $url_parsed = parse_url($seedprod_page_mapped_url);
-    $new_domain = $url_parsed['scheme'].'://'.$url_parsed['host'];
+    global $seedprod_url_parsed_scheme, $seedprod_url_parsed_host;
+    $new_domain = $seedprod_url_parsed_scheme.'://'.$seedprod_url_parsed_host;
     $domain = explode('/wp-content/',$plugin_url);
     $plugin_url = str_replace($domain[0],$new_domain,$plugin_url);
 }
@@ -48,6 +47,9 @@ $seedprod_subscribe_callback_ajax_url = html_entity_decode(wp_nonce_url(admin_ur
 // if (!empty($settings->email_integration_id)) {
 //     $email_integration_id = $settings->email_integration_id;
 // }
+
+// If site uses WP Rocket, disable minify
+seedprod_lite_wprocket_disable_minify();
 
 if (!empty($settings)) {
     ?>
@@ -108,7 +110,9 @@ if (!empty($settings->no_conflict_mode)) {
 <?php
 } 
 ?>
-
+<?php if (empty($settings->no_conflict_mode)): ?>
+<title><?php wp_title(); ?></title>
+<?php endif; ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Default CSS -->
@@ -164,10 +168,8 @@ var seeprod_enable_recaptcha = <?php echo $settings->enable_recaptcha; ?>;
     // Need to defer until after sp-scripts.min.js & defer attribute only works when using src
     window.addEventListener('DOMContentLoaded', (event) => {
         var setDelay = 5000;
-        var sliderArgs = {};
-        sliderArgs.slide = <?php echo json_encode($settings->document->settings->useSlideshowImgs); ?>;
-        sliderArgs.delay = sliderArgs.slide.map( x => setDelay );
-        easy_background("body", sliderArgs);
+        var slides = <?php echo json_encode($settings->document->settings->useSlideshowImgs); ?>;
+        seedprod_bg_slideshow("body", slides, setDelay);
     });
   </script>
 <?php } ?>

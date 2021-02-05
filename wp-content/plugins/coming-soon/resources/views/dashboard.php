@@ -75,10 +75,12 @@ if (seedprod_lite_cu()) {
 $csp_id = get_option('seedprod_coming_soon_page_id'); 
 $mmp_id = get_option('seedprod_maintenance_mode_page_id'); 
 $p404_id = get_option('seedprod_404_page_id');
+$loginp_id = get_option('seedprod_login_page_id');
 
 $csp_uuid =  get_post_meta( $csp_id, '_seedprod_page_uuid', true ); 
 $mmp_uuid =  get_post_meta( $mmp_id, '_seedprod_page_uuid', true ); 
 $p404_uuid =  get_post_meta( $p404_id, '_seedprod_page_uuid', true );
+$loginp_uuid =  get_post_meta( $loginp_id, '_seedprod_page_uuid', true );
 $seedprod_csp4_migrated = get_option('seedprod_csp4_migrated');
 $seedprod_csp4_imported = get_option('seedprod_csp4_imported');
 $seedprod_cspv5_migrated = get_option('seedprod_cspv5_migrated');
@@ -109,6 +111,14 @@ if(!empty($p404_id)){
     //$p404_preview_url= home_url(). '/?post_type=seedprod&p='.$p404_id.'&preview=true';
 }
 
+$loginp_preview_url = '';
+if(!empty($loginp_id)){
+    $loginp_preview_url =  get_preview_post_link( $loginp_id );
+    //$loginp_preview_url = home_url(). "/?post_type=seedprod&page_id=".$loginp_id."&preview_nonce=".wp_create_nonce('post_preview_' . $loginp_id);
+    //$loginp_preview_url= home_url(). '/?post_type=seedprod&p='.$loginp_id.'&preview=true';
+}
+
+
 
 $show_topbar_cta = true;
 $dismiss_topbar_cta  = get_option('seedprod_dismiss_upsell_1' );
@@ -130,6 +140,13 @@ var seedprod_remote_api = "<?php echo SEEDPROD_API_URL; ?>";
 
 <?php $seedprod_nonce = wp_create_nonce('seedprod_nonce'); ?>
 var seedprod_nonce = "<?php echo $seedprod_nonce; ?>";
+
+
+<?php $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_run_one_click_upgrade', 'seedprod_lite_run_one_click_upgrade')); ?>
+var seedprod_run_one_click_upgrade_url = "<?php echo $ajax_url; ?>";
+
+<?php $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_upgrade_license', 'seedprod_lite_upgrade_license')); ?>
+var seedprod_upgrade_license_url = "<?php echo $ajax_url; ?>";
 
 <?php $ajax_url = html_entity_decode(wp_nonce_url('admin-ajax.php?action=seedprod_lite_dismiss_upsell', 'seedprod_lite_dismiss_upsell')); ?>
 var seedprod_dismiss_upsell = "<?php echo $ajax_url; ?>";
@@ -205,6 +222,9 @@ var seedprod_data_admin =
                 'p404_id' => $p404_id,
                 'p404_uuid' => $p404_uuid,
                 'p404_preview_url' => $p404_preview_url,
+                'loginp_id' => $loginp_id,
+                'loginp_uuid' => $loginp_uuid,
+                'loginp_preview_url' => $loginp_preview_url,
                 'api_token'=>$seedprod_api_token,
                 'license_key'=>$license_key,
                 'license_name' => $license_name,

@@ -548,6 +548,11 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 				'label' => 'Medium',
 			),
 			array(
+				'url'   => array( 'patreon.com' ),
+				'icon'  => 'patreon',
+				'label' => 'Patreon',
+			),
+			array(
 				'url'   => array( 'pinterest.' ),
 				'icon'  => 'pinterest',
 				'label' => 'Pinterest',
@@ -653,7 +658,7 @@ class Jetpack_Widget_Social_Icons extends WP_Widget {
 				'label' => 'YouTube',
 			),
 
-			// keep feed at the end so that more specific icons can take precedence
+			// keep feed at the end so that more specific icons can take precedence.
 			array(
 				'url'   => array(
 					'/feed/',         // WordPress default feed url.

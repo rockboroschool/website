@@ -9,24 +9,47 @@ function seedprod_lite_save_settings()
         if (!empty($_POST['settings'])) {
             $settings = stripslashes_deep($_POST['settings']);
 
-            // publish page if not published when active
-            $s = json_decode($settings );
-            $update = array();
-            $update['post_status'] = 'publish';
-            
-            if($s->enable_coming_soon_mode === true){
-                $csp_id = get_option('seedprod_coming_soon_page_id'); 
-                $update['ID'] = $csp_id;
+            $s = json_decode($settings);
+
+            // Get old settings to check if there has been a change
+            $settings_old = get_option('seedprod_settings');
+            $s_old = json_decode($settings_old);
+
+            // Key is for $settings, Value is for get_option()
+            $settings_to_update = array(
+                'enable_coming_soon_mode' => 'seedprod_coming_soon_page_id',
+                'enable_maintenance_mode' => 'seedprod_maintenance_mode_page_id',
+                'enable_login_mode'       => 'seedprod_login_page_id',
+                'enable_404_mode'         => 'seedprod_404_page_id'
+            );
+
+            foreach ( $settings_to_update as $setting => $option ) {
+                $has_changed = ($s->$setting !== $s_old->$setting ? true : false);
+                if ( !$has_changed ) { continue; } // Do nothing if no change
+
+                $id = get_option($option);
+
+                $post_exists = !is_null( get_post($id) );
+                if ( !$post_exists ) {
+                    update_option($option, null);
+                    continue;
+                }
+
+                $update = array();
+                $update['ID'] = $id;
+
+                // Publish page when active
+                if ( $s->$setting === true ) {
+                    $update['post_status'] = 'publish';
+                    wp_update_post($update);
+                }
+
+                // Unpublish page when inactive
+                if ( $s->$setting === false ) {
+                    $update['post_status'] = 'draft';
+                    wp_update_post($update);
+                }
             }
-            if($s->enable_maintenance_mode === true){
-                $mm_id = get_option('seedprod_maintenance_mode_page_id'); 
-                $update['ID'] = $mm_id;
-            }
-            if($s->enable_404_mode === true){
-                $p404_id = get_option('seedprod_404_page_id'); 
-                $update['ID'] = $p404_id;
-            }
-            wp_update_post($update);
 
             update_option('seedprod_settings', $settings);
 

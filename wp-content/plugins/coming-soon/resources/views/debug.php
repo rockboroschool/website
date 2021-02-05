@@ -12,6 +12,9 @@ if(!empty($_POST['sp_reset_mm']) && $_POST['sp_reset_mm'] == 1){
 if(!empty($_POST['sp_reset_p404']) && $_POST['sp_reset_p404'] == 1){
     update_option('seedprod_404_page_id', false);
 }
+if(!empty($_POST['sp_reset_loginp']) && $_POST['sp_reset_loginp'] == 1){
+    update_option('seedprod_login_page_id', false);
+}
 if(!empty($_POST['sp_builder_debug']) && $_POST['sp_builder_debug'] == 1){
     update_option('seedprod_builder_debug', true);
 }elseif(!empty($_POST)){
@@ -38,26 +41,32 @@ $seedprod_builder_debug = get_option('seedprod_builder_debug');
 </tr>
 <tr>
 <th scope="row">Reset Coming Soon Page<br><small>This will delete the current coming soon page.</small></th>
-<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_builder_debug">
+<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_reset_cs">
 <input name="sp_reset_cs" type="checkbox" id="sp_reset_cs" value="1">
 Check Box and Save to Reset</label>
 </fieldset></td>
 </tr>
 <tr>
 <th scope="row">Reset Maintenance Mode Page<br><small>This will delete the current maintenance page.</small></th>
-<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_builder_debug">
+<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_reset_mm">
 <input name="sp_reset_mm" type="checkbox" id="sp_reset_mm" value="1">
 Check Box and Save to Reset</label>
 </fieldset></td>
 </tr>
 <tr>
-<th scope="row">Reset 404 Page<br><small>This will delete the current 404 page.</small></th>
-<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_builder_debug">
-<input name="sp_reset_p404" type="checkbox" id="sp_reset_p404" value="1">
+<th scope="row">Reset Login Page<br><small>This will delete the current Custom Login page.</small></th>
+<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_reset_loginp">
+<input name="sp_reset_loginp" type="checkbox" id="sp_reset_loginp" value="1">
 Check Box and Save to Reset</label>
 </fieldset></td>
 </tr>
-</tbody>
+<tr>
+<th scope="row">Reset 404 Page<br><small>This will delete the current 404 page.</small></th>
+<td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_reset_p404">
+<input name="sp_reset_p404" type="checkbox" id="sp_reset_p404" value="1">
+Check Box and Save to Reset</label>
+</fieldset></td>
+</tr></tbody>
 </table>
 <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes"></p>
 </form>

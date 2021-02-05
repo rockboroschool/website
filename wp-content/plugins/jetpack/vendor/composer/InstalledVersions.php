@@ -1,7 +1,18 @@
 <?php
 
+
+
+
+
+
+
+
+
+
+
 namespace Composer;
 
+use Composer\Autoload\ClassLoader;
 use Composer\Semver\VersionParser;
 
 
@@ -14,249 +25,249 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => 'dev-jetpack/branch-9.4',
+    'version' => 'dev-jetpack/branch-9.4',
     'aliases' => 
     array (
     ),
-    'reference' => '5687756eda3d6efef7b439f432c90abadcb28987',
+    'reference' => 'a2c6afbeb6bf8f63499df6833fdb33015a32b139',
     'name' => 'automattic/jetpack',
   ),
   'versions' => 
   array (
     'automattic/jetpack' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => 'dev-jetpack/branch-9.4',
+      'version' => 'dev-jetpack/branch-9.4',
       'aliases' => 
       array (
       ),
-      'reference' => '5687756eda3d6efef7b439f432c90abadcb28987',
+      'reference' => 'a2c6afbeb6bf8f63499df6833fdb33015a32b139',
     ),
     'automattic/jetpack-a8c-mc-stats' => 
-    array (
-      'pretty_version' => 'v1.2.0',
-      'version' => '1.2.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '9daa7d933679f7c3c38f1a2a1eaeaa87d7b43e37',
-    ),
-    'automattic/jetpack-abtest' => 
-    array (
-      'pretty_version' => 'v1.8.4',
-      'version' => '1.8.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '5eb3addbca6cbbc0603cbf74b653078615bb92d7',
-    ),
-    'automattic/jetpack-assets' => 
-    array (
-      'pretty_version' => 'v1.9.1',
-      'version' => '1.9.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '2eb64917ef18f9e26258ff1e1bfadf3ff71e7518',
-    ),
-    'automattic/jetpack-autoloader' => 
-    array (
-      'pretty_version' => 'v2.6.0',
-      'version' => '2.6.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '47dde8dbca6b1e30f176725f2f748a9abefcaf58',
-    ),
-    'automattic/jetpack-backup' => 
-    array (
-      'pretty_version' => 'v1.0.2',
-      'version' => '1.0.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'ea2aaa9be3697d8b885a74a11411c7818fba5a75',
-    ),
-    'automattic/jetpack-blocks' => 
-    array (
-      'pretty_version' => 'v1.1.1',
-      'version' => '1.1.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '4f1ac651e6a5746c9ef10f93fa61d4b5777d2e31',
-    ),
-    'automattic/jetpack-compat' => 
-    array (
-      'pretty_version' => 'v1.5.1',
-      'version' => '1.5.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '00165f14c19729d4b28ed5a67d1e2b68393ae291',
-    ),
-    'automattic/jetpack-config' => 
-    array (
-      'pretty_version' => 'v1.4.2',
-      'version' => '1.4.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '0f4b1f66f276cc2352d5fa0c29f98566df8efdd3',
-    ),
-    'automattic/jetpack-connection' => 
-    array (
-      'pretty_version' => 'v1.21.1',
-      'version' => '1.21.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'd44cc99636389cff1f7ca0e1a2aee630b9d1673f',
-    ),
-    'automattic/jetpack-constants' => 
-    array (
-      'pretty_version' => 'v1.5.1',
-      'version' => '1.5.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '18f772daddc8be5df76c9f4a92e017a3c2569a5b',
-    ),
-    'automattic/jetpack-device-detection' => 
-    array (
-      'pretty_version' => 'v1.2.1',
-      'version' => '1.2.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'c6c98a5590b4dfe28c7331f51a24b5a3e682a412',
-    ),
-    'automattic/jetpack-error' => 
-    array (
-      'pretty_version' => 'v1.2.0',
-      'version' => '1.2.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '8ebe103c86f6a423e3abffb2812d787600bf9ea0',
-    ),
-    'automattic/jetpack-heartbeat' => 
-    array (
-      'pretty_version' => 'v1.2.2',
-      'version' => '1.2.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '22bfefe0477978a1aca5410f406b020bf5a6920e',
-    ),
-    'automattic/jetpack-jitm' => 
-    array (
-      'pretty_version' => 'v1.12.1',
-      'version' => '1.12.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'a7a407d9695316c3163465af07411c06b10096fa',
-    ),
-    'automattic/jetpack-lazy-images' => 
-    array (
-      'pretty_version' => 'v1.1.2',
-      'version' => '1.1.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '489ba6b2c4fd15b47bbdb3dbbc75b68a483ef4d9',
-    ),
-    'automattic/jetpack-licensing' => 
-    array (
-      'pretty_version' => 'v1.2.4',
-      'version' => '1.2.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'b02e82ea6abaf4dbc325d54be98d300cf930c9e8',
-    ),
-    'automattic/jetpack-logo' => 
     array (
       'pretty_version' => 'v1.4.0',
       'version' => '1.4.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '4e209e3515f43f1586b25755c626cc3ec8e7b06c',
+      'reference' => '278986d7aae98eb662710cfdc84f7a8f60422022',
     ),
-    'automattic/jetpack-options' => 
+    'automattic/jetpack-abtest' => 
     array (
-      'pretty_version' => 'v1.9.1',
-      'version' => '1.9.1.0',
+      'pretty_version' => 'v1.9.2',
+      'version' => '1.9.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => '59c630e3d88f878195f2076971e7d5e2a72941ee',
+      'reference' => 'b86fbf62c5ccc0ab2d84d7c5fd62b53016d9bda6',
     ),
-    'automattic/jetpack-partner' => 
-    array (
-      'pretty_version' => 'v1.3.1',
-      'version' => '1.3.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '3656927fbe34e0dfacda1e3814556fe545aaca65',
-    ),
-    'automattic/jetpack-redirect' => 
-    array (
-      'pretty_version' => 'v1.4.1',
-      'version' => '1.4.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'de76b20f8667656e1901499abe09e674ccb830e9',
-    ),
-    'automattic/jetpack-roles' => 
-    array (
-      'pretty_version' => 'v1.3.1',
-      'version' => '1.3.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '10234f39a2294d7c2598e7492477031470f5a01b',
-    ),
-    'automattic/jetpack-status' => 
-    array (
-      'pretty_version' => 'v1.6.0',
-      'version' => '1.6.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '5ae34fcc1b5c48594778dbdb2783910109746d45',
-    ),
-    'automattic/jetpack-sync' => 
-    array (
-      'pretty_version' => 'v1.18.1',
-      'version' => '1.18.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'e4f714c10b9b3caad9bccfd1a3427dbd5b0cf7bc',
-    ),
-    'automattic/jetpack-terms-of-service' => 
-    array (
-      'pretty_version' => 'v1.8.2',
-      'version' => '1.8.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '25bbbdee520eb17f9a30e899255494583a2bbb64',
-    ),
-    'automattic/jetpack-tracking' => 
+    'automattic/jetpack-assets' => 
     array (
       'pretty_version' => 'v1.11.1',
       'version' => '1.11.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '982936c59852e8fd3768a8e33121db63928fba76',
+      'reference' => 'f7c741c560c367f9281bd4a88aaa800247c1f826',
+    ),
+    'automattic/jetpack-autoloader' => 
+    array (
+      'pretty_version' => 'v2.9.0',
+      'version' => '2.9.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6b4cd84d5333f4bf19b9765313d0984aff7682e2',
+    ),
+    'automattic/jetpack-backup' => 
+    array (
+      'pretty_version' => 'v1.0.3',
+      'version' => '1.0.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'ff4bd4363ae5b7a6251edc2067e1288c89312f11',
+    ),
+    'automattic/jetpack-blocks' => 
+    array (
+      'pretty_version' => 'v1.2.1',
+      'version' => '1.2.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c33573560f2109f9ecfe0fb1a282f93b4a0211d8',
+    ),
+    'automattic/jetpack-compat' => 
+    array (
+      'pretty_version' => 'v1.6.1',
+      'version' => '1.6.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'b934da71d4d766bf7a38d91e9a2d6e7fa587aa2f',
+    ),
+    'automattic/jetpack-config' => 
+    array (
+      'pretty_version' => 'v1.4.3',
+      'version' => '1.4.3.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6bc77aa73d90510c9488e2d8fdaad4b056d3a066',
+    ),
+    'automattic/jetpack-connection' => 
+    array (
+      'pretty_version' => 'v1.23.1',
+      'version' => '1.23.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '03303aa75b34b8bb4eff2f55178d6600f2a80f40',
+    ),
+    'automattic/jetpack-constants' => 
+    array (
+      'pretty_version' => 'v1.6.1',
+      'version' => '1.6.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '4177e55eef1706dac67705c9ada61be283e4aa8d',
+    ),
+    'automattic/jetpack-device-detection' => 
+    array (
+      'pretty_version' => 'v1.3.1',
+      'version' => '1.3.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'cae691e4c1f06191f0c97860f9442c3e1baee062',
+    ),
+    'automattic/jetpack-error' => 
+    array (
+      'pretty_version' => 'v1.3.1',
+      'version' => '1.3.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '63216c911c2c2cf0a9ee541eab27c3757d7bab15',
+    ),
+    'automattic/jetpack-heartbeat' => 
+    array (
+      'pretty_version' => 'v1.3.2',
+      'version' => '1.3.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'f08038223282c966135162dfdf80dc428e40e2ba',
+    ),
+    'automattic/jetpack-jitm' => 
+    array (
+      'pretty_version' => 'v1.13.4',
+      'version' => '1.13.4.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c2b1da18c02b5eb3afb3d00ba0c62c818e0b6fbc',
+    ),
+    'automattic/jetpack-lazy-images' => 
+    array (
+      'pretty_version' => 'v1.4.0',
+      'version' => '1.4.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '11277948b43fad0e112ecabc4fbda2d9853442ff',
+    ),
+    'automattic/jetpack-licensing' => 
+    array (
+      'pretty_version' => 'v1.3.2',
+      'version' => '1.3.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '3b89526b207f1e2dc64411815a514b36ca303eaf',
+    ),
+    'automattic/jetpack-logo' => 
+    array (
+      'pretty_version' => 'v1.5.1',
+      'version' => '1.5.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'aa008df2e86ce656076a0b3d364b43fb43231aa0',
+    ),
+    'automattic/jetpack-options' => 
+    array (
+      'pretty_version' => 'v1.11.1',
+      'version' => '1.11.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'd5e4a5018dee19c192600dbe0f6beed5cd8dceee',
+    ),
+    'automattic/jetpack-partner' => 
+    array (
+      'pretty_version' => 'v1.4.1',
+      'version' => '1.4.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '4d5f01ca8d59497325a3edcbc572fa95683c9bff',
+    ),
+    'automattic/jetpack-redirect' => 
+    array (
+      'pretty_version' => 'v1.5.2',
+      'version' => '1.5.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'f2ff0b1c4e23349a688cd2135990c0ee1aa4b860',
+    ),
+    'automattic/jetpack-roles' => 
+    array (
+      'pretty_version' => 'v1.4.1',
+      'version' => '1.4.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6d678f10a30a1050a03cbd6391c66313f26d9cdb',
+    ),
+    'automattic/jetpack-status' => 
+    array (
+      'pretty_version' => 'v1.7.1',
+      'version' => '1.7.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '401b02141d334e39479328a837a61617120a262b',
+    ),
+    'automattic/jetpack-sync' => 
+    array (
+      'pretty_version' => 'v1.20.1',
+      'version' => '1.20.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '612a75545ff3fa6345a88c042856c09f2a4f01ad',
+    ),
+    'automattic/jetpack-terms-of-service' => 
+    array (
+      'pretty_version' => 'v1.9.2',
+      'version' => '1.9.2.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'd246996ecbf943c47afdaf36e31744ed693c0007',
+    ),
+    'automattic/jetpack-tracking' => 
+    array (
+      'pretty_version' => 'v1.13.1',
+      'version' => '1.13.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '39af72ffcb6a5a9c568e8f961850109a5bdb133f',
     ),
     'nojimage/twitter-text-php' => 
     array (
@@ -269,6 +280,8 @@ private static $installed = array (
     ),
   ),
 );
+private static $canGetVendors;
+private static $installedByVendor = array();
 
 
 
@@ -278,7 +291,17 @@ private static $installed = array (
 
 public static function getInstalledPackages()
 {
-return array_keys(self::$installed['versions']);
+$packages = array();
+foreach (self::getInstalled() as $installed) {
+$packages[] = array_keys($installed['versions']);
+}
+
+
+if (1 === \count($packages)) {
+return $packages[0];
+}
+
+return array_keys(array_flip(\call_user_func_array('array_merge', $packages)));
 }
 
 
@@ -291,7 +314,13 @@ return array_keys(self::$installed['versions']);
 
 public static function isInstalled($packageName)
 {
-return isset(self::$installed['versions'][$packageName]);
+foreach (self::getInstalled() as $installed) {
+if (isset($installed['versions'][$packageName])) {
+return true;
+}
+}
+
+return false;
 }
 
 
@@ -326,25 +355,29 @@ return $provided->matches($constraint);
 
 public static function getVersionRanges($packageName)
 {
-if (!isset(self::$installed['versions'][$packageName])) {
-throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
+foreach (self::getInstalled() as $installed) {
+if (!isset($installed['versions'][$packageName])) {
+continue;
 }
 
 $ranges = array();
-if (isset(self::$installed['versions'][$packageName]['pretty_version'])) {
-$ranges[] = self::$installed['versions'][$packageName]['pretty_version'];
+if (isset($installed['versions'][$packageName]['pretty_version'])) {
+$ranges[] = $installed['versions'][$packageName]['pretty_version'];
 }
-if (array_key_exists('aliases', self::$installed['versions'][$packageName])) {
-$ranges = array_merge($ranges, self::$installed['versions'][$packageName]['aliases']);
+if (array_key_exists('aliases', $installed['versions'][$packageName])) {
+$ranges = array_merge($ranges, $installed['versions'][$packageName]['aliases']);
 }
-if (array_key_exists('replaced', self::$installed['versions'][$packageName])) {
-$ranges = array_merge($ranges, self::$installed['versions'][$packageName]['replaced']);
+if (array_key_exists('replaced', $installed['versions'][$packageName])) {
+$ranges = array_merge($ranges, $installed['versions'][$packageName]['replaced']);
 }
-if (array_key_exists('provided', self::$installed['versions'][$packageName])) {
-$ranges = array_merge($ranges, self::$installed['versions'][$packageName]['provided']);
+if (array_key_exists('provided', $installed['versions'][$packageName])) {
+$ranges = array_merge($ranges, $installed['versions'][$packageName]['provided']);
 }
 
 return implode(' || ', $ranges);
+}
+
+throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
 }
 
 
@@ -353,15 +386,19 @@ return implode(' || ', $ranges);
 
 public static function getVersion($packageName)
 {
-if (!isset(self::$installed['versions'][$packageName])) {
-throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
+foreach (self::getInstalled() as $installed) {
+if (!isset($installed['versions'][$packageName])) {
+continue;
 }
 
-if (!isset(self::$installed['versions'][$packageName]['version'])) {
+if (!isset($installed['versions'][$packageName]['version'])) {
 return null;
 }
 
-return self::$installed['versions'][$packageName]['version'];
+return $installed['versions'][$packageName]['version'];
+}
+
+throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
 }
 
 
@@ -370,15 +407,19 @@ return self::$installed['versions'][$packageName]['version'];
 
 public static function getPrettyVersion($packageName)
 {
-if (!isset(self::$installed['versions'][$packageName])) {
-throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
+foreach (self::getInstalled() as $installed) {
+if (!isset($installed['versions'][$packageName])) {
+continue;
 }
 
-if (!isset(self::$installed['versions'][$packageName]['pretty_version'])) {
+if (!isset($installed['versions'][$packageName]['pretty_version'])) {
 return null;
 }
 
-return self::$installed['versions'][$packageName]['pretty_version'];
+return $installed['versions'][$packageName]['pretty_version'];
+}
+
+throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
 }
 
 
@@ -387,15 +428,19 @@ return self::$installed['versions'][$packageName]['pretty_version'];
 
 public static function getReference($packageName)
 {
-if (!isset(self::$installed['versions'][$packageName])) {
-throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
+foreach (self::getInstalled() as $installed) {
+if (!isset($installed['versions'][$packageName])) {
+continue;
 }
 
-if (!isset(self::$installed['versions'][$packageName]['reference'])) {
+if (!isset($installed['versions'][$packageName]['reference'])) {
 return null;
 }
 
-return self::$installed['versions'][$packageName]['reference'];
+return $installed['versions'][$packageName]['reference'];
+}
+
+throw new \OutOfBoundsException('Package "' . $packageName . '" is not installed');
 }
 
 
@@ -404,7 +449,9 @@ return self::$installed['versions'][$packageName]['reference'];
 
 public static function getRootPackage()
 {
-return self::$installed['root'];
+$installed = self::getInstalled();
+
+return $installed[0]['root'];
 }
 
 
@@ -439,5 +486,33 @@ return self::$installed;
 public static function reload($data)
 {
 self::$installed = $data;
+self::$installedByVendor = array();
+}
+
+
+
+
+private static function getInstalled()
+{
+if (null === self::$canGetVendors) {
+self::$canGetVendors = method_exists('Composer\Autoload\ClassLoader', 'getRegisteredLoaders');
+}
+
+$installed = array();
+
+if (self::$canGetVendors) {
+
+foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
+if (isset(self::$installedByVendor[$vendorDir])) {
+$installed[] = self::$installedByVendor[$vendorDir];
+} elseif (is_file($vendorDir.'/composer/installed.php')) {
+$installed[] = self::$installedByVendor[$vendorDir] = require $vendorDir.'/composer/installed.php';
+}
+}
+}
+
+$installed[] = self::$installed;
+
+return $installed;
 }
 }
