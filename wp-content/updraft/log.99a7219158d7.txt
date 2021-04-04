@@ -141,3 +141,37 @@
 0002.052 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
 0002.057 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
 0002.101 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0002.632 (0) Dropbox: quota usage: used=38.1 MB, total=2048 MB, available=2009.9 MB
+0002.634 (0) Dropbox: Attempt to upload: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz to: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz
+0003.562 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAAL-IFfNrnYSB_A, 272161, 1024 KB)
+0005.059 (0) Recording as successfully uploaded: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz
+0005.064 (0) Deleting local file: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz: OK
+0005.065 (0) Dropbox: File upload success (backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz): 265 KB in 2s (109 KB/s)
+0005.077 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0005.078 (0) Number of backup sets in history: 3; groups (db): 1
+0005.081 (0) Examining (for databases) backup set with group_id=0, nonce=99a7219158d7, datestamp=1617559532 (Apr 04 2021 18:05:32)
+0005.082 (0) This backup set is the backup set just made, so will not be deleted.
+0005.083 (0) Examining (for databases) backup set with group_id=0, nonce=bb9335a6d636, datestamp=1616954663 (Mar 28 2021 18:04:23)
+0005.084 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.086 (0) Examining (for databases) backup set with group_id=0, nonce=5ad118bd20e4, datestamp=1616350142 (Mar 21 2021 18:09:02)
+0005.086 (0) 1616350142: db: this set includes a database (backup_2021-03-21-1809_Rockboro_Primary_School_5ad118bd20e4-db.gz); db count is now 2
+0005.086 (0) 1616350142: db: over retain limit (2); will delete this database
+0005.086 (0) Delete file: backup_2021-03-21-1809_Rockboro_Primary_School_5ad118bd20e4-db.gz, service=dropbox
+0005.090 (0) Dropbox: request deletion: backup_2021-03-21-1809_Rockboro_Primary_School_5ad118bd20e4-db.gz
+0005.930 (0) Dropbox: deletion succeeded
+0005.936 (0) This backup set is now empty; will remove from history
+0005.938 (0) Deleting log file (log.5ad118bd20e4.txt)
+0005.942 (0) Number of backup sets in history: 2; groups (files): 1
+0005.946 (0) Examining (for files) backup set with nonce=99a7219158d7, datestamp=1617559532 (Apr 04 2021 18:05:32)
+0005.946 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.949 (0) Examining (for files) backup set with nonce=bb9335a6d636, datestamp=1616954663 (Mar 28 2021 18:04:23)
+0005.949 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.950 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0005.957 (0) Resume backup (99a7219158d7, 0): finish run
+0005.966 (0) Decremented the semaphore (fd) by 1
+0005.970 (0) Semaphore (fd) unlocked
+0005.973 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0005.982 (0) Fetching RSS news feed
+0006.321 (0) Fetched RSS news feed; result is a: SimplePie
+0006.366 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0006.591 (0) The backup apparently succeeded and is now complete
