@@ -134,3 +134,44 @@
 0001.897 (0) backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db-table-wp_simple_history_contexts.table.gz (42/21): adding to final database dump
 0001.942 (0) backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz: finished writing out complete database file (256 KB)
 0001.962 (0) Total database tables backed up: 21 (backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz, size: 281008, sha1: 5def8a4aa7226364b48c2275a51e90987b550f16, sha256: 8cbb63fbb26c433693a7dbfa4c9e74d1fe6e064f9469dc11a7ab89eb8a1649b4)
+0001.974 (0) backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz: db: This file has not yet been successfully uploaded: will queue
+0001.977 (0) Saving backup history. Total backup size: 274.4 KB
+0001.985 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0001.996 (0) Cloud backup selection (1/1): dropbox with instance (1/1) (last)
+0002.000 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
+0002.002 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
+0002.049 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0002.408 (0) Dropbox: quota usage: used=38.1 MB, total=2048 MB, available=2009.9 MB
+0002.411 (0) Dropbox: Attempt to upload: backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz to: backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz
+0003.103 (0) Dropbox chunked upload: 100 % uploaded (AAAAAAAAAMFVm0sf57R93w, 281008, 1024 KB)
+0004.225 (0) Recording as successfully uploaded: backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz
+0004.231 (0) Deleting local file: backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz: OK
+0004.232 (0) Dropbox: File upload success (backup_2021-04-18-1905_Rockboro_Primary_School_4e325f5c3e8c-db.gz): 274 KB in 1s (150 KB/s)
+0004.243 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0004.244 (0) Number of backup sets in history: 3; groups (db): 1
+0004.247 (0) Examining (for databases) backup set with group_id=0, nonce=4e325f5c3e8c, datestamp=1618769112 (Apr 18 2021 18:05:12)
+0004.248 (0) This backup set is the backup set just made, so will not be deleted.
+0004.248 (0) Examining (for databases) backup set with group_id=0, nonce=03268de1fff4, datestamp=1618164263 (Apr 11 2021 18:04:23)
+0004.248 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0004.251 (0) Examining (for databases) backup set with group_id=0, nonce=99a7219158d7, datestamp=1617559532 (Apr 04 2021 18:05:32)
+0004.251 (0) 1617559532: db: this set includes a database (backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz); db count is now 2
+0004.251 (0) 1617559532: db: over retain limit (2); will delete this database
+0004.251 (0) Delete file: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz, service=dropbox
+0004.252 (0) Dropbox: request deletion: backup_2021-04-04-1905_Rockboro_Primary_School_99a7219158d7-db.gz
+0005.532 (0) Dropbox: deletion succeeded
+0005.537 (0) This backup set is now empty; will remove from history
+0005.539 (0) Deleting log file (log.99a7219158d7.txt)
+0005.541 (0) Number of backup sets in history: 2; groups (files): 1
+0005.543 (0) Examining (for files) backup set with nonce=4e325f5c3e8c, datestamp=1618769112 (Apr 18 2021 18:05:12)
+0005.543 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.545 (0) Examining (for files) backup set with nonce=03268de1fff4, datestamp=1618164263 (Apr 11 2021 18:04:23)
+0005.545 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.545 (0) Retain: saving new backup history (sets now: 2) and finishing retain operation
+0005.551 (0) Resume backup (4e325f5c3e8c, 0): finish run
+0005.556 (0) Decremented the semaphore (fd) by 1
+0005.563 (0) Semaphore (fd) unlocked
+0005.564 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0005.573 (0) Fetching RSS news feed
+0005.893 (0) Fetched RSS news feed; result is a: SimplePie
+0005.977 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
+0006.169 (0) The backup apparently succeeded and is now complete
