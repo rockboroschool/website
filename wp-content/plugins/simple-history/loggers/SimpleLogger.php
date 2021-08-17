@@ -184,34 +184,16 @@ class SimpleLogger
         }
 
         // Interpolate replacement values into the message and return
-        /*
-        if ( ! is_string( $message )) {
-            echo "message:";
-            var_dump($message);exit;
-        }
-        //*/
-        /*
-        if ( ! is_string( $replace )) {
-            echo "replace: \n";
-            var_dump($replace);
-        }
-        // */
-
         return strtr($message, $replace);
     }
 
     /**
-     * Returns header output for a log row
-     * Format should be common for all log rows and should be like:
-     * Username (user role) · Date
-     *
+     * @param object $row
      * @return string HTML
      */
-    public function getLogRowHeaderOutput($row)
+    public function getLogRowHeaderInitiatorOutput($row)
     {
-        // HTML for initiator
         $initiator_html = '';
-
         $initiator = $row->initiator;
         $context = $row->context;
 
@@ -239,7 +221,6 @@ class SimpleLogger
 
                     // get user role, as done in user-edit.php
                     $wp_roles = $GLOBALS['wp_roles'];
-                    $all_roles = (array) $wp_roles->roles;
                     $user_roles = array_intersect(
                         array_values((array) $user->roles),
                         array_keys((array) $wp_roles->roles)
@@ -249,12 +230,12 @@ class SimpleLogger
                     $user_display_name = $user->display_name;
 
                     /*
-                     * If user who logged this is the currently logged in user
-                     * skip name and email and use just "You"
-                     *
-                     * @param bool If you should be used
-                     * @since 2.1
-                     */
+                    * If user who logged this is the currently logged in user
+                    * skip name and email and use just "You"
+                    *
+                    * @param bool If you should be used
+                    * @since 2.1
+                    */
                     $use_you = apply_filters(
                         'simple_history/header_initiator_use_you',
                         true
@@ -262,17 +243,17 @@ class SimpleLogger
 
                     if ($use_you && $is_current_user) {
                         $tmpl_initiator_html = '
-							<a href="%6$s" class="SimpleHistoryLogitem__headerUserProfileLink">
-								<strong class="SimpleHistoryLogitem__inlineDivided">%5$s</strong>
-							</a>
-						';
+                            <a href="%6$s" class="SimpleHistoryLogitem__headerUserProfileLink">
+                                <strong class="SimpleHistoryLogitem__inlineDivided">%5$s</strong>
+                            </a>
+                        ';
                     } else {
                         $tmpl_initiator_html = '
-							<a href="%6$s" class="SimpleHistoryLogitem__headerUserProfileLink">
-								<strong class="SimpleHistoryLogitem__inlineDivided">%3$s</strong>
-								<span class="SimpleHistoryLogitem__inlineDivided SimpleHistoryLogitem__headerEmail">%2$s</span>
-							</a>
-						';
+                            <a href="%6$s" class="SimpleHistoryLogitem__headerUserProfileLink">
+                                <strong class="SimpleHistoryLogitem__inlineDivided">%3$s</strong>
+                                <span class="SimpleHistoryLogitem__inlineDivided SimpleHistoryLogitem__headerEmail">%2$s</span>
+                            </a>
+                        ';
                     }
 
                     /**
@@ -325,66 +306,21 @@ class SimpleLogger
             case 'web_user':
                 /*
                 Note: server_remote_addr may not show visiting/attacking ip, if server is behind...stuff..
-                Can be behind varnish cashe, or browser can for example use compression in chrome mobile
+                Can be behind varnish cache, or browser can for example use compression in chrome mobile
                 then the real ip is behind _server_http_x_forwarded_for_0 or similar
                 _server_remote_addr 66.249.81.222
                 _server_http_x_forwarded_for_0  5.35.187.212
                 */
 
-                // Check if additional IP addresses are stored, from http_x_forwarded_for and so on
+                // Check if additional IP addresses are stored, from http_x_forwarded_for and so on.
                 $arr_found_additional_ip_headers = $this->get_event_ip_number_headers(
                     $row
                 );
 
-                if (empty($context['_server_remote_addr'])) {
-                    $initiator_html .=
-                        "<strong class='SimpleHistoryLogitem__inlineDivided'>" .
-                        __('Anonymous web user', 'simple-history') .
-                        '</strong> ';
-                } else {
-                    $initiator_html .=
-                        "<strong class='SimpleHistoryLogitem__inlineDivided SimpleHistoryLogitem__anonUserWithIp'>";
-
-                    // if ( sizeof( $arr_found_additional_ip_headers ) ) {
-                    // $iplookup_link = sprintf('https://ipinfo.io/%1$s', esc_attr($context["_server_remote_addr"]));
-                    // $ip_numbers_joined = wp_sprintf_l('%l', array("_server_remote_addr" => $context["_server_remote_addr"]) + $arr_found_additional_ip_headers);
-                    /*
-                        $initiator_html .= sprintf(
-                            __('Anonymous user with multiple IP addresses detected: %1$s', "simple-history"),
-                            "<a target='_blank' href={$iplookup_link} class='SimpleHistoryLogitem__anonUserWithIp__theIp'>" . esc_html( $ip_numbers_joined ) . "</a>"
-                        );*/
-
-                    /*
-                        print_r($arr_found_additional_ip_headers);
-                        Array
-                        (
-                            [_server_http_x_forwarded_for_0] => 5.35.187.212
-                            [_server_http_x_forwarded_for_1] => 83.251.97.21
-                        )
-                        */
-
-                    // } else {
-                    // single ip address
-                    $iplookup_link = sprintf(
-                        'https://ipinfo.io/%1$s',
-                        esc_attr($context['_server_remote_addr'])
-                    );
-
-                    $initiator_html .= sprintf(
-                        __('Anonymous user from %1$s', 'simple-history'),
-                        "<a target='_blank' href={$iplookup_link} class='SimpleHistoryLogitem__anonUserWithIp__theIp'>" .
-                            esc_html($context['_server_remote_addr']) .
-                            '</a>'
-                    );
-
-                    // } // multiple ip
-                    $initiator_html .= '</strong> ';
-
-                    // $initiator_html .= "<strong>" . __("<br><br>Unknown user from {$context["_server_remote_addr"]}") . "</strong>";
-                    // $initiator_html .= "<strong>" . __("<br><br>{$context["_server_remote_addr"]}") . "</strong>";
-                    // $initiator_html .= "<strong>" . __("<br><br>User from IP {$context["_server_remote_addr"]}") . "</strong>";
-                    // $initiator_html .= "<strong>" . __("<br><br>Non-logged in user from IP  {$context["_server_remote_addr"]}") . "</strong>";
-                } // End if().
+                $initiator_html .=
+                    "<strong class='SimpleHistoryLogitem__inlineDivided'>" .
+                    __('Anonymous web user', 'simple-history') .
+                    '</strong> ';
 
                 break;
 
@@ -425,6 +361,11 @@ class SimpleLogger
             $row
         );
 
+        return $initiator_html;
+    }
+
+    public function getLogRowHeaderDateOutput($row)
+    {
         // HTML for date
         // Date (should...) always exist
         // http://developers.whatwg.org/text-level-semantics.html#the-time-element
@@ -562,6 +503,11 @@ class SimpleLogger
             $row
         );
 
+        return $date_html;
+    }
+
+    public function getLogRowHeaderUsingPluginOutput($row)
+    {
         // Logger "via" info in header, i.e. output some extra
         // info next to the time to make it more clear what plugin etc.
         // that "caused" this event
@@ -575,33 +521,183 @@ class SimpleLogger
             $via_html .= '</span>';
         }
 
-        // Loglevel
-        // SimpleHistoryLogitem--loglevel-warning
-        /*
-        $level_html = sprintf(
-        '<span class="SimpleHistoryLogitem--logleveltag SimpleHistoryLogitem--logleveltag-%1$s">%1$s</span>',
-        $row->level
-        );
-         */
+        return $via_html;
+    }
 
-        // Glue together final result
+    /**
+     * Context for IP Addresses can contain multiple entries.
+     *
+     * - "_server_remote_addr" with value for example "172.17.0.0" is the main entry.
+     *   It usually contains the IP address of the visitor.
+     *
+     * - Then zero or one or multiple entries can exist if web server is for example behind proxy.
+     *   Entries that can exist are the one with keys is get_ip_number_header_keys(),
+     *   Also each key can exist multiple times.
+     *   Final key name will be like "_server_http_x_forwarded_for_0", "_server_http_x_forwarded_for_1" and so on.
+     *
+     * @param mixed $row
+     * @return string
+     */
+    public function getLogRowHeaderIPAddressOutput($row)
+    {
+
+        /**
+         * Filter if IP Address should be added to header row.
+         *
+         * @since 2.x
+         *
+         * @param bool True to show IP address, false to hide it. Defaults to false.
+         * @param object $row Row data
+         */
+        $show_ip_address = apply_filters(
+            'simple_history/row_header_output/display_ip_address',
+            false,
+            $row
+        );
+
+        if (!$show_ip_address) {
+            return '';
+        }
+
+        $context = $row->context;
+        $html = "<span class='SimpleHistoryLogitem__inlineDivided SimpleHistoryLogitem__anonUserWithIp'>";
+        
+        $arr_ip_addresses = [];
+
+        // Look for additional ip addresses.
+        $arr_found_additional_ip_headers = $this->get_event_ip_number_headers($row);
+        
+        $arr_ip_addresses = array_merge(
+            // Remote addr always exists.
+            ['_server_remote_addr' => $context['_server_remote_addr']],
+            $arr_found_additional_ip_headers
+        );
+
+        // if ( sizeof( $arr_found_additional_ip_headers ) ) {
+        // $iplookup_link = sprintf('https://ipinfo.io/%1$s', esc_attr($context["_server_remote_addr"]));
+        // $ip_numbers_joined = wp_sprintf_l('%l', array("_server_remote_addr" => $context["_server_remote_addr"]) + $arr_found_additional_ip_headers);
+        /*
+            $html .= sprintf(
+                __('Anonymous user with multiple IP addresses detected: %1$s', "simple-history"),
+                "<a target='_blank' href={$iplookup_link} class='SimpleHistoryLogitem__anonUserWithIp__theIp'>" . esc_html( $ip_numbers_joined ) . "</a>"
+            );*/
+
+        /*
+            print_r($arr_found_additional_ip_headers);
+            Array
+            (
+                [_server_http_x_forwarded_for_0] => 5.35.187.212
+                [_server_http_x_forwarded_for_1] => 83.251.97.21
+            )
+            */
+
+        // } else {
+
+        $first_ip_address = reset($arr_ip_addresses);
+
+        // Output single or plural text.
+        if (sizeof($arr_ip_addresses) === 1) {
+            // Single ip address
+            $iplookup_link = sprintf(
+                'https://ipinfo.io/%1$s',
+                esc_attr($first_ip_address)
+            );
+
+            $html .= sprintf(
+                __('IP Address %1$s', 'simple-history'),
+                "<a target='_blank' href='{$iplookup_link}' class='SimpleHistoryLogitem__anonUserWithIp__theIp' data-ip-address='" . esc_attr($first_ip_address) . "'>" .
+                esc_html($first_ip_address) .
+                '</a>'
+            );
+        } elseif (sizeof($arr_ip_addresses) > 1) {
+            $ip_addresses_html = '';
+
+            foreach ($arr_ip_addresses as $ip_address_header => $ip_address) {
+                $iplookup_link = sprintf(
+                    'https://ipinfo.io/%1$s',
+                    esc_attr($ip_address)
+                );
+    
+                $ip_addresses_html .= sprintf(
+                    '<a target="_blank" href="%3$s" class="SimpleHistoryLogitem__anonUserWithIp__theIp" data-ip-address="%4$s">%1$s</a>, ',
+                    esc_html($ip_address), // 1
+                    esc_html($ip_address_header), // 2
+                    $iplookup_link, // 3
+                    esc_attr($ip_address) // 4
+                );
+            }
+
+            // Remove trailing comma.
+            $ip_addresses_html = rtrim($ip_addresses_html, ', ');
+            
+            $html .= sprintf(
+                __('IP Addresses %1$s', 'simple-history'),
+                $ip_addresses_html
+            );
+        }
+
+        // } // multiple ip
+        $html .= '</span> ';
+
+        // $initiator_html .= "<strong>" . __("<br><br>Unknown user from {$context["_server_remote_addr"]}") . "</strong>";
+        // $initiator_html .= "<strong>" . __("<br><br>{$context["_server_remote_addr"]}") . "</strong>";
+        // $initiator_html .= "<strong>" . __("<br><br>User from IP {$context["_server_remote_addr"]}") . "</strong>";
+        // $initiator_html .= "<strong>" . __("<br><br>Non-logged in user from IP  {$context["_server_remote_addr"]}") . "</strong>";
+        // } // End if().
+        return $html;
+    }
+
+    /**
+     * Returns header output for a log row.
+     *
+     * Format should be common for all log rows and should be like:
+     * Username (user role) · Date · IP Address · Via plugin abc
+     * I.e.:
+     * Initiator * Date/time * IP Address * Via logger
+     *
+     * @param object $row Row data
+     * @return string HTML
+     */
+    public function getLogRowHeaderOutput($row)
+    {
+        $initiator_html = $this->getLogRowHeaderInitiatorOutput($row);
+        $date_html = $this->getLogRowHeaderDateOutput($row);
+        $via_html = $this->getLogRowHeaderUsingPluginOutput($row);
+        $ip_address_html = $this->getLogRowHeaderIPAddressOutput($row);
+
+        // Template to combine header parts.
         $template = '
 			%1$s
 			%2$s
 			%3$s
+			%4$s
 		';
-        // if ( ! $initiator_html ) {
-        // $template = '%2$s';
-        // }
+
+        /**
+         * Filter template used to glue together markup the log row header.
+         *
+         * @since 2.0
+         *
+         * @param string $template
+         * @param object $row Log row
+         */
+        $template = apply_filters(
+            'simple_history/row_header_output/template',
+            $template,
+            $row
+        );
+
+        // Glue together final result.
         $html = sprintf(
             $template,
             $initiator_html, // 1
             $date_html, // 2
-            $via_html // 3
+            $via_html, // 3
+            $ip_address_html // 4
         );
 
         /**
-         * Filter generated html for the log row header
+         * Filter generated html for the log row header.
          *
          * @since 2.0
          *
@@ -633,8 +729,8 @@ class SimpleLogger
     {
         $message = $row->message;
         $message_key = isset($row->context['_message_key'])
-            ? $row->context['_message_key']
-            : null;
+        ? $row->context['_message_key']
+        : null;
 
         // Message is translated here, but translation must be added in
         // plain text before
@@ -694,8 +790,8 @@ class SimpleLogger
             // wp_user = wordpress uses, but user may have been deleted since log entry was added
             case 'wp_user':
                 $user_id = isset($row->context['_user_id'])
-                    ? $row->context['_user_id']
-                    : null;
+                ? $row->context['_user_id']
+                : null;
 
                 if ($user_id > 0 && ($user = get_user_by('id', $user_id))) {
                     // Sender was user
@@ -1125,8 +1221,8 @@ class SimpleLogger
          * @since 2.nn
          */
         $message_key = isset($context['_message_key'])
-            ? $context['_message_key']
-            : null;
+        ? $context['_message_key']
+        : null;
         $do_log = apply_filters(
             "simple_history/log/do_log/{$this->slug}/{$message_key}",
             true
@@ -1137,14 +1233,14 @@ class SimpleLogger
 
         // Check if $message is a translated message, and if so then fetch original
         $sh_latest_translations =
-            $this->simpleHistory->gettextLatestTranslations;
+        $this->simpleHistory->gettextLatestTranslations;
 
         if (!empty($sh_latest_translations)) {
             if (isset($sh_latest_translations[$message])) {
                 // Translation of this phrase was found, so use original phrase instead of translated one
                 // Store textdomain since it's required to translate
                 $context['_gettext_domain'] =
-                    $sh_latest_translations[$message]['domain'];
+                $sh_latest_translations[$message]['domain'];
 
                 // These are good to keep when debugging
                 // $context["_gettext_org_message"] = $sh_latest_translations[$message]["text"];
@@ -1211,10 +1307,10 @@ class SimpleLogger
         $db_table = apply_filters('simple_history/db_table', $db_table);
 
         $data = array(
-            'logger' => $this->slug,
-            'level' => $level,
-            'date' => $localtime,
-            'message' => $message
+        'logger' => $this->slug,
+        'level' => $level,
+        'date' => $localtime,
+        'message' => $message
         );
 
         // Allow date to be overriden.
@@ -1230,8 +1326,8 @@ class SimpleLogger
             // Minimize risk of similar loggers logging same messages and such and resulting in same occasions id
             // by always adding logger slug.
             $occasions_data = array(
-                '_occasionsID' => $context['_occasionsID'],
-                '_loggerSlug' => $this->slug
+            '_occasionsID' => $context['_occasionsID'],
+            '_loggerSlug' => $this->slug
             );
             $occasions_id = md5(json_encode($occasions_data));
             unset($context['_occasionsID']);
@@ -1303,8 +1399,8 @@ class SimpleLogger
 
         // Detect REST calls and append to context, if not already there.
         $isRestApiRequest =
-            (defined('REST_API_REQUEST') && REST_API_REQUEST) ||
-            (defined('REST_REQUEST') && REST_REQUEST);
+        (defined('REST_API_REQUEST') && REST_API_REQUEST) ||
+        (defined('REST_REQUEST') && REST_REQUEST);
         if ($isRestApiRequest) {
             $context['_rest_api_request'] = true;
         }
@@ -1333,7 +1429,7 @@ class SimpleLogger
             $history_inserted_id = $wpdb->insert_id;
 
             $db_table_contexts =
-                $wpdb->prefix . SimpleHistory::DBTABLE_CONTEXTS;
+            $wpdb->prefix . SimpleHistory::DBTABLE_CONTEXTS;
 
             /**
              * Filter table name for contexts.
@@ -1370,8 +1466,8 @@ class SimpleLogger
             // Add remote addr to context.
             if (!isset($context['_server_remote_addr'])) {
                 $remote_addr = empty($_SERVER['REMOTE_ADDR'])
-                    ? ''
-                    : wp_unslash($_SERVER['REMOTE_ADDR']);
+                ? ''
+                : wp_unslash($_SERVER['REMOTE_ADDR']);
 
                 /**
                  * Filter to control if ip addresses should be anonymized or not.
@@ -1427,7 +1523,7 @@ class SimpleLogger
                                 }
 
                                 $context[
-                                    "_server_{$key_lower}_{$ip_loop_num}"
+                                "_server_{$key_lower}_{$ip_loop_num}"
                                 ] = $ip;
                             }
 
@@ -1515,9 +1611,9 @@ class SimpleLogger
             }
 
             $data = array(
-                'history_id' => $history_id,
-                'key' => $key,
-                'value' => $value
+            'history_id' => $history_id,
+            'key' => $key,
+            'value' => $value
             );
 
             $wpdb->insert($db_table_contexts, $data);
@@ -1534,12 +1630,12 @@ class SimpleLogger
     public function get_ip_number_header_keys()
     {
         $arr = array(
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED'
+        'HTTP_CLIENT_IP',
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP',
+        'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED'
         );
 
         return $arr;
@@ -1593,8 +1689,8 @@ class SimpleLogger
                 $ip,
                 FILTER_VALIDATE_IP,
                 FILTER_FLAG_IPV4 |
-                    FILTER_FLAG_NO_PRIV_RANGE |
-                    FILTER_FLAG_NO_RES_RANGE
+                FILTER_FLAG_NO_PRIV_RANGE |
+                FILTER_FLAG_NO_RES_RANGE
             ) === false
         ) {
             return false;

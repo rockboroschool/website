@@ -1,9 +1,9 @@
 <?php 
 /*
  * Plugin Name: PDF Poster 
- * Plugin URI:  https://bplugins.com/pdf-poster-pro-demo/
+ * Plugin URI:  http://pdfposter.com/
  * Description: You can easily Embed pdf file in wordress post, page, widget area and theme template file. 
- * Version:     1.6.3
+ * Version:     1.6.5
  * Author:      bPlugins LLC
  * Author URI:  https://bplugins.com
  * License:     GPLv3
@@ -27,14 +27,6 @@ function pdfp_add_script_to_admin(){
 }
  
 add_action( 'admin_enqueue_scripts', 'pdfp_add_script_to_admin' );
-
-
-//Remove post update massage and link
-function pdfp_updated_messages( $messages ) {
- $messages['pdfposter'][1] = __('Updated ');
-return $messages;
-}
-add_filter('post_updated_messages','pdfp_updated_messages');
 
 
 
@@ -78,7 +70,33 @@ function pdfp_create_post_type() {
 include_once('metabox/metabox-code.php');
 include_once('metabox/meta-box-class/my-meta-box-class.php');
 include_once('metabox/class-usage-demo.php');
+include_once('admin/submenu/sub-menu.php');
 include_once('blocks/index.php');
+
+//Remove post update massage and link
+function pdfp_updated_messages( $messages ) {
+ $messages['pdfposter'][1] = __('Updated ');
+return $messages;
+}
+add_filter('post_updated_messages','pdfp_updated_messages');
+
+
+// After activation redirect
+
+register_activation_hook(__FILE__, 'pdfp_plugin_activate');
+add_action('admin_init', 'pdfp_plugin_redirect');
+
+function pdfp_plugin_activate() {
+	add_option('pdfp_plugin_do_activation_redirect', true);
+}
+
+function pdfp_plugin_redirect() {
+    if (get_option('pdfp_plugin_do_activation_redirect', false)) {
+        delete_option('pdfp_plugin_do_activation_redirect');
+        wp_redirect('edit.php?post_type=pdfposter&page=pdfp-support');
+    }
+}
+
 
 /*-------------------------------------------------------------------------------*/
 /*   Hide & Disabled View, Quick Edit and Preview Button
@@ -142,7 +160,7 @@ function pdfp_cpt_content_func($atts){
 ?>
 <?php ob_start(); ?>
 <?php if(!empty(get_post_meta($id,'meta-image', true))){?>
-	<div id="buttons" style="margin-bottom:10px;">
+	<div id="buttons" class="bpdf_wrapper" style="margin-bottom:10px;">
 	<?php if(!empty(get_post_meta($id,'pdfp_onei_pp_pgname', true))):?>File name :  <?php $url =get_post_meta($id,'meta-image', true);$name = basename($url); echo $name; ?><br/> <?php endif;?>
 
 
@@ -174,6 +192,24 @@ function pdfp_cpt_content_func($atts){
 }
 add_shortcode('pdf','pdfp_cpt_content_func');
 
+/**
+ * add css in head
+ */
+function bpdf_media_css(){
+	?>
+	<style>
+	.bpdf_wrapper {
+		min-width: 320px;
+	}
+	@media only screen and (max-width: 600px) {
+	  .bpdf_wrapper iframe {
+		height: 500px;
+	  }
+	}
+	</style>
+	<?php
+}
+add_action('wp_head', 'bpdf_media_css');
 
 // ONLY MOVIE CUSTOM TYPE POSTS
 add_filter('manage_pdfposter_posts_columns', 'ST4_columns_head_only_pdfposter', 10);
@@ -226,7 +262,7 @@ function pdfp_submenu_page_callback() {
 add_action('admin_menu', 'pdfp_add_custom_link_into_cpt_menu');
 function pdfp_add_custom_link_into_cpt_menu() {
 global $submenu;
-$link = 'https://bit.ly/3akaUZB';
+$link = 'http://pdfposter.com';
 $submenu['edit.php?post_type=pdfposter'][] = array( 'PRO Version Demo', 'manage_options', $link, 'meta'=>'target="_blank"' );
 }
 
@@ -234,7 +270,7 @@ function pdfp_my_custom_script() {
     ?>
     <script type="text/javascript">
         jQuery(document).ready( function($) {
-            $( "ul#adminmenu a[href$='https://bit.ly/3akaUZB']" ).attr( 'target', '_blank' );
+            $( "ul#adminmenu a[href$='http://pdfposter.com']" ).attr( 'target', '_blank' );
         });
     </script>
     <?php
@@ -363,7 +399,7 @@ function pdfp_callback( ) {echo'
 add_filter( 'admin_footer_text','pdfp_admin_footer');	 
 function pdfp_admin_footer( $text ) {
 	if ( 'pdfposter' == get_post_type() ) {
-		$url = 'https://wordpress.org/support/plugin/hpdf-poster/reviews/?filter=5#new-post';
+		$url = 'https://wordpress.org/support/plugin/pdf-poster/reviews/?filter=5#new-post';
 		$text = sprintf( __( 'If you like <strong>Pdf Poster</strong> please leave us a <a href="%s" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a> rating. Your Review is very important to us as it helps us to grow more. ', 'h5vp-domain' ), $url );
 	}
 

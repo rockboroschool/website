@@ -1,6 +1,6 @@
 <?php
 
-function get_list() {
+function fpdf_get_list() {
     $options = array();
     $args = array(
         'post_type' => array( 'pdfposter' ),
@@ -26,13 +26,13 @@ add_filter( 'rwmb_meta_boxes', function( $meta_boxes ) {
 		'type'            => 'block',
 		'icon'            => 'media-document',
 		'context'         => 'side',
-		'render_template' => KAHF_PLUGIN_DIR . '/inc/incfix/index-view.php',
+		'render_template' => WWW_PLUGIN_DIR . '/inc/incfix/index-view.php',
 		'fields'          => [
 			array(
                 'name'            => 'Select Document',
                 'id'              => 'tringle_text',
                 'type'            => 'select',
-                'options'         => get_list(),
+                'options'         => fpdf_get_list(),
                 'multiple'        => false,
                 'placeholder'     => 'Select an Item',
                 'select_all_none' => true,

@@ -171,7 +171,6 @@ class MonsterInsights_Popular_Posts {
 
 		// Load Popular Posts styles.
 		wp_register_style( 'monsterinsights-popular-posts-style', plugins_url( 'assets/css/frontend' . $suffix . '.css', MONSTERINSIGHTS_PLUGIN_FILE ), array(), monsterinsights_get_asset_version() );
-		wp_enqueue_style( 'monsterinsights-popular-posts-style' );
 
 		$this->add_theme_specific_styles();
 
@@ -237,6 +236,9 @@ class MonsterInsights_Popular_Posts {
 	 * @return string
 	 */
 	public function shortcode_output( $args ) {
+		// Load frontend.css file when shortcode is available
+		wp_enqueue_style( 'monsterinsights-popular-posts-style' );
+
 		if ( $this->ajaxify ) {
 			return $this->get_ajax_json_data( $args );
 		} else {
@@ -331,11 +333,11 @@ class MonsterInsights_Popular_Posts {
 			$post_image        = '';
 			$post_image_srcset = '';
 			if ( ! empty( $post_thumbnail ) ) {
-				$post_image = wp_get_attachment_image_src( $post_thumbnail, 'small' );
+				$post_image = wp_get_attachment_image_src( $post_thumbnail, 'medium' );
 				if ( is_array( $post_image ) && ! empty( $post_image[0] ) ) {
 					$post_image = $post_image[0];
 				}
-				$post_image_srcset = wp_get_attachment_image_srcset( $post_thumbnail, 'small' );
+				$post_image_srcset = wp_get_attachment_image_srcset( $post_thumbnail, 'medium' );
 			}
 
 			$author_data = get_userdata( $post->post_author );
@@ -497,7 +499,7 @@ class MonsterInsights_Popular_Posts {
 	 *
 	 * @return string
 	 */
-	public function get_element_style( $theme = '', $object, $atts, $key = '' ) {
+	public function get_element_style( $theme, $object, $atts, $key = '' ) {
 
 		if ( 'no_styles' === $this->styling ) {
 			// If no styles is selected don't output any styles.

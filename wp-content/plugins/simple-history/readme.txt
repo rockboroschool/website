@@ -3,9 +3,9 @@ Contributors: eskapism
 Donate link: https://www.paypal.me/eskapism
 Tags: history, log, changes, changelog, audit, audit log, event log, user tracking, trail, pages, attachments, users, dashboard, admin, syslog, feed, activity, stream, audit trail, brute-force
 Requires at least: 5.2
-Tested up to: 5.5
+Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 2.38.0
+Stable tag: 2.42.0
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -50,7 +50,7 @@ Out of the box Simple History has support for:
 By default Simple History comes with built in support for the following plugins:
 
 **Jetpack**<br>
-The [Jetpack plugin](https://wordpress.org/plugins/jetpack/) is a plugin from Automattic (the creators of WordPress) that lets you supercharge your website by adding a lot of extra functions.
+The [Jetpack plugin](https://wordpress.org/plugins/jetpack/) is a plugin from Automattic (the company behind the WordPress.com service) that lets you supercharge your website by adding a lot of extra functions.
 In Simple History you will see what Jetpack modules that are activated and deactivated.
 (The creator of Simple History recommends this plugin and its [brute force attack protection](https://jetpack.com/features/security/brute-force-attack-protection/) functions btw. It's a really good way to block unwanted login attempts from malicious botnets and distributed attacks.
 
@@ -62,6 +62,10 @@ Simple History will log changes made to the field groups and the fields inside f
 The [User Switching plugin](https://wordpress.org/plugins/user-switching/) allows you to quickly swap between user accounts in WordPress at the click of a button.
 Simple History will log each user switch being made.
 
+**WP Crontrol**<br>
+The [WP Crontrol plugin](https://wordpress.org/plugins/wp-crontrol/) enables you to view and control what's happening in the WP-Cron system.
+Simple History will log when cron events are added, edited, deleted, and manually ran, and when cron schedules are added and deleted.
+
 **Enable Media Replace**<br>
 The [Enable Media Replace plugin](https://wordpress.org/plugins/enable-media-replace/) allows you to replace a file in your media library by uploading a new file in its place.
 Simple history will log details about the file being replaced and details about the new file.
@@ -71,16 +75,16 @@ The plugin [Limit Login Attempts](https://wordpress.org/plugins/limit-login-atte
 and has not been updated for 4 years. However it still has +1 million installs, so many users will benefit from
 Simple History logging login attempts, lockouts, and configuration changes made in the plugin Limit Login Attempts.
 
-**Redirection**
+**Redirection**<br>
 The [redirection plugin](https://wordpress.org/plugins/redirection/) manages url redirections, using a nice GUI.
 Simple History will log redirects and groups that are created, changed, enabled or disabled and also when the global plugin settings have been modified.
 
-**Duplicate Post**
+**Duplicate Post**<br>
 The plugin [Duplicate Post](https://wordpress.org/plugins/duplicate-post/) allows users to
 clone posts of any type.
 Simple History will log when a clone of a post or page is done.
 
-**Beaver Builder**
+**Beaver Builder**<br>
 The plugin [Beaver Build](https://wordpress.org/plugins/beaver-builder-lite-version/) is a page builder for WordPress that adds a flexible drag and drop page builder to the front end of your WordPress website.
 Simple History will log when a Beaver Builder layout or template is saved or when the settings for the plugins are saved.
 
@@ -189,7 +193,43 @@ Events in the log are stored for 60 days by default. Events older than this will
 
 == Changelog ==
 
-= 2.38.0 Unreleased =
+= 2.42.0 (April 2021) =
+
+- Fixed: Quick diff table had to wrong sizes of the table cells. ([#246](https://github.com/bonny/WordPress-Simple-History/issues/246))
+
+= 2.41.2 (March 2021) =
+
+- Fixed: Error when running on PHP version 7.2 or lower.
+
+= 2.41.1 (March 2021) =
+
+- Fixed: Get information for correct IP Address when multiple IP addresses are shown.
+
+= 2.41.0 (March 2021) =
+
+- Fixed: Error when visiting settings screen on PHP 8. 
+  Fixes https://wordpress.org/support/topic/simple-history-fatal-error/.
+  [#239](https://github.com/bonny/WordPress-Simple-History/issues/239)
+
+= 2.40.0 (March 2021) =
+
+- Changed: IP address is now also shown when a user successfully logs in.
+  Previously the IP address was only shown for failed login attempts. Note that the IP address/es of all events are always logged and can be seen in the "context data" table that is displayed when you click the date and time of an event.
+  [#233](https://github.com/bonny/WordPress-Simple-History/issues/233)
+
+- Added: If multiple IP addresses are detected, for example when a website is running behind a proxy or similar, all IP addresses are now shown for failed and sucessful logins.
+
+- Added: Filter `simple_history/row_header_output/display_ip_address` that can be used to control when the IP address/es should be visible in the main log. By default sucessful and failed logins are shown.
+
+- Added: Show message when failing to get IP address due to for example ad blocker. IPInfo.io is for example blocked in the EasyList filter list that for example [Chrome extension uBlock Origin](https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm) uses.
+
+- Added: Filter `simple_history/row_header_output/template` that controls the output of the header row in the main event log.
+
+= 2.39.0 (January 2021) =
+
+- Added: Logging of events that a user performs via the [WP Crontrol](https://wordpress.org/plugins/wp-crontrol/) plugin (requires WP Crontrol version 1.9.0 or later). Simple History will log when cron events are added, edited, deleted, and manually ran, and when cron schedules are added and deleted. Props https://github.com/johnbillion.
+
+= 2.38.0 (November 2020) =
 
 - Changed: It's now possible to log things before the `after_setup_theme` hook by using the `SimpleLogger()` function. Before this change calling `SimpleLogger()` before `after_setup_theme`, or on `after_setup_theme` with a prio smaller than 10, would result in a fatal error (`Fatal error: Uncaught Error: Class 'SimpleLogger' not found`). Props https://github.com/JoryHogeveen.
 

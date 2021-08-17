@@ -161,6 +161,10 @@ class MonsterInsights_Rest_Routes {
 			if ( ! isset( $options['summaries_header_image'] ) ) {
 				$options['summaries_header_image'] = '';
 			}
+
+			if ( ! isset( $options['local_gtag_file_modified_at'] ) ) {
+				$options['local_gtag_file_modified_at'] = '';
+			}
 		}
 
 		wp_send_json( $options );
@@ -327,6 +331,18 @@ class MonsterInsights_Rest_Routes {
 		$parsed_addons['lifterlms'] = array(
 			'active' => function_exists( 'LLMS' ) && version_compare( LLMS()->version, '3.32.0', '>=' ),
 		);
+		// Restrict Content Pro.
+		$parsed_addons['rcp'] = array(
+			'active' => class_exists( 'Restrict_Content_Pro' ) && version_compare( RCP_PLUGIN_VERSION, '3.5.4', '>=' ),
+		);
+		// GiveWP.
+		$parsed_addons['givewp'] = array(
+			'active' => function_exists( 'Give' ),
+		);
+		// GiveWP Analytics.
+		$parsed_addons['givewp_google_analytics'] = array(
+			'active' => function_exists( 'Give_Google_Analytics' ),
+		);
 		// Cookiebot.
 		$parsed_addons['cookiebot'] = array(
 			'active' => function_exists( 'cookiebot_active' ) && cookiebot_active(),
@@ -343,22 +359,36 @@ class MonsterInsights_Rest_Routes {
 		$parsed_addons['google_amp'] = array(
 			'active' => defined( 'AMP__FILE__' ),
 		);
+		// Yoast SEO.
+		$parsed_addons['yoast_seo'] = array(
+			'active' => defined( 'WPSEO_VERSION' ),
+		);
 		// WPForms.
 		$parsed_addons['wpforms-lite'] = array(
 			'active'    => function_exists( 'wpforms' ),
 			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-wpforms.png',
 			'title'     => 'WPForms',
-			'excerpt'   => __( 'The most beginner friendly drag & drop WordPress forms plugin allowing you to create beautiful contact forms, subscription forms, payment forms, and more in minutes, not hours!', 'google-analytics-for-wordpress' ),
+			'excerpt'   => __( 'The best drag & drop WordPress form builder. Easily create beautiful contact forms, surveys, payment forms, and more with our 150+ form templates. Trusted by over 4 million websites as the best forms plugin', 'google-analytics-for-wordpress' ),
 			'installed' => array_key_exists( 'wpforms-lite/wpforms.php', $installed_plugins ),
 			'basename'  => 'wpforms-lite/wpforms.php',
 			'slug'      => 'wpforms-lite',
+		);
+		// AIOSEO.
+		$parsed_addons['aioseo'] = array(
+			'active'    => function_exists( 'aioseo' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-all-in-one-seo.png',
+			'title'     => 'AIOSEO',
+			'excerpt'   => __( 'The original WordPress SEO plugin and toolkit that improves your website’s search rankings. Comes with all the SEO features like Local SEO, WooCommerce SEO, sitemaps, SEO optimizer, schema, and more.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'all-in-one-seo-pack/all_in_one_seo_pack.php', $installed_plugins ),
+			'basename'  => ( monsterinsights_is_installed_aioseo_pro() ) ? 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php' : 'all-in-one-seo-pack/all_in_one_seo_pack.php',
+			'slug'      => 'all-in-one-seo-pack',
 		);
 		// OptinMonster.
 		$parsed_addons['optinmonster'] = array(
 			'active'    => class_exists( 'OMAPI' ),
 			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-om.png',
 			'title'     => 'OptinMonster',
-			'excerpt'   => __( 'Our high-converting optin forms like Exit-Intent® popups, Fullscreen Welcome Mats, and Scroll boxes help you dramatically boost conversions and get more email subscribers.', 'google-analytics-for-wordpress' ),
+			'excerpt'   => __( 'Instantly get more subscribers, leads, and sales with the #1 conversion optimization toolkit. Create high converting popups, announcement bars, spin a wheel, and more with smart targeting and personalization.', 'google-analytics-for-wordpress' ),
 			'installed' => array_key_exists( 'optinmonster/optin-monster-wp-api.php', $installed_plugins ),
 			'basename'  => 'optinmonster/optin-monster-wp-api.php',
 			'slug'      => 'optinmonster',
@@ -368,10 +398,60 @@ class MonsterInsights_Rest_Routes {
 			'active'    => function_exists( 'wp_mail_smtp' ),
 			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-smtp.png',
 			'title'     => 'WP Mail SMTP',
-			'excerpt'   => __( 'SMTP (Simple Mail Transfer Protocol) is an industry standard for sending emails. SMTP helps increase email deliverability by using proper authentication.', 'google-analytics-for-wordpress' ),
+			'excerpt'   => __( 'Improve your WordPress email deliverability and make sure that your website emails reach user’s inbox with the #1 SMTP plugin for WordPress. Over 2 million websites use it to fix WordPress email issues.', 'google-analytics-for-wordpress' ),
 			'installed' => array_key_exists( 'wp-mail-smtp/wp_mail_smtp.php', $installed_plugins ),
 			'basename'  => 'wp-mail-smtp/wp_mail_smtp.php',
 			'slug'      => 'wp-mail-smtp',
+		);
+		// SeedProd.
+		$parsed_addons['coming-soon']    = array(
+			'active'    => function_exists( 'seed_csp4_activation' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-seedprod.png',
+			'title'     => 'SeedProd',
+			'excerpt'   => __( 'The fastest drag & drop landing page builder for WordPress. Create custom landing pages without writing code, connect them with your CRM, collect subscribers, and grow your audience. Trusted by 1 million sites.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'coming-soon/coming-soon.php', $installed_plugins ),
+			'basename'  => 'coming-soon/coming-soon.php',
+			'slug'      => 'coming-soon',
+		);
+		// RafflePress
+		$parsed_addons['rafflepress']    = array(
+			'active'    => function_exists( 'rafflepress_lite_activation' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/pluign-rafflepress.png',
+			'title'     => 'RafflePress',
+			'excerpt'   => __( 'Turn your website visitors into brand ambassadors! Easily grow your email list, website traffic, and social media followers with the most powerful giveaways & contests plugin for WordPress.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'rafflepress/rafflepress.php', $installed_plugins ),
+			'basename'  => 'rafflepress/rafflepress.php',
+			'slug'      => 'rafflepress',
+		);
+		// TrustPulse
+		$parsed_addons['trustpulse-api'] = array(
+			'active'    => class_exists( 'TPAPI' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-trust-pulse.png',
+			'title'     => 'TrustPulse',
+			'excerpt'   => __( 'Boost your sales and conversions by up to 15% with real-time social proof notifications. TrustPulse helps you show live user activity and purchases to help convince other users to purchase.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'trustpulse-api/trustpulse.php', $installed_plugins ),
+			'basename'  => 'trustpulse-api/trustpulse.php',
+			'slug'      => 'trustpulse-api',
+		);
+		// Smash Balloon (Instagram)
+		$parsed_addons['smash-balloon-instagram'] = array(
+			'active'    => class_exists( 'sb_instagram_feed_init' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-smash-balloon.png',
+			'title'     => 'Smash Balloon Instagram Feeds',
+			'excerpt'   => __( 'Easily display Instagram content on your WordPress site without writing any code. Comes with multiple templates, ability to show content from multiple accounts, hashtags, and more. Trusted by 1 million websites.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'instagram-feed/instagram-feed.php', $installed_plugins ),
+			'basename'  => 'instagram-feed/instagram-feed.php',
+			'slug'      => 'instagram-feed',
+		);
+		// PushEngage
+		$parsed_addons['pushengage'] = array(
+			'active'    => method_exists( 'Pushengage', 'init' ),
+			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/plugin-pushengage.svg',
+			'title'     => 'PushEngage',
+			'excerpt'   => __( 'Connect with your visitors after they leave your website with the leading web push notification software. Over 10,000+ businesses worldwide use PushEngage to send 9 billion notifications each month.', 'google-analytics-for-wordpress' ),
+			'installed' => array_key_exists( 'pushengage/main.php', $installed_plugins ),
+			'basename'  => 'pushengage/main.php',
+			'slug'      => 'pushengage',
 		);
 		// Pretty Links
 		$parsed_addons['pretty-link'] = array(
@@ -382,34 +462,6 @@ class MonsterInsights_Rest_Routes {
 			'installed' => array_key_exists( 'pretty-link/pretty-link.php', $installed_plugins ),
 			'basename'  => 'pretty-link/pretty-link.php',
 			'slug'      => 'pretty-link',
-		);
-		// SeedProd.
-		$parsed_addons['coming-soon']    = array(
-			'active'    => function_exists( 'seed_csp4_activation' ),
-			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/seedprod.png',
-			'title'     => 'SeedProd',
-			'excerpt'   => __( 'Better Coming Soon & Maintenance Mode Pages', 'google-analytics-for-wordpress' ),
-			'installed' => array_key_exists( 'coming-soon/coming-soon.php', $installed_plugins ),
-			'basename'  => 'coming-soon/coming-soon.php',
-			'slug'      => 'coming-soon',
-		);
-		$parsed_addons['rafflepress']    = array(
-			'active'    => function_exists( 'rafflepress_lite_activation' ),
-			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/rafflepress.png',
-			'title'     => 'RafflePress',
-			'excerpt'   => __( 'Get More Traffic with Viral Giveaways', 'google-analytics-for-wordpress' ),
-			'installed' => array_key_exists( 'rafflepress/rafflepress.php', $installed_plugins ),
-			'basename'  => 'rafflepress/rafflepress.php',
-			'slug'      => 'rafflepress',
-		);
-		$parsed_addons['trustpulse-api'] = array(
-			'active'    => class_exists( 'TPAPI' ),
-			'icon'      => plugin_dir_url( MONSTERINSIGHTS_PLUGIN_FILE ) . 'assets/images/trustpulse.png',
-			'title'     => 'TrustPulse',
-			'excerpt'   => __( 'Social Proof Notifications that Boost Sales', 'google-analytics-for-wordpress' ),
-			'installed' => array_key_exists( 'trustpulse-api/trustpulse.php', $installed_plugins ),
-			'basename'  => 'trustpulse-api/trustpulse.php',
-			'slug'      => 'trustpulse-api',
 		);
 		// Gravity Forms.
 		$parsed_addons['gravity_forms'] = array(
@@ -447,10 +499,18 @@ class MonsterInsights_Rest_Routes {
 			$addon->url = '';
 		}
 
-		$addon->type      = $addons_type;
-		$addon->installed = $installed;
-		$addon->active    = $active;
-		$addon->basename  = $plugin_basename;
+		$active_version = false;
+		if ( $active ) {
+			if ( ! empty( $installed_plugins[ $plugin_basename ]['Version'] ) ) {
+				$active_version = $installed_plugins[ $plugin_basename ]['Version'];
+			}
+		}
+
+		$addon->type           = $addons_type;
+		$addon->installed      = $installed;
+		$addon->active_version = $active_version;
+		$addon->active         = $active;
+		$addon->basename       = $plugin_basename;
 
 		return $addon;
 	}

@@ -69,7 +69,11 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
             'ninja_form'				=> array( 'form_name' => __( 'Ninja Forms', 'google-captcha' ) ),
 			'divi_contact_form'			=> array( 'form_name' => __( 'Divi Contact Form', 'google-captcha' ) ),
 			'divi_login'				=> array( 'form_name' => __( 'Divi Login Form', 'google-captcha' ) ),
-			'gravity_forms'				=> array( 'form_name' => __( 'Gravity Forms', 'google-captcha' ) )
+			'gravity_forms'				=> array( 'form_name' => __( 'Gravity Forms', 'google-captcha' ) ),
+			'wpforms'				    => array( 'form_name' => __( 'WPForms', 'google-captcha' ) ),
+			'ultimate_member_login'		=> array( 'form_name' => __( 'Ultimate Member Login form', 'google-captcha' ) ),
+			'ultimate_member_register'	=> array( 'form_name' => __( 'Ultimate Member Registration form', 'google-captcha' ) ),
+			'ultimate_member_profile'	=> array( 'form_name' => __( 'Ultimate Member Profile form', 'google-captcha' ) )
 		);
 		$pro_sections = array(
 			'external' => array(
@@ -82,6 +86,7 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 					'sbscrbr',
 					'mailchimp',
                     'ninja_form',
+                    'wpforms'
 				)
 			),
 			'woocommerce' => array(
@@ -123,6 +128,14 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 					'wpforo_new_topic_form',
 					'wpforo_reply_form'
 				)
+			),
+			'ultimate_member' => array(
+				'name' => 'Ultimate Member',
+				'forms' => array(
+					'ultimate_member_login',
+					'ultimate_member_register',
+					'ultimate_member_profile'
+				)
 			)
 		); ?>
 		<table class="form-table bws_pro_version" style="margin-right: 10px; width: calc( 100% - 10px );">
@@ -161,20 +174,9 @@ if ( ! function_exists( 'gglcptch_supported_plugins_banner' ) ) {
 	<?php }
 }
 
-if ( ! function_exists( 'gglcptch_additional_settings_banner' ) ) {
-	function gglcptch_additional_settings_banner() { ?>
+if ( ! function_exists( 'gglcptch_additional_settings_banner_general' ) ) {
+	function gglcptch_additional_settings_banner_general() { ?>
 		<table class="form-table bws_pro_version">
-			<tr class="gglcptch_theme_v2" valign="top">
-				<th scope="row">
-					<?php _e( 'Size', 'google-captcha' ); ?>
-				</th>
-				<td>
-					<fieldset>
-						<label><input disabled="disabled" type="radio" checked><?php _e( 'Normal', 'google-captcha' ); ?></label><br />
-						<label><input disabled="disabled" type="radio"><?php _e( 'Compact', 'google-captcha' ); ?></label>
-					</fieldset>
-				</td>
-			</tr>
 			<tr valign="top">
 				<th scope="row"><?php _e( 'Language', 'google-captcha' ); ?></th>
 				<td>
@@ -188,6 +190,24 @@ if ( ! function_exists( 'gglcptch_additional_settings_banner' ) ) {
 				<td>
 					<input disabled="disabled" type="checkbox" />
 					<span class="bws_info"><?php _e( 'Enable to switch language automatically on multilingual website using the Multilanguage plugin.', 'google-captcha' ); ?></span>
+				</td>
+			</tr>
+		</table>
+	<?php }
+}
+
+if ( ! function_exists( 'gglcptch_additional_settings_banner_appearance' ) ) {
+	function gglcptch_additional_settings_banner_appearance() { ?>
+		<table class="form-table bws_pro_version">
+			<tr class="gglcptch_theme_v2" valign="top">
+				<th scope="row">
+					<?php _e( 'Size', 'google-captcha' ); ?>
+				</th>
+				<td>
+					<fieldset>
+						<label><input disabled="disabled" type="radio" checked><?php _e( 'Normal', 'google-captcha' ); ?></label><br />
+						<label><input disabled="disabled" type="radio"><?php _e( 'Compact', 'google-captcha' ); ?></label>
+					</fieldset>
 				</td>
 			</tr>
 		</table>

@@ -1,21 +1,21 @@
 === PDF Poster - PDF Embedder Plugin for Wordpress ===
 Contributors: abuhayat, shehabulislam
 Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
-Donate link: https://gum.co/wpdonate
+Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
-Tested up to: 5.5
-Stable tag: 1.6.3
+Tested up to: 5.7.2
+Stable tag: 1.6.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Embed pdf files in wordress post, page, widget area, page blocks and theme templates. Very easy to use, user friendly & lite weight plugin. Gutenberg PDF Viewer Block Available
+Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very liteweight plugin. Gutenberg PDF Viewer Block Available
 
 == Description ==
 
-Embed pdf files in wordress post, page, widget area, page blocks and theme templates. Very easy to use, user friendly & lite weight plugin. Gutenberg PDF Viewer Block Available
+Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very liteweight plugin. Gutenberg PDF Viewer Block Available
 
 == Demo==
-[Click Here To see demo ](https://links.bplugins.com/pdf-poster "See Demo") 
+[Click Here To see demo ](http://pdfposter.com "See Demo") 
 
 = How to Use ? =
 See, How easy Pdf Poster to use ! 
@@ -56,11 +56,17 @@ Get The PRO -> :  [BUY The PDF Poster PRO ](https://gum.co/zUvK "BUY NOW")
 - Select A PDF document  
 - Publish and Enjoy ! 
 
-= Feedback = 
-Liked that plugin? Hate it? Want a new feature?  [Send me some feedback](mailto:abuhayat.du@gmail.com "Send feedback")   
+update feedback link
 
-= Known Issues =
-[Click Here to see or file a new Known Issue.](https://docs.google.com/spreadsheets/d/1tYV6VqBbzxdxZutp7C21MCaDrt01pIg1D_t6G2KMR0U/edit?usp=sharing "Known issues")  
+= ⭐ Checkout our other WordPress Plugins- = 
+
+🔥 **[Html5 Audio Player](https://audioplayerwp.com/)** – Best audio player plugin for WordPress.
+
+🔥 **[Html5 Video Player](https://wpvideoplayer.com/)** – Best video player plugin for WordPress.
+
+🔥 **[StreamCast](https://wordpress.org/plugins/streamcast)** – A fully-featured Radio Player Plugin for WordPresss.
+
+🔥 **[3D Viewer](https://3d-viewer.bplugins.com/)** – Display interactive 3D models on the webs.
 
 
 

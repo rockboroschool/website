@@ -397,7 +397,8 @@ class MonsterInsights_Notifications {
 				'feed'      => $option['feed'],
 				'events'    => array_merge( $notification, $option['events'] ),
 				'dismissed' => $option['dismissed'],
-			)
+			),
+			false
 		);
 	}
 
@@ -420,7 +421,8 @@ class MonsterInsights_Notifications {
 				'feed'      => $feed,
 				'events'    => $option['events'],
 				'dismissed' => array_slice( $option['dismissed'], 0, 30 ), // Limit dismissed notifications to last 30.
-			)
+			),
+			false
 		);
 	}
 
@@ -472,7 +474,7 @@ class MonsterInsights_Notifications {
 			}
 		}
 
-		update_option( $this->option_name, $option );
+		update_option( $this->option_name, $option, false );
 
 		wp_send_json_success();
 	}
@@ -485,7 +487,7 @@ class MonsterInsights_Notifications {
 	public function get_menu_count() {
 
 		if ( $this->get_count() > 0 ) {
-			return '<span class="monsterinsights-menu-notification-indicator">' . $this->get_count() . '</span>';
+			return '<span class="monsterinsights-menu-notification-indicator update-plugins">' . $this->get_count() . '</span>';
 		}
 
 		return '';
@@ -503,7 +505,7 @@ class MonsterInsights_Notifications {
 		$notifications_data = array(
 			'notifications' => $this->get_active_notifications(),
 			'dismissed'     => $this->get_dismissed_notifications(),
-			'view_url'      => $this->get_view_url(),
+			'view_url'      => $this->get_view_url( 'monsterinsights-report-overview', 'monsterinsights_reports' ),
 			'sidebar_url'   => $this->get_sidebar_url(),
 		);
 
@@ -515,11 +517,18 @@ class MonsterInsights_Notifications {
 	 *
 	 * @return string
 	 */
-	public function get_view_url() {
+	public function get_view_url( $scroll_to, $page, $tab='' ) {
+		$disabled   = monsterinsights_get_option( 'dashboards_disabled', false );
 
-		$disabled = monsterinsights_get_option( 'dashboards_disabled', false );
+		$url = add_query_arg( array(
+			'page' => $page,
+			'monsterinsights-scroll' => $scroll_to,
+			'monsterinsights-highlight' => $scroll_to,
+		), admin_url( 'admin.php' ) );
 
-		$url = add_query_arg( 'page', 'monsterinsights_reports', admin_url( 'admin.php' ) );
+		if ( ! empty( $tab ) ) {
+			$url .= '#/'. $tab;
+		}
 
 		if ( false !== $disabled ) {
 			$url = is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network' ) : admin_url( 'admin.php?page=monsterinsights_settings' );
@@ -551,5 +560,19 @@ class MonsterInsights_Notifications {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Delete the notification options.
+	 */
+	public function delete_notifications_data() {
+
+		delete_option( $this->option_name );
+
+		// Delete old notices option.
+		delete_option( 'monsterinsights_notices' );
+
+		monsterinsights_notification_event_runner()->delete_data();
+
 	}
 }

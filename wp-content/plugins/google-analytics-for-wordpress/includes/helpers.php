@@ -1651,22 +1651,62 @@ function monsterinsights_get_english_speaking_countries() {
 	return array(
 		'AG' => __( 'Antigua and Barbuda', 'google-analytics-for-wordpress' ),
 		'AU' => __( 'Australia', 'google-analytics-for-wordpress' ),
-		'BS' => __( 'The Bahamas', 'google-analytics-for-wordpress' ),
 		'BB' => __( 'Barbados', 'google-analytics-for-wordpress' ),
 		'BZ' => __( 'Belize', 'google-analytics-for-wordpress' ),
+		'BW' => __( 'Botswana', 'google-analytics-for-wordpress' ),
+		'BI' => __( 'Burundi', 'google-analytics-for-wordpress' ),
+		'CM' => __( 'Cameroon', 'google-analytics-for-wordpress' ),
 		'CA' => __( 'Canada', 'google-analytics-for-wordpress' ),
 		'DM' => __( 'Dominica', 'google-analytics-for-wordpress' ),
+		'FJ' => __( 'Fiji', 'google-analytics-for-wordpress' ),
 		'GD' => __( 'Grenada', 'google-analytics-for-wordpress' ),
 		'GY' => __( 'Guyana', 'google-analytics-for-wordpress' ),
+		'GM' => __( 'Gambia', 'google-analytics-for-wordpress' ),
+		'GH' => __( 'Ghana', 'google-analytics-for-wordpress' ),
 		'IE' => __( 'Ireland', 'google-analytics-for-wordpress' ),
+		'IN' => __( 'India', 'google-analytics-for-wordpress' ),
 		'JM' => __( 'Jamaica', 'google-analytics-for-wordpress' ),
+		'KE' => __( 'Kenya', 'google-analytics-for-wordpress' ),
+		'KI' => __( 'Kiribati', 'google-analytics-for-wordpress' ),
+		'LS' => __( 'Lesotho', 'google-analytics-for-wordpress' ),
+		'LR' => __( 'Liberia', 'google-analytics-for-wordpress' ),
+		'MW' => __( 'Malawi', 'google-analytics-for-wordpress' ),
+		'MT' => __( 'Malta', 'google-analytics-for-wordpress' ),
+		'MH' => __( 'Marshall Islands', 'google-analytics-for-wordpress' ),
+		'MU' => __( 'Mauritius', 'google-analytics-for-wordpress' ),
+		'FM' => __( 'Micronesia', 'google-analytics-for-wordpress' ),
 		'NZ' => __( 'New Zealand', 'google-analytics-for-wordpress' ),
+		'NA' => __( 'Namibia', 'google-analytics-for-wordpress' ),
+		'NR' => __( 'Nauru', 'google-analytics-for-wordpress' ),
+		'NG' => __( 'Nigeria', 'google-analytics-for-wordpress' ),
+		'PK' => __( 'Pakistan', 'google-analytics-for-wordpress' ),
+		'PW' => __( 'Palau', 'google-analytics-for-wordpress' ),
+		'PG' => __( 'Papua New Guinea', 'google-analytics-for-wordpress' ),
+		'PH' => __( 'Philippines', 'google-analytics-for-wordpress' ),
+		'RW' => __( 'Rwanda', 'google-analytics-for-wordpress' ),
+		'SG' => __( 'Singapore', 'google-analytics-for-wordpress' ),
 		'KN' => __( 'St Kitts and Nevis', 'google-analytics-for-wordpress' ),
 		'LC' => __( 'St Lucia', 'google-analytics-for-wordpress' ),
 		'VC' => __( 'St Vincent and the Grenadines', 'google-analytics-for-wordpress' ),
+		'SZ' => __( 'Swaziland', 'google-analytics-for-wordpress' ),
+		'WS' => __( 'Samoa', 'google-analytics-for-wordpress' ),
+		'SC' => __( 'Seychelles', 'google-analytics-for-wordpress' ),
+		'SL' => __( 'Sierra Leone', 'google-analytics-for-wordpress' ),
+		'SB' => __( 'Solomon Islands', 'google-analytics-for-wordpress' ),
+		'ZA' => __( 'South Africa', 'google-analytics-for-wordpress' ),
+		'SS' => __( 'South Sudan', 'google-analytics-for-wordpress' ),
+		'SD' => __( 'Sudan', 'google-analytics-for-wordpress' ),
 		'TT' => __( 'Trinidad and Tobago', 'google-analytics-for-wordpress' ),
+		'BS' => __( 'The Bahamas', 'google-analytics-for-wordpress' ),
+		'TZ' => __( 'Tanzania', 'google-analytics-for-wordpress' ),
+		'TO' => __( 'Tonga', 'google-analytics-for-wordpress' ),
+		'TV' => __( 'Tuvalu', 'google-analytics-for-wordpress' ),
 		'GB' => __( 'United Kingdom', 'google-analytics-for-wordpress' ),
 		'US' => __( 'United States of America', 'google-analytics-for-wordpress' ),
+		'UG' => __( 'Uganda', 'google-analytics-for-wordpress' ),
+		'VU' => __( 'Vanuatu', 'google-analytics-for-wordpress' ),
+		'ZM' => __( 'Zambia', 'google-analytics-for-wordpress' ),
+		'ZW' => __( 'Zimbabwe', 'google-analytics-for-wordpress' ),
 	);
 }
 
@@ -1707,6 +1747,56 @@ function monsterinsights_date_is_between( $start_date, $end_date ) {
 	$end_date   = date( 'Y-m-d', strtotime( $end_date ) );
 
 	if ( ( $current_date >= $start_date ) && ( $current_date <= $end_date ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Check is All-In-One-Seo plugin is active or not.
+ *
+ * @since 7.17.0
+ *
+ * @return bool
+ */
+function monsterinsights_is_aioseo_active() {
+
+	if ( function_exists( 'aioseo' ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Return AIOSEO Dashboard URL if plugin is active.
+ *
+ * @since 7.17.0
+ *
+ * @return string
+ */
+function monsterinsights_aioseo_dashboard_url() {
+	$url = '';
+
+	if ( function_exists( 'aioseo' ) ) {
+		$url = is_multisite() ? network_admin_url( 'admin.php?page=aioseo' ) : admin_url( 'admin.php?page=aioseo' );
+	}
+
+	return $url;
+}
+
+/**
+ * Check if AIOSEO Pro version is installed or not.
+ *
+ * @since 7.17.10
+ *
+ * @return bool
+ */
+function monsterinsights_is_installed_aioseo_pro() {
+	$installed_plugins = get_plugins();
+
+	if ( array_key_exists( 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php', $installed_plugins ) ) {
 		return true;
 	}
 

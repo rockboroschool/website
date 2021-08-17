@@ -896,6 +896,7 @@ class SimpleHistory
 
             // Loggers for third party plugins.
             $loggersDir . 'PluginUserSwitchingLogger.php',
+            $loggersDir . 'PluginWPCrontrolLogger.php',
             $loggersDir . 'PluginEnableMediaReplaceLogger.php',
             $loggersDir . 'Plugin_UltimateMembers_Logger.php',
             $loggersDir . 'Plugin_LimitLoginAttempts.php',
@@ -1745,8 +1746,9 @@ Because Simple History was only recently installed, this feed does not display m
             $args = [
                 'arr_active_tab' => $arr_active_tab,
             ];
-
-            call_user_func_array($arr_active_tab['function'], $args);?>
+            
+            call_user_func_array($arr_active_tab['function'], array_values($args));
+            ?>
 
         </div>
         <?php
@@ -2271,12 +2273,13 @@ Because Simple History was only recently installed, this feed does not display m
     }
 
     /**
-     * Return header output for a log row
+     * Return header output for a log row.
+     *
      * Uses the getLogRowHeaderOutput of the logger that logged the row
-     * with fallback to SimpleLogger if logger is not available
+     * with fallback to SimpleLogger if logger is not available.
      *
      * Loggers are discouraged to override this in the loggers,
-     * because the output should be the same for all items in the gui
+     * because the output should be the same for all items in the GUI.
      *
      * @param object $row
      * @return string
@@ -2360,7 +2363,8 @@ Because Simple History was only recently installed, this feed does not display m
     }
 
     /**
-     * Returns the HTML output for a log row, to be used in the GUI/Activity Feed
+     * Returns the HTML output for a log row, to be used in the GUI/Activity Feed.
+     * This includes HTML for the header, the sender image, and the details.
      *
      * @param object $oneLogRow SimpleHistoryLogQuery array with data from SimpleHistoryLogQuery
      * @return string
@@ -2368,7 +2372,7 @@ Because Simple History was only recently installed, this feed does not display m
     public function getLogRowHTMLOutput($oneLogRow, $args)
     {
         $defaults = [
-            'type' => 'overview', // or "single" to include more stuff
+            'type' => 'overview', // or "single" to include more stuff (used in for example modal details window)
         ];
 
         $args = wp_parse_args($args, $defaults);
@@ -2408,12 +2412,13 @@ Because Simple History was only recently installed, this feed does not display m
             $occasions_html .= '</div>';
         }
 
-        // Add data atributes to log row, so plugins can do stuff
+        // Add data attributes to log row, so plugins can do stuff.
         $data_attrs = '';
         $data_attrs .= sprintf(' data-row-id="%1$d" ', $oneLogRow->id);
         $data_attrs .= sprintf(' data-occasions-count="%1$d" ', $occasions_count);
         $data_attrs .= sprintf(' data-occasions-id="%1$s" ', esc_attr($oneLogRow->occasionsID));
 
+        // Add data attributes for remote address and other ip number headers.
         if (isset($oneLogRow->context['_server_remote_addr'])) {
             $data_attrs .= sprintf(' data-ip-address="%1$s" ', esc_attr($oneLogRow->context['_server_remote_addr']));
         }
@@ -2421,10 +2426,12 @@ Because Simple History was only recently installed, this feed does not display m
         $arr_found_additional_ip_headers = $this->instantiatedLoggers['SimpleLogger'][
             'instance'
         ]->get_event_ip_number_headers($oneLogRow);
+
         if ($arr_found_additional_ip_headers) {
             $data_attrs .= sprintf(' data-ip-address-multiple="1" ');
         }
 
+        // Add data attributes info for common things like logger, level, data, initiation.
         $data_attrs .= sprintf(' data-logger="%1$s" ', esc_attr($oneLogRow->logger));
         $data_attrs .= sprintf(' data-level="%1$s" ', esc_attr($oneLogRow->level));
         $data_attrs .= sprintf(' data-date="%1$s" ', esc_attr($oneLogRow->date));
@@ -2434,7 +2441,8 @@ Because Simple History was only recently installed, this feed does not display m
             $data_attrs .= sprintf(' data-initiator-user-id="%1$d" ', $oneLogRow->context['_user_id']);
         }
 
-        // If type is single then include more details
+        // If type is single then include more details.
+        // This is typically shown in the modal window when clickin the event date and time.
         $more_details_html = '';
         if ($args['type'] == 'single') {
             $more_details_html = apply_filters(
