@@ -175,3 +175,10 @@
 0005.402 (0) Fetched RSS news feed; result is a: SimplePie
 0005.453 (0) Sending email ('Files and database (Full backup)') report (attachments: 0, size: 0 KB) to: user@...
 0005.662 (0) The backup apparently succeeded and is now complete
+0000.000 (1) Opened log file at time: Tue, 17 Aug 2021 19:37:32 +0000 on https://rockboroschool.ie
+0000.003 (1) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.59 WP: 5.6.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 11.7M | 14M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.006 (1) Free space on disk containing Updraft's temporary directory: 891.5 MB
+0000.033 (1) Requesting backup semaphore lock (9dc133e1ee7d)
+0000.041 (1) [Lock option (updraft_lock_9dc133e1ee7d, wp_options) was created in the database] debug
+0000.045 (1) [Lock (updraft_lock_9dc133e1ee7d, wp_options) acquired after initialising the database] info
+0000.049 (1) This backup task (9dc133e1ee7d) is either complete or began over 2 days ago: ending (1629229052.3594, ) (existing jobdata keys: )

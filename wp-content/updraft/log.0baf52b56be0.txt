@@ -36,3 +36,64 @@
 0001.157 () Atomic restore: dropping original table (wp_usermeta)
 0001.259 () Atomic restore: renaming new table (vb_usermeta) to final table name (wp_usermeta)
 0001.282 () Processing table (InnoDB): wp_actionscheduler_actions - will restore as: vb_actionscheduler_actions
+0001.344 () Atomic restore: dropping original table (wp_actionscheduler_actions)
+0001.432 () Atomic restore: renaming new table (vb_actionscheduler_actions) to final table name (wp_actionscheduler_actions)
+0001.443 () Processing table (InnoDB): wp_actionscheduler_claims - will restore as: vb_actionscheduler_claims
+0001.469 () Atomic restore: dropping original table (wp_actionscheduler_claims)
+0001.510 () Atomic restore: renaming new table (vb_actionscheduler_claims) to final table name (wp_actionscheduler_claims)
+0001.523 () Processing table (InnoDB): wp_actionscheduler_groups - will restore as: vb_actionscheduler_groups
+0001.561 () Atomic restore: dropping original table (wp_actionscheduler_groups)
+0001.617 () Atomic restore: renaming new table (vb_actionscheduler_groups) to final table name (wp_actionscheduler_groups)
+0001.626 () Processing table (InnoDB): wp_actionscheduler_logs - will restore as: vb_actionscheduler_logs
+0001.664 () Atomic restore: dropping original table (wp_actionscheduler_logs)
+0001.730 () Atomic restore: renaming new table (vb_actionscheduler_logs) to final table name (wp_actionscheduler_logs)
+0001.737 () Processing table (InnoDB): wp_commentmeta - will restore as: vb_commentmeta
+0001.768 () Atomic restore: dropping original table (wp_commentmeta)
+0001.842 () Atomic restore: renaming new table (vb_commentmeta) to final table name (wp_commentmeta)
+0001.852 () Processing table (InnoDB): wp_comments - will restore as: vb_comments
+0001.916 () Atomic restore: dropping original table (wp_comments)
+0002.060 () Atomic restore: renaming new table (vb_comments) to final table name (wp_comments)
+0002.072 () Processing table (InnoDB): wp_links - will restore as: vb_links
+0002.163 () Atomic restore: dropping original table (wp_links)
+0002.217 () Atomic restore: renaming new table (vb_links) to final table name (wp_links)
+0002.227 () Processing table (InnoDB): wp_postmeta - will restore as: vb_postmeta
+0002.486 () Atomic restore: dropping original table (wp_postmeta)
+0002.707 () Atomic restore: renaming new table (vb_postmeta) to final table name (wp_postmeta)
+0002.716 () Processing table (InnoDB): wp_posts - will restore as: vb_posts
+0003.038 () Atomic restore: dropping original table (wp_posts)
+0003.256 () Atomic restore: renaming new table (vb_posts) to final table name (wp_posts)
+0003.266 () Processing table (InnoDB): wp_term_relationships - will restore as: vb_term_relationships
+0003.316 () Atomic restore: dropping original table (wp_term_relationships)
+0003.390 () Atomic restore: renaming new table (vb_term_relationships) to final table name (wp_term_relationships)
+0003.399 () Processing table (InnoDB): wp_term_taxonomy - will restore as: vb_term_taxonomy
+0003.449 () Atomic restore: dropping original table (wp_term_taxonomy)
+0003.493 () Atomic restore: renaming new table (vb_term_taxonomy) to final table name (wp_term_taxonomy)
+0003.500 () Processing table (InnoDB): wp_termmeta - will restore as: vb_termmeta
+0003.535 () Atomic restore: dropping original table (wp_termmeta)
+0003.593 () Atomic restore: renaming new table (vb_termmeta) to final table name (wp_termmeta)
+0003.602 () Processing table (InnoDB): wp_terms - will restore as: vb_terms
+0003.646 () Database queries processed: 50 in 3.61 seconds
+0003.653 () Atomic restore: dropping original table (wp_terms)
+0003.713 () Atomic restore: renaming new table (vb_terms) to final table name (wp_terms)
+0003.720 () Processing table (InnoDB): wp_aioseo_notifications - will restore as: vb_aioseo_notifications
+0003.769 () Atomic restore: dropping original table (wp_aioseo_notifications)
+0003.843 () Atomic restore: renaming new table (vb_aioseo_notifications) to final table name (wp_aioseo_notifications)
+0003.851 () Processing table (InnoDB): wp_aioseo_posts - will restore as: vb_aioseo_posts
+0003.916 () Atomic restore: dropping original table (wp_aioseo_posts)
+0003.974 () Atomic restore: renaming new table (vb_aioseo_posts) to final table name (wp_aioseo_posts)
+0003.980 () Processing table (InnoDB): wp_gglcptch_whitelist - will restore as: vb_gglcptch_whitelist
+0004.009 () Atomic restore: dropping original table (wp_gglcptch_whitelist)
+0004.089 () Atomic restore: renaming new table (vb_gglcptch_whitelist) to final table name (wp_gglcptch_whitelist)
+0004.122 () Processing table (InnoDB): wp_simple_history - will restore as: vb_simple_history
+0004.193 () Atomic restore: dropping original table (wp_simple_history)
+0004.318 () Atomic restore: renaming new table (vb_simple_history) to final table name (wp_simple_history)
+0004.330 () Processing table (InnoDB): wp_simple_history_contexts - will restore as: vb_simple_history_contexts
+0004.441 () UpdraftPlus Vault: this site has not been connected - check your settings
+0004.739 () Unlocking database and leaving maintenance mode
+0004.739 () Disabling Maintenance mode&#8230;
+0004.739 () Atomic restore: dropping original table (wp_simple_history_contexts)
+0004.807 () Atomic restore: renaming new table (vb_simple_history_contexts) to final table name (wp_simple_history_contexts)
+0004.816 () Finished: lines processed: 68 in 4.78 seconds
+0004.818 () Cleaning up rubbish...
+0004.988 () Restore successful!
+0004.988 () Restore successful
