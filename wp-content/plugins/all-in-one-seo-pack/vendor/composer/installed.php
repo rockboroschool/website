@@ -1,24 +1,33 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => 'dev-develop',
-    'version' => 'dev-develop',
+    'pretty_version' => 'dev-master',
+    'version' => 'dev-master',
     'aliases' => 
     array (
     ),
-    'reference' => '40d7b78e02223728e407e3919011bb394813062a',
+    'reference' => 'ae0684856361862055a1194bd19266001ef83a21',
     'name' => 'awesomemotive/all-in-one-seo-pack-pro',
   ),
   'versions' => 
   array (
     'awesomemotive/all-in-one-seo-pack-pro' => 
     array (
-      'pretty_version' => 'dev-develop',
-      'version' => 'dev-develop',
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
       'aliases' => 
       array (
       ),
-      'reference' => '40d7b78e02223728e407e3919011bb394813062a',
+      'reference' => 'ae0684856361862055a1194bd19266001ef83a21',
+    ),
+    'jwhennessey/phpinsight' => 
+    array (
+      'pretty_version' => 'v2.0.9',
+      'version' => '2.0.9.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'b89e7a7f418ebd88ae330b889be4dd1d47d4ceaa',
     ),
     'monolog/monolog' => 
     array (
@@ -31,12 +40,12 @@
     ),
     'psr/log' => 
     array (
-      'pretty_version' => '1.1.3',
-      'version' => '1.1.3.0',
+      'pretty_version' => '1.1.4',
+      'version' => '1.1.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => '0f73288fd15629204f9d42b7055f72dacbe811fc',
+      'reference' => 'd49695b909c3b7628b6289db5479a1c204601f11',
     ),
     'psr/log-implementation' => 
     array (

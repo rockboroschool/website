@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\YoastSeo;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\ImportExport;
 
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
@@ -11,21 +16,67 @@ use AIOSEO\Plugin\Common\ImportExport;
  * @since 4.0.0
  */
 class Helpers extends ImportExport\Helpers {
-
 	/**
 	 * Converts the macros from Yoast SEO to our own smart tags.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $string The string with macros.
-	 * @return string $string The string with smart tags.
+	 * @param  string $string   The string with macros.
+	 * @param  string $postType The post type.
+	 * @param  string $pageType The page type.
+	 * @return string $string   The string with smart tags.
 	 */
-	public function macrosToSmartTags( $string ) {
+	public function macrosToSmartTags( $string, $postType = null, $pageType = null ) {
+		$macros = $this->getMacros( $postType, $pageType );
+
+		if ( preg_match( '#%%BLOGDESCLINK%%#', $string ) ) {
+			$blogDescriptionLink = '<a href="' .
+				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'url' ) ) . '">' .
+				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) ) . ' - ' .
+				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'description' ) ) . '</a>';
+
+			$string = str_replace( '%%BLOGDESCLINK%%', $blogDescriptionLink, $string );
+		}
+
+		if ( preg_match_all( '#%%cf_([^%]*)%%#', $string, $matches ) && ! empty( $matches[1] ) ) {
+			foreach ( $matches[1] as $name ) {
+				if ( ! preg_match( '#\s#', $name ) ) {
+					$string = aioseo()->helpers->pregReplace( "#%%cf_$name%%#", "#custom_field-$name", $string );
+				}
+			}
+		}
+
+		if ( preg_match_all( '#%%tax_([^%]*)%%#', $string, $matches ) && ! empty( $matches[1] ) ) {
+			foreach ( $matches[1] as $name ) {
+				if ( ! preg_match( '#\s#', $name ) ) {
+					$string = aioseo()->helpers->pregReplace( "#%%tax_$name%%#", "#tax_name-$name", $string );
+				}
+			}
+		}
+
+		foreach ( $macros as $macro => $tag ) {
+			$string = aioseo()->helpers->pregReplace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
+		}
+
+		// Strip out all remaining tags.
+		$string = aioseo()->helpers->pregReplace( '/%[^\%\s]*\([^\%]*\)%/i', '', aioseo()->helpers->pregReplace( '/%[^\%\s]*%/i', '', $string ) );
+		return trim( $string );
+	}
+
+	/**
+	 * Returns the macro mappings.
+	 *
+	 * @since 4.1.1
+	 *
+	 * @param  string $postType The post type.
+	 * @param  string $pageType The page type.
+	 * @return array  $macros   The macros.
+	 */
+	protected function getMacros( $postType = null, $pageType = null ) {
 		$macros = [
 			'%%sitename%%'             => '#site_title',
 			'%%sitedesc%%'             => '#tagline',
 			'%%sep%%'                  => '#separator_sa',
-			'%%title%%'                => '#post_title',
 			'%%term_title%%'           => '#taxonomy_title',
 			'%%term_description%%'     => '#taxonomy_description',
 			'%%category_description%%' => '#taxonomy_description',
@@ -49,53 +100,42 @@ class Helpers extends ImportExport\Helpers {
 			'%%wc_sku%%'               => '#woocommerce_sku',
 			'%%wc_price%%'             => '#woocommerce_price',
 			'%%wc_brand%%'             => '#woocommerce_brand',
-			'%%tag%%'                  => '',
 			'%%excerpt%%'              => '#post_excerpt',
-			'%%excerpt_only%%'         => '',
+			'%%excerpt_only%%'         => '#post_excerpt_only'
+			/* '%%tag%%'                  => '',
 			'%%id%%'                   => '',
-			'%%parent_title%%'         => '',
 			'%%page%%'                 => '',
 			'%%modified%%'             => '',
-			'%%pt_single%%'            => '',
-			'%%pt_plural%%'            => '',
 			'%%pagetotal%%'            => '',
 			'%%focuskw%%'              => '',
 			'%%term404%%'              => '',
-			'%%ct_desc_[^%]*%%'        => '',
-			'%%[^%]*%%'                => ''
+			'%%ct_desc_[^%]*%%'        => '' */
 		];
 
-		if ( preg_match( '#%%BLOGDESCLINK%%#', $string ) ) {
-			$blogDescriptionLink = '<a href="' .
-				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'url' ) ) . '">' .
-				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) ) . ' - ' .
-				aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'description' ) ) . '</a>';
-
-			$string = str_replace( '%%BLOGDESCLINK%%', $blogDescriptionLink, $string );
-		}
-
-		if ( preg_match_all( '#%%cf_([^%]*)%%#', $string, $matches ) && ! empty( $matches[1] ) ) {
-			foreach ( $matches[1] as $name ) {
-				if ( ! preg_match( '#\s#', $name ) ) {
-					$string = preg_replace( "#%%cf_$name%%#", "#custom_field-$name", $string );
-				}
+		if ( $postType ) {
+			$postType = get_post_type_object( $postType );
+			if ( ! empty( $postType ) ) {
+				$macros += [
+					'%%pt_single%%' => $postType->labels->singular_name,
+					'%%pt_plural%%' => $postType->labels->name,
+				];
 			}
 		}
 
-		if ( preg_match_all( '#%%tax_([^%]*)%%#', $string, $matches ) && ! empty( $matches[1] ) ) {
-			foreach ( $matches[1] as $name ) {
-				if ( ! preg_match( '#\s#', $name ) ) {
-					$string = preg_replace( "#%%tax_$name%%#", "#tax_name-$name", $string );
-				}
-			}
+		switch ( $pageType ) {
+			case 'archive':
+				$macros['%%title%%'] = '#archive_title';
+				break;
+			case 'term':
+				$macros['%%title%%'] = '#taxonomy_title';
+				break;
+			default:
+				$macros['%%title%%'] = '#post_title';
+				break;
 		}
 
-		foreach ( $macros as $macro => $tag ) {
-			$string = preg_replace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
-		}
-
-		// Strip out all remaining tags.
-		$string = preg_replace( '/%[^\%\s]*\([^\%]*\)%/i', '', preg_replace( '/%[^\%\s]*%/i', '', $string ) );
-		return trim( $string );
+		// Strip all other tags.
+		$macros['%%[^%]*%%'] = '';
+		return $macros;
 	}
 }

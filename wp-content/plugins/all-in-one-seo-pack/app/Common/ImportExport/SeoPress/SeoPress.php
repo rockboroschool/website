@@ -1,8 +1,12 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\SeoPress;
 
-class SeoPress {
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
+class SeoPress {
 	/**
 	 * Starts the import.
 	 *

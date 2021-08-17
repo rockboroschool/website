@@ -4,6 +4,12 @@
  *
  * @since 4.0.0
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
  // phpcs:disable
 ?>
 
@@ -25,25 +31,25 @@
 
 <?php }
 foreach ( $entries as $entry ) {
-	if ( ! is_array( $entry ) || ! array_key_exists( 'guid', $entry ) || ! $entry['guid'] ) {
-		continue;
-	}?>
+		if ( ! is_array( $entry ) || ! array_key_exists( 'guid', $entry ) || ! $entry['guid'] ) {
+			continue;
+			}?>
 		<item>
 			<guid><?php aioseo()->sitemap->output->escapeAndEcho( $entry['guid'] ); ?></guid>
 			<link><?php aioseo()->sitemap->output->escapeAndEcho( $entry['guid'] ); ?></link><?php
-	if ( array_key_exists( 'title', $entry ) && $entry['title'] ) {
-		?>
+			if ( array_key_exists( 'title', $entry ) && $entry['title'] ) {
+				?>
 
 			<title><?php aioseo()->sitemap->output->escapeAndEcho( $entry['title'], false ); ?></title><?php
-		}
-	if ( array_key_exists( 'pubDate', $entry ) && $entry['pubDate'] ) {
-		?>
+			}
+			if ( array_key_exists( 'pubDate', $entry ) && $entry['pubDate'] ) {
+				?>
 
 			<pubDate><?php aioseo()->sitemap->output->escapeAndEcho( $entry['pubDate'] ); ?></pubDate><?php
-		}
-	?>
+			}
+			?>
 
 		</item>
-<?php } ?>
+			<?php } ?>
 	</channel>
 </rss>

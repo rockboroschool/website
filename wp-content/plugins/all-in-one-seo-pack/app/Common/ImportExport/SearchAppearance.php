@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Migrates the Search Appearance settings.
  *
  * @since 4.0.0
  */
 abstract class SearchAppearance {
-
 	/**
 	 * The schema graphs we support.
 	 *

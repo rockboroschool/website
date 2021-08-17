@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Meta;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Instantiates the meta links "next" and "prev".
  *

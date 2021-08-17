@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles our transients.
  *
  * @since 4.0.13
  */
 class Transients {
-
 	/**
 	 * Our transients prefix.
 	 *
@@ -87,5 +91,17 @@ class Transients {
 	public function delete( $name ) {
 		delete_option( $this->prefix . $name );
 		delete_option( $this->prefix . 'expiration_' . $name );
+	}
+
+	/**
+	 * Clears all of our transients.
+	 *
+	 * @since 4.0.17
+	 *
+	 * @return void
+	 */
+	public function clearCache() {
+		$table = aioseo()->db->db->options;
+		aioseo()->db->db->query( "DELETE FROM {$table} WHERE option_name LIKE '\_aioseo\_cache\_%'" );
 	}
 }

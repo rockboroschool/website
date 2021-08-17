@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Api;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 use AIOSEO\Plugin\Common\Tools as CommonTools;
 
@@ -42,10 +47,7 @@ class Tools {
 
 		return new \WP_REST_Response( [
 			'success'       => true,
-			'notifications' => [
-				'active'    => Models\Notification::getAllActiveNotifications(),
-				'dismissed' => Models\Notification::getAllDismissedNotifications()
-			]
+			'notifications' => Models\Notification::getNotifications()
 		], 200 );
 	}
 
@@ -69,10 +71,7 @@ class Tools {
 
 		return new \WP_REST_Response( [
 			'success'       => true,
-			'notifications' => [
-				'active'    => Models\Notification::getAllActiveNotifications(),
-				'dismissed' => Models\Notification::getAllDismissedNotifications()
-			]
+			'notifications' => Models\Notification::getNotifications()
 		], 200 );
 	}
 
@@ -239,8 +238,8 @@ class Tools {
 		switch ( $log ) {
 			case 'badBotBlockerLog':
 				aioseo()->badBotBlocker->clearLog();
+				$logSize = aioseo()->badBotBlocker->getLogSize();
 				break;
-
 		}
 
 		return new \WP_REST_Response( [

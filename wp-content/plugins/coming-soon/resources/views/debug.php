@@ -1,31 +1,31 @@
 <h1 class="sp-text-xl sp-mt-4 sp-mb-1"><?php esc_html_e( 'System Information', 'coming-soon' ); ?></h1>
-<textarea readonly="readonly" style="width: 100%; height: 500px"><?php echo seedprod_lite_get_system_info(); ?></textarea>
+<textarea readonly="readonly" style="width: 100%; height: 500px"><?php echo esc_textarea(seedprod_lite_get_system_info()); ?></textarea>
 
 
-<?php 
-if(!empty($_POST['sp_reset_cs']) && $_POST['sp_reset_cs'] == 1){
-    update_option('seedprod_coming_soon_page_id', false);
+<?php
+if ( ! empty( $_POST['sp_reset_cs'] ) && $_POST['sp_reset_cs'] == 1 ) {
+	update_option( 'seedprod_coming_soon_page_id', false );
 }
-if(!empty($_POST['sp_reset_mm']) && $_POST['sp_reset_mm'] == 1){
-    update_option('seedprod_maintenance_mode_page_id', false);
+if ( ! empty( $_POST['sp_reset_mm'] ) && $_POST['sp_reset_mm'] == 1 ) {
+	update_option( 'seedprod_maintenance_mode_page_id', false );
 }
-if(!empty($_POST['sp_reset_p404']) && $_POST['sp_reset_p404'] == 1){
-    update_option('seedprod_404_page_id', false);
+if ( ! empty( $_POST['sp_reset_p404'] ) && $_POST['sp_reset_p404'] == 1 ) {
+	update_option( 'seedprod_404_page_id', false );
 }
-if(!empty($_POST['sp_reset_loginp']) && $_POST['sp_reset_loginp'] == 1){
-    update_option('seedprod_login_page_id', false);
+if ( ! empty( $_POST['sp_reset_loginp'] ) && $_POST['sp_reset_loginp'] == 1 ) {
+	update_option( 'seedprod_login_page_id', false );
 }
-if(!empty($_POST['sp_builder_debug']) && $_POST['sp_builder_debug'] == 1){
-    update_option('seedprod_builder_debug', true);
-}elseif(!empty($_POST)){
-    update_option('seedprod_builder_debug', false);
+if ( ! empty( $_POST['sp_builder_debug'] ) && $_POST['sp_builder_debug'] == 1 ) {
+	update_option( 'seedprod_builder_debug', true );
+} elseif ( ! empty( $_POST ) ) {
+	update_option( 'seedprod_builder_debug', false );
 }
 
 // get option
-$seedprod_builder_debug = get_option('seedprod_builder_debug');
+$seedprod_builder_debug = get_option( 'seedprod_builder_debug' );
 ?>
 <h1 class="sp-text-xl sp-mt-4 sp-mb-1"><?php esc_html_e( 'Debug Tools', 'coming-soon' ); ?></h1>
-<?php if(!empty(!empty($_POST))) {?>
+<?php if ( ! empty( ! empty( $_POST ) ) ) { ?>
 <div id="setting-error-settings_updated" class="notice notice-success settings-error is-dismissible" style="margin:0px 20px 0 0"> 
 <p><strong>Updated.</strong></p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
 <?php } ?>
@@ -35,7 +35,7 @@ $seedprod_builder_debug = get_option('seedprod_builder_debug');
 <tr>
 <th scope="row">Builder Debug<br><small>If you are having a problem in the builder like inserting an image or some other feature in the builder is broken, check this box.</small></th>
 <td> <fieldset><legend class="screen-reader-text"><span>Builder Debug</span></legend><label for="sp_builder_debug">
-<input name="sp_builder_debug" type="checkbox" id="sp_builder_debug" value="1" <?php echo (!empty($seedprod_builder_debug)) ? 'checked' : '';   ?>>
+<input name="sp_builder_debug" type="checkbox" id="sp_builder_debug" value="1" <?php echo ( ! empty( $seedprod_builder_debug ) ) ? 'checked' : ''; ?>>
 	Enable Builder Debug</label>
 </fieldset></td>
 </tr>

@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Lite\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Utils as CommonUtils;
 
 /**
@@ -95,6 +100,8 @@ class Options extends CommonUtils\Options {
 
 		update_option( $this->optionsName . '_lite', wp_json_encode( $refactored ) );
 
-		$this->init();
+		if ( ! $this->needsUpdate ) {
+			$this->init();
+		}
 	}
 }

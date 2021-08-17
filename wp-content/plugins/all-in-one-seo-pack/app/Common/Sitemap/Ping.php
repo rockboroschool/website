@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Sitemap;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles our sitemap search engine ping feature.
  *
  * @since 4.0.0
  */
 class Ping {
-
 	/**
 	 * Registers our hooks.
 	 *

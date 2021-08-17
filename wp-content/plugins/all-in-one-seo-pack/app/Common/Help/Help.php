@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Help;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Help {
 	/**
 	 * Source of notifications content.

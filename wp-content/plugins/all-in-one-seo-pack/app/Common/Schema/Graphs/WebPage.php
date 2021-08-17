@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * WebPage graph class.
  *
  * @since 4.0.0
  */
 class WebPage extends Graph {
-
 	/**
 	 * The graph type.
 	 *
@@ -40,8 +44,12 @@ class WebPage extends Graph {
 		];
 
 		if ( is_singular() && ! is_page() ) {
-			$data['author']  = aioseo()->schema->context['url'] . '#author';
-			$data['creator'] = aioseo()->schema->context['url'] . '#author';
+			$post   = aioseo()->helpers->getPost();
+			$author = get_author_posts_url( $post->post_author );
+			if ( ! empty( $author ) ) {
+				$data['author']  = $author . '#author';
+				$data['creator'] = $author . '#author';
+			}
 		}
 
 		if ( isset( aioseo()->schema->context['description'] ) && aioseo()->schema->context['description'] ) {

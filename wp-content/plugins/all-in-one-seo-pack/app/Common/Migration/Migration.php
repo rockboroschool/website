@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 /**
  * Handles the migration from V3 to V4.
  */
 class Migration {
-
 	/**
 	 * The old V3 options.
 	 *

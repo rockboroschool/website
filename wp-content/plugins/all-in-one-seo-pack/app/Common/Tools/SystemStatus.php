@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Tools;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class SystemStatus {
 	/**
 	 * Get an aggregated list of all system info.

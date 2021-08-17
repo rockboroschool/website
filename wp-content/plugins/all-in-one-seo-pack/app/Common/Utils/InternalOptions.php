@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Traits;
 
 /**
@@ -41,7 +46,7 @@ class InternalOptions {
 	 */
 	protected $defaults = [
 		// phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
-		'internal' => [
+		'internal'     => [
 			'validLicenseKey'   => [ 'type' => 'string' ],
 			'lastActiveVersion' => [ 'type' => 'string', 'default' => '0.0' ],
 			'migratedVersion'   => [ 'type' => 'string' ],
@@ -55,6 +60,14 @@ class InternalOptions {
 			'category'          => [ 'type' => 'string' ],
 			'categoryOther'     => [ 'type' => 'string' ],
 			'deprecatedOptions' => [ 'type' => 'array', 'default' => [] ]
+		],
+		'integrations' => [
+			'semrush' => [
+				'accessToken'  => [ 'type' => 'string' ],
+				'tokenType'    => [ 'type' => 'string' ],
+				'expires'      => [ 'type' => 'string' ],
+				'refreshToken' => [ 'type' => 'string' ]
+			]
 		]
 		// phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 	];

@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Organization graph class.
  *
  * @since 4.0.0
  */
 class Organization extends Graph {
-
 	/**
 	 * Returns the graph data.
 	 *

@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\RankMath;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\ImportExport;
 use AIOSEO\Plugin\Common\Models;
 
@@ -12,7 +17,6 @@ use AIOSEO\Plugin\Common\Models;
  * @since 4.0.0
  */
 class TitleMeta extends ImportExport\SearchAppearance {
-
 	/**
 	 * Our robot meta settings.
 	 *
@@ -39,6 +43,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 
 		$this->migrateHomePageSettings();
 		$this->migratePostTypeSettings();
+		$this->migratePostTypeArchiveSettings();
 		$this->migrateArchiveSettings();
 		$this->migrateRobotMetaSettings();
 		$this->migrateKnowledgeGraphSettings();
@@ -92,7 +97,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 	private function migrateArchiveSettings() {
 		$archives = [
 			'author',
-			'date',
+			'date'
 		];
 
 		foreach ( $archives as $archive ) {
@@ -108,13 +113,17 @@ class TitleMeta extends ImportExport\SearchAppearance {
 			}
 
 			if ( isset( $this->options[ "${archive}_archive_title" ] ) ) {
-				aioseo()->options->searchAppearance->archives->$archive->title =
-					aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options[ "${archive}_archive_title" ] ) );
+				$value = aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options[ "${archive}_archive_title" ], 'archive' ) );
+				if ( 'date' !== $archive ) {
+					// Archive Title tag needs to be stripped since we don't support it for author archives.
+					$value = aioseo()->helpers->pregReplace( '/#archive_title/', '', $value );
+				}
+				aioseo()->options->searchAppearance->archives->$archive->title = $value;
 			}
 
 			if ( isset( $this->options[ "${archive}_archive_description" ] ) ) {
 				aioseo()->options->searchAppearance->archives->$archive->metaDescription =
-					aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options[ "${archive}_archive_description" ] ) );
+					aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options[ "${archive}_archive_description" ], 'archive' ) );
 			}
 
 			if ( ! empty( $this->options[ "${archive}_custom_robots" ] ) ) {
@@ -145,8 +154,9 @@ class TitleMeta extends ImportExport\SearchAppearance {
 		}
 
 		if ( isset( $this->options['search_title'] ) ) {
-			aioseo()->options->searchAppearance->archives->search->title =
-					aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options['search_title'] ) );
+			// Archive Title tag needs to be stripped since we don't support it for search archives.
+			$value = aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $this->options['search_title'], 'archive' ) );
+			aioseo()->options->searchAppearance->archives->search->title = aioseo()->helpers->pregReplace( '/#archive_title/', '', $value );
 		}
 
 		if ( ! empty( $this->options['noindex_search'] ) ) {
@@ -189,16 +199,16 @@ class TitleMeta extends ImportExport\SearchAppearance {
 				switch ( $match[1] ) {
 					case 'title':
 						if ( 'page' === $postType ) {
-							$value = preg_replace( '#%category%#', '', $value );
-							$value = preg_replace( '#%excerpt%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%category%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%excerpt%#', '', $value );
 						}
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->title =
 							aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $value ) );
 						break;
 					case 'description':
 						if ( 'page' === $postType ) {
-							$value = preg_replace( '#%category%#', '', $value );
-							$value = preg_replace( '#%excerpt%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%category%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%excerpt%#', '', $value );
 						}
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->metaDescription =
 							aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $value ) );
@@ -232,7 +242,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->advanced->showMetaBox = 'on' === $value;
 						break;
 					case 'default_rich_snippet':
-						$value = preg_replace( '#\s#', '', $value );
+						$value = aioseo()->helpers->pregReplace( '#\s#', '', $value );
 						if ( 'off' === lcfirst( $value ) || in_array( $postType, [ 'page', 'attachment' ], true ) ) {
 							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->schemaType = 'none';
 							break;
@@ -245,7 +255,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 						if ( in_array( $postType, [ 'page', 'attachment' ], true ) ) {
 							break;
 						}
-						$value = preg_replace( '#\s#', '', $value );
+						$value = aioseo()->helpers->pregReplace( '#\s#', '', $value );
 						if ( in_array( ucfirst( $value ), ImportExport\SearchAppearance::$supportedArticleGraphs, true ) ) {
 							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->articleType = ucfirst( $value );
 						} else {
@@ -258,6 +268,42 @@ class TitleMeta extends ImportExport\SearchAppearance {
 			}
 		}
 	}
+
+	/**
+	 * Migrates the post type archive settings.
+	 *
+	 * @since 4.0.16
+	 *
+	 * @return void
+	 */
+	private function migratePostTypeArchiveSettings() {
+		$supportedSettings = [
+			'title',
+			'description'
+		];
+
+		foreach ( aioseo()->helpers->getPublicPostTypes( true, true ) as $postType ) {
+			foreach ( $this->options as $name => $value ) {
+				if ( ! preg_match( "#^pt_${postType}_archive_(.*)$#", $name, $match ) || ! in_array( $match[1], $supportedSettings, true ) ) {
+					continue;
+				}
+
+				switch ( $match[1] ) {
+					case 'title':
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->title =
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $value, 'archive' ) );
+						break;
+					case 'description':
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->metaDescription =
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->rankMath->helpers->macrosToSmartTags( $value, 'archive' ) );
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 
 	/**
 	 * Migrates the robots meta settings.
@@ -367,7 +413,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 				'type'              => 'warning',
 				'level'             => [ 'all' ],
 				'button1_label'     => __( 'Fix Now', 'all-in-one-seo-pack' ),
-				'button1_action'    => 'http://route#aioseo-search-appearance:schema-markup',
+				'button1_action'    => 'http://route#aioseo-search-appearance&aioseo-scroll=schema-graph-phone&aioseo-highlight=schema-graph-phone:schema-markup',
 				'button2_label'     => __( 'Remind Me Later', 'all-in-one-seo-pack' ),
 				'button2_action'    => 'http://action#notification/v3-migration-schema-number-reminder',
 				'start'             => gmdate( 'Y-m-d H:i:s' )

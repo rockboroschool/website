@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * AboutPage graph class.
  *
  * @since 4.0.0
  */
 class AboutPage extends WebPage {
-
 	/**
 	 * The graph type.
 	 *

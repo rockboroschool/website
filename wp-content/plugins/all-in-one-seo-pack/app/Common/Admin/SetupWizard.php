@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class that holds our setup wizard.
  *
@@ -59,7 +64,7 @@ class SetupWizard {
 	 * @return void
 	 */
 	public function addDashboardPage() {
-		add_dashboard_page( '', '', 'aioseo_setup_wizard', 'aioseo-setup-wizard', '' );
+		add_dashboard_page( '', '', aioseo()->admin->getPageRequiredCapability( 'aioseo-setup-wizard' ), 'aioseo-setup-wizard', '' );
 		remove_submenu_page( 'index.php', 'aioseo-setup-wizard' );
 	}
 
@@ -82,7 +87,7 @@ class SetupWizard {
 		if (
 			! isset( $_GET['page'] ) ||
 			'aioseo-setup-wizard' !== wp_unslash( $_GET['page'] ) || // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
-			! current_user_can( 'aioseo_setup_wizard' )
+			! current_user_can( aioseo()->admin->getPageRequiredCapability( 'aioseo-setup-wizard' ) )
 		) {
 			return;
 		}
@@ -91,6 +96,9 @@ class SetupWizard {
 
 		// Remove an action in the Gutenberg plugin ( not core Gutenberg ) which throws an error.
 		remove_action( 'admin_print_styles', 'gutenberg_block_editor_admin_print_styles' );
+
+		// If we are redirecting, clear the transient so it only happens once.
+		aioseo()->transients->delete( 'activation_redirect' );
 
 		$this->loadOnboardingWizard();
 	}
@@ -159,6 +167,14 @@ class SetupWizard {
 			'aioseo-setup-wizard-script',
 			'aioseo',
 			aioseo()->helpers->getVueData( 'setup-wizard' )
+		);
+
+		wp_localize_script(
+			'aioseo-setup-wizard-script',
+			'aioseoTranslations',
+			[
+				'translations' => aioseo()->helpers->getJedLocaleData( 'all-in-one-seo-pack' )
+			]
 		);
 
 		wp_enqueue_style( 'common' );

@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Sitemap;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the static sitemap.
  *
  * @since 4.0.0
  */
 class File {
-
 	/**
 	 * Whether the static files have already been updated during the current request.
 	 *

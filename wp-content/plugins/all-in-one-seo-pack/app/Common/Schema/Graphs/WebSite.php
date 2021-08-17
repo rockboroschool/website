@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * WebSite graph class.
  *
  * @since 4.0.0
  */
 class WebSite extends Graph {
-
 	/**
 	 * Returns the graph data.
 	 *
@@ -26,7 +30,7 @@ class WebSite extends Graph {
 			'publisher'   => [ '@id' => $homeUrl . '#' . aioseo()->options->searchAppearance->global->schema->siteRepresents ]
 		];
 
-		if ( aioseo()->options->searchAppearance->advanced->sitelinks ) {
+		if ( is_front_page() && aioseo()->options->searchAppearance->advanced->sitelinks ) {
 			$data['potentialAction'] = [
 				'@type'       => 'SearchAction',
 				'target'      => $homeUrl . '?s={search_term_string}',

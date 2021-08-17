@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Social;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the Social Meta.
  *
@@ -9,7 +14,6 @@ namespace AIOSEO\Plugin\Common\Social;
  * @since 4.0.0
  */
 class Social {
-
 
 	/**
 	 * Class constructor.

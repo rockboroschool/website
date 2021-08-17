@@ -1,6 +1,13 @@
 <?php
 namespace AIOSEO\Plugin\Common\Main;
 
+use AIOSEO\Plugin\Common\Models as Models;
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Abstract class that Pro and Lite both extend.
  *
@@ -35,6 +42,51 @@ abstract class Filters {
 
 		// GoDaddy CDN compatibility.
 		add_filter( 'wpaas_cdn_file_ext', [ $this, 'goDaddySitemapXml' ] );
+
+		// Duplicate Post integration.
+		add_action( 'dp_duplicate_post', [ $this, 'duplicatePostIntegration' ], 10, 3 );
+		add_action( 'dp_duplicate_page', [ $this, 'duplicatePostIntegration' ], 10, 3 );
+
+		// Classic Editor emoji
+		add_action( 'init', [ $this, 'removeEmojiScript' ] );
+	}
+
+	/**
+	 * Duplicates the model when duplicate post is triggered.
+	 *
+	 * @since 4.1.1
+	 *
+	 * @param  integer $newPostId    The new post ID.
+	 * @param  WP_Post $originalPost The original post object.
+	 * @param  string  $status       The status of the post.
+	 * @return void
+	 */
+	public function duplicatePostIntegration( $newPostId, $originalPost, $status ) {
+		$originalAioseoPost = Models\Post::getPost( $originalPost->ID );
+		if ( ! $originalAioseoPost->exists() ) {
+			return;
+		}
+
+		$newPost = Models\Post::getPost( $newPostId );
+		if ( $newPost->exists() ) {
+			return;
+		}
+
+		$columns = $originalAioseoPost->getColumns();
+		foreach ( $columns as $column => $value ) {
+			// Skip the ID column.
+			if ( 'id' === $column ) {
+				continue;
+			}
+
+			if ( 'post_id' === $column ) {
+				$newPost->$column = $newPostId;
+				continue;
+			}
+
+			$newPost->$column = $originalAioseoPost->$column;
+		}
+		$newPost->save();
 	}
 
 	/**
@@ -112,5 +164,18 @@ abstract class Filters {
 			}
 		}
 		return $actions;
+	}
+
+	/**
+	 * Prevents the Classic Editor from enqueuing a script that breaks emoji in our metabox.
+	 *
+	 * @since 4.1.1
+	 *
+	 * @return void
+	 */
+	public function removeEmojiScript() {
+		if ( apply_filters( 'aioseo_classic_editor_disable_emoji_script', false ) ) {
+			remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		}
 	}
 }

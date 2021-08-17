@@ -49,3 +49,31 @@ background-color: #f15d32 !important;
     line-height: 0 !important;
     text-align: center !important;
 }
+
+
+.seedprod_hidden_data{ display: none; }
+
+.edit_seedprod_custom_link{ height: 30px; margin: 1px 15px; display:flex !important; align-items: center; }
+
+.active-seed-prod-buttons{ display: none; }
+#post-body-content .active-seed-prod-buttons{ display: block; }
+
+.active-seed-prod-buttons{ display: none; }
+.seed_editor_true .seedprod-off{ display:none; }
+.seed_editor_true .seedprod-on{ display:inline-block; }
+
+.seed_editor_false .seedprod-on{ display:none; }
+.seed_editor_false .seedprod-off{ display:inline-block; }
+
+
+.sp-rotate-template b{
+    display: inline-block;
+    position: absolute;
+    white-space: nowrap;
+    left: 0;
+    top: 0;
+}
+
+.sp-rotate-template b.is-visible{
+    position: relative;
+}

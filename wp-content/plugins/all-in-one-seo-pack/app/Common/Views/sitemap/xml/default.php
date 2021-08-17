@@ -4,17 +4,21 @@
  *
  * @since 4.0.0
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable
 ?>
-<?php if ( ! $advanced || ! apply_filters( 'aioseo_sitemap_images', $excludeImages ) ): ?>
 <urlset
 	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-	xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
->
-<?php else : ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?php if ( ! $advanced || ! apply_filters( 'aioseo_sitemap_images', $excludeImages ) ): ?>
+	xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"
 <?php endif; ?>
+>
 <?php foreach ( $entries as $entry ) {
 	if ( ! is_array( $entry ) || ! array_key_exists( 'loc', $entry ) || ! $entry['loc'] ) {
 		continue;

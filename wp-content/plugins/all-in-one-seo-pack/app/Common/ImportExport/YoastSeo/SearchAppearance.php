@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\YoastSeo;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\ImportExport;
 
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
@@ -11,7 +16,6 @@ use AIOSEO\Plugin\Common\ImportExport;
  * @since 4.0.0
  */
 class SearchAppearance {
-
 	/**
 	 * Class constructor.
 	 *
@@ -28,6 +32,7 @@ class SearchAppearance {
 		$this->migrateDescriptionFormats();
 		$this->migrateNoindexSettings();
 		$this->migratePostTypeSettings();
+		$this->migratePostTypeArchiveSettings();
 		$this->migrateRedirectAttachments();
 		$this->migrateKnowledgeGraphSettings();
 		$this->migrateRssContentSettings();
@@ -71,14 +76,18 @@ class SearchAppearance {
 	 * @return void
 	 */
 	private function migrateTitleFormats() {
-		$settings = [
-			'title-home-wpseo'    => [ 'type' => 'string', 'newOption' => [ 'searchAppearance', 'global', 'siteTitle' ] ],
-			'title-author-wpseo'  => [ 'type' => 'string', 'newOption' => [ 'searchAppearance', 'archives', 'author', 'title' ] ],
-			'title-archive-wpseo' => [ 'type' => 'string', 'newOption' => [ 'searchAppearance', 'archives', 'date', 'title' ] ],
-			'title-search-wpseo'  => [ 'type' => 'string', 'newOption' => [ 'searchAppearance', 'archives', 'search', 'title' ] ],
-		];
+		aioseo()->options->searchAppearance->archives->author->title =
+			aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-home-wpseo'], 'page', 'post' ) );
 
-		aioseo()->importExport->yoastSeo->helpers->mapOldToNew( $settings, $this->options, true );
+		aioseo()->options->searchAppearance->archives->date->title =
+			aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-archive-wpseo'], null, 'archive' ) );
+
+		// Archive Title tag needs to be stripped since we don't support it for these two archives.
+		$value = aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-author-wpseo'], null, 'archive' ) );
+		aioseo()->options->searchAppearance->archives->author->title = aioseo()->helpers->pregReplace( '/#archive_title/', '', $value );
+
+		$value = aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-search-wpseo'], null, 'archive' ) );
+		aioseo()->options->searchAppearance->archives->search->title = aioseo()->helpers->pregReplace( '/#archive_title/', '', $value );
 	}
 
 	/**
@@ -149,24 +158,24 @@ class SearchAppearance {
 				switch ( $match[1] ) {
 					case 'title':
 						if ( 'page' === $postType ) {
-							$value = preg_replace( '#%%primary_category%%#', '', $value );
-							$value = preg_replace( '#%%excerpt%%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%%primary_category%%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%%excerpt%%#', '', $value );
 						}
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->title =
-							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value ) );
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value, $postType ) );
 						break;
 					case 'metadesc':
 						if ( 'page' === $postType ) {
-							$value = preg_replace( '#%%primary_category%%#', '', $value );
-							$value = preg_replace( '#%%excerpt%%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%%primary_category%%#', '', $value );
+							$value = aioseo()->helpers->pregReplace( '#%%excerpt%%#', '', $value );
 						}
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->metaDescription =
-							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value ) );
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value, $postType ) );
 						break;
 					case 'noindex':
 						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->show = empty( $value ) ? true : false;
-							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->advanced->robotsMeta->default = empty( $value ) ? true : false;
-							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->advanced->robotsMeta->noindex = empty( $value ) ? false : true;
+						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->advanced->robotsMeta->default = empty( $value ) ? true : false;
+						aioseo()->options->searchAppearance->dynamic->postTypes->$postType->advanced->robotsMeta->noindex = empty( $value ) ? false : true;
 						break;
 					case 'display-metabox-pt':
 						if ( empty( $value ) ) {
@@ -174,7 +183,7 @@ class SearchAppearance {
 						}
 						break;
 					case 'schema-page-type':
-						$value = preg_replace( '#\s#', '', $value );
+						$value = aioseo()->helpers->pregReplace( '#\s#', '', $value );
 						if ( in_array( $postType, [ 'post', 'page', 'attachment' ], true ) ) {
 							break;
 						}
@@ -184,7 +193,7 @@ class SearchAppearance {
 						}
 						break;
 					case 'schema-article-type':
-						$value = preg_replace( '#\s#', '', $value );
+						$value = aioseo()->helpers->pregReplace( '#\s#', '', $value );
 						if ( 'none' === lcfirst( $value ) ) {
 							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->articleType = 'none';
 							break;
@@ -198,6 +207,47 @@ class SearchAppearance {
 						} else {
 							aioseo()->options->searchAppearance->dynamic->postTypes->$postType->articleType = 'BlogPosting';
 						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Migrates the post type archive settings.
+	 *
+	 * @since 4.0.16
+	 *
+	 * @return void
+	 */
+	private function migratePostTypeArchiveSettings() {
+		$supportedSettings = [
+			'title',
+			'metadesc',
+			'noindex'
+		];
+
+		foreach ( aioseo()->helpers->getPublicPostTypes( true, true ) as $postType ) {
+			foreach ( $this->options as $name => $value ) {
+				if ( ! preg_match( "#(.*)-ptarchive-$postType$#", $name, $match ) || ! in_array( $match[1], $supportedSettings, true ) ) {
+					continue;
+				}
+
+				switch ( $match[1] ) {
+					case 'title':
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->title =
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value, $postType, 'archive' ) );
+						break;
+					case 'metadesc':
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->metaDescription =
+							aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $value, $postType, 'archive' ) );
+						break;
+					case 'noindex':
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->show = empty( $value ) ? true : false;
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->advanced->robotsMeta->default = empty( $value ) ? true : false;
+						aioseo()->options->searchAppearance->dynamic->archives->$postType->advanced->robotsMeta->noindex = empty( $value ) ? false : true;
 						break;
 					default:
 						break;

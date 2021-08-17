@@ -4,6 +4,12 @@
  *
  * @since 4.0.0
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 // phpcs:disable Generic.WhiteSpace.ScopeIndent.Incorrect
 // phpcs:disable Generic.WhiteSpace.ScopeIndent.IncorrectExact

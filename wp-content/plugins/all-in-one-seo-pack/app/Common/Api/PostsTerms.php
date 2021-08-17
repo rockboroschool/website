@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Api;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 /**
@@ -33,6 +38,8 @@ class PostsTerms {
 			], 400 );
 		}
 
+		$searchQuery = aioseo()->db->db->esc_like( $body['query'] );
+
 		$objects = [];
 		$options = aioseo()->options->noConflict();
 		if ( 'posts' === $body['type'] ) {
@@ -45,13 +52,17 @@ class PostsTerms {
 				}
 			}
 
-			$objects = get_posts( [
-				's'           => $body['query'],
-				'numberposts' => 20,
-				'post_status' => [ 'publish', 'draft' ],
-				'post_type'   => $postTypes,
-				'orderby'     => 'post_title'
-			] );
+			$objects = aioseo()->db
+				->start( 'posts' )
+				->select( 'ID, post_type, post_title, post_name' )
+				->whereRaw( "( post_title LIKE '%{$searchQuery}%' OR post_name LIKE '%{$searchQuery}%' OR ID = '{$searchQuery}' )" )
+				->whereIn( 'post_type', $postTypes )
+				->whereIn( 'post_status', [ 'publish', 'draft', 'future', 'pending' ] )
+				->orderBy( 'post_title' )
+				->limit( 10 )
+				->run()
+				->result();
+
 		} elseif ( 'terms' === $body['type'] ) {
 
 			$taxonomies = aioseo()->helpers->getPublicTaxonomies( true );
@@ -62,12 +73,16 @@ class PostsTerms {
 				}
 			}
 
-			$objects = get_terms( [
-				'name__like' => $body['query'],
-				'number'     => 20,
-				'taxonomy'   => $taxonomies,
-				'orderby'    => 'name'
-			] );
+			$objects = aioseo()->db
+				->start( 'terms as t' )
+				->select( 't.term_id as term_id, t.slug as slug, t.name as name, tt.taxonomy as taxonomy' )
+				->join( 'term_taxonomy as tt', 't.term_id = tt.term_id', 'INNER' )
+				->whereRaw( "( t.name LIKE '%{$searchQuery}%' OR t.slug LIKE '%{$searchQuery}%' OR t.term_id = '{$searchQuery}' )" )
+				->whereIn( 'tt.taxonomy', $taxonomies )
+				->orderBy( 't.name' )
+				->limit( 10 )
+				->run()
+				->result();
 		}
 
 		if ( empty( $objects ) ) {
@@ -82,14 +97,16 @@ class PostsTerms {
 			if ( 'posts' === $body['type'] ) {
 				$parsed[] = [
 					'type'  => $object->post_type,
-					'value' => $object->ID,
+					'value' => (int) $object->ID,
+					'slug'  => $object->post_name,
 					'label' => $object->post_title,
 					'link'  => get_permalink( $object->ID )
 				];
 			} elseif ( 'terms' === $body['type'] ) {
 				$parsed[] = [
 					'type'  => $object->taxonomy,
-					'value' => $object->term_id,
+					'value' => (int) $object->term_id,
+					'slug'  => $object->slug,
 					'label' => $object->name,
 					'link'  => get_term_link( $object->term_id )
 				];
@@ -120,11 +137,7 @@ class PostsTerms {
 			], 400 );
 		}
 
-		$thePost = aioseo()->db
-			->start( 'aioseo_posts' )
-			->where( 'post_id', $args['postId'] )
-			->run()
-			->model( 'AIOSEO\\Plugin\\Common\\Models\\Post' );
+		$thePost = Models\Post::getPost( $args['postId'] );
 
 		return new \WP_REST_Response( [
 			'success'  => true,
@@ -204,11 +217,7 @@ class PostsTerms {
 			], 400 );
 		}
 
-		$thePost = aioseo()->db
-			->start( 'aioseo_posts' )
-			->where( 'post_id', $postId )
-			->run()
-			->model( 'AIOSEO\\Plugin\\Common\\Models\\Post' );
+		$thePost = Models\Post::getPost( $postId );
 
 		if ( $thePost->exists() ) {
 			$metaTitle = aioseo()->meta->title->getPostTypeTitle( $post->post_type );
@@ -285,11 +294,7 @@ class PostsTerms {
 			], 400 );
 		}
 
-		$thePost = aioseo()->db
-			->start( 'aioseo_posts' )
-			->where( 'post_id', $postId )
-			->run()
-			->model( 'AIOSEO\\Plugin\\Common\\Models\\Post' );
+		$thePost = Models\Post::getPost( $postId );
 
 		$thePost->post_id = $postId;
 		if ( ! empty( $body['keyphrases'] ) ) {

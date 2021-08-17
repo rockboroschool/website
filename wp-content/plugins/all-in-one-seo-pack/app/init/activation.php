@@ -1,4 +1,9 @@
 <?php
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( ! function_exists( 'aioseo_lite_just_activated' ) ) {
 	/**
 	 * Store temporarily that the Lite version of the plugin was activated.

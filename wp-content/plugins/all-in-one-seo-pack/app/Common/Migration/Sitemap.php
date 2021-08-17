@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 /**
@@ -9,7 +14,6 @@ namespace AIOSEO\Plugin\Common\Migration;
  * @since 4.0.0
  */
 class Sitemap {
-
 	/**
 	 * The old V3 options.
 	 *
@@ -299,7 +303,7 @@ class Sitemap {
 				continue;
 			}
 
-			$objectSlug = preg_replace( '#post_(?!tag)|taxonomies_#', '', $slug[1] );
+			$objectSlug = aioseo()->helpers->pregReplace( '#post_(?!tag)|taxonomies_#', '', $slug[1] );
 
 			if ( in_array( $objectSlug, aioseo()->helpers->getPublicPostTypes( true ), true ) ) {
 				$settings[ $name ] = [

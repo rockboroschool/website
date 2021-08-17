@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Lite\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Utils as CommonUtils;
 
 /**

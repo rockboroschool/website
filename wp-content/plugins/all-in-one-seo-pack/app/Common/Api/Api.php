@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Api;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Api class for the admin.
  *
@@ -47,6 +52,7 @@ class Api {
 			'termscreen'                                          => [ 'callback' => [ 'PostsTerms', 'updateTermFromScreen' ], 'access' => 'aioseo_page_general_settings' ],
 			'keyphrases'                                          => [ 'callback' => [ 'PostsTerms', 'updatePostKeyphrases' ], 'access' => 'aioseo_page_analysis' ],
 			'analyze'                                             => [ 'callback' => [ 'Analyze', 'analyzeSite' ] ],
+			'analyze_headline'                                    => [ 'callback' => [ 'Analyze', 'analyzeHeadline' ] ],
 			'analyze/delete-site'                                 => [ 'callback' => [ 'Analyze', 'deleteSite' ], 'access' => 'aioseo_seo_analysis_settings' ],
 			'clear-log'                                           => [ 'callback' => [ 'Tools', 'clearLog' ], 'access' => 'aioseo_tools_settings' ],
 			'connect'                                             => [ 'callback' => [ 'Connect', 'saveConnectToken' ], 'access' => [ 'aioseo_general_settings', 'aioseo_setup_wizard' ] ],
@@ -79,7 +85,6 @@ class Api {
 						'aioseo_search_appearance_settings',
 						'aioseo_social_networks_settings',
 						'aioseo_sitemap_settings',
-						'aioseo_internal_links_settings',
 						'aioseo_redirects_settings',
 						'aioseo_seo_analysis_settings',
 						'aioseo_tools_settings',
@@ -97,11 +102,16 @@ class Api {
 			'settings/import-plugins'                             => [ 'callback' => [ 'Settings', 'importPlugins' ], 'access' => 'aioseo_tools_settings' ],
 			'settings/toggle-card'                                => [ 'callback' => [ 'Settings', 'toggleCard' ] ],
 			'settings/toggle-radio'                               => [ 'callback' => [ 'Settings', 'toggleRadio' ] ],
+			'settings/do-task'                                    => [ 'callback' => [ 'Settings', 'doTask' ], 'access' => 'aioseo_tools_settings' ],
 			'sitemap/deactivate-conflicting-plugins'              => [ 'callback' => [ 'Sitemaps', 'deactivateConflictingPlugins' ] ],
 			'sitemap/delete-static-files'                         => [ 'callback' => [ 'Sitemaps', 'deleteStaticFiles' ] ],
+			'sitemap/validate-html-sitemap-slug'                  => [ 'callback' => [ 'Sitemaps', 'validateHtmlSitemapSlug' ] ],
 			'tools/delete-robots-txt'                             => [ 'callback' => [ 'Tools', 'deleteRobotsTxt' ], 'access' => 'aioseo_tools_settings' ],
 			'tools/import-robots-txt'                             => [ 'callback' => [ 'Tools', 'importRobotsTxt' ], 'access' => 'aioseo_tools_settings' ],
-			'wizard'                                              => [ 'callback' => [ 'Wizard', 'saveWizard' ], 'access' => 'aioseo_setup_wizard' ]
+			'wizard'                                              => [ 'callback' => [ 'Wizard', 'saveWizard' ], 'access' => 'aioseo_setup_wizard' ],
+			'integration/semrush/authenticate'                    => [ 'callback' => [ 'Integrations', 'semrushAuthenticate' ] ], // @TODO: Set access.
+			'integration/semrush/refresh'                         => [ 'callback' => [ 'Integrations', 'semrushRefresh' ] ], // @TODO: Set access.
+			'integration/semrush/keyphrases'                      => [ 'callback' => [ 'Integrations', 'semrushGetKeyphrases' ] ] // @TODO: Set access.
 		],
 		'DELETE' => [
 			'backup' => [ 'callback' => [ 'Tools', 'deleteBackup' ], 'access' => 'aioseo_tools_settings' ]
@@ -115,7 +125,7 @@ class Api {
 	 * @since 4.0.0
 	 */
 	public function __construct() {
-		add_filter( 'rest_pre_serve_request', [ $this, 'allowHeaders' ] );
+		add_filter( 'rest_allowed_cors_headers', [ $this, 'allowedHeaders' ] );
 		add_action( 'rest_api_init', [ $this, 'registerRoutes' ] );
 	}
 
@@ -150,9 +160,13 @@ class Api {
 						'callback'            => is_array( $options['callback'] )
 							? [
 								(
-									class_exists( $class->getNamespaceName() . '\\' . $options['callback'][0] )
-										? $class->getNamespaceName() . '\\' . $options['callback'][0]
-										: __NAMESPACE__ . '\\' . $options['callback'][0]
+									! empty( $options['callback'][2] )
+										? $options['callback'][2] . '\\' . $options['callback'][0]
+										: (
+											class_exists( $class->getNamespaceName() . '\\' . $options['callback'][0] )
+												? $class->getNamespaceName() . '\\' . $options['callback'][0]
+												: __NAMESPACE__ . '\\' . $options['callback'][0]
+										)
 								),
 								$options['callback'][1]
 							]
@@ -171,7 +185,23 @@ class Api {
 	 * @return void
 	 */
 	public function allowHeaders() {
+		// TODO: Remove this entire function after a while. It's only here to ensure compatibility with people that are still using Image SEO 1.0.3 or lower.
 		header( 'Access-Control-Allow-Headers: X-WP-Nonce' );
+	}
+
+	/**
+	 * Sets headers that are allowed for our API routes.
+	 *
+	 * @since 4.1.1
+	 *
+	 * @param  array $allowHeaders The allowed request headers.
+	 * @return array $allowHeaders The allowed request headers.
+	 */
+	public function allowedHeaders( $allowHeaders ) {
+		if ( ! array_search( 'X-WP-Nonce', $allowHeaders, true ) ) {
+			$allowHeaders[] = 'X-WP-Nonce';
+		}
+		return $allowHeaders;
 	}
 
 	/**
@@ -194,9 +224,9 @@ class Api {
 	 * @param  \WP_REST_Request $request The REST Request.
 	 * @return bool                      True if validated, false if not.
 	 */
-	private function validateAccess( $request ) {
+	public function validateAccess( $request ) {
 		$route     = str_replace( '/' . $this->namespace . '/', '', $request->get_route() );
-		$routeData = $this->getRoutes()[ $request->get_method() ][ $route ];
+		$routeData = isset( $this->getRoutes()[ $request->get_method() ][ $route ] ) ? $this->getRoutes()[ $request->get_method() ][ $route ] : [];
 
 		if ( empty( $routeData['access'] ) ) {
 			return true;
@@ -210,6 +240,10 @@ class Api {
 			if ( current_user_can( $access ) ) {
 				return true;
 			}
+		}
+
+		if ( current_user_can( apply_filters( 'aioseo_manage_seo', 'aioseo_manage_seo' ) ) ) {
+			return true;
 		}
 
 		return false;

@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * ProfilePage graph class.
  *
  * @since 4.0.0
  */
 class ProfilePage extends WebPage {
-
 	/**
 	 * The graph type.
 	 *

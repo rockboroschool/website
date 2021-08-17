@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Builds our schema.
  *
  * @since 4.0.0
  */
 class Schema {
-
 	/**
 	 * The included graphs.
 	 *
@@ -50,6 +54,17 @@ class Schema {
 	];
 
 	/**
+	 * Fields that can be 0 or null, which shouldn't be stripped when cleaning the data.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @var array
+	 */
+	public $nullableFields = [
+		'price' // Needs to be 0 if free for Software Application.
+	];
+
+	/**
 	 * Returns the JSON schema for the requested page.
 	 *
 	 * @since 4.0.0
@@ -78,12 +93,19 @@ class Schema {
 		$graphs = apply_filters( 'aioseo_schema_graphs', array_unique( array_filter( $this->graphs ) ) );
 		foreach ( $graphs as $graph ) {
 			if ( class_exists( "\AIOSEO\Plugin\Common\Schema\Graphs\\$graph" ) ) {
-				$namespace          = "\AIOSEO\Plugin\Common\Schema\Graphs\\$graph";
+				$namespace = "\AIOSEO\Plugin\Common\Schema\Graphs\\$graph";
+
+				//if graph is actually a fully qualified class name
+				if ( class_exists( $graph ) ) {
+					$namespace = $graph;
+				}
+
 				$schema['@graph'][] = array_filter( ( new $namespace )->get() );
 			}
 		}
 
-		$schema['@graph'] = $this->cleanData( $schema['@graph'] );
+		$schema['@graph'] = apply_filters( 'aioseo_schema_output', $schema['@graph'] );
+		$schema['@graph'] = array_values( $this->cleanData( $schema['@graph'] ) );
 
 		return isset( $_GET['aioseo-dev'] ) ? wp_json_encode( $schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) : wp_json_encode( $schema );
 	}
@@ -241,7 +263,7 @@ class Schema {
 				$v = trim( wp_strip_all_tags( $v ) );
 			}
 
-			if ( empty( $v ) ) {
+			if ( empty( $v ) && ! in_array( $k, $this->nullableFields, true ) ) {
 				unset( $data[ $k ] );
 			} else {
 				$data[ $k ] = $v;

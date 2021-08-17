@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Lite\Admin;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Admin as CommonAdmin;
 
 /**

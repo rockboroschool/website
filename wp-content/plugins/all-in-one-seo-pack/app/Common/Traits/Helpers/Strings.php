@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Traits\Helpers;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Contains string specific helper methods.
  *
@@ -67,5 +72,39 @@ trait Strings {
 	 */
 	public function toLowercase( $string ) {
 		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $string, get_option( 'blog_charset' ) ) : strtolower( $string );
+	}
+
+	/**
+	 * Checks if the given string contains the given substring.
+	 *
+	 * @since 4.1.0.2
+	 *
+	 * @param  string   $stack  The stack.
+	 * @param  string   $needle The needle.
+	 * @param  int      $offset The offset.
+	 * @return int|bool         The index of the first occurence or false.
+	 */
+	public function stringContains( $stack, $needle, $offset = 0 ) {
+		return function_exists( 'mb_strpos' ) ? mb_strpos( $stack, $needle, $offset, get_option( 'blog_charset' ) ) : strpos( $stack, $needle, $offset );
+	}
+
+	/**
+	 * Check if a string is JSON encoded or not.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @param  string $string The string to check.
+	 * @return bool           True if it is JSON or false if not.
+	 */
+	public function isJsonString( $string ) {
+		if ( ! is_string( $string ) ) {
+			return false;
+		}
+
+		// Decode the string.
+		json_decode( $string );
+
+		// Return a boolean whether or not the last error matches.
+		return json_last_error() === JSON_ERROR_NONE;
 	}
 }

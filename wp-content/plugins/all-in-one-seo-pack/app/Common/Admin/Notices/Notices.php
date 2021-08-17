@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin\Notices;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 /**
@@ -29,9 +34,10 @@ class Notices {
 		add_action( 'aioseo_admin_notifications_update', [ $this, 'update' ] );
 
 		if ( is_admin() ) {
-			$this->review    = new Review();
-			$this->migration = new Migration();
-			$this->import    = new Import();
+			$this->review              = new Review();
+			$this->migration           = new Migration();
+			$this->import              = new Import();
+			$this->deprecatedWordPress = new DeprecatedWordPress();
 
 			add_action( 'admin_notices', [ $this, 'notice' ] );
 		}
@@ -318,6 +324,7 @@ class Notices {
 		$this->review->maybeShowNotice();
 		$this->migration->maybeShowNotice();
 		$this->import->maybeShowNotice();
+		$this->deprecatedWordPress->maybeShowNotice();
 	}
 
 	/**

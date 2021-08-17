@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema\Graphs;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Person Author graph class.
  *
@@ -9,7 +14,6 @@ namespace AIOSEO\Plugin\Common\Schema\Graphs;
  * @since 4.0.0
  */
 class PersonAuthor extends Person {
-
 	/**
 	 * Returns the graph data.
 	 *
@@ -32,18 +36,13 @@ class PersonAuthor extends Person {
 			return [];
 		}
 
-		$name = trim( sprintf( '%1$s %2$s', get_the_author_meta( 'first_name', $userId ), get_the_author_meta( 'last_name', $userId ) ) );
-		if ( ! $name ) {
-			$name = get_the_author_meta( 'display_name', $userId );
-		}
-
 		$authorUrl = get_author_posts_url( $post->post_author );
 
 		$data = [
 			'@type' => 'Person',
 			'@id'   => $authorUrl . '#author',
 			'url'   => $authorUrl,
-			'name'  => $name
+			'name'  => get_the_author_meta( 'display_name', $userId )
 		];
 
 		$avatar = $this->avatar( $userId, 'authorImage' );

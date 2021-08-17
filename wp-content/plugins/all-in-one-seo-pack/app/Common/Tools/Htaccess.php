@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Tools;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Htaccess {
 	/**
 	 * The path to the .htaccess file.

@@ -2,55 +2,35 @@
 
 namespace AIOSEO\Plugin\Common\Social;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Outputs our social meta.
  *
  * @since 4.0.0
  */
 class Output {
+
 	/**
-	 * Returns the social meta for the current page.
+	 * Checks if the current page should have social meta.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array The social meta.
+	 * @return bool Whether or not the page should have social meta.
 	 */
-	public function getMeta() {
+	public function isAllowed() {
 		if (
 			! is_front_page() &&
 			! is_home() &&
 			! is_singular() &&
 			! aioseo()->helpers->isWooCommerceShopPage()
 		) {
-			return;
+			return false;
 		}
-
-		return apply_filters( 'aioseo_social_meta_tags', $this->getMetaHelper() );
-	}
-
-	/**
-	 * Returns the social meta data.
-	 *
-	 * Acts as a helper for getMeta() so that we can easily override it in Pro.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return array The social meta.
-	 */
-	protected function getMetaHelper() {
-		if ( ! aioseo()->options->social->facebook->general->enable && ! aioseo()->options->social->twitter->general->enable ) {
-			return [];
-		}
-
-		$meta = [];
-		if ( aioseo()->options->social->facebook->general->enable ) {
-			$meta += $this->getFacebookMeta( $meta );
-		}
-
-		if ( aioseo()->options->social->twitter->general->enable ) {
-			$meta += $this->getTwitterMeta( $meta );
-		}
-		return $meta;
+		return true;
 	}
 
 	/**
@@ -61,7 +41,7 @@ class Output {
 	 * @return array The Open Graph meta.
 	 */
 	public function getFacebookMeta() {
-		if ( ! aioseo()->options->social->facebook->general->enable ) {
+		if ( ! $this->isAllowed() || ! aioseo()->options->social->facebook->general->enable ) {
 			return [];
 		}
 
@@ -111,7 +91,7 @@ class Output {
 			];
 		}
 
-		return array_filter( $meta );
+		return array_filter( apply_filters( 'aioseo_facebook_tags', $meta ) );
 	}
 
 	/**
@@ -122,7 +102,7 @@ class Output {
 	 * @return array The Twitter meta.
 	 */
 	public function getTwitterMeta() {
-		if ( ! aioseo()->options->social->twitter->general->enable ) {
+		if ( ! $this->isAllowed() || ! aioseo()->options->social->twitter->general->enable ) {
 			return [];
 		}
 
@@ -156,6 +136,6 @@ class Output {
 			}
 		}
 
-		return array_filter( $meta );
+		return array_filter( apply_filters( 'aioseo_twitter_tags', $meta ) );
 	}
 }

@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 /**
@@ -9,7 +14,6 @@ use AIOSEO\Plugin\Common\Models;
  * @since 4.0.0
  */
 class Helpers {
-
 	/**
 	 * Maps a list of old settings from V3 to their counterparts in V4.
 	 *
@@ -167,7 +171,7 @@ class Helpers {
 						] );
 					}
 				} else {
-					$string = preg_replace( "#%cf_$name%#", "#custom_field-$name", $string );
+					$string = aioseo()->helpers->pregReplace( "#%cf_$name%#", "#custom_field-$name", $string );
 				}
 			}
 		}
@@ -175,13 +179,13 @@ class Helpers {
 		if ( preg_match_all( '#%tax_([^%]*)%#', $string, $matches ) && ! empty( $matches[1] ) ) {
 			foreach ( $matches[1] as $name ) {
 				if ( ! preg_match( '#\s#', $name ) ) {
-					$string = preg_replace( "#%tax_$name%#", "#tax_name-$name", $string );
+					$string = aioseo()->helpers->pregReplace( "#%tax_$name%#", "#tax_name-$name", $string );
 				}
 			}
 		}
 
 		foreach ( $macros as $macro => $tag ) {
-			$string = preg_replace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
+			$string = aioseo()->helpers->pregReplace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
 		}
 
 		$string = preg_replace( '/%([a-f0-9]{2}[^%]*)%/i', '#$1#', $string );

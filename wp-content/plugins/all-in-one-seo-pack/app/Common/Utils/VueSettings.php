@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Vue Settings for the user.
  *
@@ -36,64 +41,76 @@ class VueSettings {
 		'showUpgradeBar'  => true,
 		'showSetupWizard' => true,
 		'toggledCards'    => [
-			'dashboardSeoSiteScore'     => true,
-			'dashboardNotifications'    => true,
-			'dashboardSupport'          => true,
-			'license'                   => true,
-			'webmasterTools'            => true,
-			'enableBreadcrumbs'         => true,
-			'breadcrumbSettings'        => true,
-			'breadcrumbTemplates'       => true,
-			'advanced'                  => true,
-			'accessControl'             => true,
-			'rssContent'                => true,
-			'generalSitemap'            => true,
-			'generalSitemapSettings'    => true,
-			'imageSitemap'              => true,
-			'videoSitemap'              => true,
-			'newsSitemap'               => true,
-			'rssSitemap'                => true,
-			'rssSitemapSettings'        => true,
-			'rssAdditionalPages'        => true,
-			'rssAdvancedSettings'       => true,
-			'htmlSitemap'               => true,
-			'additionalPages'           => true,
-			'advancedSettings'          => true,
-			'videoSitemapSettings'      => true,
-			'videoAdditionalPages'      => true,
-			'videoAdvancedSettings'     => true,
-			'videoEmbedSettings'        => true,
-			'newsSitemapSettings'       => true,
-			'newsAdditionalPages'       => true,
-			'newsAdvancedSettings'      => true,
-			'newsEmbedSettings'         => true,
-			'socialProfiles'            => true,
-			'facebook'                  => true,
-			'facebookHomePageSettings'  => true,
-			'facebookAdvancedSettings'  => true,
-			'twitter'                   => true,
-			'twitterHomePageSettings'   => true,
-			'pinterest'                 => true,
-			'searchTitleSeparator'      => true,
-			'searchHomePage'            => true,
-			'searchSchema'              => true,
-			'searchMediaAttachments'    => true,
-			'searchAdvanced'            => true,
-			'authorArchives'            => true,
-			'dateArchives'              => true,
-			'searchArchives'            => true,
-			'imageSeo'                  => true,
-			'completeSeoChecklist'      => true,
-			'localBusinessInfo'         => true,
-			'localBusinessOpeningHours' => true,
-			'robotsEditor'              => true,
-			'badBotBlocker'             => true,
-			'databaseTools'             => true,
-			'htaccessEditor'            => true,
-			'databaseToolsLogs'         => true,
-			'systemStatusInfo'          => true
+			'dashboardSeoSiteScore'        => true,
+			'dashboardNotifications'       => true,
+			'dashboardSupport'             => true,
+			'license'                      => true,
+			'webmasterTools'               => true,
+			'enableBreadcrumbs'            => true,
+			'breadcrumbSettings'           => true,
+			'breadcrumbTemplates'          => true,
+			'advanced'                     => true,
+			'accessControl'                => true,
+			'rssContent'                   => true,
+			'generalSitemap'               => true,
+			'generalSitemapSettings'       => true,
+			'imageSitemap'                 => true,
+			'videoSitemap'                 => true,
+			'newsSitemap'                  => true,
+			'rssSitemap'                   => true,
+			'rssSitemapSettings'           => true,
+			'rssAdditionalPages'           => true,
+			'rssAdvancedSettings'          => true,
+			'additionalPages'              => true,
+			'advancedSettings'             => true,
+			'videoSitemapSettings'         => true,
+			'videoAdditionalPages'         => true,
+			'videoAdvancedSettings'        => true,
+			'videoEmbedSettings'           => true,
+			'newsSitemapSettings'          => true,
+			'newsAdditionalPages'          => true,
+			'newsAdvancedSettings'         => true,
+			'newsEmbedSettings'            => true,
+			'socialProfiles'               => true,
+			'facebook'                     => true,
+			'facebookHomePageSettings'     => true,
+			'facebookAdvancedSettings'     => true,
+			'twitter'                      => true,
+			'twitterHomePageSettings'      => true,
+			'pinterest'                    => true,
+			'searchTitleSeparator'         => true,
+			'searchHomePage'               => true,
+			'searchSchema'                 => true,
+			'searchMediaAttachments'       => true,
+			'searchAdvanced'               => true,
+			'authorArchives'               => true,
+			'dateArchives'                 => true,
+			'searchArchives'               => true,
+			'imageSeo'                     => true,
+			'completeSeoChecklist'         => true,
+			'localBusinessInfo'            => true,
+			'localBusinessOpeningHours'    => true,
+			'locationsSettings'            => true,
+			'advancedLocationsSettings'    => true,
+			'robotsEditor'                 => true,
+			'badBotBlocker'                => true,
+			'databaseTools'                => true,
+			'htaccessEditor'               => true,
+			'databaseToolsLogs'            => true,
+			'systemStatusInfo'             => true,
+			'addNewRedirection'            => true,
+			'redirectSettings'             => true,
+			'debug'                        => true,
+			'fullSiteRedirectsRelocate'    => true,
+			'fullSiteRedirectsAliases'     => true,
+			'fullSiteRedirectsCanonical'   => true,
+			'fullSiteRedirectsHttpHeaders' => true,
+			'htmlSitemap'                  => true,
+			'htmlSitemapSettings'          => true,
+			'htmlSitemapAdvancedSettings'  => true
 		],
 		'toggledRadio'    => [
+			'locationsShowOnWebsite'        => 'widget',
 			'breadcrumbsShowOnWebsite'      => 'shortcode',
 			'breadcrumbsShowMoreSeparators' => false,
 			'searchShowMoreSeparators'      => false
@@ -161,7 +178,7 @@ class VueSettings {
 	}
 
 	/**
-	 * Retrieve an settings or null if missing.
+	 * Retrieve a setting or null if missing.
 	 *
 	 * @since 4.0.0
 	 *
@@ -170,11 +187,12 @@ class VueSettings {
 	 * @return mixed             The value from the settings or default/null.
 	 */
 	public function __call( $name, $arguments = [] ) {
-		return isset( $this->settings[ $name ] ) ? $this->settings[ $name ] : ( ! empty( $arguments[0] ) ? $arguments[0] : $this->getDefault( $name ) );
+		$value = isset( $this->settings[ $name ] ) ? $this->settings[ $name ] : ( ! empty( $arguments[0] ) ? $arguments[0] : $this->getDefault( $name ) );
+		return $value;
 	}
 
 	/**
-	 * Retrieve an settings or null if missing.
+	 * Retrieve a setting or null if missing.
 	 *
 	 * @since 4.0.0
 	 *
@@ -182,7 +200,8 @@ class VueSettings {
 	 * @return mixed        The value from the settings or default/null.
 	 */
 	public function __get( $name ) {
-		return isset( $this->settings[ $name ] ) ? $this->settings[ $name ] : $this->getDefault( $name );
+		$value = isset( $this->settings[ $name ] ) ? $this->settings[ $name ] : $this->getDefault( $name );
+		return $value;
 	}
 
 	/**

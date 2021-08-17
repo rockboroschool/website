@@ -3,17 +3,17 @@
 // Register Custom Post Type
 function seedprod_lite_post_type() {
 
-	$args = array( 
-		'supports' => array( 'title', 'editor', 'revisions' ), 
-		'public' => false, 
-		'capability_type' => 'page',
-		'show_ui' => false,
+	$args = array(
+		'supports'           => array( 'title', 'editor', 'revisions' ),
+		'public'             => false,
+		'capability_type'    => 'page',
+		'show_ui'            => false,
 		'publicly_queryable' => true,
 	);
 	register_post_type( 'seedprod', $args );
 
 }
-$sedprod_pt = post_type_exists('seedprod');
-if($sedprod_pt === false){
+$sedprod_pt = post_type_exists( 'seedprod' );
+if ( $sedprod_pt === false ) {
 	add_action( 'init', 'seedprod_lite_post_type', 0 );
 }

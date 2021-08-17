@@ -1,13 +1,19 @@
 <?php
 namespace AIOSEO\Plugin\Common\Main;
 
+use \AIOSEO\Plugin\Common\Models;
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Updater class.
  *
  * @since 4.0.0
  */
 class Updates {
-
 	/**
 	 * Class constructor.
 	 *
@@ -39,7 +45,7 @@ class Updates {
 		aioseo()->access->addCapabilities();
 
 		$oldOptions = get_option( 'aioseop_options' );
-		if ( empty( $oldOptions ) && ( ! is_network_admin() || ! isset( $_GET['activate-multi'] ) ) ) {
+		if ( empty( $oldOptions ) && ! is_network_admin() && ! isset( $_GET['activate-multi'] ) ) {
 			// Sets 30 second transient for welcome screen redirect on activation.
 			aioseo()->transients->update( 'activation_redirect', true, 30 );
 		}
@@ -77,6 +83,26 @@ class Updates {
 		if ( version_compare( $lastActiveVersion, '4.0.13', '<' ) ) {
 			$this->removeDuplicateRecords();
 		}
+
+		if ( version_compare( $lastActiveVersion, '4.0.17', '<' ) ) {
+			$this->removeLocationColumn();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.2', '<' ) ) {
+			$this->clearProductImages();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.3', '<' ) ) {
+			$this->addNotificationsNewColumn();
+			$this->noindexWooCommercePages();
+			$this->accessControlNewCapabilities();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.3.3', '<' ) ) {
+			$this->accessControlNewCapabilities();
+		}
+
+		do_action( 'aioseo_run_updates', $lastActiveVersion );
 	}
 
 	/**
@@ -194,7 +220,6 @@ class Updates {
 					videos longtext DEFAULT NULL,
 					video_thumbnail text DEFAULT NULL,
 					video_scan_date datetime DEFAULT NULL,
-					location text DEFAULT NULL,
 					local_seo longtext DEFAULT NULL,
 					created datetime NOT NULL,
 					updated datetime NOT NULL,
@@ -282,7 +307,7 @@ class Updates {
 	 *
 	 * @return void
 	 */
-	protected function removeDuplicateRecords() {
+	public function removeDuplicateRecords() {
 		$duplicates = aioseo()->db->start( 'aioseo_posts' )
 			->select( 'post_id, min(id) as id' )
 			->groupBy( 'post_id having count(post_id) > 1' )
@@ -302,5 +327,119 @@ class Updates {
 				->whereRaw( "( id > $firstRecordId AND post_id = $postId )" )
 				->run();
 		}
+	}
+
+	/**
+	 * Removes the location column.
+	 *
+	 * @since 4.0.17
+	 *
+	 * @return void
+	 */
+	public function removeLocationColumn() {
+		if ( aioseo()->db->columnExists( 'aioseo_posts', 'location' ) ) {
+			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
+			aioseo()->db->execute(
+				"ALTER TABLE {$tableName}
+				DROP location"
+			);
+		}
+	}
+
+	/**
+	 * Clears the image data for WooCommerce Products so that we scan them again and include product gallery images.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @return void
+	 */
+	public function clearProductImages() {
+		if ( ! aioseo()->helpers->isWooCommerceActive() ) {
+			return;
+		}
+
+		aioseo()->db->update( 'aioseo_posts as ap' )
+			->join( 'posts as p', 'ap.post_id = p.ID' )
+			->where( 'p.post_type', 'product' )
+			->set(
+				[
+					'images'          => null,
+					'image_scan_date' => null
+				]
+			)
+			->run();
+	}
+
+	/**
+	 * Adds the new flag to the notifications table.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @return void
+	 */
+	public function addNotificationsNewColumn() {
+		if ( ! aioseo()->db->columnExists( 'aioseo_notifications', 'new' ) ) {
+			$tableName = aioseo()->db->db->prefix . 'aioseo_notifications';
+			aioseo()->db->execute(
+				"ALTER TABLE {$tableName}
+				ADD new tinyint(1) NOT NULL DEFAULT 1 AFTER dismissed"
+			);
+
+			aioseo()->db
+				->update( 'aioseo_notifications' )
+				->where( 'new', 1 )
+				->set( 'new', 0 )
+				->run();
+		}
+	}
+
+	/**
+	 * Noindexes the WooCommerce cart, checkout and account pages.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @return void
+	 */
+	public function noindexWooCommercePages() {
+		if ( ! aioseo()->helpers->isWooCommerceActive() ) {
+			return;
+		}
+
+		$cartId     = (int) get_option( 'woocommerce_cart_page_id' );
+		$checkoutId = (int) get_option( 'woocommerce_checkout_page_id' );
+		$accountId  = (int) get_option( 'woocommerce_myaccount_page_id' );
+
+		$cartPage     = Models\Post::getPost( $cartId );
+		$checkoutPage = Models\Post::getPost( $checkoutId );
+		$accountPage  = Models\Post::getPost( $accountId );
+
+		$newMeta = [
+			'robots_default' => false,
+			'robots_noindex' => true
+		];
+
+		if ( $cartPage->exists() ) {
+			$cartPage->set( $newMeta );
+			$cartPage->save();
+		}
+		if ( $checkoutPage->exists() ) {
+			$checkoutPage->set( $newMeta );
+			$checkoutPage->save();
+		}
+		if ( $accountPage->exists() ) {
+			$accountPage->set( $newMeta );
+			$accountPage->save();
+		}
+	}
+
+	/**
+	 * Adds the new capabilities for all the roles.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @return void
+	 */
+	public function accessControlNewCapabilities() {
+		aioseo()->access->addCapabilities();
 	}
 }

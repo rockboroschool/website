@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 use AIOSEO\Plugin\Common\Models;
@@ -79,6 +84,7 @@ class Meta {
 			$aioseoPost->set( $newPostMeta );
 			$aioseoPost->save();
 
+			$this->updateLocalizedPostMeta( $post->ID, $newPostMeta );
 			$this->migrateAdditionalPostMeta( $post->ID );
 		}
 
@@ -279,6 +285,41 @@ class Meta {
 	}
 
 	/**
+	 * Updates the traditional post meta table with the new data.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  int   $postId  The post ID.
+	 * @param  array $newMeta The new meta data.
+	 * @return void
+	 */
+	protected function updateLocalizedPostMeta( $postId, $newMeta ) {
+		$localizedFields = [
+			'title',
+			'description',
+			'keywords',
+			'og_title',
+			'og_description',
+			'og_article_section',
+			'og_article_tags',
+			'twitter_title',
+			'twitter_description'
+		];
+
+		foreach ( $newMeta as $k => $v ) {
+			if ( ! in_array( $k, $localizedFields, true ) ) {
+				continue;
+			}
+
+			if ( in_array( $k, [ 'keywords', 'og_article_tags' ], true ) ) {
+				$v = ! empty( $v ) ? aioseo()->helpers->jsonTagsToCommaSeparatedList( $v ) : '';
+			}
+
+			update_post_meta( $postId, "_aioseo_{$k}", $v );
+		}
+	}
+
+	/**
 	 * Migrates additional post meta data.
 	 *
 	 * @since 4.0.2
@@ -299,7 +340,7 @@ class Meta {
 	 * @return array $meta   The mapped meta.
 	 */
 	public function convertOpenGraphMeta( $ogMeta ) {
-		$ogMeta = maybe_unserialize( $ogMeta );
+		$ogMeta = aioseo()->helpers->maybeUnserialize( $ogMeta );
 
 		if ( ! is_array( $ogMeta ) ) {
 			return [];
@@ -394,7 +435,7 @@ class Meta {
 		$oldOptions  = get_option( 'aioseo_options_v3' );
 		$titleFormat = isset( $oldOptions[ "aiosp_${postType}_title_format" ] ) ? $oldOptions[ "aiosp_${postType}_title_format" ] : '';
 
-		$seoTitle = preg_replace( '/(%post_title%|%page_title%)/', $seoTitle, $titleFormat );
+		$seoTitle = aioseo()->helpers->pregReplace( '/(%post_title%|%page_title%)/', $seoTitle, $titleFormat );
 		return aioseo()->helpers->sanitizeOption( aioseo()->migration->helpers->macrosToSmartTags( $seoTitle ) );
 	}
 }

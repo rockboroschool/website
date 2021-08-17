@@ -32,7 +32,7 @@ class seedprod_lite_Review {
 
 		// If the user has opted out of product annoucement notifications, don't
 		// display the review request.
-		if ( get_option( 'seedprod_hide_review') ) {
+		if ( get_option( 'seedprod_hide_review' ) ) {
 			return;
 		}
 		// Verify that we can do a check for reviews.
@@ -69,13 +69,13 @@ class seedprod_lite_Review {
 	public function review() {
 		// Fetch when plugin was initially installed.
 		$activated = get_option( 'seedprod_over_time', array() );
-		if ( ! empty( $activated['installed_date'] )) {
+		if ( ! empty( $activated['installed_date'] ) ) {
 			//Only continue if plugin has been installed for at least 7 days.
 			if ( ( $activated['installed_date'] + ( DAY_IN_SECONDS * 7 ) ) > time() ) {
 				return;
 			}
 			// only if version great than or = to 6.0.8.5
-			if(!empty($activated['installed_version']) && version_compare (  $activated['installed_version'],'6.0.8.5' ) < 0 ){
+			if ( ! empty( $activated['installed_version'] ) && version_compare( $activated['installed_version'], '6.0.8.5' ) < 0 ) {
 				return;
 			}
 		} else {
@@ -86,10 +86,9 @@ class seedprod_lite_Review {
 
 			update_option( 'seedprod_over_time', $data );
 			return;
-        }
-        
+		}
 
-        $feedback_url = 'https://www.seedprod.com/plugin-feedback/?utm_source=liteplugin&utm_medium=review-notice&utm_campaign=feedback&utm_content='.SEEDPROD_VERSION;
+		$feedback_url = 'https://www.seedprod.com/plugin-feedback/?utm_source=liteplugin&utm_medium=review-notice&utm_campaign=feedback&utm_content=' . SEEDPROD_VERSION;
 		// We have a candidate! Output a review message.
 		?>
 		<div class="notice notice-info is-dismissible seedprod-review-notice">
@@ -159,4 +158,4 @@ class seedprod_lite_Review {
 		die;
 	}
 }
-new seedprod_lite_Review;
+new seedprod_lite_Review();

@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\RankMath;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 /**
@@ -9,7 +14,6 @@ namespace AIOSEO\Plugin\Common\ImportExport\RankMath;
  * @since 4.0.0
  */
 class GeneralSettings {
-
 	/**
 	 * Class constructor.
 	 *

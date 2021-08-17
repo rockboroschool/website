@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Social;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the Twitter meta.
  *
  * @since 4.0.0
  */
 class Twitter {
-
 	/**
 	 * Returns the Twitter URL for the site.
 	 *
@@ -108,7 +112,7 @@ class Twitter {
 	 */
 	public function getTitle( $post = null ) {
 		if ( is_home() && 'posts' === get_option( 'show_on_front' ) ) {
-			$title = aioseo()->meta->title->prepareTitle( aioseo()->options->social->twitter->homePage->title );
+			$title = aioseo()->meta->title->helpers->prepare( aioseo()->options->social->twitter->homePage->title );
 			return $title ? $title : aioseo()->social->facebook->getTitle( $post );
 		}
 
@@ -121,7 +125,7 @@ class Twitter {
 
 		$title = '';
 		if ( ! empty( $metaData->twitter_title ) ) {
-			$title = aioseo()->meta->title->prepareTitle( $metaData->twitter_title );
+			$title = aioseo()->meta->title->helpers->prepare( $metaData->twitter_title );
 		}
 
 		return $title ? $title : aioseo()->social->facebook->getTitle( $post );
@@ -137,7 +141,7 @@ class Twitter {
 	 */
 	public function getDescription( $post = null ) {
 		if ( is_home() && 'posts' === get_option( 'show_on_front' ) ) {
-			$description = aioseo()->meta->description->prepareDescription( aioseo()->options->social->twitter->homePage->description );
+			$description = aioseo()->meta->description->helpers->prepare( aioseo()->options->social->twitter->homePage->description );
 			return $description ? $description : aioseo()->social->facebook->getDescription( $post );
 		}
 
@@ -150,7 +154,7 @@ class Twitter {
 
 		$description = '';
 		if ( ! empty( $metaData->twitter_description ) ) {
-			$description = aioseo()->meta->description->prepareDescription( $metaData->twitter_description );
+			$description = aioseo()->meta->description->helpers->prepare( $metaData->twitter_description );
 		}
 
 		return $description ? $description : aioseo()->social->facebook->getDescription( $post );

@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Meta;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * To check whether SEO is enabled for the queried object.
  *

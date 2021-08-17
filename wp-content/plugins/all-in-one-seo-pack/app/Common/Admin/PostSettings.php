@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 /**
@@ -18,16 +23,16 @@ class PostSettings {
 	 */
 	public function __construct() {
 		if ( is_admin() ) {
-			// Load Vue APP
+			// Load Vue APP.
 			add_action( 'admin_enqueue_scripts', [ $this, 'enqueuePostSettingsAssets' ] );
 
-			// Add metabox
+			// Add metabox.
 			add_action( 'add_meta_boxes', [ $this, 'addPostSettingsMetabox' ] );
 
-			// Add metabox to terms on init hook
+			// Add metabox to terms on init hook.
 			add_action( 'init', [ $this, 'init' ], 1000 );
 
-			// Save metabox
+			// Save metabox.
 			add_action( 'save_post', [ $this, 'saveSettingsMetabox' ] );
 			add_action( 'edit_attachment', [ $this, 'saveSettingsMetabox' ] );
 			add_action( 'add_attachment', [ $this, 'saveSettingsMetabox' ] );
@@ -131,18 +136,30 @@ class PostSettings {
 	 * @return string
 	 */
 	public function postSettingsMetabox() {
+		$this->postSettingsHiddenField();
+		?>
+		<div id="aioseo-post-settings-metabox">
+			<?php aioseo()->templates->getTemplate( 'parts/loader.php' ); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Adds the hidden field where all the metabox data goes.
+	 *
+	 * @since 4.0.17
+	 *
+	 * @return void
+	 */
+	public function postSettingsHiddenField() {
+		if ( isset( $this->postSettingsHiddenFieldExists ) ) {
+			return;
+		}
+		$this->postSettingsHiddenFieldExists = true;
 		?>
 		<div id="aioseo-post-settings-field">
-			<input type="hidden" name="aioseo-post-settings" id="aioseo-post-settings" value="" />
+			<input type="hidden" name="aioseo-post-settings" id="aioseo-post-settings" value=""/>
 			<?php wp_nonce_field( 'aioseoPostSettingsNonce', 'PostSettingsNonce' ); ?>
-		</div>
-		<div id="aioseo-post-settings-metabox">
-			<div style="height:50px">
-				<div class="aioseo-loading-spinner dark" style="top:calc( 50% - 17px);left:calc( 50% - 17px);">
-					<div class="double-bounce1"></div>
-					<div class="double-bounce2"></div>
-				</div>
-			</div>
 		</div>
 		<?php
 	}

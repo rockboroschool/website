@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
@@ -11,7 +16,6 @@ use AIOSEO\Plugin\Common\Models;
  * @since 4.0.0
  */
 class GeneralSettings {
-
 	/**
 	 * The old V3 options.
 	 *
@@ -202,7 +206,7 @@ class GeneralSettings {
 
 		if ( 'posts' === $showOnFront ) {
 			$homePageTitle = $homePageTitle ? $homePageTitle : get_bloginfo( 'name' );
-			$title         = empty( $format ) ? $homePageTitle : preg_replace( '#%page_title%#', $homePageTitle, $format );
+			$title         = empty( $format ) ? $homePageTitle : aioseo()->helpers->pregReplace( '#%page_title%#', $homePageTitle, $format );
 			$title         = aioseo()->migration->helpers->macrosToSmartTags( $title );
 			aioseo()->options->searchAppearance->global->siteTitle = aioseo()->helpers->sanitizeOption( $title );
 			return;
@@ -210,7 +214,7 @@ class GeneralSettings {
 
 		// Set the setting globally regardless of what happens below.
 		if ( ! empty( $homePageTitle ) ) {
-			$title = aioseo()->migration->helpers->macrosToSmartTags( preg_replace( '#%page_title%#', $homePageTitle, $format ) );
+			$title = aioseo()->migration->helpers->macrosToSmartTags( aioseo()->helpers->pregReplace( '#%page_title%#', $homePageTitle, $format ) );
 			aioseo()->options->searchAppearance->global->siteTitle = aioseo()->helpers->sanitizeOption( $title );
 		}
 
@@ -221,11 +225,11 @@ class GeneralSettings {
 		if ( empty( $this->oldOptions['aiosp_use_static_home_info'] ) ) {
 			$homePageTitle = ! empty( $this->oldOptions['aiosp_home_title'] ) ? $this->oldOptions['aiosp_home_title'] : '#site_title';
 			$homePageTitle = ! empty( $metaTitle ) ? $metaTitle : $homePageTitle;
-			$homePageTitle = empty( $format ) ? $homePageTitle : preg_replace( '#%page_title%#', $homePageTitle, $format );
+			$homePageTitle = empty( $format ) ? $homePageTitle : aioseo()->helpers->pregReplace( '#%page_title%#', $homePageTitle, $format );
 			$homePageTitle = aioseo()->migration->helpers->macrosToSmartTags( $homePageTitle );
 		} else {
 			if ( ! empty( $metaTitle ) ) {
-				$homePageTitle = empty( $format ) ? $metaTitle : preg_replace( '#%page_title%#', $metaTitle, $format );
+				$homePageTitle = empty( $format ) ? $metaTitle : aioseo()->helpers->pregReplace( '#%page_title%#', $metaTitle, $format );
 				$homePageTitle = aioseo()->migration->helpers->macrosToSmartTags( $homePageTitle );
 			}
 		}
@@ -279,8 +283,8 @@ class GeneralSettings {
 			// If the description had the page_title macro, we want to replace it with the actual page title itself.
 			$homePageDescription = $homePageDescription ? $homePageDescription : get_bloginfo( 'description' );
 			$homePageTitle       = ! empty( $this->oldOptions['aiosp_home_title'] ) ? $this->oldOptions['aiosp_home_title'] : get_bloginfo( 'name' );
-			$format              = preg_replace( '#%page_title%#', $homePageTitle, $format );
-			$description         = empty( $format ) ? $homePageDescription : preg_replace( '#%description%#', $homePageDescription, $format );
+			$format              = aioseo()->helpers->pregReplace( '#%page_title%#', $homePageTitle, $format );
+			$description         = empty( $format ) ? $homePageDescription : aioseo()->helpers->pregReplace( '#%description%#', $homePageDescription, $format );
 			$description         = aioseo()->migration->helpers->macrosToSmartTags( $description );
 			aioseo()->options->searchAppearance->global->metaDescription = aioseo()->helpers->sanitizeOption( $description );
 			return;
@@ -289,8 +293,8 @@ class GeneralSettings {
 		// Set the setting globally regardless of what happens below.
 		if ( ! empty( $homePageDescription ) ) {
 			$homePageTitle = ! empty( $this->oldOptions['aiosp_home_title'] ) ? $this->oldOptions['aiosp_home_title'] : get_bloginfo( 'name' );
-			$format        = preg_replace( '#%page_title%#', $homePageTitle, $format );
-			$description   = aioseo()->migration->helpers->macrosToSmartTags( preg_replace( '#%description%#', $homePageDescription, $format ) );
+			$format        = aioseo()->helpers->pregReplace( '#%page_title%#', $homePageTitle, $format );
+			$description   = aioseo()->migration->helpers->macrosToSmartTags( aioseo()->helpers->pregReplace( '#%description%#', $homePageDescription, $format ) );
 			aioseo()->options->searchAppearance->global->metaDescription = aioseo()->helpers->sanitizeOption( $description );
 		}
 
@@ -303,12 +307,12 @@ class GeneralSettings {
 			$homePageDescription = ! empty( $metaDescription ) ? $metaDescription : $homePageDescription;
 		} else {
 			if ( ! empty( $metaDescription ) ) {
-				$homePageDescription = empty( $format ) ? $metaDescription : preg_replace( '#%description%#', $metaDescription, $format );
+				$homePageDescription = empty( $format ) ? $metaDescription : aioseo()->helpers->pregReplace( '#%description%#', $metaDescription, $format );
 				$homePageDescription = aioseo()->migration->helpers->macrosToSmartTags( $homePageDescription );
 			}
 		}
 
-		$homePageDescription = empty( $format ) ? $homePageDescription : preg_replace( '#%page_title%#', $homePageDescription, $format );
+		$homePageDescription = empty( $format ) ? $homePageDescription : aioseo()->helpers->pregReplace( '#%page_title%#', $homePageDescription, $format );
 		$homePageDescription = aioseo()->migration->helpers->macrosToSmartTags( $homePageDescription );
 
 		$aioseoPost = Models\Post::getPost( $post->ID );
@@ -360,6 +364,7 @@ class GeneralSettings {
 			'notification_name' => 'v3-migration-homepage-settings',
 			'title'             => __( 'Review Your Homepage Title & Description', 'all-in-one-seo-pack' ),
 			'content'           => sprintf(
+				// Translators: 1 - All in One SEO.
 				__( 'Due to a bug in the previous version of %1$s, your homepage title and description may have changed. Please take a minute to review your homepage settings to verify that they are correct.', 'all-in-one-seo-pack' ), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
 				AIOSEO_PLUGIN_NAME
 			),
@@ -408,7 +413,7 @@ class GeneralSettings {
 					continue;
 				}
 
-				$objectSlug = preg_replace( '#_tax#', '', $slug[1] );
+				$objectSlug = aioseo()->helpers->pregReplace( '#_tax#', '', $slug[1] );
 				if ( in_array( $objectSlug, aioseo()->helpers->getPublicPostTypes( true ), true ) ) {
 					$settings[ $name ] = [ 'type' => 'string', 'newOption' => [ 'searchAppearance', 'dynamic', 'postTypes', $objectSlug, 'title' ] ];
 					continue;
@@ -633,7 +638,7 @@ class GeneralSettings {
 			return;
 		}
 
-		$socialUrls = preg_replace( '/\s/', '\r\n', $this->oldOptions['aiosp_schema_social_profile_links'] );
+		$socialUrls = aioseo()->helpers->pregReplace( '/\s/', '\r\n', $this->oldOptions['aiosp_schema_social_profile_links'] );
 		$socialUrls = array_filter( explode( '\r\n', $socialUrls ) );
 
 		if ( ! count( $socialUrls ) ) {

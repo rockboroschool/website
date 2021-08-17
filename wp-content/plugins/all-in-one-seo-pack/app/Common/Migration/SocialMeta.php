@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Migration;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
@@ -11,7 +16,6 @@ use AIOSEO\Plugin\Common\Models;
  * @since 4.0.0
  */
 class SocialMeta {
-
 	/**
 	 * The old V3 options.
 	 *
@@ -124,7 +128,7 @@ class SocialMeta {
 
 		// Latest Posts.
 		if ( 'posts' === $showOnFront ) {
-			$ogTitle = preg_replace( '#%page_title%#', '#site_title', $format );
+			$ogTitle = aioseo()->helpers->pregReplace( '#%page_title%#', '#site_title', $format );
 			if ( ! $useHomePageMeta ) {
 				if ( ! empty( $this->oldOptions['modules']['aiosp_opengraph_options']['aiosp_opengraph_hometitle'] ) ) {
 					$ogTitle = $this->oldOptions['modules']['aiosp_opengraph_options']['aiosp_opengraph_hometitle'];
@@ -150,7 +154,7 @@ class SocialMeta {
 			return;
 		}
 
-		$ogMeta = maybe_unserialize( $ogMeta );
+		$ogMeta = aioseo()->helpers->maybeUnserialize( $ogMeta );
 
 		$ogTitle = '';
 		if ( ! $useHomePageMeta ) {
@@ -207,7 +211,7 @@ class SocialMeta {
 		$format             = $this->oldOptions['aiosp_description_format'];
 
 		if ( 'posts' === $showOnFront ) {
-			$ogDescription = preg_replace( '#%description%#', '#tagline', $format );
+			$ogDescription = aioseo()->helpers->pregReplace( '#%description%#', '#tagline', $format );
 			if ( ! $useHomePageMeta ) {
 				if ( ! empty( $this->oldOptions['modules']['aiosp_opengraph_options']['aiosp_opengraph_description'] ) ) {
 					$ogDescription = $this->oldOptions['modules']['aiosp_opengraph_options']['aiosp_opengraph_description'];
@@ -232,7 +236,7 @@ class SocialMeta {
 			return;
 		}
 
-		$ogMeta = maybe_unserialize( $ogMeta );
+		$ogMeta = aioseo()->helpers->maybeUnserialize( $ogMeta );
 
 		$ogDescription = '';
 		if ( ! $useHomePageMeta ) {

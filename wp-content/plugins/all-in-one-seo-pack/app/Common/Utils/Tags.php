@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class to replace tag values with their data counterparts.
  *
@@ -327,7 +332,7 @@ class Tags {
 			],
 			[
 				'id'          => 'taxonomy_title',
-				// Translators: 1 - The singular name of the current taxonomy.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Title', 'all-in-one-seo-pack' ), 'Category' ),
 				'description' => __( 'Current or first category title.', 'all-in-one-seo-pack' )
 			],
@@ -339,14 +344,14 @@ class Tags {
 			],
 			[
 				'id'          => 'category_link',
-				// Translators: 1 - The singular name of the current taxonomy.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Link', 'all-in-one-seo-pack' ), 'Category' ),
 				'description' => __( 'Current or first category link (name as text).', 'all-in-one-seo-pack' ),
 				'html'        => true
 			],
 			[
 				'id'          => 'category_link_alt',
-				// Translators: 1 - The singular name of the current taxonomy.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Link (Alt)', 'all-in-one-seo-pack' ), 'Category' ),
 				'description' => __( 'Current or first category link (link as text).', 'all-in-one-seo-pack' ),
 				'html'        => true
@@ -430,21 +435,21 @@ class Tags {
 			],
 			[
 				'id'          => 'post_link',
-				// Translators: 1 - The singular name of the post type.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Link', 'all-in-one-seo-pack' ), 'Post' ),
 				'description' => __( 'Post link (name as text).', 'all-in-one-seo-pack' ),
 				'html'        => true
 			],
 			[
 				'id'          => 'post_link_alt',
-				// Translators: 1 - The singular name of the post type.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Link (Alt)', 'all-in-one-seo-pack' ), 'Post' ),
 				'description' => __( 'Post link (link as text).', 'all-in-one-seo-pack' ),
 				'html'        => true
 			],
 			[
 				'id'          => 'post_title',
-				// Translators: 1 - The singular name of the post type.
+				// Translators: 1 - The type of page (Post, Page, Category, Tag, etc.).
 				'name'        => sprintf( __( '%1$s Title', 'all-in-one-seo-pack' ), 'Post' ),
 				'description' => __( 'The original title of the current post.', 'all-in-one-seo-pack' )
 			],
@@ -874,7 +879,12 @@ class Tags {
 					$excerpt = '';
 				}
 
-				return $excerpt;
+				if ( $excerpt || ! is_admin() ) {
+					return $excerpt;
+				}
+
+				// Fall through to post content if we're in the admin.
+				// This is needed since get_the_excerpt doesn't generate an excerpt from the post content outside of the loop.
 			case 'post_content':
 				return empty( $postId ) ? ( $sampleData ? __( 'An example of content from your page/post.', 'all-in-one-seo-pack' ) : '' ) : aioseo()->helpers->getContent( $post );
 			case 'category':

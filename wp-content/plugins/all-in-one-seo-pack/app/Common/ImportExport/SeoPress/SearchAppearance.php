@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\SeoPress;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 /**
@@ -9,7 +14,6 @@ namespace AIOSEO\Plugin\Common\ImportExport\SeoPress;
  * @since 4.0.0
  */
 class SearchAppearance {
-
 	/**
 	 * Class constructor.
 	 *

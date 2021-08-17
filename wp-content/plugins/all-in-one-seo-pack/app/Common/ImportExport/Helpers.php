@@ -1,12 +1,26 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Contains helper methods for the import from other plugins.
  *
  * @since 4.0.0
  */
 abstract class Helpers {
+	/**
+	 * Converts macros to smart tags.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @param  string $value The string with macros.
+	 * @return string        The string with macros converted.
+	 */
+	abstract public function macrosToSmartTags( $value );
 
 	/**
 	 * Maps a list of old settings from V3 to their counterparts in V4.

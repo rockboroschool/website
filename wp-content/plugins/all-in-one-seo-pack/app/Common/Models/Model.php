@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Models;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Base Model class.
  *
@@ -33,6 +38,15 @@ class Model implements \JsonSerializable {
 	 * @var array
 	 */
 	protected $booleanFields = [];
+
+	/**
+	 * Fields that should be numeric values.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @var array
+	 */
+	protected $numericFields = [];
 
 	/**
 	 * Fields that should be hidden when serialized.
@@ -150,13 +164,15 @@ class Model implements \JsonSerializable {
 
 		foreach ( (array) $array as $key => $value ) {
 			trim( $key );
-			$this->$key = in_array( $key, $this->jsonFields, true )
-				? json_decode( $value )
-				: (
-					in_array( $key, $this->booleanFields, true )
-						? (bool) $value
-						: $value
-				);
+			$this->$key = $value;
+
+			if ( in_array( $key, $this->jsonFields, true ) ) {
+				$this->$key = json_decode( $value );
+			} elseif ( in_array( $key, $this->booleanFields, true ) ) {
+				$this->$key = (bool) $value;
+			} elseif ( in_array( $key, $this->numericFields, true ) ) {
+				$this->$key = (int) $value;
+			}
 		}
 	}
 
@@ -212,8 +228,14 @@ class Model implements \JsonSerializable {
 			return $data;
 		}
 
+		foreach ( $this->numericFields as $field ) {
+			if ( isset( $data[ $field ] ) ) {
+				$data[ $field ] = (int) $data[ $field ];
+			}
+		}
+
 		foreach ( $this->jsonFields as $field ) {
-			if ( isset( $data[ $field ] ) && ! empty( $data[ $field ] ) ) {
+			if ( isset( $data[ $field ] ) && ! aioseo()->helpers->isJsonString( $data[ $field ] ) ) {
 				$data[ $field ] = wp_json_encode( $data[ $field ] );
 			}
 		}
@@ -378,7 +400,7 @@ class Model implements \JsonSerializable {
 				continue;
 			}
 
-			$array[ $column ] = ! empty( $this->$column ) ? $this->$column : null;
+			$array[ $column ] = isset( $this->$column ) ? $this->$column : null;
 		}
 
 		return $array;
@@ -402,6 +424,12 @@ class Model implements \JsonSerializable {
 			foreach ( $results->result() as $col ) {
 				self::$columns[ get_called_class() ][ $col->Field ] = $col->Default;
 			}
+
+			if ( ! empty( $this->appends ) ) {
+				foreach ( $this->appends as $append ) {
+					self::$columns[ get_called_class() ][ $append ] = null;
+				}
+			}
 		}
 
 		return self::$columns[ get_called_class() ];
@@ -423,8 +451,8 @@ class Model implements \JsonSerializable {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string The existing options in JSON.
-	 * @return string The existing options with defaults added in JSON.
+	 * @param  string $existingOptions The existing options in JSON.
+	 * @return string                  The existing options with defaults added in JSON.
 	 */
 	public static function getDefaultSchemaOptions( $existingOptions = '' ) {
 		// If the root level value for a graph needs to be an object, we need to set at least one property inside of it so that PHP doesn't convert it to an empty array.
@@ -473,9 +501,113 @@ class Model implements \JsonSerializable {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return string JSON object.
+	 * @param  string $existingOptions The existing options in JSON.
+	 * @return string                  The existing options with defaults added in JSON.
 	 */
-	public static function getDefaultLocalSeoOptions() {
-		return '{"businessInfo":{"name":"","urls":{"website":"","aboutPage":"","contactPage":""},"address":{"line1":"","line2":"","zip":"","city":"","state":"","country":""},"contact":{"email":"","phone":"","fax":""},"ids":{"vatID":"","taxID":"","chamberID":""},"payment":{"priceIndication":"","currenciesAccepted":"","methodsAccepted":""},"areaServed":""},"openingHours":{"show":false,"closedLabel":"","open24h":false,"open24hLabel":"","open247":false,"use24hFormat":false,"twoSets":false,"timezone":"","hours":{}}}'; // phpcs:ignore Generic.Files.LineLength.MaxExceeded
+	public static function getDefaultLocalSeoOptions( $existingOptions = '' ) {
+		$defaults = [
+			'locations'    => [
+				'business' => [
+					'name'         => '',
+					'businessType' => '',
+					'image'        => '',
+					'areaServed'   => '',
+					'urls'         => [
+						'website'     => '',
+						'aboutPage'   => '',
+						'contactPage' => ''
+					],
+					'address'      => [
+						'streetLine1'   => '',
+						'streetLine2'   => '',
+						'zipCode'       => '',
+						'city'          => '',
+						'state'         => '',
+						'country'       => '',
+						'addressFormat' => '#streetLineOne\n#streetLineTwo\n#city, #state #zipCode'
+					],
+					'contact'      => [
+						'email'          => '',
+						'phone'          => '',
+						'phoneFormatted' => '',
+						'fax'            => '',
+						'faxFormatted'   => ''
+					],
+					'ids'          => [
+						'vat'               => '',
+						'tax'               => '',
+						'chamberOfCommerce' => ''
+					],
+					'payment'      => [
+						'priceRange'         => '',
+						'currenciesAccepted' => '',
+						'methods'            => ''
+					],
+				],
+			],
+			'openingHours' => [
+				'useDefaults'  => true,
+				'show'         => true,
+				'alwaysOpen'   => false,
+				'use24hFormat' => false,
+				'timezone'     => '',
+				'labels'       => [
+					'closed'     => '',
+					'alwaysOpen' => ''
+				],
+				'days'         => [
+					'monday'    => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'tuesday'   => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'wednesday' => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'thursday'  => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'friday'    => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'saturday'  => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					],
+					'sunday'    => [
+						'open24h'   => false,
+						'closed'    => false,
+						'openTime'  => '09:00',
+						'closeTime' => '17:00'
+					]
+				]
+			]
+		];
+
+		if ( empty( $existingOptions ) ) {
+			$defaults = wp_json_encode( $defaults );
+			return str_replace( '\\\n', '\n', $defaults );
+		}
+
+		$existingOptions = json_decode( $existingOptions, true );
+		return array_replace_recursive( $defaults, $existingOptions );
 	}
 }

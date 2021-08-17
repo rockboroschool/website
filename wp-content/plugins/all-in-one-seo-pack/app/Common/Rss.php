@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Adds content before or after posts in the RSS feed.
  *
@@ -34,8 +39,8 @@ class Rss {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $content The
-	 * @return void
+	 * @param  string $content The post content.
+	 * @return string          The post content with prepended/appended content.
 	 */
 	public function addRssContent( $content, $type = 'complete' ) {
 		$content = trim( $content );

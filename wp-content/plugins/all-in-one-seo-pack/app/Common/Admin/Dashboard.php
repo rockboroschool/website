@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class that holds our dashboard widget.
  *

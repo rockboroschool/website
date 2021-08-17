@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Main;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Abstract class that Pro and Lite both extend.
  *
  * @since 4.0.0
  */
 class Activate {
-
 	/**
 	 * Construct method.
 	 *
@@ -26,6 +30,33 @@ class Activate {
 	}
 
 	/**
+	 * Runs on activation.
+	 *
+	 * @since 4.0.17
+	 *
+	 * @param  bool $networkWide Whether or not this is a network wide activation.
+	 * @return void
+	 */
+	public function activate( $networkWide ) {
+		aioseo()->access->addCapabilities();
+
+		// Make sure our tables exist.
+		aioseo()->updates->addInitialCustomTablesForV4();
+
+		// Set the activation timestamps.
+		$time = time();
+		aioseo()->internalOptions->internal->activated = $time;
+
+		if ( ! aioseo()->internalOptions->internal->firstActivated ) {
+			aioseo()->internalOptions->internal->firstActivated = $time;
+		}
+
+		aioseo()->transients->clearCache();
+
+		$this->maybeRunSetupWizard();
+	}
+
+	/**
 	 * Runs on deactivation.
 	 *
 	 * @since 4.0.0
@@ -35,5 +66,34 @@ class Activate {
 	public function deactivate() {
 		aioseo()->access->removeCapabilities();
 		\AIOSEO\Plugin\Common\Sitemap\Rewrite::removeRewriteRules( [], true );
+	}
+
+	/**
+	 * Check if we should redirect on activation.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @return void
+	 */
+	private function maybeRunSetupWizard() {
+		if ( '0.0' !== aioseo()->internalOptions->internal->lastActiveVersion ) {
+			return;
+		}
+
+		$oldOptions = get_option( 'aioseop_options' );
+		if ( ! empty( $oldOptions ) ) {
+			return;
+		}
+
+		if ( is_network_admin() ) {
+			return;
+		}
+
+		if ( isset( $_GET['activate-multi'] ) ) {
+			return;
+		}
+
+		// Sets 30 second transient for welcome screen redirect on activation.
+		aioseo()->transients->update( 'activation_redirect', true, 30 );
 	}
 }

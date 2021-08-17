@@ -1,12 +1,26 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Usage tracking class.
  *
  * @since 4.0.0
  */
-class Usage {
+abstract class Usage {
+	/**
+	 * Returns the current plugin version type ("lite" or "pro").
+	 *
+	 * @since 4.1.3
+	 *
+	 * @return string The version type.
+	 */
+	abstract public function getType();
+
 	/**
 	 * Source of notifications content.
 	 *
@@ -113,7 +127,7 @@ class Usage {
 	 *
 	 * @return array An array of data to send.
 	 */
-	private function getData() {
+	protected function getData() {
 		$themeData = wp_get_theme();
 		$type      = $this->getType();
 

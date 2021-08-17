@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Database utility class for AIOSEO.
  *
@@ -268,13 +273,8 @@ class Database {
 	 * @return boolean        Whether or not the table exists.
 	 */
 	public function tableExists( $table ) {
-		$tables = $this->getInstalledTables();
-
-		if ( ! in_array( $this->prefix . $table, $tables, true ) ) {
-			return false;
-		}
-
-		return true;
+		$results = $this->db->get_results( 'SHOW TABLES LIKE "' . $this->prefix . $table . '"' );
+		return ! ( empty( $results ) );
 	}
 
 	/**
@@ -297,6 +297,29 @@ class Database {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Gets the size of a table in bytes.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  string  $table The table to check.
+	 * @return integer        The size of the table in bytes.
+	 */
+	public function getTableSize( $table ) {
+		$this->db->query( 'ANALYZE TABLE ' . $this->prefix . $table );
+		$results = $this->db->get_results( '
+			SELECT
+				TABLE_NAME AS `table`,
+				ROUND(SUM(DATA_LENGTH + INDEX_LENGTH)) AS `size`
+			FROM information_schema.TABLES
+			WHERE TABLE_SCHEMA = "' . $this->db->dbname . '"
+			AND TABLE_NAME = "' . $this->prefix . $table . '"
+			ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;
+		' );
+
+		return empty( $results ) ? 0 : $results[0]->size;
 	}
 
 	/**
@@ -323,6 +346,22 @@ class Database {
 			case 'UPDATE':
 				$clauses   = [];
 				$clauses[] = "UPDATE $this->table";
+
+				if ( count( $this->join ) > 0 ) {
+					foreach ( (array) $this->join as $join ) {
+						if ( is_array( $join[1] ) ) {
+							$join_on = [];
+							foreach ( (array) $join[1] as $left => $right ) {
+								$join_on[] = "$this->table.`$left` = `{$join[0]}`.`$right`";
+							}
+
+							$clauses[] = "\t" . ( ( 'LEFT' === $join[2] || 'RIGHT' === $join[2] ) ? $join[2] . ' JOIN ' : 'JOIN ' ) . $join[0] . ' ON ' . implode( ' AND ', $join_on );
+						} else {
+							$clauses[] = "\t" . ( ( 'LEFT' === $join[2] || 'RIGHT' === $join[2] ) ? $join[2] . ' JOIN ' : 'JOIN ' ) . "{$join[0]} ON {$join[1]}";
+						}
+					}
+				}
+
 				$clauses[] = 'SET ' . implode( ', ', $this->set );
 
 				if ( count( $this->where ) > 0 ) {
@@ -852,26 +891,6 @@ class Database {
 	}
 
 	/**
-	 * Enable/disable HTML stripping.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param boolean   $value Whether or not to enable/disable HTML stripping.
-	 * @return Database        Returns the Database class which can be method chained for more query building.
-	 */
-	public function setStripTags( $value ) {
-		$options = $this->getEscapeOptions();
-		if ( $value ) {
-			$options = $options | DatabaseConnection::ESCAPE_STRIP_HTML;
-		} else {
-			$options = $options & ~DatabaseConnection::ESCAPE_STRIP_HTML;
-		}
-
-		$this->setEscapeOptions( $options );
-		return $this;
-	}
-
-	/**
 	 * Set the output for the query.
 	 *
 	 * @since 4.0.0
@@ -922,6 +941,22 @@ class Database {
 	}
 
 	/**
+	 * Inject a count select statement and return the result.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @param  string $countColumn The column to count with. Defaults to '*' all.
+	 * @return void                The count total.
+	 */
+	public function count( $countColumn = '*' ) {
+		$results = $this->select( 'count(' . $countColumn . ') as count' )
+			->run()
+			->result();
+
+		return 1 === $this->numRows() ? (int) $results[0]->count : $this->numRows();
+	}
+
+	/**
 	 * Returns the query results based on the output.
 	 *
 	 * @since 4.0.0
@@ -955,18 +990,19 @@ class Database {
 	 * @param string  $index The index if necessary.
 	 * @return array         An array of class models.
 	 */
-	public function models( $class, $id = null, $index = null ) {
+	public function models( $class, $id = null, $toJson = false ) {
 		if ( empty( $this->models ) ) {
-			$i = 0;
-			$this->models = [];
+			$i      = 0;
+			$models = [];
 			foreach ( $this->result() as $row ) {
-				$var = ( null === $id ) ? $row : $row[ $id ];
-				// $ndx   = ( null === $index ) ? $i : $row[ $index ];
+				$var   = ( null === $id ) ? $row : $row[ $id ];
 				$class = new $class( $var );
 				// Lets add the class to the array using the class ID.
-				$this->models[ $class->id ] = $class;
+				$models[ $class->id ] = $toJson ? $class->jsonSerialize() : $class;
 				$i++;
 			}
+
+			$this->models = $models;
 		}
 
 		return $this->models;
@@ -1091,13 +1127,14 @@ class Database {
 				$value = wp_strip_all_tags( $value );
 			}
 
-			if ( ( $options & self::ESCAPE_FORCE ) !== 0 || php_sapi_name() === 'cli' ) {
-				$value = $this->db->_real_escape( $value );
-			}
-
-			if ( ( $options & self::ESCAPE_QUOTE ) !== 0 && ! is_integer( $value ) ) {
-				$value = addslashes( $value );
-				$value = "'$value'";
+			if (
+				( ( $options & self::ESCAPE_FORCE ) !== 0 || php_sapi_name() === 'cli' ) ||
+				( ( $options & self::ESCAPE_QUOTE ) !== 0 && ! is_integer( $value ) )
+			) {
+				$value = esc_sql( $value );
+				if ( ! is_integer( $value ) ) {
+					$value = "'$value'";
+				}
 			}
 
 			return $value;
@@ -1251,5 +1288,16 @@ class Database {
 		} else {
 			return $this->$what;
 		}
+	}
+
+	/**
+	 * In order to not have a conflict, we need to return a clone.
+	 *
+	 * @since 4.1.0
+	 *
+	 * @return Options The cloned Options object.
+	 */
+	public function noConflict() {
+		return clone $this;
 	}
 }

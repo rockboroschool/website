@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Utils;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
 
@@ -12,7 +17,6 @@ require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
  * @since 4.0.0
  */
 class PluginUpgraderSkin extends \WP_Upgrader_Skin {
-
 	/**
 	 * Empty out the header of its HTML content and only check to see if it has
 	 * been performed or not.

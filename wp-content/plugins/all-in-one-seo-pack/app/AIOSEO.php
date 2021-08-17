@@ -1,5 +1,9 @@
 <?php
 namespace AIOSEO\Plugin {
+	// Exit if accessed directly.
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
 
 	/**
 	 * Main AIOSEO class.
@@ -90,6 +94,24 @@ namespace AIOSEO\Plugin {
 		private $autoUpdates = null;
 
 		/**
+		 * Holds our addon helper and loaded addons.
+		 *
+		 * @since 4.0.17
+		 *
+		 * @var object
+		 */
+		public $addons;
+
+		/**
+		 * Holds our template helper.
+		 *
+		 * @since 4.0.17
+		 *
+		 * @var Common\Utils\Templates
+		 */
+		public $templates;
+
+		/**
 		 * Main AIOSEO Instance.
 		 *
 		 * Insures that only one instance of AIOSEO exists in memory at any one
@@ -178,7 +200,7 @@ namespace AIOSEO\Plugin {
 		private function includes() {
 			$dependencies = [
 				'/vendor/autoload.php',
-				'/vendor/woocommerce/action-scheduler/action-scheduler.php',
+				'/vendor/woocommerce/action-scheduler/action-scheduler.php'
 			];
 
 			foreach ( $dependencies as $path ) {
@@ -251,6 +273,9 @@ namespace AIOSEO\Plugin {
 			$this->addons             = $this->pro ? new Pro\Utils\Addons() : new Common\Utils\Addons();
 			$this->tags               = $this->pro ? new Pro\Utils\Tags() : new Common\Utils\Tags();
 			$this->badBotBlocker      = new Common\Tools\BadBotBlocker();
+			$this->headlineAnalyzer   = new Common\HeadlineAnalyzer\HeadlineAnalyzer();
+			$this->breadcrumbs        = $this->pro ? new Pro\Breadcrumbs\Breadcrumbs() : new Common\Breadcrumbs\Breadcrumbs();
+			$this->dynamicBackup      = $this->pro ? new Pro\Utils\DynamicBackup() : new Common\Utils\DynamicBackup();
 			$this->internalOptions    = $this->pro ? new Pro\Utils\InternalOptions() : new Lite\Utils\InternalOptions();
 			$this->options            = $this->pro ? new Pro\Utils\Options() : new Lite\Utils\Options();
 			$this->backup             = new Common\Utils\Backup();
@@ -271,19 +296,20 @@ namespace AIOSEO\Plugin {
 			$this->migration          = $this->pro ? new Pro\Migration\Migration() : new Common\Migration\Migration();
 			$this->importExport       = $this->pro ? new Pro\ImportExport\ImportExport() : new Common\ImportExport\ImportExport();
 			$this->sitemap            = $this->pro ? new Pro\Sitemap\Sitemap() : new Common\Sitemap\Sitemap();
+			$this->htmlSitemap        = new Common\Sitemap\Html\Sitemap();
+			$this->templates          = new Common\Utils\Templates();
 
 			if ( ! wp_doing_ajax() && ! wp_doing_cron() ) {
 				$this->rss              = new Common\Rss();
 				$this->main             = $this->pro ? new Pro\Main\Main() : new Common\Main\Main();
 				$this->schema           = $this->pro ? new Pro\Schema\Schema() : new Common\Schema\Schema();
 				$this->head             = $this->pro ? new Pro\Main\Head() : new Common\Main\Head();
-				$this->activate         = $this->pro ? new Pro\Main\Activate() : new Lite\Main\Activate();
+				$this->activate         = $this->pro ? new Pro\Main\Activate() : new Common\Main\Activate();
 				$this->filters          = $this->pro ? new Pro\Main\Filters() : new Lite\Main\Filters();
 				$this->dashboard        = $this->pro ? new Pro\Admin\Dashboard() : new Common\Admin\Dashboard();
 				$this->api              = $this->pro ? new Pro\Api\Api() : new Lite\Api\Api();
 				$this->postSettings     = $this->pro ? new Pro\Admin\PostSettings() : new Lite\Admin\PostSettings();
 				$this->filter           = new Common\Utils\Filter();
-				$this->localBusinessSeo = new Common\Admin\LocalBusinessSeo();
 				$this->help             = new Common\Help\Help();
 			}
 
@@ -328,6 +354,10 @@ namespace AIOSEO\Plugin {
 }
 
 namespace {
+	// Exit if accessed directly.
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
 
 	/**
 	 * The function which returns the one AIOSEO instance.

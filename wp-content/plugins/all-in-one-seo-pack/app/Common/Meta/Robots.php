@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Meta;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the robots meta tag.
  *
  * @since 4.0.0
  */
 class Robots {
-
 	/**
 	 * The robots meta tag attributes.
 	 *
@@ -31,6 +35,59 @@ class Robots {
 	];
 
 	/**
+	 * Class constructor.
+	 *
+	 * @since 4.0.16
+	 */
+	public function __construct() {
+		add_action( 'wp_loaded', [ $this, 'unregisterWooCommerceNoindex' ] );
+		add_action( 'template_redirect', [ $this, 'noindexFeed' ] );
+		add_action( 'wp_head', [ $this, 'disableWpRobotsCore' ], -1 );
+	}
+
+	/**
+	 * Prevents WooCommerce from noindexing the Cart/Checkout pages.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @return void
+	 */
+	public function unregisterWooCommerceNoindex() {
+		if ( has_action( 'wp_head', 'wc_page_noindex' ) ) {
+			remove_action( 'wp_head', 'wc_page_noindex' );
+		}
+	}
+
+	/**
+	 * Prevents WP Core from outputting its own robots meta tag.
+	 *
+	 * @since 4.0.16
+	 *
+	 * @return void
+	 */
+	public function disableWpRobotsCore() {
+		remove_all_filters( 'wp_robots' );
+	}
+
+	/**
+	 * Noindexes RSS feed pages.
+	 *
+	 * @since 4.0.17
+	 *
+	 * @return void
+	 */
+	public function noindexFeed() {
+		if (
+			! is_feed() ||
+			( ! aioseo()->options->searchAppearance->advanced->globalRobotsMeta->default && ! aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindexFeed )
+		) {
+			return;
+		}
+
+		header( 'X-Robots-Tag: noindex, follow', true );
+	}
+
+	/**
 	 * Returns the robots meta tag value.
 	 *
 	 * @since 4.0.0
@@ -42,7 +99,7 @@ class Robots {
 			return $this->term();
 		}
 
-		if ( ! get_option( 'blog_public' ) || $this->isNoindexedWooCommercePage() ) {
+		if ( ! get_option( 'blog_public' ) ) {
 			return false;
 		}
 
@@ -300,28 +357,5 @@ class Robots {
 	private function isPasswordProtected() {
 		$post = aioseo()->helpers->getPost();
 		return is_object( $post ) && $post->post_password;
-	}
-
-	/**
-	 * Checks whether the current page is a noindexed WooCommerce page.
-	 *
-	 * WooCommerce noindexes the Cart, Checkout and My Account pages by default. In this case, we don't need to output another robots meta tag.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return boolean Whether the current page is an noindexed WooCommerce page.
-	 */
-	private function isNoindexedWooCommercePage() {
-		$post = aioseo()->helpers->getPost();
-		if (
-			! aioseo()->helpers->isWooCommerceActive() ||
-			! is_object( $post ) ||
-			'page' !== $post->post_type ||
-			! has_action( 'wp_head', 'wc_page_noindex' )
-		) {
-			return false;
-		}
-
-		return in_array( get_permalink(), aioseo()->helpers->getNoindexedWooCommercePages(), true );
 	}
 }

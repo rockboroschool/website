@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Schema;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Determines the breadcrumb trail.
  *
  * @since 4.0.0
  */
 class Breadcrumb {
-
 	/**
 	 * Returns the breadcrumb trail for the homepage.
 	 *
@@ -52,7 +56,7 @@ class Breadcrumb {
 					'name'        => $post->post_title,
 					'description' => aioseo()->meta->description->getDescription( $post ),
 					'url'         => get_permalink( $post ),
-					'type'        => aioseo()->helpers->isWooCommerceShopPage() || is_home() ? 'CollectionPage' : $this->getPostGraph()
+					'type'        => aioseo()->helpers->isWooCommerceShopPage( $post->ID ) || is_home() ? 'CollectionPage' : $this->getPostGraph()
 				]
 			);
 
@@ -129,8 +133,8 @@ class Breadcrumb {
 					break;
 				case '%author%':
 					$breadcrumb = [
-						'name'        => trim( sprintf( '%1$s %2$s', get_the_author_meta( 'first_name', $post->post_author ), get_the_author_meta( 'last_name', $post->post_author ) ) ),
-						'description' => aioseo()->meta->description->prepareDescription( aioseo()->options->searchAppearance->archives->author->metaDescription ),
+						'name'        => get_the_author_meta( 'display_name', $post->post_author ),
+						'description' => aioseo()->meta->description->helpers->prepare( aioseo()->options->searchAppearance->archives->author->metaDescription ),
 						'url'         => $url[0],
 						'type'        => 'ProfilePage'
 					];
@@ -156,7 +160,7 @@ class Breadcrumb {
 					}
 					$breadcrumb = [
 						'name'        => $dateName,
-						'description' => aioseo()->meta->description->prepareDescription( aioseo()->options->searchAppearance->archives->date->metaDescription ),
+						'description' => aioseo()->meta->description->helpers->prepare( aioseo()->options->searchAppearance->archives->date->metaDescription ),
 						'url'         => $url[0],
 						'type'        => 'CollectionPage'
 					];

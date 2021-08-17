@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Api;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Route class for the API.
  *
@@ -85,6 +90,30 @@ class Analyze {
 		aioseo()->internalOptions->internal->siteAnalysis->results = wp_json_encode( $responseBody[ $analyzeOrHomeUrl ]->results );
 
 		return new \WP_REST_Response( $responseBody[ $analyzeOrHomeUrl ], 200 );
+	}
+
+	/**
+	 * Analyzes the title for SEO.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function analyzeHeadline( $request ) {
+		$body  = $request->get_json_params();
+		$title = sanitize_text_field( $body['title'] );
+
+		if ( ! $title ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'Title is missing.'
+			], 400 );
+		}
+
+		$result = aioseo()->headlineAnalyzer->getResult( $title );
+
+		return new \WP_REST_Response( $result, 200 );
 	}
 
 	/**

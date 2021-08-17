@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Sitemap;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles our sitemap rewrite rules.
  *
  * @since 4.0.0
  */
 class Rewrite {
-
 	/**
 	 * Returns our sitemap rewrite rules.
 	 *

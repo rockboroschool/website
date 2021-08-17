@@ -3,9 +3,9 @@ Contributors: seedprod, smub
 Donate link: http://www.seedprod.com
 Tags: maintenance mode, coming soon page, coming soon, under construction, landing page, launch, maintenance, construction, offline, unavailable, under construction page, launch page
 Requires at least: 5.0
-Tested up to: 5.6
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 6.0.10.1
+Stable tag: 6.2.0
 Text Domain: coming-soon
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -75,6 +75,9 @@ Create a Coming Soon Page, Maintenance Mode Page, Landing Pages and Custom 404 p
 *	Star Rating Block
 *	Shortcode Block
 *   Login Block
+*   Accordion Block
+*   Testimonials Block
+*   WooCommerce Blocks
 *	Plus lots more...
 
 *   [Upgrade to the Pro Version Now!&raquo;](http://www.seedprod.com/?utm_source=wordpress.org&utm_medium=link&utm_campaign=coming-soon-from-wordpress.org)
@@ -135,6 +138,10 @@ This is always a caching issue. Go to the caching plugin's setting page and clea
 
 This page builder is intended for landing pages only. If your website only had a small number of pages you could in theory only use SeedProd. However if you have a large website there are other page builders with the wordpress.org plugin repo that will let you build your entire site. 
 
+= Does it work with WooCommerce? =
+
+Yes, you cam build custom Product, Checkout and Cart pages with our WooCommerce integration. Note: WooCommerce Integration is only available in the Pro verison.
+
 
 == Screenshots ==
 
@@ -149,6 +156,33 @@ This page builder is intended for landing pages only. If your website only had a
 
 
 == Changelog ==
+= 6.6.0 =
+
+* Added - Column Alignment Controls
+* Added - Divice Visibility Controls
+* Added - Full Length Template Previews
+* Tweak - Version Sync with Pro
+
+= 6.2.1 =
+
+* Tweak - Clarify External Service is used for license upgrades.
+* Tweak - Removed helper function that was set for pre-release.
+
+= 6.2.0 =
+
+* Added - WooCommerce Blocks Pro Version
+* Added - Accordion Block Pro Version
+* Added - Testimonial Block Version
+* Added - Abilty to Edit WordPress pafges with SeedProd, this can be disbaled in the SeedProd settings page.
+* Fixed - IOS cover image bug
+* Fixed - Yoast and AllinOne SEO Pro edit page links
+* Fixed - WP Version filter not returning default value
+* Tweak - Added filter to top level menu position 'seedprod_top_level_menu_postion'
+* Tweak - Added imprint and privacy to default excluded pages
+
+= 6.0.11.2 =
+* Tweak - Redirect Default Login Page Behavior and added inline explanation
+
 
 = 6.0.11.1 =
 * Fixed - Some SEO plugins not adding title tag to landing pages
@@ -213,136 +247,25 @@ This page builder is intended for landing pages only. If your website only had a
 * New - Landing Pages
 * New - Custom 404 Pages
 
-= 5.1.3 =
-* Tweak - Prepping for upcoming new version
-
-= 5.1.2 =
-* Tweak - Escape logo and custom css fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
-
-= 5.1.1 =
-* Tweak - Escape script output on certain fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
-
-= 5.1.0 =
-* Added - Suggest a Feature 
-* Added - Quicklinks to Support
-* Added - RafflePress support and recommendation
-
-= 5.0.26 =
-* Added - Giveaway Link to Submenu
-
-= 5.0.25 =
-* Fixed - Documentation Link
-* Tweak - Removed plugin recommendation
-
-= 5.0.24 =
-* Tweak - Typos 
-* Tweak - Remove Install Plugins menu when dismissed
-
-= 5.0.23 =
-* Tweak - Typos 
-
-= 5.0.22 =
-* Fixed - Bug with old php versions
-
-= 5.0.21 =
-* Added - Themes, Stock Images, Subscribers and Addons Previews
-
-= 5.0.20 =
-* Tweak - Autoclear popular caches.
-
-= 5.0.19 =
-* fixed z-index issue with supersize loader and focus link color
-
-= 5.0.18 =
-* fixed ios issue and no cache header issue
-
-= 5.0.17 =
-* Changed credit image
-
-= 5.0.16 =
-* Removed php warning notice of depreciated function
-
-= 5.0.15 =
-* Changed text on credit and added and tweaked inline optin for free bg images.
-
-= 5.0.14 =
-* Fixed a PHP 7 compatibility warning
-
-= 5.0.12 =
-* Added Review Request
-
-= 5.0.11 =
-* Removed blog feed from sidebar and change out images
-
-= 5.0.10 =
-* Added the ability to make the bg image stay contained within the browser window.
-
-= 5.0.9 =
-* Fixed CSS issues
-
-= 5.0.8 =
-* Fixed CSS issue and added cache control
-
-= 5.0.6 =
-* Added wp review request
-
-= 5.0.5 =
-* Disable REST API while in coming soon and maintenance mode
-
-= 5.0.4 =
-* PHP 7 Compatibility
-
-= 5.0.3 =
-* Updated ReadMe Text
-* Ensure Full Size images are selected by default when selecting an image.
-* Make sure all files are local to the plugin.
-
-= 5.0.2 =
-* More tweaks to the append html section.
-
-= 5.0.1 =
-* Added option to append to the html in addition of just replacing.
-
-= 5.0.0 =
-* Added the ability to add custom html, dim background and help video.
-
-= 4.2.1 =
-* Fixed undefined notice
-
-= 4.2.0 =
-* Language Packs
-
-= 4.1.4 =
-* Added Danish Translation
-
-= 4.1.3 =
-*  Added Swedish Translation
-
-= 4.1.2 =
-*  Tweak: Updated optin form again
-
-= 4.1.1 =
-*  Tweak: Updated optin form
-
-= 4.1.0 =
-*  Exclude default urls terms: login, admin, dashboard and account. Also provided a way to disable this behavior.
-
-= 4.0.4 =
-*  Added launch course and WordPress 4.1.0 compatibility
-
-= 4.0.3=
-* Fixed preview link
-
-= 4.0.2=
-* Add link to free backgrounds
-
-= 4.0.1 =
-* Fixed a bug where website was not showing when logged in
-
-= 4.0.0 =
-* Initial Commit
-
 == Upgrade Notice ==
+
+= 6.6.0 =
+
+* Added - Column Alignment Controls
+* Added - Divice Visibility Controls
+
+= 6.2.0 =
+
+* Added - WooCommerce Blocks Pro Version
+* Added - Accordion Block Pro Version
+* Added - Testimonial Block Version
+* Added - Abilty to Edit WordPress pafges with SeedProd, this can be disbaled in the SeedProd settings page.
+* Fixed - IOS cover image bug
+* Fixed - Yoast and AllinOne SEO Pro edit page links
+* Fixed - WP Version filter not returning default value
+* Tweak - Added filter to top level menu position 'seedprod_top_level_menu_postion'
+* Tweak - Added imprint and privacy to default excluded pages
+
 = 6.0.11.1 =
 * Fixed - Some SEO plugins not adding title tag to landing pages
 * Tweak - Made settings more accessible
@@ -362,140 +285,4 @@ This page builder is intended for landing pages only. If your website only had a
 
 = 6.0.8.2 =
 * Reverted - Preview link ad added flush permalink
-
-= 6.0.8.1 =
-* Tweak - Added preview_nonce to preview link
-
-= 6.0.8 =
-* Fixed - PHP warning in admin to undefined database table
-* Tweak - How Preview links are constructed
-
-= 6.0.7 =
-* Tweak - Flush Permalinks Programmatically
-
-= 6.0.0 =
-* New - Complete rebuild of the plugin. 
-* New - Drag and Drop Page Builder
-* New - Page Blocks
-* New - Coming Soon Pages
-* New - Maintenance Pages
-* New - Landing Pages
-* New - Custom 404 Pages
-
-= 5.1.3 =
-* Tweak - Prepping for upcoming new version
-
-= 5.1.2 =
-* Tweak - Escape logo and custom css fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
-
-= 5.1.1 =
-* Tweak - Escape script output on certain fields: reported by security researcher (Jinson Varghese Behanan) from the company (Astra Security)
-
-= 5.1.0 =
-* Added - Suggest a Feature 
-* Added - Quicklinks to Support
-* Added - RafflePress support and recommendation
-
-= 5.0.26 =
-* Added - Giveaway Link to Submenu
-
-= 5.0.25 =
-* Fixed - Documentation Link
-* Tweak - Removed plugin recommendation
-
-= 5.0.24 =
-* Tweak - Typos 
-* Tweak - Remove Install Plugins menu when dismissed
-
-= 5.0.23 =
-* Tweak - Typos 
-
-= 5.0.22 =
-* Fixed - Bug with old php versions
-
-= 5.0.21 =
-* Added - Themes, Stock Images, Subscribers and Addons Previews
-
-= 5.0.20 =
-* Tweak - Autoclear popular caches.
-
-= 5.0.19 =
-* fixed z-index issue with supersize loader and focus link color
-
-= 5.0.18 =
-* fixed ios issue and no cache header issue
-
-= 5.0.17 =
-* Changed credit image
-
-= 5.0.16 =
-* Removed php warning notice of depreciated function
-
-= 5.0.15 =
-* Changed text on credit and added and tweaked inline optin for free bg images.
-
-= 5.0.14 =
-* Fixed a PHP 7 compatibility warning
-
-= 5.0.12 =
-* Added Review Request
-
-= 5.0.11 =
-* Removed blog feed from sidebar and change out images
-
-= 5.0.10 =
-* Added the ability to make the bg image stay contained within the browser window.
-
-= 5.0.9 =
-* Fixed CSS issues
-
-= 5.0.8 =
-* Fixed CSS issue and added cache control
-
-= 5.0.5 =
-* Disable REST API while in coming soon and maintenance mode
-
-= 5.0.4 =
-* PHP 7 Compatibility
-
-= 5.0.3 =
-* Ensure Full Size images are selected by default when selecting an image.
-* Make sure all files are local to the plugin.
-* Updated ReadMe Text
-
-= 5.0.2 =
-* More tweaks to the append html section.
-
-= 5.0.1 =
-* Added option to append to the html in addition of just replacing.
-
-= 5.0.0 =
-* Added the ability to add custom html, dim background and help video.
-
-= 4.2.0 =
-* Language Packs
-
-= 4.1.4 =
-* Added Danish Translation
-
-= 4.1.3 =
-*  Added Swedish Translation
-
-= 4.1.0 =
-*  Exclude default urls terms: login, admin, dashboard and account. Also provided a way to disable this behavior.
-
-= 4.0.4 =
-*  Added launch course and 4.1.0 compatibility
-
-= 4.0.3=
-* Fixed preview link
-
-= 4.0.2=
-* Add link to free backgrounds
-
-= 4.0.1 =
-* Fixed a bug where website was not showing when logged in
-
-= 4.0.0 =
-Initial Commit
 

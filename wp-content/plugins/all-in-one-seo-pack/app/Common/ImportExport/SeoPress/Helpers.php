@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\ImportExport\SeoPress;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\ImportExport;
 
 // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
@@ -11,7 +16,6 @@ use AIOSEO\Plugin\Common\ImportExport;
  * @since 4.0.0
  */
 class Helpers extends ImportExport\Helpers {
-
 	/**
 	 * Converts the macros from SEOPress to our own smart tags.
 	 *
@@ -26,7 +30,7 @@ class Helpers extends ImportExport\Helpers {
 		];
 
 		foreach ( $macros as $macro => $tag ) {
-			$string = preg_replace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
+			$string = aioseo()->helpers->pregReplace( "#$macro(?![a-zA-Z0-9_])#im", $tag, $string );
 		}
 		return $string;
 	}

@@ -1,12 +1,26 @@
 <?php
 namespace AIOSEO\Plugin\Common\Meta;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the title.
  *
  * @since 4.0.0
  */
 class Title {
+	/**
+	 * Class constructor.
+	 *
+	* @since 4.1.2
+	 */
+	public function __construct() {
+		$this->helpers = new Helpers( 'title' );
+	}
+
 	/**
 	 * Returns the filtered page title.
 	 *
@@ -34,7 +48,7 @@ class Title {
 			return $title ? $title : aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 		}
 
-		$title = $this->prepareTitle( aioseo()->options->searchAppearance->global->siteTitle );
+		$title = $this->helpers->prepare( aioseo()->options->searchAppearance->global->siteTitle );
 		return $title ? $title : aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 	}
 
@@ -62,22 +76,22 @@ class Title {
 		}
 
 		if ( is_author() ) {
-			return $this->prepareTitle( aioseo()->options->searchAppearance->archives->author->title );
+			return $this->helpers->prepare( aioseo()->options->searchAppearance->archives->author->title );
 		}
 
 		if ( is_date() ) {
-			return $this->prepareTitle( aioseo()->options->searchAppearance->archives->date->title );
+			return $this->helpers->prepare( aioseo()->options->searchAppearance->archives->date->title );
 		}
 
 		if ( is_search() ) {
-			return $this->prepareTitle( aioseo()->options->searchAppearance->archives->search->title );
+			return $this->helpers->prepare( aioseo()->options->searchAppearance->archives->search->title );
 		}
 
 		if ( is_archive() ) {
 			$postType = get_queried_object();
 			$options  = aioseo()->options->noConflict();
 			if ( $options->searchAppearance->dynamic->archives->has( $postType->name ) ) {
-				return $this->prepareTitle( aioseo()->options->searchAppearance->dynamic->archives->{ $postType->name }->title );
+				return $this->helpers->prepare( aioseo()->options->searchAppearance->dynamic->archives->{ $postType->name }->title );
 			}
 		}
 	}
@@ -92,23 +106,30 @@ class Title {
 	 * @return string               The post title.
 	 */
 	public function getPostTitle( $post, $default = false ) {
-		$post     = $post && is_object( $post ) ? $post : aioseo()->helpers->getPost( $post );
-		$metaData = aioseo()->meta->metaData->getMetaData( $post );
+		$post = $post && is_object( $post ) ? $post : aioseo()->helpers->getPost( $post );
 
-		$title = '';
+		static $posts = [];
+		if ( isset( $posts[ $post->ID ] ) ) {
+			return $posts[ $post->ID ];
+		}
+
+		$title    = '';
+		$metaData = aioseo()->meta->metaData->getMetaData( $post );
 		if ( ! empty( $metaData->title ) && ! $default ) {
-			$title = $this->prepareTitle( $metaData->title, $post->ID );
+			$title = $this->helpers->prepare( $metaData->title, $post->ID );
+		}
+
+		if ( ! $title ) {
+			$title = $this->helpers->prepare( $this->getPostTypeTitle( $post->post_type ), $post->ID, $default );
 		}
 
 		// If this post is the static home page and we have no title, let's reset to the site name.
 		if ( empty( $title ) && 'page' === get_option( 'show_on_front' ) && (int) get_option( 'page_on_front' ) === $post->ID ) {
-			return aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
+			$title = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 		}
 
-		if ( ! $title ) {
-			$title = $this->prepareTitle( $this->getPostTypeTitle( $post->post_type ), $post->ID, $default );
-		}
-		return $title ? $title : '';
+		$posts[ $post->ID ] = $title;
+		return $posts[ $post->ID ];
 	}
 
 	/**
@@ -120,12 +141,18 @@ class Title {
 	 * @return string           The title.
 	 */
 	public function getPostTypeTitle( $postType ) {
-		$options = aioseo()->options->noConflict();
-		if ( $options->searchAppearance->dynamic->postTypes->has( $postType, false ) ) {
-			return $options->{$postType}->title;
+		static $postTypeTitle = [];
+		if ( isset( $postTypeTitle[ $postType ] ) ) {
+			return $postTypeTitle[ $postType ];
 		}
 
-		return '';
+		if ( aioseo()->options->searchAppearance->dynamic->postTypes->has( $postType ) ) {
+			$title = aioseo()->options->searchAppearance->dynamic->postTypes->{$postType}->title;
+		}
+
+		$postTypeTitle[ $postType ] = empty( $title ) ? '' : $title;
+
+		return $postTypeTitle[ $postType ];
 	}
 
 	/**
@@ -138,42 +165,20 @@ class Title {
 	 * @return string           The term title.
 	 */
 	public function getTermTitle( $term, $default = false ) {
+		static $terms = [];
+		if ( isset( $terms[ $term->term_id ] ) ) {
+			return $terms[ $term->term_id ];
+		}
+
 		$title   = '';
 		$options = aioseo()->options->noConflict();
 		if ( ! $title && $options->searchAppearance->dynamic->taxonomies->has( $term->taxonomy ) ) {
 			$newTitle = aioseo()->options->searchAppearance->dynamic->taxonomies->{$term->taxonomy}->title;
-			$newTitle = preg_replace( '/#taxonomy_title/', $term->name, $newTitle );
-			$title    = $this->prepareTitle( $newTitle, false, $default );
-		}
-		return $title ? $title : '';
-	}
-
-	/**
-	 * Prepares and sanitizes the title.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string  $title   The title.
-	 * @param  int     $id      The page or post id.
-	 * @param  boolean $default Whether we want the default value, not the post one.
-	 * @return string           The sanitized title.
-	 */
-	public function prepareTitle( $title, $id = false, $default = false ) {
-		if ( ! empty( $title ) && ! is_admin() && 1 < aioseo()->helpers->getPageNumber() ) {
-			$title .= '&nbsp;' . trim( aioseo()->options->searchAppearance->advanced->pagedFormat );
+			$newTitle = preg_replace( '/#taxonomy_title/', aioseo()->helpers->escapeRegexReplacement( $term->name ), $newTitle );
+			$title    = $this->helpers->prepare( $newTitle, false, $default );
 		}
 
-		$title = $default ? $title : aioseo()->tags->replaceTags( $title, $id );
-		$title = apply_filters( 'aioseo_title', $title );
-
-		if ( apply_filters( 'aioseo_title_do_shortcodes', true ) ) {
-			$title = aioseo()->helpers->doShortcodes( $title );
-		}
-
-		$title = aioseo()->helpers->decodeHtmlEntities( $title );
-		$title = wp_strip_all_tags( strip_shortcodes( $title ) );
-		// Trim both internal and external whitespace.
-		$title = preg_replace( '/[\s]+/u', ' ', trim( $title ) );
-		return aioseo()->helpers->internationalize( $title );
+		$terms[ $term->term_id ] = $title;
+		return $terms[ $term->term_id ];
 	}
 }

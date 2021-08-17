@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Api;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use AIOSEO\Plugin\Common\Models;
 
 /**
@@ -63,10 +68,7 @@ class Sitemaps {
 
 		return new \WP_REST_Response( [
 			'success'       => true,
-			'notifications' => [
-				'active'    => Models\Notification::getAllActiveNotifications(),
-				'dismissed' => Models\Notification::getAllDismissedNotifications()
-			]
+			'notifications' => Models\Notification::getNotifications()
 		], 200 );
 	}
 
@@ -104,10 +106,42 @@ class Sitemaps {
 
 		return new \WP_REST_Response( [
 			'success'       => true,
-			'notifications' => [
-				'active'    => Models\Notification::getAllActiveNotifications(),
-				'dismissed' => Models\Notification::getAllDismissedNotifications()
-			]
+			'notifications' => Models\Notification::getNotifications()
+		], 200 );
+	}
+
+	/**
+	* Check whether the slug for the HTML sitemap is not in use.
+	*
+	* @since 4.1.3
+	*
+	* @param  \WP_REST_Request   $request The REST Request
+	* @return \WP_REST_Response           The response.
+	*/
+	public static function validateHtmlSitemapSlug( $request ) {
+		$body = $request->get_json_params();
+
+		$pageUrl = ! empty( $body['pageUrl'] ) ? sanitize_text_field( $body['pageUrl'] ) : '';
+		if ( empty( $pageUrl ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'No path was provided.'
+			], 400 );
+		}
+
+		$pageUrl = wp_parse_url( $pageUrl );
+		if ( empty( $pageUrl['path'] ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'The given path is invalid.'
+			], 400 );
+		}
+
+		$path = trim( $pageUrl['path'], '/' );
+		$page = get_page_by_path( $path, OBJECT, aioseo()->helpers->getPublicPostTypes( true ) );
+
+		return new \WP_REST_Response( [
+			'exists' => is_object( $page )
 		], 200 );
 	}
 }

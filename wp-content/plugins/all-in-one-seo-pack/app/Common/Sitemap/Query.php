@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Sitemap;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles all complex queries for the sitemap.
  *
@@ -117,10 +122,9 @@ class Query {
 	 * @return array $remainingPosts The remaining posts.
 	 */
 	public function filterPosts( $posts ) {
-		$remainingPosts          = [];
-		$isWooCommerceActive     = aioseo()->helpers->isWooCommerceActive();
-		$isWooCommerceNoindexing = $isWooCommerceActive && has_action( 'wp_head', 'wc_page_noindex' );
-		$excludeHiddenProducts   = apply_filters( 'aioseo_sitemap_woocommerce_exclude_hidden_products', true );
+		$remainingPosts        = [];
+		$isWooCommerceActive   = aioseo()->helpers->isWooCommerceActive();
+		$excludeHiddenProducts = apply_filters( 'aioseo_sitemap_woocommerce_exclude_hidden_products', true );
 
 		foreach ( $posts as $post ) {
 			if ( 'product' !== $post->post_type && is_numeric( $post ) ) {
@@ -129,11 +133,6 @@ class Query {
 			}
 
 			switch ( $post->post_type ) {
-				case 'page':
-					if ( ! $isWooCommerceNoindexing || ! aioseo()->helpers->isWooCommercePage( $post->ID ) ) {
-						$remainingPosts[] = $post;
-					}
-					break;
 				case 'product':
 					if ( ! $isWooCommerceActive || ! $excludeHiddenProducts || ! $this->isHiddenProduct( $post ) ) {
 						$remainingPosts[] = $post;

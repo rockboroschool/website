@@ -1,13 +1,17 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin\Notices;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Plugin import notice.
  *
  * @since 4.0.0
  */
 class Import {
-
 	/**
 	 * Go through all the checks to see if we should show the notice.
 	 *

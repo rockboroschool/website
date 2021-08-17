@@ -1,6 +1,11 @@
 <?php
 namespace AIOSEO\Plugin\Common\Admin\Notices;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * V3 to V4 migration notice.
  *
