@@ -562,6 +562,8 @@ var updraft_activejobs_nextupdate = (new Date).getTime() + 1000;
 // Bits: main tab displayed (1); restore dialog open (uses downloader) (2); tab not visible (4)
 var updraft_page_is_visible = 1;
 var updraft_console_focussed_tab = updraftlion.tab;
+var php_max_input_vars = 0;
+var skipped_db_scan = 0;
 
 var updraft_settings_form_changed = false;
 window.onbeforeunload = function(e) {
@@ -706,7 +708,7 @@ var updraft_backups_selection = {};
 		if (this.firstMultipleSelectionIndex > el.rowIndex-1) {
 			idx_start = el.rowIndex-1; idx_end = this.firstMultipleSelectionIndex;
 		}
-		for (i=idx_start; i<=idx_end; i++) {
+		for (var i=idx_start; i<=idx_end; i++) {
 			this.select($('#updraft-navtab-backups-content .updraft_existing_backups .updraft_existing_backups_row').eq(i));
 		}
 	}
@@ -1123,7 +1125,7 @@ function update_backupnow_modal(response) {
 function updraft_exclude_entity_update(include_entity_name) {
 	var exclude_entities = [];
 	jQuery('#updraft_include_'+include_entity_name+'_exclude_container .updraft_exclude_entity_wrapper .updraft_exclude_entity_field').each(function() {
-		var data_val = jQuery(this).data('val').trim();
+		var data_val = jQuery(this).data('val').toString().trim();
 		if ('' != data_val) {
 			exclude_entities.push(data_val);
 		}
@@ -1708,6 +1710,12 @@ function updraft_restorer_checkstage2(doalert) {
 							resp.i = JSON.stringify(info);
 						}
 					}
+					if (info.hasOwnProperty('php_max_input_vars')) {
+						php_max_input_vars = parseInt(info.php_max_input_vars);
+					}
+					if (info.hasOwnProperty('skipped_db_scan')) {
+						skipped_db_scan = parseInt(info.skipped_db_scan);
+					}
 				} catch (err) {
 					console.log(err);
 					console.log(resp);
@@ -2038,13 +2046,14 @@ jQuery(function($) {
 		}
 	});
 
-	$('#updraft-wrap').on('click', '#updraftplus_manual_authorisation_submit_dropbox', function(e) {
+	$('#updraft-wrap').on('click', '[id^=updraftplus_manual_authorisation_submit_]', function(e) {
 		e.preventDefault();
-		var dropbox_auth_data = $('#updraftplus_manual_authentication_data_dropbox').val();
-		$('#updraftplus_manual_authentication_error_dropbox').text();
-		$('#updraft-wrap #updraftplus_manual_authorisation_template_dropbox .updraftplus_spinner.spinner').addClass('visible');
-		$('#updraftplus_manual_authorisation_submit_dropbox').prop('disabled', true);
-		manual_remote_storage_auth('dropbox', dropbox_auth_data);
+		var method = $(this).data('method');
+		var auth_data = $('#updraftplus_manual_authentication_data_'+method).val();
+		$('#updraftplus_manual_authentication_error_'+method).text();
+		$('#updraft-wrap #updraftplus_manual_authorisation_template_'+method+' .updraftplus_spinner.spinner').addClass('visible');
+		$('#updraftplus_manual_authorisation_submit_'+method).prop('disabled', true);
+		manual_remote_storage_auth(method, auth_data);
 	});
 
 	/**
@@ -2962,11 +2971,11 @@ jQuery(function($) {
 		updraft_settings_form_changed = true;
 		jQuery(this).parent().find('select:nth(2)').empty();
 		if ('day_of_the_week' === jQuery(this).val()) {
-			for (i=0; i<updraftlion.conditional_logic.day_of_the_week_options.length; i++) {
+			for (var i=0; i<updraftlion.conditional_logic.day_of_the_week_options.length; i++) {
 				jQuery(this).parent().find('select:nth(2)').append(jQuery('<option value="'+updraftlion.conditional_logic.day_of_the_week_options[i].index+'"></option>').text(updraftlion.conditional_logic.day_of_the_week_options[i].value));
 			}
 		} else if ('day_of_the_month' === jQuery(this).val()) {
-			for (i=1; i<=31; i++) {
+			for (var i=1; i<=31; i++) {
 				jQuery(this).parent().find('select:nth(2)').append(jQuery('<option value="'+i+'"></option>').text(i));
 			}
 		}
@@ -3037,11 +3046,11 @@ jQuery(function($) {
 		$('#backupnow_database_moreoptions').toggle();
 	});
 
-	$('#backupnow_db_anon_all').click(function(e) {
+	$('#backupnow_db_anon_all').on('click', function(e) {
 		if ($('#backupnow_db_anon_non_staff').prop('checked')) $('#backupnow_db_anon_non_staff').prop("checked", false);
 	});
 
-	$('#backupnow_db_anon_non_staff').click(function(e) {
+	$('#backupnow_db_anon_non_staff').on('click', function(e) {
 		if ($('#backupnow_db_anon_all').prop('checked')) $('#backupnow_db_anon_all').prop("checked", false);
 	});
 
@@ -3651,7 +3660,7 @@ jQuery(function($) {
 							if (jQuery(y).is(':checked') && !jQuery(y).is(':disabled')) anyselected = 1;
 						});
 						
-						if (0 == anyselected) {
+						if (0 == anyselected && !skipped_db_scan) {
 							alert(updraftlion.youdidnotselectany);
 							jQuery('.updraft-restore--next-step, .updraft-restore--cancel').prop('disabled', false);
 							return;
@@ -3689,6 +3698,30 @@ jQuery(function($) {
 					});
 
 					console.log("Restore options: "+restore_options);
+
+					if (typeof php_max_input_vars !== 'undefined') {
+						var restore_options_length = restore_options.split("&").length;
+						var warning_template_start = '<div class="notice notice-warning"><p><span class="dashicons dashicons-warning"></span> <strong>' + updraftlion.warnings +'</strong></p><ul id="updraft_restore_warnings">';
+						var warning_template_end = '</ul></div>';
+
+						// If we can't detect the php_max_input_vars assume the PHP default of 1000
+						if (!php_max_input_vars && 1000 <= restore_options_length) {
+							console.log('Restore options: ' + restore_options_length + ' PHP max input vars not detected; using default: 1000');
+						} else if (php_max_input_vars && restore_options_length >= php_max_input_vars) {
+							var warning = '<li>' + updraftlion.php_max_input_vars_detected_warning + '</li>';
+							if (1 != jQuery('#updraft-restore-modal-stage2a .notice-warning').length) {
+								var final_warning = warning_template_start + warning + warning_template_end;
+								jQuery('#updraft_restoreoptions_ui').prepend(final_warning);
+							} else {
+								jQuery('#updraft-restore-modal-stage2a #updraft_restore_warnings').append(warning);
+							}
+							console.log('Restore options: ' + restore_options_length + ' PHP max input vars: ' + php_max_input_vars);
+							jQuery('.updraft-restore--next-step, .updraft-restore--cancel').prop('disabled', false);
+							php_max_input_vars = undefined;
+							return;
+						}
+					}
+
 					$('#updraft_restorer_restore_options').val(restore_options);
 					// This must be done last, as it wipes out the section with #updraft_restoreoptions_ui
 					$('#updraft-restore-modal-stage2a').html(updraftlion.restore_proceeding);
@@ -3701,7 +3734,21 @@ jQuery(function($) {
 			}
 		}
 	}
-
+	
+	var original_restore_main_activity_width = $('.updraft_restore_main--activity').width();
+	jQuery('#activity-full-log').on('click', function() {
+		var activity_log_max_width = $('.updraft_restore_main').css('max-width') == '1460px' ? '860px' : '1460px';
+		var restore_main_activity_width = $('.updraft_restore_main--activity').width() == original_restore_main_activity_width ? '100%' : original_restore_main_activity_width + 'px';
+		var activity_log_max_height = $('.updraft_restore_main--activity').css('min-height') == '600px' ? '0px' : '600px';
+		var activity_log_icon_title = $('#activity-full-log').attr('title') == updraftlion.restoreactivitylogscreenexit ? updraftlion.restoreactivitylogfullscreen : updraftlion.restoreactivitylogscreenexit;
+		$('#activity-full-log').toggleClass('dashicons-fullscreen-exit-alt');
+		$('#activity-full-log').attr('title', activity_log_icon_title);
+		$('.updraft_restore_main--components').toggle('fast');
+		$('.updraft_restore_main--header').toggle('fast');
+		$('.updraft_restore_main--activity').animate({minHeight: activity_log_max_height, width: restore_main_activity_width});
+		$('.updraft_restore_main').animate({maxWidth: activity_log_max_width});
+	});
+	
 	jQuery("#updraft-iframe-modal").dialog({
 		autoOpen: false, height: 500, width: 780, modal: true
 	});
@@ -3965,6 +4012,42 @@ jQuery(function($) {
 				},
 				"plugins": ["sort"],
 			});
+		} else if ('contain-clause' == panel) {
+			jQuery('#updraft_exclude_files_folders_wildcards_jstree').jstree({
+				"core": {
+					"multiple": false,
+					"data": function (nodeid, callback) {
+						updraft_send_command('get_jstree_directory_nodes', {entity: 'filebrowser', directories_only: 1, node:nodeid, path: jQuery('#updraft_exclude_modal_path').val(), findex: 0, skip_root_node: 0}, function(response) {
+						if (response.hasOwnProperty('error')) {
+									alert(response.error);
+													   } else {
+		 callback.call(this, response.nodes);
+													   }
+						}, { error_callback: function(response, status, error_code, resp) {
+								if (typeof resp !== 'undefined' && resp.hasOwnProperty('fatal_error')) {
+								console.error(resp.fatal_error_message);
+								jQuery('#updraft_zip_files_jstree').html('<p style="color:red; margin: 5px;">'+resp.fatal_error_message+'</p>');
+								alert(resp.fatal_error_message);
+									} else {
+								var error_message = "updraft_send_command: error: "+status+" ("+error_code+")";
+								jQuery('#updraft_zip_files_jstree').html('<p style="color:red; margin: 5px;">'+error_message+'</p>');
+								console.log(error_message);
+								alert(error_message);
+								console.log(response);
+									}
+								}
+						});
+					},
+					"error": function(error) {
+						alert(error);
+						console.log(error);
+					},
+				},
+				"search": {
+					"show_only_matches": true
+				},
+				"plugins": ["sort"],
+			});
 		}
 		jQuery('#updraft_exclude_modal_main').slideUp();
 		jQuery('.updraft-exclude-panel').hide();
@@ -3974,6 +4057,7 @@ jQuery(function($) {
 	jQuery('.updraft-exclude-modal-reset').on('click', function(event) {
 		event.preventDefault();
 		jQuery('#updraft_exclude_files_folders_jstree').jstree("destroy");
+		jQuery('#updraft_exclude_files_folders_wildcards_jstree').jstree("destroy");
 		jQuery('#updraft_exclude_extension_field').val('');
 		jQuery('#updraft_exclude_prefix_field').val('');
 		jQuery('.updraft-exclude-panel').slideUp();
@@ -4024,6 +4108,39 @@ jQuery(function($) {
 					return;
 				}
 			exclude_item_val = 'prefix:'+prefix;
+				break;
+				
+			case 'contain-clause':
+				var exclude_jstree_selected = jQuery("#updraft_exclude_files_folders_wildcards_jstree").jstree("get_selected");
+				if (0 == exclude_jstree_selected.length) {
+					alert(updraftlion.exclude_select_folder_wildcards_msg);
+					return;
+				}
+				var clause_val = jQuery(this).parents('div.updraft-exclude-panel').find('div.clause-input-container input').val();
+				jQuery(this).parents('div.updraft-exclude-panel').find('div.clause-input-container input').val('');
+				var clause_type = jQuery(this).parents('div.updraft-exclude-panel').find('div.clause-input-container select').val();
+				if ('' == clause_val) {
+					alert(updraftlion.exclude_contain_error_msg);
+					return;
+				}
+				jQuery(this).parents('div.updraft-exclude-panel').find('div.clause-input-container select option').eq(0).prop('selected', true);
+				var selected_file_or_folder = exclude_jstree_selected[0];
+				var prefix_path = jQuery('#updraft_exclude_modal_path').val();
+				if (selected_file_or_folder.substr(0, prefix_path.length) == prefix_path) {
+						selected_file_or_folder = selected_file_or_folder.substr(prefix_path.length, selected_file_or_folder.length);
+				}
+				if ('/' == selected_file_or_folder.charAt(0))  selected_file_or_folder = selected_file_or_folder.substr(1);
+				if ('/' == selected_file_or_folder.charAt(selected_file_or_folder.length - 1))  selected_file_or_folder = selected_file_or_folder.substr(0, selected_file_or_folder.length - 1);
+				exclude_item_val = selected_file_or_folder;
+				if ('' !== exclude_item_val) exclude_item_val += '/';
+				clause_val = clause_val.replace(/\*/g, '\\*');
+				if ('beginning' === clause_type) {
+					exclude_item_val += clause_val + '*';
+				} else if ('middle' === clause_type) {
+					exclude_item_val += '*' + clause_val + '*';
+				} else if ('end' === clause_type) {
+					exclude_item_val += '*' + clause_val;
+				}
 				break;
 		
 			default:
@@ -4404,14 +4521,12 @@ jQuery(function($) {
 	jQuery("#updraft-upload-modal").dialog({
 		autoOpen: false, modal: true, resizeOnWindowResize: true, scrollWithViewport: true, resizeAccordingToViewport: true, useContentSize: false,
 		open: function(event, ui) {
-			$(this).parent().focus();
+			$(this).parent().trigger('focus');
 			$(this).dialog('option', 'width', 308);
 			if (jQuery(window).height() > 460) {
-				$(this).dialog('option', 'height', 218);
-				$(this).css('height', 'auto');
+				$(this).dialog('option', 'height', 318);
 			} else if (jQuery(window).height() > 250 && jQuery(window).height() < 461) {
 				$(this).dialog('option', 'height', 460);
-				$(this).css('height', 'auto');
 			} else {
 				$(this).dialog('option', 'height', jQuery(window).height() - 20);
 			}
@@ -4459,7 +4574,7 @@ jQuery(function($) {
 				jQuery(this).prop('checked', false);
 				jQuery(this).prop('disabled', true);
 				var label = $(this).prop("labels");
-				jQuery(label).append(' ' + updraftlion.already_uploaded);
+				jQuery(label).find('span').show();
 			}
 		});
 		jQuery('#updraft-upload-modal').dialog('open');
@@ -4934,19 +5049,6 @@ jQuery(function($) {
 					context['instance_conditional_logic'].logic_options = updraftlion.conditional_logic.logic_options;
 					context['instance_conditional_logic'].operand_options = updraftlion.conditional_logic.operand_options;
 					context['instance_conditional_logic'].operator_options = updraftlion.conditional_logic.operator_options;
-					// work around the UpdraftVault conditional logic
-					if ("updraftvault" === method && "object" === typeof context.settings) {
-						for (var ins_id in context['settings']) {
-							if (context['settings'][ins_id]['instance_conditional_logic']['rules'] instanceof Array && context.settings[ins_id]['instance_conditional_logic']['rules'].length > 0) {
-								context['instance_conditional_logic']['rules'] = context.settings[ins_id]['instance_conditional_logic']['rules'];
-							}
-							if ("string" === typeof context['settings'][ins_id]['instance_conditional_logic']['type'] && context.settings[ins_id]['instance_conditional_logic']['type'].length > 0) {
-								context['instance_conditional_logic']['type'] = context.settings[ins_id]['instance_conditional_logic']['type'];
-							}
-							break;
-						}
-					}
-					// #end updraftvault
 
 					context['first_instance'] = first_instance;
 					if ('undefined' == typeof context['instance_enabled']) {

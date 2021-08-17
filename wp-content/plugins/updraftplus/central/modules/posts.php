@@ -209,7 +209,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 	 * @return array
 	 */
 	protected function get_preload_data($timeout, $type = 'post') {
-		global $updraftplus;
+		global $updraftplus, $updraftcentral_host_plugin;
 
 		if (!function_exists('get_page_templates')) {
 			require_once(ABSPATH.'wp-admin/includes/theme.php');
@@ -219,7 +219,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 		if (!empty($templates)) {
 			$templates = array_flip($templates);
 			if (!isset($templates['default'])) {
-				$templates['default'] = __('Default template', 'updraftplus');
+				$templates['default'] = $updraftcentral_host_plugin->retrieve_show_message('default_template');
 			}
 		}
 
@@ -622,6 +622,8 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 				);
 			}
 
+			add_filter('tag_cloud_sort', array($this, 'sort_tag_cloud'), 9, 2);
+
 			if (!function_exists('wp_generate_tag_cloud')) {
 				require_once ABSPATH.WPINC.'/category-template.php';
 			}
@@ -653,6 +655,43 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 				)
 			)
 		));
+	}
+
+	/**
+	 * Sorts the tag items that are to be shown within the tag cloud
+	 *
+	 * @param array $tags The array to be sorted. Contains the tag items
+	 * @param array $args Additional parameters needed for the sorting process
+	 * @return array
+	 */
+	public function sort_tag_cloud($tags, $args) {
+		uasort($tags, array($this, '_wp_object_count_sort_cb'));
+		if ('DESC' === $args['order']) {
+			$tags = array_reverse($tags, true);
+		}
+
+		return $tags;
+	}
+
+	/**
+	 * Serves as a callback for comparing objects based on count. Copied from WordPress 5.7
+	 * core (wp-includes/category-template.php) and tweaked to return integer instead of boolean
+	 * because returning boolean using uasort is now DEPRECATED in PHP 8.
+	 *
+	 * Used with `uasort()`.
+	 *
+	 * @since 3.1.0
+	 * @access private
+	 *
+	 * @param object $a The first object to compare.
+	 * @param object $b The second object to compare.
+	 * @return bool Whether the count value for `$a` is greater than the count value for `$b`.
+	 */
+	public function _wp_object_count_sort_cb($a, $b) {
+		if ($a->count == $b->count) {
+			return 0;
+		}
+		return ( $a->count > $b->count ) ? 1 : -1;
 	}
 
 	/**
@@ -958,7 +997,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 			return $wrap_response ? $this->_response($data) : $data;
 		} else {
 			$error = array(
-				'message' => __($result->get_error_message(), 'updraftplus')
+				'message' => $result->get_error_message()
 			);
 
 			return $wrap_response ? $this->_generic_error_response('post_add_category_failed', $error) : $error;
@@ -1023,7 +1062,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 			return $wrap_response ? $this->_response($data) : $data;
 		} else {
 			$error = array(
-				'message' => __($result->get_error_message(), 'updraftplus')
+				'message' => $result->get_error_message()
 			);
 
 			return $wrap_response ? $this->_generic_error_response('post_add_tag_failed', $error) : $error;
@@ -1057,6 +1096,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 	 * @return array
 	 */
 	public function save($params) {
+		global $updraftcentral_host_plugin;
 
 		$validation_fields = array(
 			'post' => array('publish_posts', 'edit_posts', 'delete_posts'),
@@ -1294,7 +1334,7 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 			}
 		} else {
 			// ERROR: no id parameter, invalid request
-			return $this->_generic_error_response('post_invalid_request', array('message' => __('Expected parameter(s) missing.', 'updraftplus')));
+			return $this->_generic_error_response('post_invalid_request', array('message' => $updraftcentral_host_plugin->retrieve_show_message('parameters_missing')));
 		}
 	}
 

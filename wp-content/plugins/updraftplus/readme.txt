@@ -2,8 +2,8 @@
 Contributors: Backup with UpdraftPlus, DavidAnderson, DNutbourne, aporter, snightingale, bcrodua
 Tags: backup, restore, database backup, wordpress backup, cloud backup, s3, dropbox, google drive, onedrive, ftp, backups
 Requires at least: 3.2
-Tested up to: 5.6
-Stable tag: 1.16.47
+Tested up to: 5.8
+Stable tag: 1.16.59
 Author URI: https://updraftplus.com
 Donate link: https://david.dw-perspective.org.uk/donate
 License: GPLv3 or later
@@ -91,7 +91,7 @@ Many thanks to the existing translators - listed at: <a href="https://updraftplu
 
 = More premium plugins =
 
-If you are in the market for other WordPress premium plugins (especially WooCommerce addons), then try <a href="https://www.simbahosting.co.uk/s3/shop/">our sister shop, here</a>.
+If you are in the market for other WordPress premium plugins (especially WooCommerce addons), then try <a href="https://www.simbahosting.co.uk/s3/shop/">our friends' shop, here</a>.
 
 For other useful free plugins see <a href="https://profiles.wordpress.org/davidanderson/#content-plugins">our lead developer's profile, here</a>.
 
@@ -167,6 +167,133 @@ Unfortunately not; since this is free software, there’s no warranty and no gua
 The <a href="https://updraftplus.com/news/">UpdraftPlus backup blog</a> is the best place to learn in more detail about any important changes.
 
 N.B. Paid versions of UpdraftPlus Backup / Restore have a version number which is 1 higher in the first digit, and has an extra component on the end, but the changelog below still applies. i.e. changes listed for 1.16.32.x of the free version correspond to changes made in 2.16.32.x of the paid version.
+
+= 1.16.59 - 16/Jul/2021 =
+
+* FIX: Each time the 'Upload Backup' dialog is opened, '(already uploaded)' text is appended one more time for the same remote storage resulting in it being nearly impossible to have the two buttons shown at the bottom
+* FEATURE: (Paid versions) New WP-CLI command (connect) to connect plugin with the user's associated account/licence on updraftplus.com
+* TWEAK: Enhanced over-sized row-detection to include any table with a primary key and a LONGTEXT
+* TWEAK: Log file now includes max packet size
+* TWEAK: Properly handle port numbers included in DB_HOST when using mysqldump
+* TWEAK: Handle UNIX socket paths included in DB_HOST when using mysqldump
+* TWEAK: Increase default mysqldump maximum packet size
+* TWEAK: Change WebDAV request library to HTTP_Request2
+* TWEAK: Add custom category sorting on post module using uasort due to deprecation warning emitted on UpdraftCentral
+* TWEAK: Added an icon within the top-right of the log widget allowing user to toggle that part between its current size and full-screen of the restoration log section
+* TWEAK: Prevent an error in the phpinfo advanced tool when handling non-string constants
+* TWEAK: Escape remote storage IDs in output templates
+* TWEAK: Suppress unwanted error logging related to Gravity Forms
+* TWEAK: Clear Elementor cache at the end of restoration process (if possible) giving an opportunity for Elementor to regenerate CSS files on the next page load request
+* TWEAK: Clear Avada/Fusion-related CSS cache at the end of restoration process (if relevant)
+* TWEAK: Catch and recover from errors and exceptions when clearing third-party caches
+* TWEAK: Prevent a PHP logging notice when an SCP server is scanned for files
+* TWEAK: Remove unused CloudFront methods from S3 library
+* TWEAK: Added missing anonymisation.png graphic and detail of Anonymisation addon in the addons list table
+* TWEAK: Added Update URI header field to avoid accidentally being overwritten with an update of a plugin of a similar name from the WordPress.org Plugin Directory.
+* TWEAK: Improvements in finding a working mysqldump binary during a backup operation
+* TWEAK: Start on larger chunk sizes when fetching *meta table contents, and scale up chunk sizes on all tables dynamically (less SQL queries; but testing shows it makes little difference to overall speed)
+* TWEAK: Adjust Google Drive to retry once after a UDP_Google_IO_Exception, as was done in Google Cloud - intended to help with intermittently buggy Curl versions
+* TWEAK: Show a notice when attempting to download a backup from email remote storage explaining nothing can be downloaded
+
+= 1.16.58 - 27/May/2021 =
+
+* FIX: UpdraftVault storage settings saving issue on multisite
+* FIX: Translation undefined index issue while running updates on UpdraftCentral
+* FIX: Do not retain SFTP/SCP connection object between upload and prune stages, fixing a multi-instance bug that could cause deleting of obsolete archives to be skipped when backing up the same backup to multiple SCP servers
+* TWEAK: When a link points to an unreadable file, include information in the log about the original reference
+* TWEAK: Do not compress and recompress intermediate table files when stitching together the final database dump (increases speed and reduces resource usage)
+
+= 1.16.57 - 08/May/2021 =
+
+* FIX: Backblaze infinite loop when listing on buckets with huge numbers of objects
+* TWEAK: Minor improvements to the organisation of the S3-provider classes (abstract per-backend logic more cleanly)
+* TWEAK: Add --no-tablespaces switch to mysqldump invocation (required on MySQL 8.0+)
+
+= 1.16.56 - 29/Apr/2021 =
+
+* FIX: Revert changing of Amazon S3 authentication error handling in 1.16.55, which broke support of S3-compatible providers
+* TWEAK: Remove some unnnecessary methods from the UpdraftPlus_S3 class
+
+= 1.16.55 - 28/Apr/2021 =
+
+* FIX: Wrong prefix being used on non WP tables during an atomic restore
+* FIX: Issue that prevented generic (non-UpdraftPlus) SQL databases being restored
+* TWEAK: JSTree file selector: list folders first, and list entities in alphabetical order
+* TWEAK: Increase efficiency when listing Backblaze files during multi-delete operation
+* TWEAK: Integrate UpdraftVault storage with the scheduled destination backups feature
+* TWEAK: Added bucket access style field to S3-Compatible (Generic) to allow user to choose preferred access style (Path or Virtual-host)
+* TWEAK: Improve handling of Amazon S3 authentication error messages to avoid misunderstanding concerning "wrong bucket region" that occurs after trying further methods
+* TWEAK: Make modal dialogs resizable
+* TWEAK: During the Database scan if the amount of tables found exceeds the PHP max input vars limit then truncate the list, to prevent restore options being lost
+* TWEAK: Update seasonal notices
+* TWEAK: Track the amount of restore options being sent and warn the user if this exceeds the PHP max_input_vars limit
+
+= 1.16.54 - 05/Apr/2021 =
+
+* FIX: Undetected build system error on free version omitted jstree library
+* TWEAK: Reduce plugin size by removing 9 languages that are now fully available from the wordpress.org on-demand system
+
+= 1.16.53 - 03/Apr/2021 =
+
+* FIX: Incorrect final table name being used during an atomic restore when restoring using a different table prefix
+* FIX: Fix variable re-use issue in Backblaze multi-delete code which halted deletion
+* TWEAK: Prevent unnecessary logging when testing data for serialization on PHP 8.0 during migration
+* TWEAK: Update jsTree library to version 3.3.12-rc0 to work around deprecated jQuery functions
+* TWEAK: Add an extra check for whether it looks reasonable to reduce the resumption time, increasing efficiency
+* TWEAK: On the posts table, detect over-sized rows in advance, and fetch them one at a time.
+
+= 1.16.51 - 01/Apr/2021 =
+
+* FIX: Backup before updating dialog was not working on the inline informational pop-up on the Plugins page
+* TWEAK: Refactor how translatable texts are being handled and displayed within the UpdraftCentral client code
+* TWEAK: Fix parameter passing for UpdraftCentral multiplexed request
+* TWEAK: Exclude/skip very large files from the backup operation if the first and second attempt at backing them up didn't succeed
+* TWEAK: Backblaze multi-deletion code did not properly handle files that were already deleted (could abort deletion of others)
+* TWEAK: Replace the table prefix in the constraint name if it is found
+* TWEAK: Don't perform an atomic restore on tables with constraints
+* TWEAK: Add atomic restore support for non-WordPress tables
+
+= 1.16.50 - 16/Mar/2021 =
+
+* TWEAK: Reduce and log memory usage in Google upload methods
+* TWEAK: Catch Dropbox HTTP 401 errors and refresh the access token
+* FIX: An issue with refreshing Dropbox access tokens
+
+= 1.16.49 - 10/Mar/2021 =
+
+* FIX: Don't perform an atomic restore for non-WP-prefix tables backed up (Premium feature) - fixes a bug that resulted in the final table being dropped
+* TWEAK: Dates/times shown in the "next scheduled backup(s)" are now translated into the user's locale
+
+= 1.16.48 - 09/Mar/2021 =
+
+* FEATURE: If needed database permissions are available then perform an atomic restore to improve chances of successfully restoring the database
+* FEATURE: Added the ability to manually complete authentication with Google Drive (Avoids issues where security modules/plugins break the authentication flow)
+* FEATURE: Added the ability to manually complete authentication with OneDrive (Avoids issues where security modules/plugins break the authentication flow)
+* FEATURE: Google Drive and Google Cloud now allow boosting chunk size for faster transfers
+* FIX: Files/Directories Exclusion not saving correctly when adding numeric directory/file names into the exclusion list
+* FIX: Different PHP versions generate different suffixes length in the temporary ZIP filename resulting in a chance of overlapping runs
+* FIX: an issue with mysqldump password character escaping
+* TWEAK: Avoid unnecessary database writes caused by redundant jobdata updating during backup of files
+* TWEAK: Add "anywhere in their names" syntax option to the exclusion UI
+* TWEAK: Bump the requirement for the S3 enhanced module, and for using the official AWS SDK, up to PHP 5.5 (in preparation for updating the SDK version later)
+* TWEAK: Fix a bug of report emails for incremental backups displaying incorrectly in many email apps
+* TWEAK: Update Select2 library to version 4.1.0-rc.0 to work around deprecated jQuery isFunction
+* TWEAK: Update jQuery-serializeJSON library to version 3.2.0 to work around deprecated jQuery isArray
+* TWEAK: Handle hosts that have disabled some of the PHP functions thus causing a fatal error on PHP 8
+* TWEAK: Correct under-calculation of used memory in verify_free_memory()
+* TWEAK: Fix (inconsequential to this point) double-use of identifier for SQL statement type
+* TWEAK: Remove some compatibility code in Dropbox downloading pertaining to a folder selection bug eliminated ~8 years ago.
+* TWEAK: Remove unneeded sub-site tables when performing a restoration/migration (Multisite)
+* TWEAK: Improve the exclusion UI by adding new "wildcards" option thus allowing the user to add a set of patterns for excluding files/directories
+* TWEAK: Integration of the new files that were previously added for abstracting UpdraftCentral's client code
+* TWEAK: Excluded items (Files or Folders) that are not readable should not trigger a warning about being unreadable
+* TWEAK: Fix some RTL CSS issues
+* TWEAK: OneDrive 4xx error reporting
+* TWEAK: Update the Dropbox SDK to use refresh tokens (long lived token support ends September 2021)
+* TWEAK: implement a multi-delete capabiltiy when deleting from Backblaze
+* TWEAK: On UpdraftClone display the image ID in the advanced tools tab for easier debugging
+* TWEAK: Make it more clear in the restore log that we are starting an AJAX restore
+* TWEAK: The download backup HTML so that there is only one download button per archive type
 
 = 1.16.47 - 25/Jan/2021 =
 
@@ -1229,4 +1356,4 @@ Reliance upon any non-English translation is at your own risk; UpdraftPlus can g
 We recognise and thank those mentioned at https://updraftplus.com/acknowledgements/ for code and/or libraries used and/or modified under the terms of their open source licences.
 
 == Upgrade Notice ==
-* 1.16.47: Various compatibility tweaks and improvements. A recommended update for all.
+* 1.16.59: Many and various tweaks and improvements; a recommended update for all.

@@ -746,6 +746,21 @@ class UpdraftPlus_Commands {
 		$state = isset($auth_data['state']) ? urldecode($auth_data['state']) : '';
 		$code = isset($auth_data['code']) ? urldecode($auth_data['code']) : '';
 
+		if (empty($code) && isset($auth_data['access_token']) && isset($auth_data['user_id'])) {
+			// If there is no code, but the access_token and user_id is set then this is for Google Drive so create a code array using these values
+			$access_token = urldecode($auth_data['access_token']);
+			$user_id = urldecode($auth_data['user_id']);
+			$code = array(
+				'access_token' => $access_token,
+				'user_id' => $user_id
+			);
+		} elseif (empty($code) && isset($auth_data['token'])) {
+			// If there is no code, but a token is set then this is for OneDrive so assign token to code
+			$encoded_token = stripslashes($auth_data['token']);
+			$token = json_decode($encoded_token);
+			$code = $token;
+		}
+
 		if (empty($state) || empty($code)) {
 			$response['result'] = 'error';
 			$response['data'] = __('Missing authentication data:', 'updraftplus') . " ({$state}) ({$code})";
@@ -1026,9 +1041,9 @@ class UpdraftPlus_Commands {
 			$content .= '</div>'; // end .updraftclone-main-row
 		}
 		if (isset($params['form_data']['install_info']['wp_only'])) {
-			$content .= '<p id="updraft_clone_progress">' . __('No backup will be started. The creation of your clone should now begin, and your WordPress username and password will be displayed below when ready.', 'updraftplus') . ' ' . __('N.B. You will be charged one token once the clone is ready. If the clone fails to boot, then no token will be taken.', 'updraftplus') . '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
+			$content .= '<p id="updraft_clone_progress">' . __('No backup will be started. The creation of your clone should now begin, and your WordPress username and password will be displayed below when ready.', 'updraftplus') . ' ' . __('N.B. You will be charged one token once the clone is ready. If the clone fails to boot, then the token will be released within an hour.', 'updraftplus') . '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
 		} else {
-			$content .= '<p id="updraft_clone_progress">' . __('The creation of your data for creating the clone should now begin.', 'updraftplus') . ' ' . __('N.B. You will be charged one token once the clone is ready. If the clone fails to boot, then no token will be taken.', 'updraftplus') . '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
+			$content .= '<p id="updraft_clone_progress">' . __('The creation of your data for creating the clone should now begin.', 'updraftplus') . ' ' . __('N.B. You will be charged one token once the clone is ready. If the clone fails to boot, then the token will be released within an hour.', 'updraftplus') . '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
 			$content .= '<div id="updraft_clone_activejobsrow" style="display:none;"></div>';
 		}
 

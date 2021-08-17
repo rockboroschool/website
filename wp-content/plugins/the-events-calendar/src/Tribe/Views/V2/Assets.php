@@ -33,6 +33,15 @@ class Assets extends \tad_DI52_ServiceProvider {
 	public static $group_key = 'events-views-v2';
 
 	/**
+	 * Key for this group of assets.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public static $single_group_key = 'events-views-v2-single';
+
+	/**
 	 * Key for the widget group of assets.
 	 *
 	 * @since 5.3.0
@@ -95,6 +104,7 @@ class Assets extends \tad_DI52_ServiceProvider {
 				'priority'     => 10,
 				'conditionals' => [ $this, 'should_enqueue_frontend' ],
 				'groups'       => [ static::$group_key ],
+				'print'        => true,
 			]
 		);
 
@@ -112,6 +122,7 @@ class Assets extends \tad_DI52_ServiceProvider {
 				'priority'     => 10,
 				'conditionals' => [ $this, 'should_enqueue_frontend' ],
 				'groups'       => [ static::$group_key ],
+				'print'        => true,
 			]
 		);
 
@@ -132,30 +143,7 @@ class Assets extends \tad_DI52_ServiceProvider {
 					[ $this, 'should_enqueue_full_styles' ],
 				],
 				'groups'       => [ static::$group_key ],
-			]
-		);
-
-		tribe_asset(
-			$plugin,
-			'tribe-events-widgets-v2-events-list-skeleton',
-			'widget-events-list-skeleton.css',
-			null,
-			[
-				'priority' => 15,
-			]
-		);
-
-		tribe_asset(
-			$plugin,
-			'tribe-events-widgets-v2-events-list-full',
-			'widget-events-list-full.css',
-			[
-				'tribe-common-full-style',
-				'tribe-events-widgets-v2-events-list-skeleton',
-			],
-			null,
-			[
-				'priority' => 15,
+				'print'        => true,
 			]
 		);
 
@@ -187,11 +175,12 @@ class Assets extends \tad_DI52_ServiceProvider {
 				'tribe-query-string',
 				'underscore',
 			],
-			'wp_enqueue_scripts',
+			'wp_print_footer_scripts',
 			[
-				'priority'     => 20,
+				'priority'     => 9, // for `wp_print_footer_scripts` we are required to go before P10.
 				'conditionals' => [ $this, 'should_enqueue_frontend' ],
-				'groups'       => [ static::$group_key ],
+				'groups'       => [ static::$group_key, static::$widget_group_key ],
+				'defer'        => true,
 			]
 		);
 
@@ -208,7 +197,7 @@ class Assets extends \tad_DI52_ServiceProvider {
 			[
 				'priority'     => 10,
 				'conditionals' => [ $this, 'should_enqueue_frontend' ],
-				'groups'       => [ static::$group_key, static::$widget_group_key ],
+				'groups'       => [ static::$group_key ],
 			]
 		);
 
@@ -410,9 +399,44 @@ class Assets extends \tad_DI52_ServiceProvider {
 					'priority'     => 10,
 					'conditionals' => [ $this, 'should_enqueue_frontend' ],
 					'groups'       => [ static::$group_key ],
+					'print'        => true,
 				]
 			);
 		}
+
+		tribe_asset(
+			$plugin,
+			'tribe-events-v2-single-skeleton',
+			'tribe-events-single-skeleton.css',
+			[],
+			'wp_enqueue_scripts',
+			[
+				'priority'     => 15,
+				'groups'       => [ static::$single_group_key ],
+				'conditionals' => [
+					[ $this, 'should_enqueue_single_event_styles' ],
+				],
+			]
+		);
+
+		tribe_asset(
+			$plugin,
+			'tribe-events-v2-single-skeleton-full',
+			'tribe-events-single-full.css',
+			[
+				'tribe-events-v2-single-skeleton',
+			],
+			'wp_enqueue_scripts',
+			[
+				'priority'     => 15,
+				'groups'       => [ static::$single_group_key ],
+				'conditionals' => [
+					'operator' => 'AND',
+					[ $this, 'should_enqueue_single_event_styles' ],
+					[ $this, 'should_enqueue_full_styles' ],
+				],
+			]
+		);
 	}
 
 	/**
@@ -423,8 +447,13 @@ class Assets extends \tad_DI52_ServiceProvider {
 	 * @return void
 	 */
 	public function disable_v1() {
-		// Dont disable V1 on Single Event page
-		if ( tribe( Template_Bootstrap::class )->is_single_event() ) {
+		// Don't disable V1:
+		// - on Single Event page
+		// - using the Block Editor OR using the Classic editor but with the V2 overrides disabled.
+		if (
+			tribe( Template_Bootstrap::class )->is_single_event() &&
+			( has_blocks( get_queried_object_id() ) || ! tribe_events_single_view_v2_is_enabled() )
+		) {
 			return;
 		}
 
@@ -486,7 +515,7 @@ class Assets extends \tad_DI52_ServiceProvider {
 	}
 
 	/**
-	 * Verifies if we dont have skeleton active, which will trigger true for the two other possible options.
+	 * Verifies if we don't have skeleton active, which will trigger true for the two other possible options.
 	 * Options:
 	 * - `full` - Deprecated
 	 * - `tribe`  - All styles load
@@ -506,5 +535,34 @@ class Assets extends \tad_DI52_ServiceProvider {
 		 * @param bool $is_skeleton_style
 		 */
 		return apply_filters( 'tribe_events_views_v2_assets_should_enqueue_full_styles', $should_enqueue );
+	}
+
+	/**
+	 * Verifies if we are on V2 and on Event Single in order to enqueue the override styles for Single Event.
+	 *
+	 * @since 5.5.0
+	 *
+	 * @return boolean
+	 */
+	public function should_enqueue_single_event_styles() {
+		// Bail if not Single Event V2.
+		if ( ! tribe_events_single_view_v2_is_enabled() ) {
+			return false;
+		}
+
+		// Bail if not Single Event.
+		if ( ! tribe( Template_Bootstrap::class )->is_single_event() ) {
+			return false;
+		}
+
+		// Bail if Block Editor.
+		if (
+			tribe( 'editor' )->is_events_using_blocks()
+			&& has_blocks( get_queried_object_id() )
+		) {
+			return false;
+		}
+
+		return true;
 	}
 }

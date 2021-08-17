@@ -52,7 +52,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 
 						if (method_exists($instance, $action)) {
 							$params = empty($params) ? array() : $params;
-							$call_result = call_user_func_array(array($instance, $action), $params);
+							$call_result = call_user_func(array($instance, $action), $params);
 
 							$command_results[$command] = $call_result;
 							if ('rpcerror' === $call_result['response'] || (isset($call_result['data']['error']) && $call_result['data']['error'])) {
@@ -130,19 +130,35 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 				'core' => untrailingslashit(ABSPATH)
 			);
 			
+			if ('translations' === $entity) {
+				// 'en_US' don't usually have the "languages" folder, thus, we
+				// check if there's a need to ask for filesystem credentials for that
+				// folder if it exists, most especially for locale other than 'en_US'.
+				$language_dir = WP_CONTENT_DIR.'/languages';
+				if ('en_US' !== get_locale() && is_dir($language_dir)) {
+					$entity_directories['translations'] = $language_dir;
+				}
+			}
+			
 			$url = wp_nonce_url(site_url());
-			$directory = $entity_directories[$entity];
 
-			// Check if credentials are valid and have sufficient
-			// privileges to create and delete (e.g. write)
-			ob_start();
-			$credentials = request_filesystem_credentials($url, '', false, $directory);
-			ob_end_clean();
+			$passed = false;
+			if (isset($entity_directories[$entity])) {
+				$directory = $entity_directories[$entity];
+	
+				// Check if credentials are valid and have sufficient
+				// privileges to create and delete (e.g. write)
+				ob_start();
+				$credentials = request_filesystem_credentials($url, '', false, $directory);
+				ob_end_clean();
+	
+				// The "WP_Filesystem" will suffice in validating the inputted credentials
+				// from UpdraftCentral, as it is already attempting to connect to the filesystem
+				// using the chosen transport (e.g. ssh, ftp, etc.)
+				$passed = WP_Filesystem($credentials, $directory);
+			}
 
-			// The "WP_Filesystem" will suffice in validating the inputted credentials
-			// from UpdraftCentral, as it is already attempting to connect to the filesystem
-			// using the chosen transport (e.g. ssh, ftp, etc.)
-			if (WP_Filesystem($credentials, $directory)) {
+			if ($passed) {
 				$result = array('error' => false, 'message' => 'credentials_ok', 'values' => array());
 			} else {
 				// We're adding some useful error information to help troubleshooting any problems
@@ -392,6 +408,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 	 * @return null|array
 	 */
 	private function _get_phpinfo_array() {
+		if (!function_exists('phpinfo')) return null;
 		ob_start();
 		phpinfo(INFO_GENERAL|INFO_CREDITS|INFO_MODULES);
 		$phpinfo = array('phpinfo' => array());
