@@ -1,0 +1,22 @@
+0000.014 (R) [notice] Looking for db archive: file name: backup_2021-08-08-1905_Rockboro_Primary_School_9dc133e1ee7d-db.gz
+0000.014 (R) [notice] Archive is expected to be size: 271.7 KB: OK
+0000.021 (R) [notice] Unpacking backup... (backup_2021-08-08-1905_Rockboro_Primary_School_9dc133e1ee7d-db.gz, 0.3 Mb)
+0000.021 (R) [notice] Restoring the database (on a large site this can take a long time - if it times out (which can happen if your web hosting company has configured your hosting to limit resources) then you should use a different method, such as phpMyAdmin)...
+0000.216 (R) [notice] Enabling Maintenance mode&#8230;
+0000.406 (R) [notice] Backup of: https://rockboroschool.ie
+0000.406 (R) [notice] Content URL: https://rockboroschool.ie/wp-content
+0000.407 (R) [notice] Uploads URL: https://rockboroschool.ie/wp-content/uploads
+0000.407 (R) [notice] Old table prefix: wp_
+0000.407 (R) [notice] Site information: multisite = 0
+0000.407 (R) [notice] Site information: sql_mode = NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0000.409 (R) [notice] New table prefix: vb_
+0000.417 (R) [notice] Processing table (InnoDB):  wp_options - will restore as: vb_options
+0000.716 (R) [notice] Atomic restore: dropping original table (wp_options)
+0000.861 (R) [notice] Atomic restore: renaming new table (vb_options) to final table name (wp_options)
+0000.914 (R) [notice] Processing table (InnoDB):  wp_users - will restore as: vb_users
+0000.957 (R) [notice] Atomic restore: dropping original table (wp_users)
+0001.080 (R) [notice] Atomic restore: renaming new table (vb_users) to final table name (wp_users)
+0001.106 (R) [notice] Processing table (InnoDB):  wp_usermeta - will restore as: vb_usermeta
+0001.157 (R) [notice] Atomic restore: dropping original table (wp_usermeta)
+0001.259 (R) [notice] Atomic restore: renaming new table (vb_usermeta) to final table name (wp_usermeta)
+0001.282 (R) [notice] Processing table (InnoDB):  wp_actionscheduler_actions - will restore as: vb_actionscheduler_actions

@@ -1,0 +1,38 @@
+0000.009 () Opened log file at time: Tue, 17 Aug 2021 19:37:24 +0000 on https://rockboroschool.ie
+0000.009 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.59 WP: 5.6.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 14M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.009 () Free space on disk containing Updraft's temporary directory: 874.1 MB
+0000.065 () Restore setup, now closing connection and starting restore over AJAX.
+0000.005 () Opened log file at time: Tue, 17 Aug 2021 19:37:24 +0000 on https://rockboroschool.ie
+0000.005 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.59 WP: 5.6.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 13.4M | 2M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.005 () Free space on disk containing Updraft's temporary directory: 874.1 MB
+0000.006 () Ensuring WP_Filesystem is setup for a restore
+0000.006 () WP_Filesystem is setup and ready for a restore
+0000.014 () Restore job started. Entities to restore: db. Restore options: {"include_unspecified_tables":false,"tables_to_restore":["wp_options","wp_users","wp_usermeta","wp_actionscheduler_actions","wp_actionscheduler_claims","wp_actionscheduler_groups","wp_actionscheduler_logs","wp_commentmeta","wp_comments","wp_links","wp_postmeta","wp_posts","wp_term_relationships","wp_term_taxonomy","wp_termmeta","wp_terms","wp_aioseo_notifications","wp_aioseo_posts","wp_gglcptch_whitelist","wp_simple_history","wp_simple_history_contexts"],"tables_to_skip":[],"updraft_encryptionphrase":"","updraft_restorer_wpcore_includewpconfig":false,"updraft_incremental_restore_point":-1}
+0000.020 () Entity: db
+0000.020 () restore_backup(backup_file=backup_2021-08-08-1905_Rockboro_Primary_School_9dc133e1ee7d-db.gz, type=db, info=a:0:{}, last_one=1)
+0000.021 () Unpacking backup... (backup_2021-08-08-1905_Rockboro_Primary_School_9dc133e1ee7d-db.gz, 0.3 Mb)
+0000.021 () Database successfully unpacked
+0000.021 () Restoring the database (on a large site this can take a long time - if it times out (which can happen if your web hosting company has configured your hosting to limit resources) then you should use a different method, such as phpMyAdmin)...
+0000.021 () Using direct MySQL access; value of use_mysqli is: 1
+0000.027 () SQL compatibility mode is: NO_AUTO_VALUE_ON_ZERO,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0000.216 () Max packet size: 32 MB
+0000.216 () Entering maintenance mode
+0000.216 () Enabling Maintenance mode&#8230;
+0000.405 () Backup of: https://rockboroschool.ie
+0000.407 () Content URL: https://rockboroschool.ie/wp-content
+0000.407 () Uploads URL: https://rockboroschool.ie/wp-content/uploads
+0000.407 () Old table prefix: wp_
+0000.407 () Site information: multisite=0
+0000.407 () Site information: sql_mode=NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0000.409 () New table prefix: vb_
+0000.417 () Processing table (InnoDB): wp_options - will restore as: vb_options
+0000.716 () Atomic restore: dropping original table (wp_options)
+0000.861 () Atomic restore: renaming new table (vb_options) to final table name (wp_options)
+0000.871 () Restoring prior UD configuration (table: wp_options; keys: 4)
+0000.914 () Processing table (InnoDB): wp_users - will restore as: vb_users
+0000.957 () Atomic restore: dropping original table (wp_users)
+0001.080 () Atomic restore: renaming new table (vb_users) to final table name (wp_users)
+0001.106 () Processing table (InnoDB): wp_usermeta - will restore as: vb_usermeta
+0001.157 () Atomic restore: dropping original table (wp_usermeta)
+0001.259 () Atomic restore: renaming new table (vb_usermeta) to final table name (wp_usermeta)
+0001.282 () Processing table (InnoDB): wp_actionscheduler_actions - will restore as: vb_actionscheduler_actions
