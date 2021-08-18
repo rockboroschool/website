@@ -1,0 +1,4 @@
+0000.005 () Opened log file at time: Wed, 18 Aug 2021 13:15:47 +0000 on https://rockboroschool.ie
+0000.006 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.59 WP: 5.6.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 14M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.006 () Free space on disk containing Updraft's temporary directory: 887.4 MB
+0000.018 () Restore setup, now closing connection and starting restore over AJAX.
