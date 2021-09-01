@@ -164,7 +164,7 @@ if ( !function_exists( 'czr_fn_setup_constants' ) ):
         //TC_BASE_URL_CHILD http url of the loaded child theme
         if( !defined( 'TC_BASE_URL_CHILD' ) )  define( 'TC_BASE_URL_CHILD' , CZR_BASE_URL_CHILD );
         if( !defined( 'PREV_REC_NOTICE_ID' ) )  define( 'PREV_REC_NOTICE_ID' , 'rec-notice-1119' );
-        if( !defined( 'REC_NOTICE_ID' ) )  define( 'REC_NOTICE_ID' , 'rec-notice-0620' );
+        if( !defined( 'REC_NOTICE_ID' ) )  define( 'REC_NOTICE_ID' , 'rec-notice-0321' );
 
         //fire an action hook after constants have been set up
         do_action( 'czr_after_setup_base_constants' );
@@ -1487,7 +1487,7 @@ function czr_fn_is_home_empty() {
 * @since Customizr 2.1.6
 *
 */
-function czr_fn_wp_title( $title, $sep ) {
+function czr_fn_wp_filter_title( $title, $sep ) {
     if ( function_exists( '_wp_render_title_tag' ) )
       return $title;
 
