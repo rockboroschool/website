@@ -4,7 +4,7 @@
  *
  * @since 8.4.0
  *
- * @package Jetpack
+ * @package automattic/jetpack
  */
 
 namespace Automattic\Jetpack\Extensions\Podcast_Player;
@@ -50,6 +50,9 @@ function register_block() {
 				),
 			),
 			'render_callback' => __NAMESPACE__ . '\render_block',
+			// Since Gutenberg #31873.
+			'style'           => 'wp-mediaelement',
+
 		)
 	);
 }
