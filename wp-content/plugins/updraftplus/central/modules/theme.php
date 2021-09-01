@@ -93,12 +93,20 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 				if ($info['installed']) {
 					switch_theme($info['slug']);
 					if (wp_get_theme()->get_stylesheet() === $info['slug']) {
-						$result = array('activated' => true);
+						$result = array('activated' => true, 'info' => $this->_get_theme_info($query['theme']));
 					} else {
-						$result = $this->_generic_error_response('theme_not_activated', array($query['theme']));
+						$result = $this->_generic_error_response('theme_not_activated', array(
+							'theme' => $query['theme'],
+							'error_code' => 'theme_not_activated',
+							'info' => $info
+						));
 					}
 				} else {
-					$result = $this->_generic_error_response('theme_not_installed', array($query['theme']));
+					$result = $this->_generic_error_response('theme_not_installed', array(
+						'theme' => $query['theme'],
+						'error_code' => 'theme_not_installed',
+						'info' => $info
+					));
 				}
 				break;
 			case 'network_enable':
@@ -117,12 +125,20 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 					$allowed = WP_Theme::get_allowed_on_network();
 					if (is_array($allowed) && !empty($allowed[$info['slug']])) {
-						$result = array('enabled' => true);
+						$result = array('enabled' => true, 'info' => $this->_get_theme_info($query['theme']));
 					} else {
-						$result = $this->_generic_error_response('theme_not_enabled', array($query['theme']));
+						$result = $this->_generic_error_response('theme_not_enabled', array(
+							'theme' => $query['theme'],
+							'error_code' => 'theme_not_enabled',
+							'info' => $info
+						));
 					}
 				} else {
-					$result = $this->_generic_error_response('theme_not_installed', array($query['theme']));
+					$result = $this->_generic_error_response('theme_not_installed', array(
+						'theme' => $query['theme'],
+						'error_code' => 'theme_not_installed',
+						'info' => $info
+					));
 				}
 				break;
 			case 'network_disable':
@@ -143,12 +159,20 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 					$allowed = WP_Theme::get_allowed_on_network();
 					if (is_array($allowed) && empty($allowed[$info['slug']])) {
-						$result = array('disabled' => true);
+						$result = array('disabled' => true, 'info' => $this->_get_theme_info($query['theme']));
 					} else {
-						$result = $this->_generic_error_response('theme_not_disabled', array($query['theme']));
+						$result = $this->_generic_error_response('theme_not_disabled', array(
+							'theme' => $query['theme'],
+							'error_code' => 'theme_not_disabled',
+							'info' => $info
+						));
 					}
 				} else {
-					$result = $this->_generic_error_response('theme_not_installed', array($query['theme']));
+					$result = $this->_generic_error_response('theme_not_installed', array(
+						'theme' => $query['theme'],
+						'error_code' => 'theme_not_installed',
+						'info' => $info
+					));
 				}
 				break;
 			case 'install':
@@ -168,7 +192,12 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 				));
 
 				if (is_wp_error($api)) {
-					$result = $this->_generic_error_response('generic_response_error', array($api->get_error_message()));
+					$result = $this->_generic_error_response('generic_response_error', array(
+						'theme' => $query['theme'],
+						'error_code' => 'theme_not_installed',
+						'error_message' => $api->get_error_message(),
+						'info' => $info
+					));
 				} else {
 					$info = $this->_get_theme_info($query['theme']);
 					$installed = $info['installed'];
@@ -223,10 +252,11 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 						$result = $this->_generic_error_response('theme_install_failed', array(
 							'theme' => $query['theme'],
 							'error_code' => $error_code,
-							'error_message' => $error_message
+							'error_message' => $error_message,
+							'info' => $info
 						));
 					} else {
-						$result = array('installed' => true);
+						$result = array('installed' => true, 'info' => $this->_get_theme_info($query['theme']));
 					}
 				}
 				break;
@@ -426,12 +456,20 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 			$deleted = delete_theme($info['slug']);
 
 			if ($deleted) {
-				$result = array('deleted' => true);
+				$result = array('deleted' => true, 'info' => $this->_get_theme_info($query['theme']));
 			} else {
-				$result = $this->_generic_error_response('delete_theme_failed', array($query['theme']));
+				$result = $this->_generic_error_response('delete_theme_failed', array(
+					'theme' => $query['theme'],
+					'error_code' => 'delete_theme_failed',
+					'info' => $info
+				));
 			}
 		} else {
-			$result = $this->_generic_error_response('theme_not_installed', array($query['theme']));
+			$result = $this->_generic_error_response('theme_not_installed', array(
+				'theme' => $query['theme'],
+				'error_code' => 'theme_not_installed',
+				'info' => $info
+			));
 		}
 
 		return $this->_response($result);
@@ -462,10 +500,14 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 			$result = $update_command->update_theme($info['slug']);
 			if (!empty($result['error'])) {
-				$result['values'] = array($query['theme']);
+				$result['values'] = array('theme' => $query['theme'], 'info' => $info);
 			}
 		} else {
-			return $this->_generic_error_response('theme_not_installed', array($query['theme']));
+			return $this->_generic_error_response('theme_not_installed', array(
+				'theme' => $query['theme'],
+				'error_code' => 'theme_not_installed',
+				'info' => $info
+			));
 		}
 
 		return $this->_response($result);

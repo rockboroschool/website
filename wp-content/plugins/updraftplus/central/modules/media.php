@@ -118,6 +118,7 @@ class UpdraftCentral_Media_Commands extends UpdraftCentral_Commands {
 
 		$response = array(
 			'items' => $media_items,
+			'has_image_editor' => $this->has_image_editor(isset($media_items[0]) ? $media_items[0] : null),
 			'info' => $info,
 			'options' => array(
 				'date' => $this->get_date_options(),
@@ -126,6 +127,36 @@ class UpdraftCentral_Media_Commands extends UpdraftCentral_Commands {
 		);
 
 		return $this->_response($response);
+	}
+
+	/**
+	 * Check whether we have an image editor (e.g. GD, Imagick, etc.) set in place to handle the basic editing
+	 * functions such as rotate, crop, etc. If not, then we hide that feature in UpdraftCentral
+	 *
+	 * @param object $media The media item/object to check
+	 * @return boolean
+	 */
+	private function has_image_editor($media) {
+		// Most of the time image library are enabled by default in the php.ini but there's a possbility that users don't
+		// enable them as they have no need for them at the moment or for some other reasons. Thus, we need to confirm
+		// that here through the wp_get_image_editor method.
+		$has_image_editor = true;
+		if (!empty($media)) {
+			if (!function_exists('wp_get_image_editor')) {
+				require_once(ABSPATH.'wp-includes/media.php');
+			}
+
+			if (!function_exists('_load_image_to_edit_path')) {
+				require_once(ABSPATH.'wp-admin/includes/image.php');
+			}
+
+			$image_editor = wp_get_image_editor(_load_image_to_edit_path($media->ID));
+			if (is_wp_error($image_editor)) {
+				$has_image_editor = false;
+			}
+		}
+
+		return $has_image_editor;
 	}
 
 	/**

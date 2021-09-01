@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'cd6850c3489488256d91e2ed73b7e003b9ad3095',
+    'reference' => '108f0884206a45957eea1861b19b5c5826525c01',
     'name' => 'updraftplus/updraftplus',
   ),
   'versions' => 
@@ -51,24 +51,24 @@
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/cache' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/common' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/guzzle' => 
@@ -85,152 +85,152 @@
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/inflection' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/iterator' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/log' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/parser' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-async' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-backoff' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-cache' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-cookie' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-curlauth' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-error-response' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-history' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-log' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-md5' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-mock' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/plugin-oauth' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/service' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'guzzle/stream' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.x-dev',
-        1 => 'dev-master',
+        0 => 'dev-master',
+        1 => '3.9.x-dev',
       ),
     ),
     'kriswallsmith/assetic' => 
@@ -312,7 +312,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '997b6453',
+      'reference' => 'eecf7a36ce67202acaeec9fddaca50140ee07ed9',
     ),
     'updraftplus/updraftplus' => 
     array (
@@ -321,7 +321,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'cd6850c3489488256d91e2ed73b7e003b9ad3095',
+      'reference' => '108f0884206a45957eea1861b19b5c5826525c01',
     ),
     'vakata/jstree' => 
     array (
