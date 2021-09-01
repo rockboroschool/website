@@ -4,7 +4,7 @@ Donate link: https://bestwebsoft.com/donate/
 Tags: anti-spam security, antispam, recaptcha, captcha, captha, Invisible reCaptcha, Invisible captcha, Invisibl reCaptcha, comment, cpatcha, google catcha, Invisible re captcha, recaptcha version3
 Requires at least: 4.5
 Tested up to: 5.8
-Stable tag: 1.63
+Stable tag: 1.64
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -63,6 +63,7 @@ http://www.youtube.com/watch?v=L2BziEOL3Fg
 > 	* Ninja Forms
 > 	* Gravity Forms
 > 	* WPForms
+> 	* Caldera Forms [NEW]
 > * Compatible with WooCommerce:
 > 	* Login form
 > 	* Register form
@@ -84,7 +85,7 @@ http://www.youtube.com/watch?v=L2BziEOL3Fg
 > 	* Registration form
 > 	* New Topic form
 > 	* Reply form
-> * Compatible with Ultimate Member [NEW]:
+> * Compatible with Ultimate Member:
 > 	* Login form
 > 	* Registration form
 > 	* Profile form
@@ -109,6 +110,10 @@ If you have a feature suggestion or idea you'd like to see in the plugin, we'd l
 = Help & Support =
 
 Visit our Help Center if you have any questions, our friendly Support Team is happy to help - <https://support.bestwebsoft.com/>
+
+= Affiliate Program =
+
+Earn 20% commission by selling the premium WordPress plugins and themes by BestWebSoft - <https://bestwebsoft.com/affiliate/>
 
 = Translation =
 
@@ -268,6 +273,10 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 8. reCaptcha Allow List page.
 
 == Changelog ==
+
+= V1.64 - 18.08.2021 =
+* Bugfix : 'use strict' was added.
+* Pro : The compatibility with Caldera Member has been added.
 
 = V1.63 - 21.07.2021 =
 * Update : All functionality was updated for WordPress 5.8.
@@ -553,6 +562,9 @@ Please make sure that the problem hasn't been discussed yet on our forum (<https
 * NEW : Ability to add Google Captcha (reCAPTCHA) into standard forms was added.
 
 == Upgrade Notice ==
+
+= V1.64 =
+* New features added.
 
 = V1.63 =
 * Usability improved.

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: reCaptcha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-20 17:21+0300\n"
+"POT-Creation-Date: 2021-07-30 15:38+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: bestwebsoft.com <plugin@bestwebsoft.com>\n"
 "Language-Team: the BestWebSoft Team <plugin@bestwebsoft.com>\n"
@@ -467,7 +467,7 @@ msgstr "Testimonials"
 msgid "WordPress default"
 msgstr "Стандартных форм WordPress"
 
-#: includes/forms.php:47 includes/pro_banners.php:80
+#: includes/forms.php:47 includes/pro_banners.php:81
 msgid "External Plugins"
 msgstr "Внешние плагины"
 
@@ -611,15 +611,15 @@ msgstr "Форма регистрации плагина Ultimate Member"
 msgid "Ultimate Member Profile form"
 msgstr "Форма профиля плагина Ultimate Member"
 
-#: includes/pro_banners.php:181
+#: includes/pro_banners.php:183
 msgid "Language"
 msgstr "Язык"
 
-#: includes/pro_banners.php:189
+#: includes/pro_banners.php:191
 msgid "Multilanguage"
 msgstr "Multilanguage"
 
-#: includes/pro_banners.php:192
+#: includes/pro_banners.php:194
 msgid ""
 "Enable to switch language automatically on multilingual website using the "
 "Multilanguage plugin."
@@ -627,15 +627,15 @@ msgstr ""
 "Включить, чтобы переключить язык автоматически на многоязычном сайте, "
 "используя плагин Multilanguage."
 
-#: includes/pro_banners.php:204
+#: includes/pro_banners.php:206
 msgid "Size"
 msgstr "Размер"
 
-#: includes/pro_banners.php:208
+#: includes/pro_banners.php:210
 msgid "Normal"
 msgstr "Нормальный"
 
-#: includes/pro_banners.php:209
+#: includes/pro_banners.php:211
 msgid "Compact"
 msgstr "Компактный"
 

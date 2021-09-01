@@ -3,8 +3,8 @@ Contributors: abuhayat, shehabulislam
 Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
-Tested up to: 5.7.2
-Stable tag: 1.6.4
+Tested up to: 5.8
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,3 +139,8 @@ If you find a conflict between our plugin and a third-party plugin, please let u
 
 = 1.6 =
 * Fix isuue and make compatible with Wordpress 5.5 Version
+
+= 2.0.0 =
+* Added Advanced Shortcode Generator
+* Improved Security Performance
+* Fixed Height issue on mobile device
