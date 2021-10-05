@@ -154,6 +154,7 @@ class Content {
 
 			// Override priority/frequency for static homepage.
 			if ( $isStaticHomepage && $homePageId === $post->ID ) {
+				$entry['loc']        = aioseo()->helpers->maybeRemoveTrailingSlash( $entry['loc'] );
 				$entry['changefreq'] = aioseo()->sitemap->priority->frequency( 'homePage' );
 				$entry['priority']   = aioseo()->sitemap->priority->priority( 'homePage' );
 			}
@@ -256,9 +257,9 @@ class Content {
 		$entries = [];
 		foreach ( aioseo()->sitemap->helpers->includedPostTypes( true ) as $postType ) {
 			if (
-				aioseo()->options->noConflict()->searchAppearance->dynamic->archives->has( $postType ) &&
-				! aioseo()->options->searchAppearance->dynamic->archives->$postType->advanced->robotsMeta->default &&
-				aioseo()->options->searchAppearance->dynamic->archives->$postType->advanced->robotsMeta->noindex
+				aioseo()->dynamicOptions->noConflict()->searchAppearance->archives->has( $postType ) &&
+				! aioseo()->dynamicOptions->searchAppearance->archives->$postType->advanced->robotsMeta->default &&
+				aioseo()->dynamicOptions->searchAppearance->archives->$postType->advanced->robotsMeta->noindex
 			) {
 				continue;
 			}
@@ -374,10 +375,11 @@ class Content {
 	public function addl() {
 		$entries = [];
 		if ( 'posts' === get_option( 'show_on_front' ) || ! in_array( 'page', aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
-			$frontPageId = (int) get_option( 'page_on_front' );
-			$post        = aioseo()->helpers->getPost( $frontPageId );
+			$frontPageId  = (int) get_option( 'page_on_front' );
+			$frontPageUrl = aioseo()->helpers->localizedUrl( '/' );
+			$post         = aioseo()->helpers->getPost( $frontPageId );
 			$entries[] = [
-				'loc'        => aioseo()->helpers->localizedUrl( '/' ),
+				'loc'        => aioseo()->helpers->maybeRemoveTrailingSlash( $frontPageUrl ),
 				'lastmod'    => $post ? aioseo()->helpers->formatDateTime( $post->post_modified_gmt ) : aioseo()->sitemap->helpers->lastModifiedPostTime(),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'homePage' ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'homePage' ),

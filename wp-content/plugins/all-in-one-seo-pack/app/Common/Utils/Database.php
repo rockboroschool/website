@@ -273,7 +273,7 @@ class Database {
 	 * @return boolean        Whether or not the table exists.
 	 */
 	public function tableExists( $table ) {
-		$results = $this->db->get_results( 'SHOW TABLES LIKE "' . $this->prefix . $table . '"' );
+		$results = $this->db->get_results( "SHOW TABLES LIKE '" . $this->prefix . $table . "'" );
 		return ! ( empty( $results ) );
 	}
 
@@ -696,7 +696,8 @@ class Database {
 			}
 
 			foreach ( $values as &$value ) {
-				if ( is_numeric( $value ) ) {
+				// Note: We can no longer check for `is_numeric` because a value like `61021e6242255` returns true and breaks the query.
+				if ( is_integer( $value ) || is_float( $value ) ) {
 					// No change.
 				} elseif ( is_null( $value ) || false !== stristr( $value, 'NULL' ) ) {
 					// Change to a true NULL value.

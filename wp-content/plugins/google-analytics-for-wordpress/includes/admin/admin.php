@@ -224,7 +224,7 @@ function monsterinsights_add_action_links( $links ) {
 
 	// If lite, show a link where they can get pro from
 	if ( ! monsterinsights_is_pro_version() ) {
-		$get_pro = '<a title="' . esc_html__( 'Get MonsterInsights Pro', 'google-analytics-for-wordpress' ) .'" href="'. monsterinsights_get_upgrade_link( 'all-plugins', 'upgrade-link', "https://www.monsterinsights.com/lite/" ) .'" style="font-weight:700">' . esc_html__( 'Get MonsterInsights Pro', 'google-analytics-for-wordpress' ) . '</a>';
+		$get_pro = '<a title="' . esc_html__( 'Get MonsterInsights Pro', 'google-analytics-for-wordpress' ) .'" href="'. monsterinsights_get_upgrade_link( 'all-plugins', 'upgrade-link', "https://www.monsterinsights.com/lite/" ) .'" style="font-weight:700; color: #1da867;">' . esc_html__( 'Get MonsterInsights Pro', 'google-analytics-for-wordpress' ) . '</a>';
 		array_unshift( $links, $get_pro );
 	}
 
@@ -316,7 +316,7 @@ function monsterinsights_admin_setup_notices() {
 
 
     // 1. Google Analytics not authenticated
-	if ( ! is_network_admin() && ! monsterinsights_get_ua() && ! defined( 'MONSTERINSIGHTS_DISABLE_TRACKING' ) ) {
+	if ( ! is_network_admin() && ! monsterinsights_get_ua() && ! monsterinsights_get_v4_id() && ! defined( 'MONSTERINSIGHTS_DISABLE_TRACKING' ) ) {
 
         $submenu_base = is_network_admin() ? add_query_arg( 'page', 'monsterinsights_network', network_admin_url( 'admin.php' ) ) : add_query_arg( 'page', 'monsterinsights_settings', admin_url( 'admin.php' ) );
         $title     = esc_html__( 'Please Setup Website Analytics to See Audience Insights', 'google-analytics-for-wordpress' );
@@ -371,22 +371,36 @@ function monsterinsights_admin_setup_notices() {
     if ( current_user_can( 'update_core' ) ) {
         global $wp_version;
 
-        // PHP 5.2-5.5
-        if ( version_compare( phpversion(), '5.6', '<' ) ) {
-            $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-php/' );
-            // Translators: Placeholders add the PHP version, a link to the MonsterInsights blog and a line break.
-            $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress stopped supporting your PHP version in April, 2019.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
-            echo '<div class="error"><p>'. $message.'</p></div>';
-            return;
-        }
-        // WordPress 3.0 - 4.5
-        else if ( version_compare( $wp_version, '4.9', '<' ) ) {
+	    $compatible_php_version = apply_filters( 'monsterinsights_compatible_php_version', false );
+	    $compatible_wp_version  = apply_filters( 'monsterinsights_compatible_wp_version', false );
+
+	    $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-php/' );
+
+	    $message = false;
+	    if ( version_compare( phpversion(), $compatible_php_version['required'], '<' ) ) {
+		    // Translators: Placeholders add the PHP version, a link to the MonsterInsights blog and a line break.
+		    $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress stopped supporting your PHP version in April, 2019.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+	    } else if ( version_compare( phpversion(), $compatible_php_version['warning'], '<' ) ) {
+		    // Translators: Placeholders add the PHP version, a link to the MonsterInsights blog and a line break.
+		    $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress stopped supporting your PHP version in November, 2019.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+	    } else if ( version_compare( phpversion(), $compatible_php_version['recommended'], '<' ) ) {
+		    // Translators: Placeholders add the PHP version, a link to the MonsterInsights blog and a line break.
+		    $message = sprintf( esc_html__( 'Your site is running an outdated, insecure version of PHP (%1$s), which could be putting your site at risk for being hacked.%4$sWordPress is working towards discontinuing support for your PHP version.%4$sUpdating PHP only takes a few minutes and will make your website significantly faster and more secure.%4$s%2$sLearn more about updating PHP%3$s', 'google-analytics-for-wordpress' ), phpversion(), '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+	    }
+
+	    if ( $message ) {
+		    echo '<div class="error"><p>'. $message.'</p></div>';
+		    return;
+	    }
+
+        // WordPress 4.9
+        /* else if ( version_compare( $wp_version, '5.0', '<' ) ) {
             $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-wordpress/' );
             // Translators: Placeholders add the current WordPress version and links to the MonsterInsights blog
-            $message = sprintf( esc_html__( 'Your site is running an outdated version of WordPress (%1$s).%4$sMonsterInsights will stop supporting WordPress versions lower than 4.9 in 2020.%4$sUpdating WordPress takes just a few minutes and will also solve many bugs that exist in your WordPress install.%4$s%2$sLearn more about updating WordPress%3$s', 'google-analytics-for-wordpress' ), $wp_version, '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
+            $message = sprintf( esc_html__( 'Your site is running an outdated version of WordPress (%1$s).%4$sMonsterInsights will stop supporting WordPress versions lower than 5.0 in 2021.%4$sUpdating WordPress takes just a few minutes and will also solve many bugs that exist in your WordPress install.%4$s%2$sLearn more about updating WordPress%3$s', 'google-analytics-for-wordpress' ), $wp_version, '<a href="' . $url . '" target="_blank">', '</a>', '<br>' );
             echo '<div class="error"><p>'. $message.'</p></div>';
             return;
-        }
+        } */
         // PHP 5.4/5.5
         // else if ( version_compare( phpversion(), '5.6', '<' ) ) {
         //  $url = monsterinsights_get_url( 'global-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-php/' );
@@ -576,3 +590,39 @@ function monsterinsights_admin_menu_inline_styles() {
 }
 
 add_action( 'admin_head', 'monsterinsights_admin_menu_inline_styles', 300 );
+
+/**
+ * Display notice in admin when measurement protocol is left blank
+ */
+function monsterinsights_empty_measurement_protocol_token() {
+	if ( ! class_exists( 'MonsterInsights_eCommerce' ) && ! class_exists( 'MonsterInsights_Forms' ) ) {
+		return;
+	}
+
+	$page = is_network_admin()
+		? network_admin_url( 'admin.php?page=monsterinsights_network' )
+		: admin_url( 'admin.php?page=monsterinsights_settings' );
+
+	$api_secret = is_network_admin()
+		? MonsterInsights()->auth->get_network_measurement_protocol_secret()
+		: MonsterInsights()->auth->get_measurement_protocol_secret();
+
+	$current_code = monsterinsights_get_v4_id_to_output();
+
+	if ( empty( $current_code ) || ! empty( $api_secret ) ) {
+		return;
+	}
+
+	$message = sprintf(
+		esc_html__(
+			'Your Measurement Protocol API Secret is currently left blank, so you won\'t be able to use some of the tracking features with your GA4 property. %1$sPlease enter your Measurement Protocol API Secret here.%2$s',
+			'google-analytics-for-wordpress'
+		),
+		'<a href="' . esc_url( $page ). '">',
+		'</a>'
+	);
+	echo '<div class="error"><p>'. $message.'</p></div>';
+}
+
+add_action( 'admin_notices', 'monsterinsights_empty_measurement_protocol_token' );
+add_action( 'network_admin_notices', 'monsterinsights_admin_setup_notices' );

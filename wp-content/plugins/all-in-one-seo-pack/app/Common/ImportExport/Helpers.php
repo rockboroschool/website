@@ -42,13 +42,15 @@ abstract class Helpers {
 			return;
 		}
 
+		$mainOptions    = aioseo()->options->noConflict();
+		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
 		foreach ( $mappings as $name => $values ) {
 			if ( ! isset( $group[ $name ] ) ) {
 				continue;
 			}
 
 			$error      = false;
-			$options    = aioseo()->options->noConflict();
+			$options    = ! empty( $values['dynamic'] ) ? $dynamicOptions : $mainOptions;
 			$lastOption = '';
 			for ( $i = 0; $i < count( $values['newOption'] ); $i++ ) {
 				$lastOption = $values['newOption'][ $i ];
@@ -89,7 +91,5 @@ abstract class Helpers {
 					break;
 			}
 		}
-
-		aioseo()->options->refresh();
 	}
 }

@@ -20,7 +20,17 @@ class Activate {
 	public function __construct() {
 		register_activation_hook( AIOSEO_FILE, [ $this, 'activate' ] );
 		register_deactivation_hook( AIOSEO_FILE, [ $this, 'deactivate' ] );
+		add_action( 'init', [ $this, 'init' ] );
+	}
 
+	/**
+	 * Initialize activation.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return void
+	 */
+	public function init() {
 		// If Pro just deactivated the lite version, we need to manually run the activation hook, because it doesn't run here.
 		$proDeactivatedLite = (bool) aioseo()->transients->get( 'pro_just_deactivated_lite' );
 		if ( $proDeactivatedLite ) {

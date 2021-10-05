@@ -2,8 +2,8 @@
 Contributors: aioseo, smub, benjaminprojas
 Tags: SEO, Google Search Console, XML Sitemap, meta description, schema, meta title, rich snippets, woocommerce seo, local seo, open graph, google news sitemap, video sitemap, robots.txt, seo audit, content analysis, seo plugin, redirection
 Requires at least: 4.9
-Tested up to: 5.8
-Stable tag: 4.1.3.3
+Tested up to: 5.8.1
+Stable tag: 4.1.4.4
 License: GPLv2 or later
 Requires PHP: 5.4
 
@@ -201,11 +201,61 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 == Changelog ==
 
+**New in version 4.1.4.4 - Released on September 21, 2021**
+
+* Fixed: PHP notice when importing SEO data from other plugins.
+* Fixed: PHP notice after upgrading from AIOSEO Lite to AIOSEO Pro.
+
+**New in version 4.1.4.3 – Released on September 14, 2021**
+
+* Fixed: Some settings not carried over correctly in niche cases.
+
+**New in version 4.1.4.2 – Released on September 10, 2021**
+
+* Fixed: Console error after loading the Classic Editor because of a conflict with Lodash.
+* Fixed: PHP error in WordPress Core 4.9 because of a call to a function that was introduced in WordPress Core 5.0.
+* Fixed: PHP error on upgrading from AIOSEO Lite to AIOSEO Pro.
+* Fixed: Post/term data not always saving correctly.
+
+**New in version 4.1.4.1 – Released on August 31, 2021**
+
+* Fixed: Slower load time when HTML Sitemap dedicated page is enabled.
+
+**New in version 4.1.4 – Released on August 31, 2021**
+
+* New: Added support for Google Maps embeds in our Local Business addon. Embed maps directly on your location pages to allow your customers to easily find your location with driving directions and reviews.
+* New: AIOSEO now displays an overview of your posts’ most critical SEO settings before they are published and enables you to easily share them on social media (Block Editor only).
+* New: Added the ability to fully customize redirects from the 404 Log.
+* New: Added support for importing SEO settings and data from SEOPress.
+* New: Added support for WooCommerce’s product duplication.
+* Updated: Various improvements for the Yoast SEO importer.
+* Updated: Updated SearchAction schema (Google Sitelinks) based on new specifications.
+* Updated: WebPage/Article graphs and child graphs now include the language of the page.
+* Updated: Rating range for Review schema is now restricted to min 1 – max 5.
+* Updated: Removed WooCommerce Customer role from Access Control by default. Can be re-added by using a filter hook.
+* Updated: Optimized all images in the plugin, resulting in a large plugin size decrease.
+* Updated: AIOSEO is now able to detect local alt text added to images via the Image Block.
+* Fixed: AIOSEO now takes profile language preference into account when loading translations.
+* Fixed: nginx/.htaccess export files no longer include duplicate rules.
+* Fixed: AIOSEO now validates translations before they are used, preventing site errors in case a string contains illegal characters.
+* Fixed: WooCommerce product sitemap indexes are now paginated correctly and always contain the right amount of URLs when the site has hidden products.
+* Fixed: .htaccess File Editor no longer encodes special characters when writing to the file.
+* Fixed: WebPage schema now references the correct Person graph as the author of the page.
+* Fixed: Setup Wizard now correctly saves homepage title/description when using a static homepage.
+* Fixed: Static homepage now uses Website as default Open Graph object type.
+* Fixed: Support for MySQL servers that have ANSI_QUOTES SQL enabled.
+* Fixed: JWT Auth plugin no longer blocks AIOSEO from accessing the REST API.
+* Fixed: Headline Analyzer no longer throws a 404 error in the console when a new post without a title is created.
+* Fixed: Sitemap no longer adds a trailing slash to the homepage URL if the permalink structure does not have one.
+* Fixed: PHP errors when checking if the current request is from the REST API.
+* Fixed: AIOSEO no longer tries to build BreadcrumbList graph if no breadcrumbs were found.
+* Fixed: Styling issues when opening modals in the Block Editor.
+
 **New in version 4.1.3.3 – Released on August 16, 2021**
 
 * Fixed: Additional permissions related issues for Authors and Contributors.
 
-**New in version 4.1.3.2 – Released on August 16, 2021**
+**New in version 4.1.3.2 – Released on August 11, 2021**
 
 * Fixed: AIOSEO Details column not appearing for Editor and other non-admin roles.
 
@@ -611,6 +661,6 @@ AIOSEO is the original WordPress SEO plugin, and it's trusted by over 2 million 
 
 == Upgrade Notice ==
 
-= 4.1.3.3 =
+= 4.1.4.4 =
 
 This update adds major improvements and bugfixes.

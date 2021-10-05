@@ -38,7 +38,7 @@ class WebPage extends Graph {
 			'url'         => aioseo()->schema->context['url'],
 			'name'        => aioseo()->meta->title->getTitle(),
 			'description' => aioseo()->schema->context['description'],
-			'inLanguage'  => get_bloginfo( 'language' ),
+			'inLanguage'  => aioseo()->helpers->currentLanguageCodeBCP47(),
 			'isPartOf'    => [ '@id' => $homeUrl . '#website' ],
 			'breadcrumb'  => [ '@id' => aioseo()->schema->context['url'] . '#breadcrumblist' ]
 		];

@@ -58,7 +58,8 @@ class Twitter {
 		$post   = aioseo()->helpers->getPost();
 		if ( $post && aioseo()->options->social->twitter->general->showAuthor ) {
 			$twitterUser = get_the_author_meta( 'aioseo_twitter', $post->post_author );
-			$author      = aioseo()->social->twitter->prepareUsername( $twitterUser );
+			$author      = $twitterUser ? $twitterUser : aioseo()->social->twitter->getTwitterUrl();
+			$author      = aioseo()->social->twitter->prepareUsername( $author );
 		}
 		return $author;
 	}
@@ -224,7 +225,7 @@ class Twitter {
 		}
 
 		if ( ! empty( $post->post_content ) ) {
-			$minutes = aioseo()->helpers->getReadingTime( $post->post_content );
+			$minutes = $this->getReadingTime( $post->post_content );
 			if ( ! empty( $minutes ) ) {
 				$data[] = [
 					'label' => __( 'Est. reading time', 'all-in-one-seo-pack' ),
@@ -235,5 +236,19 @@ class Twitter {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Returns the estimated reading time for a string.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  string  $string The string to count.
+	 * @return integer         The estimated reading time as an integer.
+	 */
+	private function getReadingTime( $string ) {
+		$wpm  = 200;
+		$word = str_word_count( wp_strip_all_tags( $string ) );
+		return round( $word / $wpm );
 	}
 }

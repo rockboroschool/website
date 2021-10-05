@@ -240,7 +240,7 @@ class RobotsTxt {
 	 * @param  array $lines The lines to extract from.
 	 * @return array        An array of extracted rules.
 	 */
-	private function extractRules( $lines ) {
+	public function extractRules( $lines ) {
 		$rules     = [];
 		$userAgent = null;
 		foreach ( $lines as $line ) {
@@ -388,6 +388,20 @@ class RobotsTxt {
 		$currentRules = $this->parseRules( aioseo()->options->tools->robots->rules );
 		$allRules     = $this->mergeRules( $currentRules, $allRules, false, true );
 
+		aioseo()->options->tools->robots->rules = aioseo()->robotsTxt->prepareRobotsTxt( $allRules );
+
+		return true;
+	}
+
+	/**
+	 * Prepare robots.txt rules to save.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @param  array $allRules Array with the rules.
+	 * @return array           The prepared rules array.
+	 */
+	public function prepareRobotsTxt( $allRules = [] ) {
 		$robots = [];
 		foreach ( $allRules as $userAgent => $rules ) {
 			if ( empty( $userAgent ) ) {
@@ -416,9 +430,7 @@ class RobotsTxt {
 			}
 		}
 
-		aioseo()->options->tools->robots->rules = $robots;
-
-		return true;
+		return $robots;
 	}
 
 	/**

@@ -66,18 +66,26 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 	 * for the frontend_output() function to output. These are
 	 * generally dimensions and turned on GA features.
 	 *
-	 * @return array Options for the gtag config.
+	 * @param bool $encoded Whether to return a JavaScript object representation of the options
+	 *
+	 * @return array|string Options for the gtag config.
 	 * @since 7.15.0
 	 * @access public
 	 *
 	 */
-	public function frontend_tracking_options() {
+	public function frontend_tracking_options( $type = 'ua', $encoded = false ) {
 		global $wp_query;
 		$options = array();
 
-		$ua_code = monsterinsights_get_ua_to_output();
-		if ( empty( $ua_code ) ) {
-			return $options;
+		$tracking_ids = monsterinsights_get_tracking_ids();
+		if ( empty( $tracking_ids ) ) {
+			return $encoded ? wp_json_encode( $options ) : $options;
+		}
+
+		$placeholder = '';
+
+		if ( $encoded ) {
+			$placeholder = '!@#';
 		}
 
 //		$track_user = monsterinsights_track_user();
@@ -124,19 +132,23 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 					$linker_domains[] = $cross_domain['domain'];
 				}
 			}
-			$options['linker'] = json_encode( array(
+			$options['linker'] = array(
 				'domains' => $linker_domains,
-			) );
+			);
 		}
 
-		$options = apply_filters( 'monsterinsights_frontend_tracking_options_gtag_before_pageview', $options );
-		$options = apply_filters( 'monsterinsights_frontend_tracking_options_before_pageview', $options, $this->name, $this->version );
+		if ( monsterinsights_is_debug_mode() ) {
+			$options['debug_mode'] = true;
+		}
+
+		$options = apply_filters( 'monsterinsights_frontend_tracking_options_gtag_before_pageview', $options, $type );
+		$options = apply_filters( 'monsterinsights_frontend_tracking_options_before_pageview', $options, $this->name, $this->version, $type );
 
 		if ( is_404() ) {
 			if ( monsterinsights_get_option( 'hash_tracking', false ) ) {
-				$options['page_path'] = "'/404.html?page=' + document.location.pathname + document.location.search + location.hash + '&from=' + document.referrer";
+				$options['page_path'] = "${placeholder}'/404.html?page=' + document.location.pathname + document.location.search + location.hash + '&from=' + document.referrer${placeholder}";
 			} else {
-				$options['page_path'] = "'/404.html?page=' + document.location.pathname + document.location.search + '&from=' + document.referrer";
+				$options['page_path'] = "${placeholder}'/404.html?page=' + document.location.pathname + document.location.search + '&from=' + document.referrer${placeholder}";
 			}
 		} else if ( $wp_query->is_search ) {
 			$pushstr = "'/?s=";
@@ -150,10 +162,18 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 				$options['page_path'] = $pushstr . rawurlencode( $wp_query->query_vars['s'] ) . "&cat=plus-5-results'";
 			}
 		} else if ( monsterinsights_get_option( 'hash_tracking', false ) ) {
-			$options['page_path'] = 'location.pathname + location.search + location.hash';
+			$options['page_path'] = "${placeholder}location.pathname + location.search + location.hash${placeholder}";
 		}
 
-		$options = apply_filters( 'monsterinsights_frontend_tracking_options_gtag_end', $options );
+		$options = apply_filters( 'monsterinsights_frontend_tracking_options_gtag_end', $options, $type );
+
+		if ( $encoded ) {
+			return str_replace(
+				array( '"' . $placeholder, $placeholder . '"' ),
+				'',
+				wp_json_encode( $options )
+			);
+		}
 
 		return $options;
 	}
@@ -171,22 +191,26 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 	 *
 	 */
 	public function frontend_output() {
-		$options     = $this->frontend_tracking_options();
-		$persistent  = $this->frontend_tracking_options_persistent();
-		$ua          = monsterinsights_get_ua();
-		$src         = apply_filters( 'monsterinsights_frontend_output_gtag_src', '//www.googletagmanager.com/gtag/js?id=' . $ua );
-		$compat_mode = monsterinsights_get_option( 'gtagtracker_compatibility_mode', true );
-		$compat      = $compat_mode ? 'window.gtag = __gtagTracker;' : '';
-		$track_user  = monsterinsights_track_user();
-		$output      = '';
-		$reason      = '';
-		$attr_string = monsterinsights_get_frontend_analytics_script_atts();
-		$gtag_async  = apply_filters( 'monsterinsights_frontend_gtag_script_async', true ) ? 'async' : '';
- 		ob_start();
+		$options        = $this->frontend_tracking_options( 'ua', true );
+		$options_v4     = $this->frontend_tracking_options( 'v4', true );
+		$persistent     = $this->frontend_tracking_options_persistent();
+		$connected_type = MonsterInsights()->auth->get_connected_type();
+		$v4_id          = monsterinsights_get_v4_id_to_output();
+		$ua             = monsterinsights_get_ua_to_output();
+		$main_id        = $connected_type === 'ua' ? $ua : $v4_id;
+		$src            = apply_filters( 'monsterinsights_frontend_output_gtag_src', '//www.googletagmanager.com/gtag/js?id=' . $main_id );
+		$compat_mode    = monsterinsights_get_option( 'gtagtracker_compatibility_mode', true );
+		$compat         = $compat_mode ? 'window.gtag = __gtagTracker;' : '';
+		$track_user     = monsterinsights_track_user();
+		$output         = '';
+		$reason         = '';
+		$attr_string    = monsterinsights_get_frontend_analytics_script_atts();
+		$gtag_async     = apply_filters( 'monsterinsights_frontend_gtag_script_async', true ) ? 'async' : '';
+		ob_start();
 		?>
 		<!-- This site uses the Google Analytics by MonsterInsights plugin v<?php echo MONSTERINSIGHTS_VERSION; ?> - Using Analytics tracking - https://www.monsterinsights.com/ -->
 		<?php if ( ! $track_user ) {
-			if ( empty( $ua ) ) {
+			if ( empty( $v4_id ) && empty( $ua ) ) {
 				$reason = __( 'Note: MonsterInsights is not currently configured on this site. The site owner needs to authenticate with Google Analytics in the MonsterInsights settings panel.', 'google-analytics-for-wordpress' );
 				$output .= '<!-- ' . esc_html( $reason ) . ' -->' . PHP_EOL;
 			} else if ( current_user_can( 'monsterinsights_save_settings' ) ) {
@@ -198,7 +222,7 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 			}
 			echo $output;
 		} ?>
-		<?php if ( $ua ) { ?>
+		<?php if ( ! empty( $v4_id ) || ! empty( $ua ) ) { ?>
 			<script src="<?php echo esc_attr( $src ); ?>" <?php echo $attr_string; ?> <?php echo esc_attr( $gtag_async ); ?>></script>
 			<script<?php echo $attr_string; ?>>
 				var mi_version = '<?php echo MONSTERINSIGHTS_VERSION; ?>';
@@ -207,22 +231,39 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 				<?php do_action( 'monsterinsights_tracking_gtag_frontend_output_after_mi_track_user' ); ?>
 
 				<?php if ( $this->should_do_optout() ) { ?>
-				var disableStr = 'ga-disable-<?php echo monsterinsights_get_ua(); ?>';
+				var disableStrs = [
+					<?php if ( ! empty( $v4_id ) ): ?>
+					'ga-disable-<?php echo esc_js( $v4_id ); ?>',
+					<?php endif; ?>
+					<?php if ( ! empty( $ua ) ): ?>
+					'ga-disable-<?php echo esc_js( $ua ); ?>',
+					<?php endif; ?>
+				];
 
 				/* Function to detect opted out users */
 				function __gtagTrackerIsOptedOut() {
-					return document.cookie.indexOf( disableStr + '=true' ) > - 1;
+					for ( var index = 0; index < disableStrs.length; index++ ) {
+						if ( document.cookie.indexOf( disableStrs[ index ] + '=true' ) > -1 ) {
+							return true;
+						}
+					}
+
+					return false;
 				}
 
 				/* Disable tracking if the opt-out cookie exists. */
 				if ( __gtagTrackerIsOptedOut() ) {
-					window[disableStr] = true;
+					for ( var index = 0; index < disableStrs.length; index++ ) {
+						window[ disableStrs[ index ] ] = true;
+					}
 				}
 
 				/* Opt-out function */
 				function __gtagTrackerOptout() {
-					document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
-					window[disableStr] = true;
+					for ( var index = 0; index < disableStrs.length; index++ ) {
+						document.cookie = disableStrs[ index ] + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+						window[ disableStrs[ index ] ] = true;
+					}
 				}
 
 				if ( 'undefined' === typeof gaOptout ) {
@@ -232,8 +273,40 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 				}
 				<?php } ?>
 				window.dataLayer = window.dataLayer || [];
+
+				window.MonsterInsightsDualTracker = {
+					helpers: {},
+					trackers: {},
+				};
 				if ( mi_track_user ) {
-					function __gtagTracker() {dataLayer.push( arguments );}
+					function __gtagDataLayer() {
+						dataLayer.push( arguments );
+					}
+
+					function __gtagTracker( type, name, parameters ) {
+						if ( type === 'event' ) {
+							<?php if ( $v4_id ): ?>
+								parameters.send_to = monsterinsights_frontend.v4_id;
+								var hookName = name;
+								if ( typeof parameters[ 'event_category' ] !== 'undefined' ) {
+									hookName = parameters[ 'event_category' ] + ':' + name;
+								}
+
+								if ( typeof MonsterInsightsDualTracker.trackers[ hookName ] !== 'undefined' ) {
+									MonsterInsightsDualTracker.trackers[ hookName ]( parameters );
+								} else {
+									__gtagDataLayer( 'event', name, parameters );
+								}
+							<?php endif; ?>
+
+							<?php if ( $ua ): ?>
+								parameters.send_to = monsterinsights_frontend.ua;
+								__gtagDataLayer.apply( null, arguments );
+							<?php endif; ?>
+						} else {
+							__gtagDataLayer.apply( null, arguments );
+						}
+					}
 					__gtagTracker( 'js', new Date() );
 					__gtagTracker( 'set', {
 						'developer_id.dZGIzZG' : true,
@@ -244,15 +317,14 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 							}
 						}
 						?>
-                    });
-					__gtagTracker( 'config', '<?php echo esc_js( $ua ); ?>', {
-						<?php
-						foreach ( $options as $key => $value ) {
-							echo esc_js( $key ) . ':' . stripslashes( $value ) . ',';
-						}
-						?>
 					} );
+					<?php if ( ! empty( $v4_id ) ): ?>
+					__gtagTracker( 'config', '<?php echo esc_js( $v4_id ); ?>', <?php echo $options_v4; ?> );
+					<?php endif; ?>
+					<?php if ( ! empty( $ua ) ): ?>
+					__gtagTracker( 'config', '<?php echo esc_js( $ua ); ?>', <?php echo $options; ?> );
 					<?php
+					endif;
 					/**
 					 * Extend or enhance the functionality by adding custom code to frontend
 					 * tracking via this hook.
@@ -349,7 +421,8 @@ class MonsterInsights_Tracking_Gtag extends MonsterInsights_Tracking_Abstract {
 										'title' : 'page_title',
 									};
 									for ( arg in args ) {
-										if ( args.hasOwnProperty(arg) && gaMap.hasOwnProperty(arg) ) {
+										<?php // Note: we do || instead of && because FBIA can't encode && properly. ?>
+										if ( ! ( ! args.hasOwnProperty(arg) || ! gaMap.hasOwnProperty(arg) ) ) {
 											hit[gaMap[arg]] = args[arg];
 										} else {
 											hit[arg] = args[arg];

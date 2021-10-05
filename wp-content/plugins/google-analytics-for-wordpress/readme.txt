@@ -2,10 +2,10 @@
 Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, google analytics dashboard, google analytics widget, WooCommerce stats, analytics dashboard, universal google analytics, statistics, tracking, stats, google, google analytics by yoast, ga, monster insights, monsterinsights, universal analytics, web stats, ecommerce, ecommerce tracking
-Requires at least: 3.8.0
+Requires at least: 4.8.0
 Tested up to: 5.8
-Stable tag: 7.18.0
-Requires PHP: 5.2
+Stable tag: 8.1.0
+Requires PHP: 5.5
 License: GPL v3
 
 The best free Google Analytics plugin for WordPress. See how visitors find and use your website, so you can grow your business.
@@ -200,6 +200,7 @@ We understand Google Analytics better than any other analytics plugin for WordPr
 * Real Time Stats - See real time stats inside your Google Analytics dashboard.
 * Universal Tracking - Get better insights with Google Analytics' universal tracking.
 * Google Analytics Dashboard - See the stats that matter from right inside your WordPress dashboard with custom Publisher Report, Ecommerce report, and Search Console report.
+* Google Analytics 4 Support -  Easily set up and send proper website tracking data to Google Analytics 4
 * eCommerce Tracking - Add Google Analytics Ecommerce tracking to WordPress.
 * WooCommerce Google Analytics - Add Enhanced Ecommerce Tracking to your WooCommerce store.
 * Easy Digital Downloads Google Analytics - Add Enhanced Ecommerce Tracking to your EDD store.
@@ -287,6 +288,18 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
+= 8.1.0: September 30, 2021 =
+- Tweak: The labels of some of the GAv4 reports in our plugin have been tweaked to be more accurate.
+- New in Pro: You can now do Google Ads conversion tracking for WooCommerce, Easy Digital Downloads, and MemberPress.
+- New in Pro: Now you can attribute orders in Google Analytics to the referring affiliate if you use EasyAffiliate and either WooCommerce, Easy Digital Downloads, or MemberPress.
+
+= 8.0.1: September 21, 2021 =
+- Fix: We fixed an issue that caused the bounce rate box to appear twice on the dashboard widget.
+
+= 8.0.0: September 14, 2021 =
+- New: Full Google Analytics v4 support! After working very closely with the Google Analytics team for many months, we're excited to unveil full support for Google's newest version of Google Analytics. Google Analytics 4 (GA4) is the latest version of Google’s web analytics platform, and it can track both websites and apps in the same property. It also has some new reporting features and can give you better, more in-depth insights into how users are interacting with your website. We've taken the time to ensure that users who run GAv4 can do so effortlessly, for example by ensuring your events from GAv3 will work the same in GAv4 without having to touch any code or configuration. You can learn all about GAv4 and MonsterInsights on our [announcement blog post](https://www.monsterinsights.com/introducing-google-analytics-4-dual-analytics-tracking-for-wordpress/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion).
+- New: GAv3 + GAv4 Dual Tracking support. We're also excited to announce our exclusive dual-tracking feature. This feature lets you to track your site visitors to both a Google Analytics v3 (Universal) and a Google Analytics v4 (GAv4) property at the same time, which allows you to take advantage of the new GAv4 features without having to sacrifice your historical data. You can [learn more](https://www.monsterinsights.com/introducing-google-analytics-4-dual-analytics-tracking-for-wordpress/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion) about this MonsterInsights exclusive feature on our [site](https://www.monsterinsights.com/introducing-google-analytics-4-dual-analytics-tracking-for-wordpress/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion).
+
 = 7.18.0: July 15, 2021 =
 - Tweak: We updated the way we load the main tracking script to improve page load performance.
 - Tweak: We tweaked how most of the objects stored in the database are loaded and improved the overall sizes for better performance in the WordPress administration area.
@@ -372,7 +385,6 @@ Our EU compliance addon allows you to:
 * Anonymize IPs to Google Analytics
 * Disable the Demographics and Interest Reports for Remarketing and Advertising
 * Disable UserID and author name tracking
-* Enable the ga() compatibility mode
 * Integrate with Cookie Notice and CookieBot plugins to collect user consent before tracking
 * Integrate with Google AMP Consent Box before enable tracking
 * Integrate with Google Analytics Chrome browser opt-out extension and built-in cookie opt-out system
@@ -403,6 +415,11 @@ MonsterInsights Enhanced eCommerce tracking works out of the box with WooCommerc
 Yes. MonsterInsights offers the most comprehensive Google Analytics solution for WordPress multi-site.
 
 It comes with advanced permission control, sample rate control, and other options that you need to properly enable Google Analytics on WordPress multisite.
+
+= Does MonsterInsights support Google Analytics v4 (GAv4) =
+
+Yes, we fully support Google Analytics v4 (GAv4) properties as well as GAv3 (Universal) properties. In fact, you can track your site to both at the same time using [our exclusive dual tracking feature](https://www.monsterinsights.com/introducing-google-analytics-4-dual-analytics-tracking-for-wordpress/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion).
+
 
 == Screenshots ==
 

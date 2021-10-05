@@ -72,6 +72,59 @@ class Admin {
 			return;
 		}
 
+		add_action( 'sanitize_comment_cookies', [ $this, 'init' ], 20 );
+
+		$this->setupWizard = new SetupWizard();
+	}
+
+	/**
+	 * Initialize the admin.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @return void
+	 */
+	public function init() {
+		// Add the admin bar menu.
+		if ( is_user_logged_in() && ( ! is_multisite() || ! is_network_admin() ) ) {
+			add_action( 'admin_bar_menu', [ $this, 'adminBarMenu' ], 1000 );
+		}
+
+		if ( is_admin() ) {
+			// Add the menu to the sidebar.
+			add_action( 'admin_menu', [ $this, 'addMenu' ] );
+			add_action( 'admin_menu', [ $this, 'hideScheduledActionsMenu' ], 99999 );
+			if ( is_multisite() ) {
+				add_action( 'network_admin_menu', [ $this, 'addRobotsMenu' ] );
+			}
+
+			// Add the columns to page/posts.
+			add_action( 'current_screen', [ $this, 'addPostColumns' ], 1 );
+
+			// Add Score to Publish metabox.
+			add_action( 'post_submitbox_misc_actions', [ $this, 'addPublishScore' ] );
+
+			add_action( 'admin_init', [ $this, 'addPluginScripts' ] );
+
+			// Add redirects messages to trashed posts.
+			add_filter( 'bulk_post_updated_messages', [ $this, 'appendTrashedMessage' ], 10, 2 );
+
+			$this->registerLinkFormatHooks();
+		}
+
+		$this->loadTextDomain();
+		$this->setPages();
+	}
+
+	/**
+	 * Sets our menu pages.
+	 * It is important this runs AFTER we've loaded the text domain.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @return void
+	 */
+	private function setPages() {
 		$this->pages = [
 			$this->pageSlug            => [
 				'menu_title' => esc_html__( 'Dashboard', 'all-in-one-seo-pack' ),
@@ -126,46 +179,6 @@ class Admin {
 				'parent'     => $this->pageSlug
 			]
 		];
-
-		add_action( 'sanitize_comment_cookies', [ $this, 'init' ], 20 );
-
-		$this->setupWizard = new SetupWizard();
-	}
-
-	/**
-	 * Initialize the admin.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return void
-	 */
-	public function init() {
-		// Add the admin bar menu.
-		if ( is_user_logged_in() && ( ! is_multisite() || ! is_network_admin() ) ) {
-			add_action( 'admin_bar_menu', [ $this, 'adminBarMenu' ], 1000 );
-		}
-
-		if ( is_admin() ) {
-			// Add the menu to the sidebar.
-			add_action( 'admin_menu', [ $this, 'addMenu' ] );
-			add_action( 'admin_menu', [ $this, 'hideScheduledActionsMenu' ], 99999 );
-			if ( is_multisite() ) {
-				add_action( 'network_admin_menu', [ $this, 'addRobotsMenu' ] );
-			}
-
-			// Add the columns to page/posts.
-			add_action( 'current_screen', [ $this, 'addPostColumns' ], 1 );
-
-			// Add Score to Publish metabox.
-			add_action( 'post_submitbox_misc_actions', [ $this, 'addPublishScore' ] );
-
-			add_action( 'admin_init', [ $this, 'addPluginScripts' ] );
-
-			// Add redirects messages to trashed posts.
-			add_filter( 'bulk_post_updated_messages', [ $this, 'appendTrashedMessage' ], 10, 2 );
-
-			$this->registerLinkFormatHooks();
-		}
 	}
 
 	/**
@@ -1108,7 +1121,7 @@ class Admin {
 		$postTypes     = aioseo()->helpers->getPublicPostTypes();
 		$showTruSeo    = aioseo()->options->advanced->truSeo;
 		$isSpecialPage = aioseo()->helpers->isSpecialPage( $post->ID );
-		$showMetabox   = aioseo()->options->searchAppearance->dynamic->postTypes->{$post->post_type}->advanced->showMetaBox;
+		$showMetabox   = aioseo()->dynamicOptions->searchAppearance->postTypes->{$post->post_type}->advanced->showMetaBox;
 
 		$postTypesMB = [];
 		foreach ( $postTypes as $pt ) {
@@ -1142,7 +1155,7 @@ class Admin {
 						echo sprintf( esc_html__( '%1$s Score', 'all-in-one-seo-pack' ), esc_html( AIOSEO_PLUGIN_SHORT_NAME ) );
 					?>
 				</span>
-				<div id="aioseo-post-settings-sidebar-button" class="aioseo-score-button classic-editor <?php echo esc_attr( aioseo()->helpers->getScoreClass( $score ) ); ?>">
+				<div id="aioseo-post-settings-sidebar-button" class="aioseo-score-button classic-editor <?php echo esc_attr( $this->getScoreClass( $score ) ); ?>">
 					<span id="aioseo-post-score"><?php echo esc_attr( $score . '/100' ); ?></span>
 				</div>
 			</div>
@@ -1377,5 +1390,37 @@ class Admin {
 		$messages['post']['trashed'] = $messages['post']['trashed'] . '&nbsp;<a href="' . $url . '">' . $addRedirect . '</a> |';
 		$messages['page']['trashed'] = $messages['page']['trashed'] . '&nbsp;<a href="' . $url . '">' . $addRedirect . '</a> |';
 		return $messages;
+	}
+
+	/**
+	* Get the class name for the Score button.
+	* Depending on the score the button should have different color.
+	*
+	* @since 4.0.0
+	*
+	* @param int $score The content to retrieve from the remote URL.
+	*
+	* @return string The class name for Score button.
+	*/
+	private function getScoreClass( $score ) {
+		$scoreClass = 50 < $score ? 'score-orange' : 'score-red';
+		if ( 0 === $score ) {
+			$scoreClass = 'score-none';
+		}
+		if ( $score >= 80 ) {
+			$scoreClass = 'score-green';
+		}
+		return $scoreClass;
+	}
+
+	/**
+	 * Loads the plugin text domain.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @return void
+	 */
+	public function loadTextDomain() {
+		aioseo()->helpers->loadTextDomain( 'all-in-one-seo-pack' );
 	}
 }

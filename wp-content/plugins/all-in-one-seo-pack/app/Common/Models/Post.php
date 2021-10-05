@@ -74,8 +74,25 @@ class Post extends Model {
 			->run()
 			->model( 'AIOSEO\\Plugin\\Common\\Models\\Post' );
 
+		if ( ! $post->exists() ) {
+			$post->post_id = $postId;
+			$post          = self::setDynamicDefaults( $post, $postId );
+		}
+
+		return $post;
+	}
+
+	/**
+	 * Sets the dynamic defaults on the post object if it doesn't exist in the DB yet.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @param  Post $post   The post object.
+	 * @param  int  $postId The post ID.
+	 * @return Post         The modified post object.
+	 */
+	private static function setDynamicDefaults( $post, $postId ) {
 		if (
-			! $post->exists() &&
 			'page' === get_post_type( $postId ) && // This check cannot be deleted and is required to prevent errors after WordPress cleans up the attachment it creates when a plugin is updated.
 			(
 				aioseo()->helpers->isWooCommerceCheckoutPage( $postId ) ||
@@ -86,6 +103,11 @@ class Post extends Model {
 			$post->robots_default = false;
 			$post->robots_noindex = true;
 		}
+
+		if ( aioseo()->helpers->isStaticHomePage( $postId ) ) {
+			$post->og_object_type = 'website';
+		}
+
 		return $post;
 	}
 
@@ -94,9 +116,9 @@ class Post extends Model {
 	 *
 	 * @since 4.0.3
 	 *
-	 * @param  int                    $postId The Post ID.
-	 * @param  array                  $data   The post data to save.
-	 * @return bool|\WP_REST_Response         True if post data was saved or error response.
+	 * @param  int         $postId The Post ID.
+	 * @param  array       $data   The post data to save.
+	 * @return void|string         True if post data was saved or error response.
 	 */
 	public static function savePost( $postId, $data ) {
 		$thePost = self::getPost( $postId );
@@ -189,8 +211,6 @@ class Post extends Model {
 		if ( ! empty( $lastError ) ) {
 			return $lastError;
 		}
-
-		return true;
 	}
 
 	/**

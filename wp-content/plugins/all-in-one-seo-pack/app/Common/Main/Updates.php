@@ -66,6 +66,9 @@ class Updates {
 	 * @return void
 	 */
 	public function runUpdates() {
+		// The dynamic options have not yet fully loaded, so let's refresh here to force that to happen.
+		aioseo()->dynamicOptions->refresh(); // TODO: Check if we still need this since it already runs on 999 in the main AIOSEO file.
+
 		$lastActiveVersion = aioseo()->internalOptions->internal->lastActiveVersion;
 		if ( version_compare( $lastActiveVersion, '4.0.5', '<' ) ) {
 			$this->addImageScanDateColumn();
@@ -102,7 +105,28 @@ class Updates {
 			$this->accessControlNewCapabilities();
 		}
 
+		if ( version_compare( $lastActiveVersion, '4.1.4.3', '<' ) ) {
+			$this->migrateDynamicSettings();
+		}
+
 		do_action( 'aioseo_run_updates', $lastActiveVersion );
+	}
+
+	/**
+	 * Retrieve the raw options from the database for migration.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @return array An array of options.
+	 */
+	private function getRawOptions() {
+		// Options from the DB.
+		$commonOptions = json_decode( get_option( aioseo()->options->optionsName ), true );
+		if ( empty( $commonOptions ) ) {
+			$commonOptions = [];
+		}
+
+		return $commonOptions;
 	}
 
 	/**
@@ -113,7 +137,9 @@ class Updates {
 	 * @return void
 	 */
 	public function updateLatestVersion() {
-		aioseo()->internalOptions->internal->lastActiveVersion = aioseo()->version;
+		if ( aioseo()->version !== aioseo()->internalOptions->internal->lastActiveVersion ) {
+			aioseo()->internalOptions->internal->lastActiveVersion = aioseo()->version;
+		}
 	}
 
 	/**
@@ -441,5 +467,125 @@ class Updates {
 	 */
 	public function accessControlNewCapabilities() {
 		aioseo()->access->addCapabilities();
+	}
+
+	/**
+	 * Migrate dynamic settings to a separate options structure.
+	 *
+	 * @since 4.1.4
+	 *
+	 * @return void
+	 */
+	public function migrateDynamicSettings() {
+		$rawOptions = $this->getRawOptions();
+		$options    = aioseo()->dynamicOptions->noConflict();
+
+		// Sitemap post type priorities/frequencies.
+		if (
+			! empty( $rawOptions['sitemap']['dynamic']['priority']['postTypes'] )
+		) {
+			foreach ( $rawOptions['sitemap']['dynamic']['priority']['postTypes'] as $postTypeName => $data ) {
+				if ( $options->sitemap->priority->postTypes->has( $postTypeName ) ) {
+					$options->sitemap->priority->postTypes->$postTypeName->priority  = $data['priority'];
+					$options->sitemap->priority->postTypes->$postTypeName->frequency = $data['frequency'];
+				}
+			}
+		}
+
+		// Sitemap taxonomy priorities/frequencies.
+		if (
+			! empty( $rawOptions['sitemap']['dynamic']['priority']['taxonomies'] )
+		) {
+			foreach ( $rawOptions['sitemap']['dynamic']['priority']['taxonomies'] as $taxonomyName => $data ) {
+				if ( $options->sitemap->priority->taxonomies->has( $taxonomyName ) ) {
+					$options->sitemap->priority->taxonomies->$taxonomyName->priority  = $data['priority'];
+					$options->sitemap->priority->taxonomies->$taxonomyName->frequency = $data['frequency'];
+				}
+			}
+		}
+
+		// Facebook post type object types.
+		if (
+			! empty( $rawOptions['social']['facebook']['general']['dynamic']['postTypes'] )
+		) {
+			foreach ( $rawOptions['social']['facebook']['general']['dynamic']['postTypes'] as $postTypeName => $data ) {
+				if ( $options->social->facebook->general->postTypes->has( $postTypeName ) ) {
+					$options->social->facebook->general->postTypes->$postTypeName->objectType = $data['objectType'];
+				}
+			}
+		}
+
+		// Search appearance post type data.
+		if (
+			! empty( $rawOptions['searchAppearance']['dynamic']['postTypes'] )
+		) {
+			foreach ( $rawOptions['searchAppearance']['dynamic']['postTypes'] as $postTypeName => $data ) {
+				if ( $options->searchAppearance->postTypes->has( $postTypeName ) ) {
+					$options->searchAppearance->postTypes->$postTypeName->show            = $data['show'];
+					$options->searchAppearance->postTypes->$postTypeName->title           = $data['title'];
+					$options->searchAppearance->postTypes->$postTypeName->metaDescription = $data['metaDescription'];
+					$options->searchAppearance->postTypes->$postTypeName->schemaType      = $data['schemaType'];
+					$options->searchAppearance->postTypes->$postTypeName->webPageType     = $data['webPageType'];
+					$options->searchAppearance->postTypes->$postTypeName->articleType     = $data['articleType'];
+					$options->searchAppearance->postTypes->$postTypeName->customFields    = $data['customFields'];
+
+					// Advanced settings.
+					$advanced = ! empty( $data['advanced']['robotsMeta'] ) ? $data['advanced']['robotsMeta'] : null;
+					if ( ! empty( $advanced ) ) {
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->default         = $data['advanced']['robotsMeta']['default'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->noindex         = $data['advanced']['robotsMeta']['noindex'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->nofollow        = $data['advanced']['robotsMeta']['nofollow'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->noarchive       = $data['advanced']['robotsMeta']['noarchive'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->noimageindex    = $data['advanced']['robotsMeta']['noimageindex'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->notranslate     = $data['advanced']['robotsMeta']['notranslate'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->nosnippet       = $data['advanced']['robotsMeta']['nosnippet'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->noodp           = $data['advanced']['robotsMeta']['noodp'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->maxSnippet      = $data['advanced']['robotsMeta']['maxSnippet'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->maxVideoPreview = $data['advanced']['robotsMeta']['maxVideoPreview'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->robotsMeta->maxImagePreview = $data['advanced']['robotsMeta']['maxImagePreview'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->showDateInGooglePreview     = $data['advanced']['showDateInGooglePreview'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->showPostThumbnailInSearch   = $data['advanced']['showPostThumbnailInSearch'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->showMetaBox                 = $data['advanced']['showMetaBox'];
+						$options->searchAppearance->postTypes->$postTypeName->advanced->bulkEditing                 = $data['advanced']['bulkEditing'];
+					}
+
+					if ( 'attachment' === $postTypeName ) {
+						$options->searchAppearance->postTypes->$postTypeName->redirectAttachmentUrls = $data['redirectAttachmentUrls'];
+					}
+				}
+			}
+		}
+
+		// Search appearance taxonomy data.
+		if (
+			! empty( $rawOptions['searchAppearance']['dynamic']['taxonomies'] )
+		) {
+			foreach ( $rawOptions['searchAppearance']['dynamic']['taxonomies'] as $taxonomyName => $data ) {
+				if ( $options->searchAppearance->taxonomies->has( $taxonomyName ) ) {
+					$options->searchAppearance->taxonomies->$taxonomyName->show            = $data['show'];
+					$options->searchAppearance->taxonomies->$taxonomyName->title           = $data['title'];
+					$options->searchAppearance->taxonomies->$taxonomyName->metaDescription = $data['metaDescription'];
+
+					// Advanced settings.
+					$advanced = ! empty( $data['advanced']['robotsMeta'] ) ? $data['advanced']['robotsMeta'] : null;
+					if ( ! empty( $advanced ) ) {
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->default         = $data['advanced']['robotsMeta']['default'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->noindex         = $data['advanced']['robotsMeta']['noindex'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->nofollow        = $data['advanced']['robotsMeta']['nofollow'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->noarchive       = $data['advanced']['robotsMeta']['noarchive'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->noimageindex    = $data['advanced']['robotsMeta']['noimageindex'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->notranslate     = $data['advanced']['robotsMeta']['notranslate'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->nosnippet       = $data['advanced']['robotsMeta']['nosnippet'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->noodp           = $data['advanced']['robotsMeta']['noodp'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->maxSnippet      = $data['advanced']['robotsMeta']['maxSnippet'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->maxVideoPreview = $data['advanced']['robotsMeta']['maxVideoPreview'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->robotsMeta->maxImagePreview = $data['advanced']['robotsMeta']['maxImagePreview'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->showDateInGooglePreview     = $data['advanced']['showDateInGooglePreview'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->showPostThumbnailInSearch   = $data['advanced']['showPostThumbnailInSearch'];
+						$options->searchAppearance->taxonomies->$taxonomyName->advanced->showMetaBox                 = $data['advanced']['showMetaBox'];
+					}
+				}
+			}
+		}
 	}
 }

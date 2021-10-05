@@ -32,6 +32,11 @@ class Image {
 			return;
 		}
 
+		// Don't schedule a scan if an importer is running.
+		if ( aioseo()->importExport->isImportRunning() ) {
+			return;
+		}
+
 		add_action( $this->imageScanAction, [ $this, 'scanPosts' ] );
 
 		if ( wp_doing_ajax() || wp_doing_cron() ) {

@@ -13,6 +13,43 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 trait DateTime {
 	/**
+	 * Formats a timestamp as an ISO 8601 date.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  string $dateTime The raw datetime.
+	 * @return string           The formatted datetime.
+	 */
+	public function formatDateTime( $dateTime ) {
+		return gmdate( 'c', mysql2date( 'U', $dateTime ) );
+	}
+
+	/**
+	 * Returns the timezone offset.
+	 * We use the code from wp_timezone_string() which became available in WP 5.3+
+	 *
+	 * @since 4.0.0
+	 *
+	 * @return string The timezone offset.
+	 */
+	public function getTimeZoneOffset() {
+		$timezoneString = get_option( 'timezone_string' );
+		if ( $timezoneString ) {
+			return $timezoneString;
+		}
+
+		$offset   = (float) get_option( 'gmt_offset' );
+		$hours    = (int) $offset;
+		$minutes  = ( $offset - $hours );
+		$sign     = ( $offset < 0 ) ? '-' : '+';
+		$absHour  = abs( $hours );
+		$absMins  = abs( $minutes * 60 );
+		$tzOffset = sprintf( '%s%02d:%02d', $sign, $absHour, $absMins );
+
+		return $tzOffset;
+	}
+
+	/**
 	 * Formats a date in ISO8601 format.
 	 *
 	 * @since 4.1.2

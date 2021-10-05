@@ -89,10 +89,10 @@ class Description {
 		}
 
 		if ( is_archive() ) {
-			$postType = get_queried_object();
-			$options  = aioseo()->options->noConflict();
-			if ( $options->searchAppearance->dynamic->archives->has( $postType->name ) ) {
-				return $this->helpers->prepare( aioseo()->options->searchAppearance->dynamic->archives->{ $postType->name }->metaDescription );
+			$postType       = get_queried_object();
+			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+				return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->metaDescription );
 			}
 		}
 	}
@@ -177,8 +177,8 @@ class Description {
 			return $postTypeDescription[ $postType ];
 		}
 
-		if ( aioseo()->options->searchAppearance->dynamic->postTypes->has( $postType ) ) {
-			$description = aioseo()->options->searchAppearance->dynamic->postTypes->{$postType}->metaDescription;
+		if ( aioseo()->dynamicOptions->searchAppearance->postTypes->has( $postType ) ) {
+			$description = aioseo()->dynamicOptions->searchAppearance->postTypes->{$postType}->metaDescription;
 		}
 
 		$postTypeDescription[ $postType ] = empty( $description ) ? '' : $description;
@@ -210,9 +210,9 @@ class Description {
 			return $description;
 		}
 
-		$options = aioseo()->options->noConflict();
-		if ( ! $description && $options->searchAppearance->dynamic->taxonomies->has( $term->taxonomy ) ) {
-			$description = $this->helpers->prepare( aioseo()->options->searchAppearance->dynamic->taxonomies->{$term->taxonomy}->metaDescription, false, $default );
+		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+		if ( ! $description && $dynamicOptions->searchAppearance->taxonomies->has( $term->taxonomy ) ) {
+			$description = $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->taxonomies->{$term->taxonomy}->metaDescription, false, $default );
 		}
 
 		$terms[ $term->term_id ] = $description ? $description : $this->helpers->prepare( term_description( $term->term_id ), false, $default );

@@ -6,9 +6,9 @@
  * Author:              MonsterInsights
  * Author URI:          https://www.monsterinsights.com/?utm_source=liteplugin&utm_medium=pluginheader&utm_campaign=authoruri&utm_content=7%2E0%2E0
  *
- * Version:             7.18.0
- * Requires at least:   3.8.0
- * Requires PHP:        5.2
+ * Version:             8.1.0
+ * Requires at least:   4.8.0
+ * Requires PHP:        5.5
  *
  * License:             GPL v3
  *
@@ -69,7 +69,7 @@ final class MonsterInsights_Lite {
 	 * @access public
 	 * @var string $version Plugin version.
 	 */
-	public $version = '7.18.0';
+	public $version = '8.1.0';
 
 	/**
 	 * Plugin file.
@@ -203,18 +203,14 @@ final class MonsterInsights_Lite {
 			self::$instance = new MonsterInsights_Lite();
 			self::$instance->file = __FILE__;
 
-			global $wp_version;
-
-			// Detect non-supported WordPress version and return early
-			if ( version_compare( $wp_version, '3.8', '<' ) && ( ! defined( 'MONSTERINSIGHTS_FORCE_ACTIVATION' ) || ! MONSTERINSIGHTS_FORCE_ACTIVATION ) ) {
-				add_action( 'admin_notices', array( self::$instance, 'monsterinsights_wp_notice' ) );
-				return;
-			}
-
 			// Detect Pro version and return early
 			if ( defined( 'MONSTERINSIGHTS_PRO_VERSION' ) ) {
 				add_action( 'admin_notices', array( self::$instance, 'monsterinsights_pro_notice' ) );
-				return;
+				return self::$instance;
+			}
+
+			if ( ! self::$instance->check_compatibility() ) {
+				return self::$instance;
 			}
 
 			// Define constants
@@ -324,6 +320,24 @@ final class MonsterInsights_Lite {
 	}
 
 	/**
+	 * Check compatibility with PHP and WP, and display notices if necessary
+	 *
+	 * @since 8.0.0
+	 * @return bool
+	 */
+	private function check_compatibility() {
+		if ( defined( 'MONSTERINSIGHTS_FORCE_ACTIVATION' ) && MONSTERINSIGHTS_FORCE_ACTIVATION ) {
+			return true;
+		}
+
+		require_once plugin_dir_path( __FILE__ ) . 'includes/compatibility-check.php';
+		$compatibility = MonsterInsights_Compatibility_Check::get_instance();
+		$compatibility->maybe_display_notice();
+
+		return $compatibility->is_php_compatible() && $compatibility->is_wp_compatible();
+	}
+
+	/**
 	 * Define MonsterInsights constants.
 	 *
 	 * This function defines all of the MonsterInsights PHP constants.
@@ -406,27 +420,6 @@ final class MonsterInsights_Lite {
 			load_plugin_textdomain( 'google-analytics-for-wordpress', false, $mi_mofile4 );
 		}
 
-	}
-
-	/**
-	 * Output a nag notice if the user has an out of date WP version installed
-	 *
-	 * @access public
-	 * @since 6.0.0
-	 *
-	 * @return 	void
-	 */
-	public function monsterinsights_wp_notice() {
-		$url = admin_url( 'plugins.php' );
-		// Check for MS dashboard
-		if( is_network_admin() ) {
-			$url = network_admin_url( 'plugins.php' );
-		}
-		?>
-		<div class="error">
-			<p><?php echo sprintf( esc_html__( 'Sorry, but your version of WordPress does not meet MonsterInsights\'s required version of %1$s3.8%2$s to run properly. The plugin not been activated. %3$sClick here to return to the Dashboard%4$s.', 'google-analytics-for-wordpress' ), '<strong>', '</strong>', '<a href="' . $url . '">', '</a>' ); ?></p>
-		</div>
-		<?php
 	}
 
 	/**
@@ -569,6 +562,7 @@ final class MonsterInsights_Lite {
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/frontend/frontend.php';
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/frontend/seedprod.php';
 		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/measurement-protocol.php';
+		require_once MONSTERINSIGHTS_PLUGIN_DIR . 'includes/measurement-protocol-v4.php';
 	}
 
 	/**
@@ -600,24 +594,20 @@ final class MonsterInsights_Lite {
  * @return void
  */
 function monsterinsights_lite_activation_hook( $network_wide ) {
-
-	global $wp_version;
-
 	$url = admin_url( 'plugins.php' );
 	// Check for MS dashboard
 	if ( is_network_admin() ) {
 		$url = network_admin_url( 'plugins.php' );
 	}
 
-	if ( version_compare( $wp_version, '3.8', '<' ) && ( ! defined( 'MONSTERINSIGHTS_FORCE_ACTIVATION' ) || ! MONSTERINSIGHTS_FORCE_ACTIVATION ) ) {
-		deactivate_plugins( plugin_basename( __FILE__ ) );
-		wp_die( sprintf( esc_html__( 'Sorry, but your version of WordPress does not meet MonsterInsight\'s required version of %1$s3.8%2$s to run properly. The plugin not been activated. %3$sClick here to return to the Dashboard%4$s.', 'google-analytics-by-wordpress' ), '<strong>', '</strong>', '<a href="' . $url . '">', '</a>' ) );
-	}
-
 	if ( class_exists( 'MonsterInsights' ) ) {
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 		wp_die( sprintf( esc_html__( 'Please uninstall and remove MonsterInsights Pro before activating Google Analytics for WordPress by MonsterInsights. The Lite version has not been activated. %1$sClick here to return to the Dashboard%2$s.', 'google-analytics-by-wordpress' ), '<a href="' . $url . '">', '</a>' ) );
 	}
+
+	require_once plugin_dir_path( __FILE__ ) . 'includes/compatibility-check.php';
+	$compatibility = MonsterInsights_Compatibility_Check::get_instance();
+	$compatibility->maybe_deactivate_plugin( plugin_basename( __FILE__ ) );
 
 	// Add transient to trigger redirect.
 	set_transient( '_monsterinsights_activation_redirect', 1, 30 );
@@ -751,10 +741,11 @@ function MonsterInsights_Lite() {
  * @return void
  */
 function monsterinsights_lite_install_and_upgrade() {
-	global $wp_version;
+	require_once plugin_dir_path( __FILE__ ) . 'includes/compatibility-check.php';
+	$compatibility = MonsterInsights_Compatibility_Check::get_instance();
 
-	// If the WordPress site doesn't meet the correct WP version requirements, don't activate MonsterInsights
-	if ( version_compare( $wp_version, '3.8', '<' ) ) {
+	// If the WordPress site doesn't meet the correct WP or PHP version requirements, don't activate MonsterInsights
+	if ( ! $compatibility->is_php_compatible() || ! $compatibility->is_wp_compatible() ) {
 		if ( is_plugin_active( plugin_basename( __FILE__ ) ) ) {
 			return;
 		}

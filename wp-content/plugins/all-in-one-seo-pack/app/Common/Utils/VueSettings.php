@@ -92,6 +92,8 @@ class VueSettings {
 			'localBusinessOpeningHours'    => true,
 			'locationsSettings'            => true,
 			'advancedLocationsSettings'    => true,
+			'localBusinessMapsApiKey'      => true,
+			'localBusinessMapsSettings'    => true,
 			'robotsEditor'                 => true,
 			'badBotBlocker'                => true,
 			'databaseTools'                => true,

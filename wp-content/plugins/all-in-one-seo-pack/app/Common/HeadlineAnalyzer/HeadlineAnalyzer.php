@@ -55,7 +55,8 @@ class HeadlineAnalyzer {
 
 		aioseo()->helpers->enqueueStyle(
 			'aioseo-headline-analyzer',
-			'css/headline-analyzer.css'
+			'css/headline-analyzer.css',
+			false
 		);
 	}
 

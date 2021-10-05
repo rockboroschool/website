@@ -88,10 +88,10 @@ class Title {
 		}
 
 		if ( is_archive() ) {
-			$postType = get_queried_object();
-			$options  = aioseo()->options->noConflict();
-			if ( $options->searchAppearance->dynamic->archives->has( $postType->name ) ) {
-				return $this->helpers->prepare( aioseo()->options->searchAppearance->dynamic->archives->{ $postType->name }->title );
+			$postType       = get_queried_object();
+			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+				return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->title );
 			}
 		}
 	}
@@ -146,8 +146,8 @@ class Title {
 			return $postTypeTitle[ $postType ];
 		}
 
-		if ( aioseo()->options->searchAppearance->dynamic->postTypes->has( $postType ) ) {
-			$title = aioseo()->options->searchAppearance->dynamic->postTypes->{$postType}->title;
+		if ( aioseo()->dynamicOptions->searchAppearance->postTypes->has( $postType ) ) {
+			$title = aioseo()->dynamicOptions->searchAppearance->postTypes->{$postType}->title;
 		}
 
 		$postTypeTitle[ $postType ] = empty( $title ) ? '' : $title;
@@ -170,10 +170,10 @@ class Title {
 			return $terms[ $term->term_id ];
 		}
 
-		$title   = '';
-		$options = aioseo()->options->noConflict();
-		if ( ! $title && $options->searchAppearance->dynamic->taxonomies->has( $term->taxonomy ) ) {
-			$newTitle = aioseo()->options->searchAppearance->dynamic->taxonomies->{$term->taxonomy}->title;
+		$title          = '';
+		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+		if ( ! $title && $dynamicOptions->searchAppearance->taxonomies->has( $term->taxonomy ) ) {
+			$newTitle = aioseo()->dynamicOptions->searchAppearance->taxonomies->{$term->taxonomy}->title;
 			$newTitle = preg_replace( '/#taxonomy_title/', aioseo()->helpers->escapeRegexReplacement( $term->name ), $newTitle );
 			$title    = $this->helpers->prepare( $newTitle, false, $default );
 		}

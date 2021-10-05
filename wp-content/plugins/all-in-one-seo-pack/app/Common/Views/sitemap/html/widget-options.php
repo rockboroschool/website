@@ -76,7 +76,7 @@
 					<input
 						type="checkbox"
 						name="<?php echo esc_attr( $this->get_field_name( 'post_types' ) ); ?>[]"
-						id="<?php echo esc_attr( $this->get_field_id( 'post_types' ) ); ?>"
+						id="<?php echo esc_attr( $this->get_field_id( 'post_types' . $i ) ); ?>"
 						<?php checked( in_array( $postTypeObject['name'], $instance['post_types'], true ) ); ?>
 						value="<?php echo esc_html( $i ); ?>"
 					/>
@@ -99,7 +99,7 @@
 					<input
 						type="checkbox"
 						name="<?php echo esc_attr( $this->get_field_name( 'taxonomies' ) ); ?>[]"
-						id="<?php echo esc_attr( $this->get_field_id( 'taxonomies' ) ); ?>"
+						id="<?php echo esc_attr( $this->get_field_id( 'taxonomies' . $i ) ); ?>"
 						<?php checked( in_array( $taxonomyObject['name'], $instance['taxonomies'], true ) ); ?>
 						value="<?php echo esc_html( $i ); ?>"
 					/>

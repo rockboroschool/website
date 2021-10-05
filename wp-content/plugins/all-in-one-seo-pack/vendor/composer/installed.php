@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'ae0684856361862055a1194bd19266001ef83a21',
+    'reference' => '884def13a567fe83d0ad308050fc70346387e793',
     'name' => 'awesomemotive/all-in-one-seo-pack-pro',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'ae0684856361862055a1194bd19266001ef83a21',
+      'reference' => '884def13a567fe83d0ad308050fc70346387e793',
     ),
     'jwhennessey/phpinsight' => 
     array (
