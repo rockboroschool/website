@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
 /**
  * Handles UpdraftCentral Theme Commands which basically handles
@@ -19,7 +19,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 	 *
 	 * link to udrpc_action main function in class UpdraftCentral_Listener
 	 */
-	public function _pre_action($command, $data, $extra_info) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- This function is called from listner.php and $extra_info is being sent.
+	public function _pre_action($command, $data, $extra_info) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- This function is called from listener.php and $extra_info is being sent.
 		// Here we assign the current blog_id to a variable $blog_id
 		$blog_id = get_current_blog_id();
 		if (!empty($data['site_id'])) $blog_id = $data['site_id'];
@@ -191,6 +191,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 					)
 				));
 
+				$info = $this->_get_theme_info($query['theme']);
 				if (is_wp_error($api)) {
 					$result = $this->_generic_error_response('generic_response_error', array(
 						'theme' => $query['theme'],
@@ -199,13 +200,12 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 						'info' => $info
 					));
 				} else {
-					$info = $this->_get_theme_info($query['theme']);
 					$installed = $info['installed'];
 
 					$error_code = $error_message = '';
 					if (!$installed) {
 						// WP < 3.7
-						if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
+						if (!class_exists('Automatic_Upgrader_Skin')) include_once(dirname(dirname(__FILE__)).'/classes/class-automatic-upgrader-skin.php');
 
 						$skin = new Automatic_Upgrader_Skin();
 						$upgrader = new Theme_Upgrader($skin);

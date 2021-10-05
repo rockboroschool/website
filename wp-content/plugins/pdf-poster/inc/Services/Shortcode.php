@@ -2,6 +2,7 @@
 
 namespace PDFP\Services;
 use PDFP\Model\AdvanceSystem;
+use PDFP\Model\AnalogSystem;
 
 class Shortcodes{
   protected static $_instance = null;
@@ -23,14 +24,23 @@ class Shortcodes{
     ), $atts));
 
     $post_type = get_post_type($id);
+    $pluginUpdated = 1630223686;
+    $publishDate = get_the_date('U', $id);
+    $isGutenberg = get_post_meta($id, 'isGutenberg', true);
+    $post = get_post($id);
 
+    
     ob_start(); 
     
     if($post_type !== 'pdfposter'){
       return false;
     }
 
-    echo( AdvanceSystem::html($id));
+    if($pluginUpdated < $publishDate && $post->post_content != '' || $isGutenberg){
+      echo( AdvanceSystem::html($id));
+    }else {
+      echo Analogsystem::html($id);
+    }
     
     return ob_get_clean(); 
   }

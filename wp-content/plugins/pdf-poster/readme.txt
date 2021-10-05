@@ -4,7 +4,7 @@ Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
 Tested up to: 5.8
-Stable tag: 2.0.2
+Stable tag: 2.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,31 +116,42 @@ If you find a conflict between our plugin and a third-party plugin, please let u
 
 == Changelog ==
 
-= 1.0 =
-* Initial Release
+= 2.0.3 = 
+* Option to enable/disable Gutenberg Shortcode Generator
 
-= 1.1 =
-* fix an issue with pdf positions
+= 2.0.0 =
+* Added Advanced Shortcode Generator
+* Improved Security Performance
+* Fixed Height issue on mobile device
+
+= 1.6 =
+* Fix isuue and make compatible with Wordpress 5.5 Version
+
+= 1.5 =
+* Fix Gutenberg block issue
+* Fix toggle menu in viewer
+ 
+= 1.4 =
+* Add support for Gutenberg Block
+
+= 1.3 =
+* Fix an issue 
 
 = 1.2 =
 * removed an ad.
 * fix issue which causes centralize the content.
 * Improved performance. 
 
-= 1.3 =
-* Fix an issue 
- 
-= 1.4 =
-* Add support for Gutenberg Block
+= 1.1 =
+* fix an issue with pdf positions
 
-= 1.5 =
-* Fix Gutenberg block issue
-* Fix toggle menu in viewer
+= 1.0 =
+* Initial Release
 
-= 1.6 =
-* Fix isuue and make compatible with Wordpress 5.5 Version
 
-= 2.0.0 =
-* Added Advanced Shortcode Generator
-* Improved Security Performance
-* Fixed Height issue on mobile device
+
+
+
+
+
+

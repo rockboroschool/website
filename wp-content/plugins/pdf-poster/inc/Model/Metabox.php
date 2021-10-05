@@ -1,5 +1,5 @@
 <?php
-namespace H5APPlayer\Model;
+namespace PDFP\Model;
 
 class Metabox{
 

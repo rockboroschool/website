@@ -73,20 +73,20 @@
         },
         {
             "name": "components/jquery",
-            "version": "3.5.1",
-            "version_normalized": "3.5.1.0",
+            "version": "3.6.0",
+            "version_normalized": "3.6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/components/jquery.git",
-                "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b"
+                "reference": "6cf38ee1fd04b6adf8e7dda161283aa35be818c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
-                "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
+                "url": "https://api.github.com/repos/components/jquery/zipball/6cf38ee1fd04b6adf8e7dda161283aa35be818c3",
+                "reference": "6cf38ee1fd04b6adf8e7dda161283aa35be818c3",
                 "shasum": ""
             },
-            "time": "2020-05-05T13:21:02+00:00",
+            "time": "2021-03-20T19:13:42+00:00",
             "type": "component",
             "extra": {
                 "component": {
@@ -284,7 +284,7 @@
                     "dev-master": "3.9-dev"
                 }
             },
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Guzzle": "src/",
@@ -648,7 +648,7 @@
             },
             "time": "2016-01-29T14:18:21+00:00",
             "type": "library",
-            "installation-source": "source",
+            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "OpenCloud": [
@@ -940,7 +940,7 @@
                     ]
                 }
             },
-            "installation-source": "source",
+            "installation-source": "dist",
             "license": [
                 "MIT"
             ],

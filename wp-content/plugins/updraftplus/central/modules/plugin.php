@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
 /**
  * Handles UpdraftCentral Plugin Commands which basically handles
@@ -162,6 +162,7 @@ class UpdraftCentral_Plugin_Commands extends UpdraftCentral_Commands {
 					)
 				));
 
+				$info = $this->_get_plugin_info($query);
 				if (is_wp_error($api)) {
 					$result = $this->_generic_error_response('generic_response_error', array(
 						'plugin' => $query['plugin'],
@@ -170,13 +171,12 @@ class UpdraftCentral_Plugin_Commands extends UpdraftCentral_Commands {
 						'info' => $info
 					));
 				} else {
-					$info = $this->_get_plugin_info($query);
 					$installed = $info['installed'];
 
 					$error_code = $error_message = '';
 					if (!$installed) {
 						// WP < 3.7
-						if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
+						if (!class_exists('Automatic_Upgrader_Skin')) include_once(dirname(dirname(__FILE__)).'/classes/class-automatic-upgrader-skin.php');
 
 						$skin = new Automatic_Upgrader_Skin();
 						$upgrader = new Plugin_Upgrader($skin);

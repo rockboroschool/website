@@ -439,8 +439,8 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	/**
 	 * This function will complete the oAuth flow, if return_instead_of_echo is true then add the action to display the authed admin notice, otherwise echo this notice to page.
 	 *
-	 * @param string  $state              - the state
-	 * @param string  $code               - the oauth code
+	 * @param string  $state                  - the state
+	 * @param string  $code                   - the oauth code
 	 * @param boolean $return_instead_of_echo - a boolean to indicate if we should return the result or echo it
 	 *
 	 * @return void|string - returns the authentication message if return_instead_of_echo is true

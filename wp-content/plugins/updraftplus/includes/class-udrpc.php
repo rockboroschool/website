@@ -59,7 +59,7 @@ if (!class_exists('UpdraftPlus_Remote_Communications')) :
 class UpdraftPlus_Remote_Communications {
 
 	// Version numbers relate to versions of this PHP library only (i.e. it's not a protocol support number, and version numbers of other compatible libraries (e.g. JavaScript) are not comparable)
-	public $version = '1.4.22';
+	public $version = '1.4.23';
 
 	private $key_name_indicator;
 
@@ -610,8 +610,7 @@ class UpdraftPlus_Remote_Communications {
 	 */
 	public function http_post($post_options) {
 		global $wp_version;
-		// @codingStandardsIgnoreLine
-		@include ABSPATH.WPINC.'/version.php';
+		include ABSPATH.WPINC.'/version.php';
 		$http_credentials = $this->http_credentials;
 
 		if (is_a($this->http_transport, 'GuzzleHttp\Client')) {
@@ -756,8 +755,7 @@ class UpdraftPlus_Remote_Communications {
 			}
 
 			if (empty($decoded)) {
-				$this->log('response from remote site could not be understood: '.substr($response_body, 0, 100).' ... ');
-
+				$this->log('response from remote site ('.$this->destination_url.') could not be understood: '.substr($response_body, 0, 100).' ... ');
 				return new WP_Error('response_not_understood', 'Response from remote site could not be understood', $response_body);
 			}
 		}

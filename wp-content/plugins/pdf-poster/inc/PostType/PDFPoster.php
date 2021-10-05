@@ -11,16 +11,17 @@ class Podcast{
     public function __construct(){
         add_action('init', [$this, 'init']);
         if ( is_admin() ) {
-            add_filter( 'post_row_actions', [$this, 'pdp_remove_row_actions'], 10, 2 );
-            // add_action('edit_form_after_title', [$this, 'pdp_shortcode_area']);
-            add_filter('manage_pdfposter_posts_columns', [$this, 'pdp_columns_head_only_podcast'], 10);
-            add_action('manage_pdfposter_posts_custom_column', [$this, 'pdp_columns_content_only_podcast'], 10, 2);
-            // add_filter('post_updated_messages', [$this, 'pdp_updated_messages']);
+            add_filter( 'post_row_actions', [$this, 'pdfp_remove_row_actions'], 10, 2 );
+            add_action('edit_form_after_title', [$this, 'pdfp_shortcode_area']);
+            add_filter('manage_pdfposter_posts_columns', [$this, 'pdfp_columns_head_only_podcast'], 10);
+            add_action('manage_pdfposter_posts_custom_column', [$this, 'pdfp_columns_content_only_podcast'], 10, 2);
+            add_filter('post_updated_messages', [$this, 'pdfp_updated_messages']);
 
-            // add_action('admin_head-post.php', [$this, 'pdp_hide_publishing_actions']);
-            // add_action('admin_head-post-new.php', [$this, 'pdp_hide_publishing_actions']);	
-            // add_filter( 'gettext', [$this, 'pdp_change_publish_button'], 10, 2 );
+            add_action('admin_head-post.php', [$this, 'pdfp_hide_publishing_actions']);
+            add_action('admin_head-post-new.php', [$this, 'pdfp_hide_publishing_actions']);	
+            add_filter( 'gettext', [$this, 'pdfp_change_publish_button'], 10, 2 );
             
+            add_filter( 'filter_block_editor_meta_boxes', [$this, 'remove_metabox'] );
             add_action('use_block_editor_for_post', [$this, 'forceGutenberg'], 10, 2);
             
         }
@@ -86,7 +87,7 @@ class Podcast{
     /**
      * Remove Row
      */
-    function pdp_remove_row_actions( $idtions ) {
+    function pdfp_remove_row_actions( $idtions ) {
         global $post;
         if( $post->post_type == $this->post_type ) {
             unset( $idtions['view'] );
@@ -95,23 +96,23 @@ class Podcast{
         return $idtions;
     }
 
-    function pdp_shortcode_area(){
+    function pdfp_shortcode_area(){
         global $post;	
         if($post->post_type== $this->post_type){
         ?>	
-        <div class="pdp_playlist_shortcode">
+        <div class="pdfp_playlist_shortcode">
                 <div class="shortcode-heading">
-                    <div class="icon"><span class="dashicons dashicons-format-audio"></span> <?php _e("WP Podcast", "pdp") ?></div>
-                    <div class="text"> <a href="https://bplugins.com/support/" target="_blank"><?php _e("Supports", "pdp") ?></a></div>
+                    <div class="icon"><span class="dashicons dashicons-pdf"></span> <?php _e("WP Podcast", "pdfp") ?></div>
+                    <div class="text"> <a href="https://bplugins.com/support/" target="_blank"><?php _e("Supports", "pdfp") ?></a></div>
                 </div>
                 <div class="shortcode-left">
-                    <h3><?php _e("Shortcode", "pdp") ?></h3>
-                    <p><?php _e("Copy and paste this shortcode into your posts, pages and widget:", "pdp") ?></p>
+                    <h3><?php _e("Shortcode", "pdfp") ?></h3>
+                    <p><?php _e("Copy and paste this shortcode into your posts, pages and widget:", "pdfp") ?></p>
                     <div class="shortcode" selectable>[pdf id='<?php echo esc_attr($post->ID); ?>']</div>
                 </div>
                 <div class="shortcode-right">
-                    <h3><?php _e("Template Include", "pdp") ?></h3>
-                    <p><?php _e("Copy and paste the PHP code into your template file:", "pdp"); ?></p>
+                    <h3><?php _e("Template Include", "pdfp") ?></h3>
+                    <p><?php _e("Copy and paste the PHP code into your template file:", "pdfp"); ?></p>
                     <div class="shortcode">&lt;?php echo do_shortcode('[pdf id="<?php echo esc_html($post->ID); ?>"]');
                     ?&gt;</div>
                 </div>
@@ -121,25 +122,25 @@ class Podcast{
     }
     
     // CREATE TWO FUNCTIONS TO HANDLE THE COLUMN
-    function pdp_columns_head_only_podcast($defaults) {
+    function pdfp_columns_head_only_podcast($defaults) {
         unset($defaults['date']);
         $defaults['shortcode'] = 'ShortCode';
         $defaults['date'] = 'Date';
         return $defaults;
     }
 
-    function pdp_columns_content_only_podcast($column_name, $post_ID) {
+    function pdfp_columns_content_only_podcast($column_name, $post_ID) {
         if ($column_name == 'shortcode') {
             echo '<div class="pdfp_front_shortcode"><input style="text-align: center; border: none; outline: none; background-color: #1e8cbe; color: #fff; padding: 4px 10px; border-radius: 3px;" value="[pdf id='. esc_attr($post_ID) . ']" ><span class="htooltip">Copy To Clipboard</span></div>';
         }
     }
     
-    function pdp_updated_messages( $messages ) {
-        $messages[$this->post_type][1] = __('Player updated ');
+    function pdfp_updated_messages( $messages ) {
+        $messages[$this->post_type][1] = __('updated ');
         return $messages;
     }
 
-    public function pdp_hide_publishing_actions(){
+    public function pdfp_hide_publishing_actions(){
         global $post;
         if($post->post_type == $this->post_type){
             echo '
@@ -153,24 +154,52 @@ class Podcast{
         }
     }
 
+    function remove_metabox($metaboxs) {
+        global $post;
+        $screen = get_current_screen();
+
+        if($screen->post_type === $this->post_type){
+            return false;
+        }
+        return $metaboxs;
+    }
+
     public function forceGutenberg($use, $post)
     {
-        // $block = self::createBlock($post->ID);
-        // $postArr = [
-        //     'ID' => $post->ID,
-        //     'post_content' => '<!-- wp:pdp/podcast '.json_encode($block).' /-->'
-        // ];
-        // print_r($post->post_content);
-        // wp_update_post($postArr);
+        $gutenberg = (boolean) get_option('pdfp_gutenberg_enable', true);
+        $isGutenberg = (boolean) get_post_meta($post->ID, 'isGutenberg', true);
+        $pluginUpdated = 1630223686;
+        $publishDate = get_the_date('U', $post);
+        $currentTime = current_time("U");
+
     
         if ($this->post_type === $post->post_type) {
-            return true;
+            if($gutenberg){
+                if($post->post_status == 'auto-draft' ){
+                    update_post_meta($post->ID, 'isGutenberg', true);
+                    return true;
+                }else {
+                    if($isGutenberg || $pluginUpdated < $publishDate){
+                        return true;
+                    }else {
+                        remove_post_type_support($this->post_type, 'editor');
+                        return false;
+                    }
+                }
+            }else {
+                if($isGutenberg){
+                    return true;
+                }else {
+                    remove_post_type_support($this->post_type, 'editor');
+                    return false;
+                }
+            }
         }
 
         return $use;
     }
 
-    function pdp_change_publish_button( $translation, $text ) {
+    function pdfp_change_publish_button( $translation, $text ) {
         if ( $this->post_type == get_post_type())
         if ( $text == 'Publish' )
             return 'Save';
@@ -180,13 +209,13 @@ class Podcast{
     // public static function createBlock($id){
     //     //shares
     //     $shares = [
-    //         '_pdp_facebook' => 'facebook',
-    //         '_pdp_twitter' => 'twitter',
-    //         '_pdp_linkedin' => 'linkedin',
-    //         '_pdp_pinterest' => 'pinterest',
-    //         '_pdp_stumbleupon' => 'stumbleupon',
-    //         '_pdp_whatsapp' => 'whatsapp',
-    //         '_pdp_email' => 'email',
+    //         '_pdfp_facebook' => 'facebook',
+    //         '_pdfp_twitter' => 'twitter',
+    //         '_pdfp_linkedin' => 'linkedin',
+    //         '_pdfp_pinterest' => 'pinterest',
+    //         '_pdfp_stumbleupon' => 'stumbleupon',
+    //         '_pdfp_whatsapp' => 'whatsapp',
+    //         '_pdfp_email' => 'email',
     //     ];
     //     $newShares = [];
     //     foreach($shares as $key => $value){
@@ -196,13 +225,13 @@ class Podcast{
     //     }
 
     //     //podcasts
-    //     $podcasts = get_post_meta($id, '_pdp_re_', true);
+    //     $podcasts = get_post_meta($id, '_pdfp_re_', true);
     //     $newPodcasts = [];
     //     foreach($podcasts as $podcast){
     //         array_push($newPodcasts, [
-    //             'title' => $podcast['_pdp_title'] ?? '',
-    //             'audio' => $podcast['_pdp_audio']['url'] ?? '',
-    //             'image' => $podcast['_pdp_image']['url'] ?? ''
+    //             'title' => $podcast['_pdfp_title'] ?? '',
+    //             'audio' => $podcast['_pdfp_audio']['url'] ?? '',
+    //             'image' => $podcast['_pdfp_image']['url'] ?? ''
     //         ]);
     //     }
 
@@ -213,20 +242,20 @@ class Podcast{
     //         'current-time' => true,
     //         'mute' => true,
     //         'volume' => true,
-    //         'settings' => get_post_meta($id, '_pdp_setting_button', true) !== 'on' ? true : false,
-    //         'download' => get_post_meta($id, '_pdp_download_button', true) !== 'on' ? true : false
+    //         'settings' => get_post_meta($id, '_pdfp_setting_button', true) !== 'on' ? true : false,
+    //         'download' => get_post_meta($id, '_pdfp_download_button', true) !== 'on' ? true : false
     //     ];
 
     //     return [
     //         'podcasts' => $newPodcasts, 
     //         'shares' => $newShares,
     //         'controls' => $controls,
-    //         'theme' => get_post_meta($id, '_pdp_player_theme', true) == 'dark' ? 'dark' : 'light',
-    //         'featureImage' => get_post_meta($id, '_pdp_disable_image', true) == 'on' ? false : true,
-    //         'loop' => get_post_meta($id, '_pdp_audio_repeat', true) == 'once' ? false : true,
-    //         'showLabel' => get_post_meta($id, '_pdp_social_label', true) == 'on' ? true : false,
-    //         'showCount' => get_post_meta($id, '_pdp_social_count', true) == 'on' ? true : false,
-    //         'share' => get_post_meta($id, '_pdp_disable_social', true) == 'on' ? false : true,
+    //         'theme' => get_post_meta($id, '_pdfp_player_theme', true) == 'dark' ? 'dark' : 'light',
+    //         'featureImage' => get_post_meta($id, '_pdfp_disable_image', true) == 'on' ? false : true,
+    //         'loop' => get_post_meta($id, '_pdfp_audio_repeat', true) == 'once' ? false : true,
+    //         'showLabel' => get_post_meta($id, '_pdfp_social_label', true) == 'on' ? true : false,
+    //         'showCount' => get_post_meta($id, '_pdfp_social_count', true) == 'on' ? true : false,
+    //         'share' => get_post_meta($id, '_pdfp_disable_social', true) == 'on' ? false : true,
     //     ];
     // }
 }
