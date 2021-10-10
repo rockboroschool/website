@@ -1,0 +1,35 @@
+0000.010 (0) Opened log file at time: Sun, 10 Oct 2021 18:08:05 +0000 on https://rockboroschool.ie
+0000.104 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.62 WP: 5.8.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 12.4M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.109 (0) Free space on disk containing Updraft's temporary directory: 782 MB
+0000.122 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB:  (schedule: weekly)
+0000.125 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.360 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1633284276, seconds_ago=605009)
+0000.372 (0) Set semaphore last lock (fd) time to 2021-10-10 18:08:05
+0000.375 (0) Semaphore lock (fd) complete
+0000.393 (0) Backup run: resumption=0, nonce=e0d565a408b6, file_nonce=e0d565a408b6 begun at=1633889285 (0s ago), job type=backup
+0000.402 (0) Scheduling a resumption (1) after 300 seconds (1633889585) in case this run gets aborted
+0001.517 (0) Checking if we have a zip executable available
+0001.523 (0) Testing: /usr/bin/zip
+0001.543 (0) Output: zip warning: binziptest/test.zip not found or empty
+0001.547 (0) Output: adding: binziptest/subdir1/	(in=0) (out=0) (stored 0%)
+0001.550 (0) Output: adding: binziptest/subdir1/subdir2/	(in=0) (out=0) (stored 0%)
+0001.552 (0) Output: adding: binziptest/subdir1/subdir2/test.html	(in=131) (out=107) (deflated 18%)
+0001.555 (0) Output: total bytes=131, compressed=107 -> 18% savings
+0001.558 (0) Output: adding: binziptest/subdir1/subdir2/test2.html	(in=138) (out=113) (deflated 18%)
+0001.562 (0) Output: total bytes=269, compressed=220 -> 18% savings
+0001.669 (0) Working binary zip found: /usr/bin/zip
+0001.678 (0) Zip engine: found/will use a binary zip: /usr/bin/zip
+0001.688 (0) Creation of backups of directories: beginning
+0001.701 (0) No backup of plugins: excluded by user's options
+0001.706 (0) No backup of themes: excluded by user's options
+0001.710 (0) No backup of uploads: excluded by user's options
+0001.714 (0) No backup of others: excluded by user's options
+0001.740 (0) Saving backup status to database (elements: 0)
+0001.753 (0) Beginning creation of database dump (WordPress DB)
+0001.757 (0) SQL compatibility mode is: NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0001.875 (0) Table wp_options: Total expected rows (via COUNT): 519
+0002.039 (0) Table wp_options: Rows added in this batch (next record: 1727113): 515 (uncompressed bytes in this segment=445113) in 0.20 seconds
+0002.075 (0) Table wp_options: finishing file(s) (2, 67.3 KB)
+0002.097 (0) Table wp_users: Total expected rows (via COUNT): 5
+0002.101 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0002.112 (0) Table wp_users: Rows added in this batch (next record: 8): 5 (uncompressed bytes in this segment=2233) in 0.02 seconds
