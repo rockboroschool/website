@@ -5,7 +5,7 @@ Tags: history, log, changes, changelog, audit, audit log, event log, user tracki
 Requires at least: 5.2
 Tested up to: 5.7
 Requires PHP: 5.6
-Stable tag: 2.42.0
+Stable tag: 2.43.0
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -192,6 +192,12 @@ Events in the log are stored for 60 days by default. Events older than this will
    A simple way to see any uncommon activity, for example an increased number of logins or similar.
 
 == Changelog ==
+
+= 2.43.0 (October 2021) =
+
+- Fixed: PHP notices on menu save when there are ACF fields attached ([#235](https://github.com/bonny/WordPress-Simple-History/issues/235))
+
+- Fixed: `array_map` and `reset` cause warning in PHP 8 ([#263](https://github.com/bonny/WordPress-Simple-History/pull/263))
 
 = 2.42.0 (April 2021) =
 
