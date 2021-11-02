@@ -314,7 +314,7 @@ if ( !class_exists( 'CZR_admin_init' ) ) :
     */
     function czr_fn_write_ajax_dismis_script() {
       ?>
-      <script type="text/javascript" id="tc-dismiss-update-notice">
+      <script id="tc-dismiss-update-notice">
         ( function($){
           var _ajax_action = function( $_el ) {
               var AjaxUrl = "<?php echo admin_url( 'admin-ajax.php' ); ?>",
@@ -343,7 +343,7 @@ if ( !class_exists( 'CZR_admin_init' ) ) :
           $( function($) {
             $('.tc-dismiss-update-notice').on('click', function( e ) {
               e.preventDefault();
-              $(this).closest('.updated').slideToggle('fast');
+              $(this).closest('.czr-update-notice').slideToggle('fast');
               _ajax_action( $(this) );
             });
           });
@@ -372,6 +372,9 @@ if ( !class_exists( 'CZR_admin_init' ) ) :
       //typically useful when several versions are released in a short time interval
       //to avoid hammering the wp admin dashboard with a new admin notice each time
       if ( ( defined('DISPLAY_UPDATE_NOTIFICATION') && !DISPLAY_UPDATE_NOTIFICATION ) || ( defined('DISPLAY_PRO_UPDATE_NOTIFICATION') && !DISPLAY_PRO_UPDATE_NOTIFICATION ) )
+        return;
+      $screen = get_current_screen();
+      if ( is_object($screen) && 'appearance_page_welcome' === $screen-> id )
         return;
 
       $opt_name                   = CZR_IS_PRO ? 'last_update_notice_pro' : 'last_update_notice';
@@ -424,17 +427,17 @@ if ( !class_exists( 'CZR_admin_init' ) ) :
 
       ob_start();
         ?>
-        <div class="updated czr-update-notice" style="position:relative">
+        <div class="notice notice-info czr-update-notice" style="position:relative">
           <?php
             echo apply_filters(
               'czr_update_notice',
-              sprintf('<h3>%1$s %2$s %3$s %4$s. <a class="" href="%5$s" title="%6$s">%6$s %7$s</a></h3>',
-                __( "✅ You have recently updated to", "customizr"),
+              sprintf('<h3>➡️ %1$s %2$s %3$s %4$s. <strong><a href="%5$s" title="%6$s">%6$s %7$s</a></strong></h3>',
+                __( "You have recently updated to", "customizr"),
                 CZR_IS_PRO ? 'Customizr Pro' : 'Customizr',
                 __( "version", "customizr"),
                 CUSTOMIZR_VER,
                 admin_url() .'themes.php?page=welcome.php',
-                __( "Changelog here" , "customizr" ),
+                __( "Make sure to read the changelog" , "customizr" ),
                 is_rtl() ? '&laquo;' : '&raquo;'
               )
             );
@@ -534,10 +537,12 @@ if ( !class_exists( 'CZR_admin_page' ) ) :
 
             <?php
               if ( !CZR_IS_PRO ) {
-                printf( '<h3>%1$s 🙏</h3>',
-                  sprintf( __( "If you enjoy using the Customizr theme for your website, please consider %s. Your support allows us to keep the theme at the highest level. Thank you!", "customizr"),
-                    sprintf( '<a href="%1$s" title="%2$s" target="_blank">%2$s</a>', 'https://presscustomizr.com/customizr-pro/', __("upgrading to the pro version", "customizr") )
-                  )
+                printf( '<h3>%1$s ❤️.</h3><h4>%2$s</h4><h4 style="font-weight:bold">%3$s 🙏</h4>',
+                  sprintf( __( "If you enjoy using the Customizr theme for your website, you will love %s", "customizr"),
+                    sprintf( '<a style="color:#d87f00" href="%1$s" title="%2$s" target="_blank">%2$s</a>', 'https://presscustomizr.com/customizr-pro/', __("Customizr Pro", "customizr") )
+                  ),
+                  __("With Customizr Pro, you get premium features like infinite scrolling, footer and header customization, font customizer and many more. In addition, our premium support will be there to help you resolve any issue you may have with the theme. When installing Customizr Pro, all your previous options used in Customizr free are kept.", 'customizr'),
+                  __('And of course your support allows us to keep the theme at the highest level for your website. Thank you!', 'customizr')
                 );
               }
             ?>
@@ -766,7 +771,7 @@ Page For Posts:           <?php $id = get_option( 'page_for_posts' ); echo get_t
       if ( 'appearance_page_welcome' != $screen-> id )
         return;
       ?>
-        <style type="text/css" id="tc-fix-wp-footer-position">
+        <style id="tc-fix-wp-footer-position">
           .wp-admin #wpfooter {bottom: inherit;}
         </style>
       <?php
@@ -2082,7 +2087,7 @@ if ( !class_exists( 'CZR_meta_boxes' ) ) :
                <input class="widefat" name="<?php echo $custom_link_id; ?>" id="<?php echo $custom_link_id; ?>" value="<?php echo $custom_link_value; ?>" style="width:50%">
            </div>
            <div class="meta-box-item-title">
-               <h4><?php _e("Open link in a new page/tab", 'customizr' );  ?></h4>
+               <h4><?php _e("Open link in a new browser tab", 'customizr' );  ?></h4>
            </div>
            <div class="meta-box-item-content">
                <?php
