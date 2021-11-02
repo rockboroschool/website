@@ -499,8 +499,9 @@ function videopress_make_video_get_path( $guid ) {
  */
 function videopress_make_media_upload_path( $blog_id ) {
 	return sprintf(
-		'https://public-api.wordpress.com/rest/v1.1/sites/%s/media/new',
-		$blog_id
+		'https://public-api.wordpress.com/rest/v1.1/sites/%s/media/new?locale=%s',
+		$blog_id,
+		get_locale()
 	);
 }
 
@@ -731,7 +732,11 @@ function videopress_get_attachment_url( $post_id ) {
 			return null;
 		}
 	} else {
-		$return = $meta['videopress']['file_url_base']['https'] . $meta['videopress']['files']['hd']['mp4'];
+		$return = $meta['videopress']['file_url_base']['https'] . (
+			isset( $meta['videopress']['files']['hd']['hls'] )
+			? $meta['videopress']['files']['hd']['hls']
+			: $meta['videopress']['files']['hd']['mp4']
+		);
 	}
 
 	// If the URL is a string, return it. Otherwise, we shouldn't to avoid errors downstream, so null.

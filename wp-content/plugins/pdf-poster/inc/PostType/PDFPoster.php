@@ -117,6 +117,8 @@ class Podcast{
                     ?&gt;</div>
                 </div>
             </div>
+            
+        <h2 style="margin: 10px 0 0; font-size: 20px;"><?php esc_html_e('You can enable Gutenberg shortcode generator from PDF Poster -> Settings', 'pdfp') ?></h2>
         <?php   
         }
     }
@@ -166,7 +168,7 @@ class Podcast{
 
     public function forceGutenberg($use, $post)
     {
-        $gutenberg = (boolean) get_option('pdfp_gutenberg_enable', true);
+        $gutenberg = (boolean) get_option('pdfp_gutenberg_enable', false);
         $isGutenberg = (boolean) get_post_meta($post->ID, 'isGutenberg', true);
         $pluginUpdated = 1630223686;
         $publishDate = get_the_date('U', $post);

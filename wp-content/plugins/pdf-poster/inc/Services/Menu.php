@@ -32,7 +32,16 @@ class Menu {
             array(
                 'type'         => 'boolean',
                 'show_in_rest' => true,
-                'default'      => true,
+                'default'      => false,
+            )
+        );
+        register_setting(
+            'pdfp_settings',
+            'bpm_gutenberg_enable',
+            array(
+                'type'         => 'boolean',
+                'show_in_rest' => true,
+                'default'      => false,
             )
         );
     

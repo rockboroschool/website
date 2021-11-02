@@ -4,7 +4,7 @@ Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
 Tested up to: 5.8
-Stable tag: 2.0.5
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,12 @@ If you find a conflict between our plugin and a third-party plugin, please let u
 4. Full Screen preview 
 
 == Changelog ==
+
+= 2.0.7 =
+* Forbidden issue fixed
+
+= 2.0.6 = 
+* Disable Gutenberg as default shortcode generator
 
 = 2.0.3 = 
 * Option to enable/disable Gutenberg Shortcode Generator

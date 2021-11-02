@@ -29,7 +29,7 @@ class PDFTemplate{
         <?php if($t['file']){ ?>
 	    <div id="<?php echo esc_attr($iid); ?>" class="pdfp_wrapper">
             <?php
-                $viewer_base_url= plugins_url()."/pdf-poster/pdfjs/web/viewer.php"; 
+                $viewer_base_url= plugins_url()."/pdf-poster/pdfjs/web/viewer.html"; 
                 $final_url = $viewer_base_url."?file=".$t['file']."&download=true&print=".$t['print']."&openfile=false";
             ?>
             <div class="cta_wrapper">
