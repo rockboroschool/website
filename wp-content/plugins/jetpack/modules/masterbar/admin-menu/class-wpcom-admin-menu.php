@@ -46,7 +46,7 @@ class WPcom_Admin_Menu extends Admin_Menu {
 			$this->add_new_site_link();
 		}
 
-		$this->add_beta_testing_menu();
+		$this->add_woocommerce_installation_menu();
 
 		ksort( $GLOBALS['menu'] );
 	}

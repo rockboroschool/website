@@ -1,13 +1,13 @@
 === PDF Embedder ===
 Contributors: lionsher, nathansingh, chrisakelley, dimensionmedia
 Tags: doc, pdf viewer, office, embed, document, intranet
-Requires at least: 3.5
-Tested up to: 5.7.2
-Stable tag: 4.6.2
+Requires at least: 5.2.0
+Tested up to: 5.8.2
+Stable tag: 4.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Embed PDF files directly into your posts and pages, with intelligent responsive resizing, and no third-party services or iframes. 
+Embed PDF files directly into your posts and pages, with intelligent responsive resizing, and no third-party services or iframes.
 
 == Description ==
 
@@ -58,9 +58,9 @@ Features available in the PDF Embedder Premium versions:
 
 The free version will work on most mobile browsers, but cannot position the document entirely within the screen.
 
-Our **PDF Embedder Premium** plugin solves this problem with an intelligent 'full screen' mode. 
+Our **PDF Embedder Premium** plugin solves this problem with an intelligent 'full screen' mode.
 
-When the document is smaller than a certain width, the document displays only as a 'thumbnail' with a large 'View in Full Screen' button for the user to click when they want to study your document. 
+When the document is smaller than a certain width, the document displays only as a 'thumbnail' with a large 'View in Full Screen' button for the user to click when they want to study your document.
 
 This opens up the document so it has the full focus of the mobile browser, and the user can move about the document without hitting other parts of the web page by mistake. Viewers can then Click Exit to return to the regular page.
 
@@ -83,7 +83,7 @@ See our site [wp-pdf.com](http://wp-pdf.com/secure/?utm_source=PDF%20Readme%20Se
 Our **PDF Thumbnails** plugin automatically generates fixed image versions of all PDF files in your Media Library, to use on your site as you wish.
 
 You can use them as featured images in posts containing an embedded version of the PDF, or as a visual clickable link to download the PDF directly.
-It also displays the thumbnail as the ‘icon’ for the PDF in the Media Library, making it easy for authors to locate the PDFs they need to insert in a post.
+It also displays the thumbnail as the â€˜iconâ€™ for the PDF in the Media Library, making it easy for authors to locate the PDFs they need to insert in a post.
 
 See our site [wp-pdf.com/thumbnails/](http://wp-pdf.com/thumbnails/?utm_source=PDF%20Readme%20Thumbnails&utm_medium=freemium&utm_campaign=Freemium) for more details and purchase options.
 
@@ -92,9 +92,9 @@ See our site [wp-pdf.com/thumbnails/](http://wp-pdf.com/thumbnails/?utm_source=P
 
 Please contribute your translations.
 
-* Persian translation by Mostafa Safarian i of [سئو](http://www.greenseo.ir/)
+* Persian translation by Mostafa Safarian i of [Ø³Ø¦Ùˆ](http://www.greenseo.ir/)
 * French translation by Thierry Gaillou of [JDFitForme](http://www.jdfitforme.fr/)
-* Spanish translation by Armando Landois of [LANDOIS Diseño](https://landois.com/)
+* Spanish translation by Armando Landois of [LANDOIS DiseÃ±o](https://landois.com/)
 
 
 With thanks to the Mozilla team for developing the underlying [pdf.js](https://github.com/mozilla/pdf.js) technology used by this pdf embedder plugin.
@@ -113,7 +113,7 @@ We have [instructions](https://wp-pdf.com/free-instructions/) and a [Knowledge B
 
 Please feel free to email [contact@wp-pdf.com](mailto:contact@wp-pdf.com) with any questions.
 
-Always include your full shortcode, plus links to the relevant pages, and screenshots if they would be helpful too. 
+Always include your full shortcode, plus links to the relevant pages, and screenshots if they would be helpful too.
 
 We may occasionally be able to respond to support queries posted on the 'Support' forum here on the wordpress.org plugin page, but we recommend sending us an email instead if possible.
 
@@ -153,9 +153,9 @@ See [wp-pdf.com](http://wp-pdf.com/?utm_source=PDF%20Readme%20Box&utm_medium=fre
 
 = Can I improve the viewing experience for mobile users? =
 
-Yes, our **PDF Embedder Premium** plugin has an intelligent 'full screen' mode. 
-When the document is smaller than a certain width, the document displays only as a 'thumbnail' with a large 'View in Full Screen' button for the user to click when they want to study your document. 
-This opens up the document so it has the full focus of the mobile browser, and the user can move about the document without hitting other parts of the web page by mistake. 
+Yes, our **PDF Embedder Premium** plugin has an intelligent 'full screen' mode.
+When the document is smaller than a certain width, the document displays only as a 'thumbnail' with a large 'View in Full Screen' button for the user to click when they want to study your document.
+This opens up the document so it has the full focus of the mobile browser, and the user can move about the document without hitting other parts of the web page by mistake.
 Click Exit to return to the regular web page.
 
 See our website [wp-pdf.com](http://wp-pdf.com/premium/?utm_source=PDF%20Readme%20FAQ%20Premium&utm_medium=freemium&utm_campaign=Freemium) for more details and purchase options.
@@ -202,6 +202,16 @@ the Plugins section of your Wordpress admin
 1. Follow the instructions from step 4 above
 
 == Changelog ==
+
+= 4.6.4 =
+
+Resolved Javascript errors in minified JS
+
+= 4.6.3 =
+
+Added about tab
+Updated core PDF.js functionality
+Addressed mobile issue in Safari iOS
 
 = 4.6.2 =
 
@@ -269,7 +279,7 @@ When scrollbars are always visible, no longer cuts off edge of PDF underneath.
 
 Ready for compatibility with WordPress 4.8.
 
-New mouse wheel scrolling in Firefox wasn’t working with some themes.
+New mouse wheel scrolling in Firefox wasnâ€™t working with some themes.
 
 Latest version of pdf.js library, and newest code bringing the free version into line with the premium versions.
 
