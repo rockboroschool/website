@@ -2,8 +2,8 @@
 Contributors: mndpsingh287
 Tags: Page Duplicate, Post duplicate, duplicate custom posts, duplicate page, duplicate post, duplicate ,custom posts, post, page, duplicate this, duplicate, content duplicate, duplicate content, data duplicate, duplicate data, copy page, clone page,wordpress page duplicate, wordpress post duplicate, Copy post, wordpress page duplicator, wordpress post duplicator, Cloner, duplicate post
 Requires at least: 3.4
-Tested up to: 5.8.1
-Stable tag: 4.4.5
+Tested up to: 5.8.2
+Stable tag: 4.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,9 +57,17 @@ https://www.youtube.com/watch?v=Fj8BHxvebXs&feature=youtu.be
 
 == Changelog ==
 
+= 4.4.7(16th Dec, 2021)
+
+* Added editor role check
+
+= 4.4.6(7th Dec, 2021)
+
+* Fixed security issues.
+
 = 4.4.5(29th Sep, 2021)
 
-* Fixed ths issue for content HTML displaying in the sidebar.
+* Fixed the issue for content HTML displaying in the sidebar.
 
 = 4.4.4(16th Sep, 2021)
 

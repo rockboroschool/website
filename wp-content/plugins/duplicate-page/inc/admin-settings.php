@@ -50,7 +50,7 @@ endif;
     	<option value="classic" <?php echo (isset($opt['duplicate_post_editor']) && $opt['duplicate_post_editor'] == 'classic') ? "selected = 'selected'" : ''; ?>><?php _e('Classic Editor', 'duplicate-page'); ?></option>
     	<option value="gutenberg" <?php echo (isset($opt['duplicate_post_editor']) && $opt['duplicate_post_editor'] == 'gutenberg') ? "selected = 'selected'" : ''; ?>><?php _e('Gutenberg Editor', 'duplicate-page'); ?></option>
         </select>
-    <p><?php _e('Please select which editor you are using.<strong>Default: </strong> Classic Editor', 'duplicate-page'); ?></p>
+    <p><?php _e('Please select which editor you are using.<strong> Default: </strong> Classic Editor', 'duplicate-page'); ?></p>
 </td>
 </tr>	
 <tr>
@@ -62,7 +62,7 @@ endif;
     	<option value="private" <?php echo($opt['duplicate_post_status'] == 'private') ? "selected = 'selected'" : ''; ?>><?php _e('Private', 'duplicate-page'); ?></option>
     	<option value="pending" <?php echo($opt['duplicate_post_status'] == 'pending') ? "selected = 'selected'" : ''; ?>><?php _e('Pending', 'duplicate-page'); ?></option>
         </select>
-    <p><?php _e('Please select any post status you want to assign for duplicate post.<strong>Default: </strong> Draft.','duplicate-page'); ?></p>
+    <p><?php _e('Please select any post status you want to assign for duplicate post.<strong> Default: </strong> Draft','duplicate-page'); ?></p>
 </td>
 </tr>
 <tr>
@@ -71,7 +71,7 @@ endif;
 	<option value="to_list" <?php echo($opt['duplicate_post_redirect'] == 'to_list') ? "selected = 'selected'" : ''; ?>><?php _e('To All Posts List', 'duplicate-page'); ?></option>
 	<option value="to_page" <?php echo($opt['duplicate_post_redirect'] == 'to_page') ? "selected = 'selected'" : ''; ?>><?php _e('To Duplicate Edit Screen', 'duplicate-page'); ?></option>
     </select>
-    <p><?php  _e('Please select any post redirection, redirect you to selected after click on duplicate this link.<strong>Default: </strong>To current list.','duplicate-page'); ?></p>
+    <p><?php  _e('Please select any post redirection, redirect you to selected after click on duplicate this link.<strong> Default: </strong>To All Posts List','duplicate-page'); ?></p>
 </td>
 </tr>
 <tr>

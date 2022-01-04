@@ -20,6 +20,8 @@ class EnableMediaReplacePlugin
 
   public function runtime()
   {
+		 $this->nopriv_plugin_actions();
+
      if (EMR_CAPABILITY !== false)
      {
         if (is_array(EMR_CAPABILITY))
@@ -58,6 +60,12 @@ class EnableMediaReplacePlugin
     return self::$instance;
   }
 
+	// Actions for EMR that always need to hook
+	protected function nopriv_plugin_actions()
+	{
+    	// shortcode
+    	add_shortcode('file_modified', array($this, 'get_modified_date'));
+	}
 
   public function plugin_actions()
   {
@@ -83,9 +91,6 @@ class EnableMediaReplacePlugin
     // editors
     add_action( 'add_meta_boxes', array($this, 'add_meta_boxes'),10,2 );
     add_filter('attachment_fields_to_edit', array($this, 'attachment_editor'), 10, 2);
-
-    // shortcode
-    add_shortcode('file_modified', array($this, 'get_modified_date'));
 
     /** Just after an image is replaced, try to browser decache the images */
     if (isset($_GET['emr_replaced']) && intval($_GET['emr_replaced'] == 1))
@@ -264,6 +269,10 @@ class EnableMediaReplacePlugin
 
   public function add_meta_boxes($post_type, $post)
   {
+			// Because some plugins don't like to play by the rules.
+		  if (is_null($post_type) || is_null($post))
+			 	return false;
+
       if (! $this->checkImagePermission($post->post_author, $post->ID))
       {  return;  }
 
@@ -399,14 +408,14 @@ class EnableMediaReplacePlugin
   	$current_screen = get_current_screen();
 
   	$crtScreen = function_exists("get_current_screen") ? get_current_screen() : (object)array("base" => false);
-
+/*
   	if(current_user_can( 'activate_plugins' ) && !get_option( 'emr_news') && !is_plugin_active('shortpixel-image-optimiser/wp-shortpixel.php')
   	   && ($crtScreen->base == "upload" || $crtScreen->base == "plugins")
           //for network installed plugins, don't display the message on subsites.
          && !(function_exists('is_multisite') && is_multisite() && is_plugin_active_for_network('enable-media-replace/enable-media-replace.php') && !is_main_site()))
   	{
   		require_once($this->plugin_path . '/views/notice.php');
-  	}
+  	} */
   }
 
   public function display_network_notices() {

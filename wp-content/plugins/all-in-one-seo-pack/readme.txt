@@ -3,7 +3,7 @@ Contributors: aioseo, smub, benjaminprojas
 Tags: SEO, Google Search Console, XML Sitemap, meta description, schema, meta title, rich snippets, woocommerce seo, local seo, open graph, google news sitemap, video sitemap, robots.txt, seo audit, content analysis, seo plugin, redirection
 Requires at least: 4.9
 Tested up to: 5.8.1
-Stable tag: 4.1.4.4
+Stable tag: 4.1.4.5
 License: GPLv2 or later
 Requires PHP: 5.4
 
@@ -661,6 +661,6 @@ AIOSEO is the original WordPress SEO plugin, and it's trusted by over 2 million 
 
 == Upgrade Notice ==
 
-= 4.1.4.4 =
+= 4.1.4.5 =
 
 This update adds major improvements and bugfixes.

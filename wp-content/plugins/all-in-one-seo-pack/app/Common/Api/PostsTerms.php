@@ -38,7 +38,7 @@ class PostsTerms {
 			], 400 );
 		}
 
-		$searchQuery = aioseo()->db->db->esc_like( $body['query'] );
+		$searchQuery = esc_sql( aioseo()->db->db->esc_like( $body['query'] ) );
 
 		$objects        = [];
 		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
