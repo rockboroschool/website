@@ -160,11 +160,11 @@ class Query {
 		if ( $shouldSort ) {
 			if ( 'asc' === strtolower( $attributes['order'] ) ) {
 				usort( $terms, function( $term1, $term2 ) {
-					return $term1->timestamp > $term2->timestamp;
+					return $term1->timestamp > $term2->timestamp ? 1 : 0;
 				} );
 			} else {
 				usort( $terms, function( $term1, $term2 ) {
-					return $term1->timestamp < $term2->timestamp;
+					return $term1->timestamp < $term2->timestamp ? 1 : 0;
 				} );
 			}
 		}

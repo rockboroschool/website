@@ -26,6 +26,7 @@ class Output {
 			! is_front_page() &&
 			! is_home() &&
 			! is_singular() &&
+			! is_post_type_archive() &&
 			! aioseo()->helpers->isWooCommerceShopPage()
 		) {
 			return false;

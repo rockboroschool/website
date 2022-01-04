@@ -57,11 +57,27 @@ abstract class Filters {
 		add_action( 'dp_duplicate_page', [ $this, 'duplicatePost' ], 10, 2 );
 		add_action( 'woocommerce_product_duplicate_before_save', [ $this, 'scheduleDuplicateProduct' ], 10, 2 );
 
-		// Classic Editor emoji
 		add_action( 'init', [ $this, 'removeEmojiScript' ] );
+		add_action( 'init', [ $this, 'resetUserBBPress' ], -1 );
 
 		// Bypass the JWT Auth plugin's unnecessary restrictions. https://wordpress.org/plugins/jwt-auth/
 		add_filter( 'jwt_auth_default_whitelist', [ $this, 'allowRestRoutes' ] );
+	}
+
+	/**
+	 * Resets the current user if bbPress is active.
+	 * We have to do this because our calls to wp_get_current_user() set the current user early and this breaks core functionality in bbPress.
+	 *
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return void
+	 */
+	public function resetUserBBPress() {
+		if ( function_exists( 'bbpress' ) ) {
+			global $current_user;
+			$current_user = null;
+		}
 	}
 
 	/**

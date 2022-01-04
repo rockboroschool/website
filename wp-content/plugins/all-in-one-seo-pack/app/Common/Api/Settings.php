@@ -389,7 +389,7 @@ class Settings {
 
 		switch ( $action ) {
 			case 'clear-cache':
-				aioseo()->transients->clearCache();
+				aioseo()->cache->clear();
 				break;
 			case 'remove-duplicates':
 				aioseo()->updates->removeDuplicateRecords();

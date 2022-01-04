@@ -59,9 +59,7 @@ abstract class Usage {
 		try {
 			$action = 'aioseo_send_usage_data';
 			if ( ! $this->enabled ) {
-				if ( as_next_scheduled_action( $action ) ) {
-					as_unschedule_action( $action, [], 'aioseo' );
-				}
+				aioseo()->helpers->unscheduleAction( $action );
 				return;
 			}
 

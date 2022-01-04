@@ -143,8 +143,8 @@ class Wizard {
 				$options->searchAppearance->global->schema->contactType = $additionalInformation['contactType'];
 			}
 
-			if ( ! empty( $additionalInformation['contactManual'] ) ) {
-				$options->searchAppearance->global->schema->contactManual = $additionalInformation['contactManual'];
+			if ( ! empty( $additionalInformation['contactTypeManual'] ) ) {
+				$options->searchAppearance->global->schema->contactTypeManual = $additionalInformation['contactTypeManual'];
 			}
 
 			if ( ! empty( $additionalInformation['socialShareImage'] ) ) {

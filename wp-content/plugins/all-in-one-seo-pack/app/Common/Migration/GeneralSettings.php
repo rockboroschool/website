@@ -312,7 +312,7 @@ class GeneralSettings {
 			}
 		}
 
-		$homePageDescription = empty( $format ) ? $homePageDescription : aioseo()->helpers->pregReplace( '#%page_title%#', $homePageDescription, $format );
+		$homePageDescription = empty( $format ) ? $homePageDescription : aioseo()->helpers->pregReplace( '#(%description%|%page_title%)#', $homePageDescription, $format );
 		$homePageDescription = aioseo()->migration->helpers->macrosToSmartTags( $homePageDescription );
 
 		$aioseoPost = Models\Post::getPost( $post->ID );

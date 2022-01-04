@@ -41,6 +41,11 @@ class Facebook {
 			$image = aioseo()->social->image->getImage( 'facebook', $imageSource, $post );
 		}
 
+		// Since we could be on an archive page, let's check again for that default image.
+		if ( ! $image ) {
+			$image = aioseo()->social->image->getImage( 'facebook', 'default', null );
+		}
+
 		if ( ! $image ) {
 			$image = aioseo()->helpers->getSiteLogoUrl();
 		}
@@ -171,6 +176,10 @@ class Facebook {
 			return $type ? $type : 'website';
 		}
 
+		if ( is_post_type_archive() ) {
+			return 'website';
+		}
+
 		$post     = aioseo()->helpers->getPost();
 		$metaData = aioseo()->meta->metaData->getMetaData( $post );
 		if ( ! empty( $metaData->og_object_type ) && 'default' !== $metaData->og_object_type ) {
@@ -207,7 +216,22 @@ class Facebook {
 		if ( ! empty( $metaData->og_title ) ) {
 			$title = aioseo()->meta->title->helpers->prepare( $metaData->og_title );
 		}
-		return $title ? $title : aioseo()->meta->title->getPostTitle( $post );
+
+		if ( is_post_type_archive() ) {
+			$postType       = get_queried_object();
+			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+				$title = aioseo()->meta->title->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->title );
+			}
+		}
+
+		return $title
+			? $title
+			: (
+				$post
+					? aioseo()->meta->title->getPostTitle( $post )
+					: $title
+			);
 	}
 
 	/**
@@ -231,7 +255,22 @@ class Facebook {
 		if ( ! empty( $metaData->og_description ) ) {
 			$description = aioseo()->meta->description->helpers->prepare( $metaData->og_description );
 		}
-		return $description ? $description : aioseo()->meta->description->getPostDescription( $post );
+
+		if ( is_post_type_archive() ) {
+			$postType       = get_queried_object();
+			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+				$description = aioseo()->meta->description->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->metaDescription );
+			}
+		}
+
+		return $description
+			? $description
+			: (
+				$post
+					? aioseo()->meta->description->getPostDescription( $post )
+					: $description
+			);
 	}
 
 	/**
@@ -273,7 +312,7 @@ class Facebook {
 	 */
 	public function getPublishedTime() {
 		$post = aioseo()->helpers->getPost();
-		return $post ? aioseo()->helpers->formatDateTime( $post->post_date_gmt ) : '';
+		return $post ? aioseo()->helpers->dateTimeToIso8601( $post->post_date_gmt ) : '';
 	}
 
 	/**
@@ -285,7 +324,7 @@ class Facebook {
 	 */
 	public function getModifiedTime() {
 		$post = aioseo()->helpers->getPost();
-		return $post ? aioseo()->helpers->formatDateTime( $post->post_modified_gmt ) : '';
+		return $post ? aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt ) : '';
 	}
 
 

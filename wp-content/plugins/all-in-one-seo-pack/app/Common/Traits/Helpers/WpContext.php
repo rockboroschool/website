@@ -149,8 +149,8 @@ trait WpContext {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  int     $postId The post ID.
-	 * @return WP_Post         The post object.
+	 * @param  int          $postId The post ID.
+	 * @return WP_Post|null         The post object.
 	 */
 	public function getPost( $postId = false ) {
 		static $showOnFront  = null;
@@ -178,6 +178,7 @@ trait WpContext {
 			return get_post();
 		}
 
+		// We need to check for this and not always return a post because we'll otherwise return a post on term pages.
 		if (
 			$this->isScreenBase( 'post' ) ||
 			$postId ||
@@ -185,17 +186,61 @@ trait WpContext {
 		) {
 			return get_post( $postId );
 		}
+
+		return null;
 	}
 
 	/**
-	 * Returns the page content.
+	 * Returns the post content after parsing it.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @param  WP_Post|int $post The post (optional).
+	 * @return string            The post content.
+	 */
+	public function getContent( $post = null ) {
+		$post = ( $post && is_object( $post ) ) ? $post : $post = $this->getPost( $post );
+
+		static $content = [];
+		if ( isset( $content[ $post->ID ] ) ) {
+			return $content[ $post->ID ];
+		}
+
+		if ( empty( $post->post_content ) ) {
+			return $post->post_content;
+		}
+
+		$content[ $post->ID ] = $this->theContent( $post->post_content );
+		return $content[ $post->ID ];
+	}
+
+	/**
+	 * Returns the post content after parsing shortcodes and blocks.
+	 * We avoid using the "the_content" hook because it breaks stuff if we call it outside the loop or main query.
+	 * See https://developer.wordpress.org/reference/hooks/the_content/
+	 *
+	 * @since 4.1.5.2
+	 *
+	 * @param  string $postContent The post content.
+	 * @return string              The parsed post content.
+	 */
+	public function theContent( $postContent ) {
+		// The order of the function calls below is intentional and should NOT change.
+		$postContent = do_blocks( $postContent );
+		$postContent = wpautop( $postContent );
+		$postContent = $this->doShortcodes( $postContent );
+		return $postContent;
+	}
+
+	/**
+	 * Returns the description based on the post content.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post|int $post The post.
-	 * @return string            The content.
+	 * @param  WP_Post|int $post The post (optional).
+	 * @return string            The description.
 	 */
-	public function getContent( $post = null ) {
+	public function getDescriptionFromContent( $post = null ) {
 		$post = ( $post && is_object( $post ) ) ? $post : $post = $this->getPost( $post );
 
 		static $content = [];
@@ -212,7 +257,7 @@ trait WpContext {
 			! in_array( 'runShortcodesInDescription', aioseo()->internalOptions->deprecatedOptions, true ) ||
 			aioseo()->options->deprecated->searchAppearance->advanced->runShortcodesInDescription
 		) {
-			$postContent = $this->doShortcodes( $postContent );
+			$postContent = $this->theContent( $postContent );
 		}
 
 		$postContent          = wp_trim_words( $postContent, 55, apply_filters( 'excerpt_more', ' ' . '[&hellip;]' ) );

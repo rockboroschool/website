@@ -74,6 +74,8 @@ class Admin {
 
 		add_action( 'sanitize_comment_cookies', [ $this, 'init' ], 20 );
 
+		add_filter( 'admin_body_class', [ $this, 'bodyClass' ] );
+
 		$this->setupWizard = new SetupWizard();
 	}
 
@@ -562,6 +564,8 @@ class Admin {
 				}
 			}
 		}
+
+		return [];
 	}
 
 	/**
@@ -635,15 +639,16 @@ class Admin {
 	 * @return void
 	 */
 	public function addRobotsMenu() {
-		$this->addMainMenu( 'aioseo-tools' );
+		$slug = 'aioseo-tools';
+		$this->addMainMenu( $slug );
 
-		$page = $this->pages['aioseo-tools'];
+		$page = $this->pages[ $slug ];
 		$hook = add_submenu_page(
-			$page['parent'],
+			$slug,
 			! empty( $page['page_title'] ) ? $page['page_title'] : $page['menu_title'],
 			$page['menu_title'],
-			$page['capability'],
-			'aioseo-tools',
+			$this->getPageRequiredCapability( $slug ),
+			$slug,
 			[ $this, 'page' ]
 		);
 		add_action( "load-{$hook}", [ $this, 'hooks' ] );
@@ -704,6 +709,21 @@ class Admin {
 	 */
 	public function page() {
 		echo '<div id="aioseo-app"></div>';
+
+		if ( $this->isFlyoutMenuEnabled() ) {
+			echo '<div id="aioseo-flyout-menu"></div>';
+		}
+	}
+
+	/**
+	 * Returns if the Flyout menu is enabled or not.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return bool Whether or not the Flyout menu is enabled.
+	 */
+	public function isFlyoutMenuEnabled() {
+		return apply_filters( 'aioseo_flyout_menu_enable', true );
 	}
 
 	/**
@@ -858,10 +878,34 @@ class Admin {
 		//  'css/chunk-' . $this->currentPage . $rtl . '-vendors.css'
 		// );
 
+		if ( ! apply_filters( 'aioseo_flyout_menu_disable', false ) ) {
+			$this->enqueueFlyoutMenu();
+		}
+
 		wp_localize_script(
 			'aioseo-' . $this->currentPage . '-script',
 			'aioseo',
 			aioseo()->helpers->getVueData( $this->currentPage )
+		);
+	}
+
+	/**
+	 * Enqueues the JS/CSS for the Flyout Menu.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return void
+	 */
+	private function enqueueFlyoutMenu() {
+		aioseo()->helpers->enqueueScript(
+			'aioseo-flyout-menu',
+			'js/flyout-menu.js'
+		);
+
+		$rtl = is_rtl() ? '.rtl' : '';
+		aioseo()->helpers->enqueueStyle(
+			'aioseo-flyout-menu',
+			"css/flyout-menu$rtl.css"
 		);
 	}
 
@@ -1176,9 +1220,9 @@ class Admin {
 			Migration\Helpers::redoMigration();
 		}
 
-		// Remove all AIOSEO transients.
+		// Remove all AIOSEO cache.
 		if ( isset( $_GET['aioseo-clear-cache'] ) ) {
-			aioseo()->transients->clearCache();
+			aioseo()->cache->clear();
 		}
 
 		if ( isset( $_GET['aioseo-remove-duplicates'] ) ) {
@@ -1204,7 +1248,7 @@ class Admin {
 	 * @return void
 	 */
 	public function scheduleUnescapeData() {
-		aioseo()->transients->update( 'unslash_escaped_data_posts', time(), WEEK_IN_SECONDS );
+		aioseo()->cache->update( 'unslash_escaped_data_posts', time(), WEEK_IN_SECONDS );
 		aioseo()->helpers->scheduleSingleAction( 'aioseo_unslash_escaped_data_posts', 120 );
 	}
 
@@ -1217,7 +1261,7 @@ class Admin {
 	 */
 	public function unslashEscapedDataPosts() {
 		$postsToUnslash = 200;
-		$timeStarted    = gmdate( 'Y-m-d H:i:s', aioseo()->transients->get( 'unslash_escaped_data_posts' ) );
+		$timeStarted    = gmdate( 'Y-m-d H:i:s', aioseo()->cache->get( 'unslash_escaped_data_posts' ) );
 
 		$posts = aioseo()->db->start( 'aioseo_posts' )
 			->select( '*' )
@@ -1228,7 +1272,7 @@ class Admin {
 			->result();
 
 		if ( empty( $posts ) ) {
-			aioseo()->transients->delete( 'unslash_escaped_data_posts' );
+			aioseo()->cache->delete( 'unslash_escaped_data_posts' );
 			return;
 		}
 
@@ -1349,10 +1393,15 @@ class Admin {
 	 *
 	 * @since 4.1.2
 	 *
-	 * @param  string $messages The original messages.
-	 * @return string           The modified messages.
+	 * @param  array $messages The original messages.
+	 * @return array           The modified messages.
 	 */
 	public function appendTrashedMessage( $messages, $counts ) {
+		// Let advanced users override this.
+		if ( apply_filters( 'aioseo_redirects_disable_trashed_posts_suggestions', false ) ) {
+			return $messages;
+		}
+
 		if ( function_exists( 'aioseoRedirects' ) && aioseoRedirects()->options->monitor->trash ) {
 			return $messages;
 		}
@@ -1422,5 +1471,22 @@ class Admin {
 	 */
 	public function loadTextDomain() {
 		aioseo()->helpers->loadTextDomain( 'all-in-one-seo-pack' );
+	}
+
+	/**
+	 * Filters the CSS classes for the body tag in the admin.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @param  string $classes Space-separated list of CSS classes.
+	 * @return string          Space-separated list of CSS classes.
+	 */
+	public function bodyClass( $classes ) {
+		if ( $this->isFlyoutMenuEnabled() ) {
+			// This adds a bottom margin to our menu so that we push the footer down and prevent the flyout menu from overlapping the "Save Changes" button.
+			$classes .= ' aioseo-flyout-menu-enabled ';
+		}
+
+		return $classes;
 	}
 }

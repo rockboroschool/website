@@ -25,8 +25,8 @@ class UserMeta {
 	public function scheduleImport() {
 		aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->yoastSeo->userActionName, 30 );
 
-		if ( ! aioseo()->transients->get( 'import_user_meta_yoast_seo' ) ) {
-			aioseo()->transients->update( 'import_user_meta_yoast_seo', 0, WEEK_IN_SECONDS );
+		if ( ! aioseo()->cache->get( 'import_user_meta_yoast_seo' ) ) {
+			aioseo()->cache->update( 'import_user_meta_yoast_seo', 0, WEEK_IN_SECONDS );
 		}
 	}
 
@@ -39,7 +39,7 @@ class UserMeta {
 	 */
 	public function importUserMeta() {
 		$usersPerAction = 100;
-		$offset         = aioseo()->transients->get( 'import_user_meta_yoast_seo' );
+		$offset         = aioseo()->cache->get( 'import_user_meta_yoast_seo' );
 
 		$usersMeta = aioseo()->db
 			->start( 'usermeta' . ' as um' )
@@ -50,7 +50,7 @@ class UserMeta {
 			->result();
 
 		if ( ! $usersMeta || ! count( $usersMeta ) ) {
-			aioseo()->transients->delete( 'import_user_meta_yoast_seo' );
+			aioseo()->cache->delete( 'import_user_meta_yoast_seo' );
 			return;
 		}
 
@@ -59,10 +59,10 @@ class UserMeta {
 		}
 
 		if ( count( $usersMeta ) === $usersPerAction ) {
-			aioseo()->transients->update( 'import_user_meta_yoast_seo', 100 + $offset, WEEK_IN_SECONDS );
+			aioseo()->cache->update( 'import_user_meta_yoast_seo', 100 + $offset, WEEK_IN_SECONDS );
 			aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->yoastSeo->userActionName, 5 );
 		} else {
-			aioseo()->transients->delete( 'import_user_meta_yoast_seo' );
+			aioseo()->cache->delete( 'import_user_meta_yoast_seo' );
 		}
 	}
 }

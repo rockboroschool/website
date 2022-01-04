@@ -145,7 +145,7 @@ class PostsTerms {
 			'postData' => [
 				'parsedTitle'       => aioseo()->tags->replaceTags( $thePost->title, $args['postId'] ),
 				'parsedDescription' => aioseo()->tags->replaceTags( $thePost->description, $args['postId'] ),
-				'content'           => aioseo()->helpers->doShortcodes( self::getAnalysisContent( $args['postId'] ) ),
+				'content'           => aioseo()->helpers->theContent( self::getAnalysisContent( $args['postId'] ) ),
 				'slug'              => get_post_field( 'post_name', $args['postId'] )
 			]
 		], 200 );

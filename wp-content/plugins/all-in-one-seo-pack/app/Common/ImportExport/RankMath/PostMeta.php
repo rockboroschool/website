@@ -29,8 +29,8 @@ class PostMeta {
 				return;
 			}
 
-			if ( ! aioseo()->transients->get( 'import_post_meta_rank_math' ) ) {
-				aioseo()->transients->update( 'import_post_meta_rank_math', time(), WEEK_IN_SECONDS );
+			if ( ! aioseo()->cache->get( 'import_post_meta_rank_math' ) ) {
+				aioseo()->cache->update( 'import_post_meta_rank_math', time(), WEEK_IN_SECONDS );
 			}
 
 			as_schedule_single_action( time(), aioseo()->importExport->rankMath->postActionName, [], 'aioseo' );
@@ -49,7 +49,7 @@ class PostMeta {
 	public function importPostMeta() {
 		$postsPerAction  = 100;
 		$publicPostTypes = implode( "', '", aioseo()->helpers->getPublicPostTypes( true ) );
-		$timeStarted     = gmdate( 'Y-m-d H:i:s', aioseo()->transients->get( 'import_post_meta_rank_math' ) );
+		$timeStarted     = gmdate( 'Y-m-d H:i:s', aioseo()->cache->get( 'import_post_meta_rank_math' ) );
 
 		$posts = aioseo()->db
 			->start( 'posts' . ' as p' )
@@ -65,7 +65,7 @@ class PostMeta {
 			->result();
 
 		if ( ! $posts || ! count( $posts ) ) {
-			aioseo()->transients->delete( 'import_post_meta_rank_math' );
+			aioseo()->cache->delete( 'import_post_meta_rank_math' );
 			return;
 		}
 
@@ -198,7 +198,7 @@ class PostMeta {
 				// Do nothing.
 			}
 		} else {
-			aioseo()->transients->delete( 'import_post_meta_rank_math' );
+			aioseo()->cache->delete( 'import_post_meta_rank_math' );
 		}
 	}
 }

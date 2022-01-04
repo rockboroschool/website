@@ -44,8 +44,8 @@ class Options {
 			'homepageLabel'         => [ 'type' => 'string', 'default' => 'Home' ],
 			'breadcrumbPrefix'      => [ 'type' => 'string' ],
 			'archiveFormat'         => [ 'type' => 'string', 'default' => 'Archives for #breadcrumb_archive_post_type_name', 'localized' => true ],
-			'searchResultFormat'    => [ 'type' => 'string', 'default' => 'Search for \'#breadcrumb_search_string\'', 'localized' => true ],
-			'errorFormat404'        => [ 'type' => 'string', 'default' => '404 Error: page not found', 'localized' => true ],
+			'searchResultFormat'    => [ 'type' => 'string', 'default' => 'Search Results for \'#breadcrumb_search_string\'', 'localized' => true ],
+			'errorFormat404'        => [ 'type' => 'string', 'default' => '404 - Page Not Found', 'localized' => true ],
 			'showCurrentItem'       => [ 'type' => 'boolean', 'default' => true ],
 			'linkCurrentItem'       => [ 'type' => 'boolean', 'default' => false ],
 			'categoryFullHierarchy' => [ 'type' => 'boolean', 'default' => false ],
@@ -524,8 +524,8 @@ TEMPLATE
 
 		$this->defaults['breadcrumbs']['homepageLabel']['default']      = __( 'Home', 'all-in-one-seo-pack' );
 		$this->defaults['breadcrumbs']['archiveFormat']['default']      = sprintf( '%1$s #breadcrumb_archive_post_type_name', __( 'Archives for', 'all-in-one-seo-pack' ) );
-		$this->defaults['breadcrumbs']['searchResultFormat']['default'] = sprintf( '%1$s \'#breadcrumb_search_string\'', __( 'Search for', 'all-in-one-seo-pack' ) );
-		$this->defaults['breadcrumbs']['errorFormat404']['default']     = __( '404 Error: page not found', 'all-in-one-seo-pack' );
+		$this->defaults['breadcrumbs']['searchResultFormat']['default'] = sprintf( '%1$s \'#breadcrumb_search_string\'', __( 'Search Results for', 'all-in-one-seo-pack' ) );
+		$this->defaults['breadcrumbs']['errorFormat404']['default']     = __( '404 - Page Not Found', 'all-in-one-seo-pack' );
 
 		$this->defaults['searchAppearance']['global']['schema']['organizationName']['default'] = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 		$this->defaults['searchAppearance']['global']['schema']['organizationLogo']['default'] = aioseo()->helpers->getSiteLogoUrl() ? aioseo()->helpers->getSiteLogoUrl() : '';

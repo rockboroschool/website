@@ -360,7 +360,7 @@ class PluginUpgraderSilentAjax extends \Plugin_Upgrader {
 	 *
 	 * @param bool $enable True to enable maintenance mode, false to disable.
 	 */
-	public function maintenance_mode( $enable = false ) {
+	public function maintenance_mode( $enable = false ) { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 		global $wp_filesystem;
 		$file = $wp_filesystem->abspath() . '.maintenance';
 		if ( $enable ) {
@@ -387,7 +387,7 @@ class PluginUpgraderSilentAjax extends \Plugin_Upgrader {
 	 * @param array  $hook_extra       Extra arguments to pass to the filter hooks. Default empty array.
 	 * @return string|WP_Error The full path to the downloaded package file, or a WP_Error object.
 	 */
-	public function download_package( $package, $check_signatures = false, $hook_extra = [] ) {
+	public function download_package( $package, $check_signatures = false, $hook_extra = [] ) { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 
 		/**
 		 * Filters whether to return the package.
@@ -437,7 +437,7 @@ class PluginUpgraderSilentAjax extends \Plugin_Upgrader {
 	 *                               to unpack it. Default true.
 	 * @return string|WP_Error The path to the unpacked contents, or a WP_Error on failure.
 	 */
-	public function unpack_package( $package, $delete_package = true ) {
+	public function unpack_package( $package, $delete_package = true ) { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 		global $wp_filesystem;
 
 		//$this->skin->feedback( 'unpack_package' );
@@ -509,7 +509,7 @@ class PluginUpgraderSilentAjax extends \Plugin_Upgrader {
 	 *
 	 * @return array|WP_Error The result (also stored in `WP_Upgrader::$result`), or a WP_Error on failure.
 	 */
-	public function install_package( $args = [] ) {
+	public function install_package( $args = [] ) { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 		global $wp_filesystem, $wp_theme_directories;
 
 		$defaults = [

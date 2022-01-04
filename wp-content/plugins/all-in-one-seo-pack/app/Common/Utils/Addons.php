@@ -43,8 +43,8 @@ class Addons {
 	public function getAddons( $flushCache = false ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-		$addons = aioseo()->transients->get( 'addons' );
-		if ( false === $addons || $flushCache ) {
+		$addons = aioseo()->cache->get( 'addons' );
+		if ( null === $addons || $flushCache ) {
 			$response = wp_remote_get( $this->getLicensingUrl() );
 			if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 				$addons = json_decode( wp_remote_retrieve_body( $response ) );
@@ -55,7 +55,7 @@ class Addons {
 			$addons = $this->getDefaultAddons();
 		}
 
-		aioseo()->transients->update( 'addons', $addons );
+		aioseo()->cache->update( 'addons', $addons );
 
 		// The API request will tell us if we can activate a plugin, but let's check if its already active.
 		$installedPlugins = array_keys( get_plugins() );
@@ -144,15 +144,15 @@ class Addons {
 	public function getAddon( $sku, $flushCache = false ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-		$addon = aioseo()->transients->get( 'addon_' . $sku );
-		if ( false === $addon || $flushCache ) {
+		$addon = aioseo()->cache->get( 'addon_' . $sku );
+		if ( null === $addon || $flushCache ) {
 			$addon = aioseo()->helpers->sendRequest( $this->getLicensingUrl() . 'addons/', $this->getAddonPayload( $sku ) );
-			aioseo()->transients->update( 'addon_' . $sku, $addon, DAY_IN_SECONDS );
+			aioseo()->cache->update( 'addon_' . $sku, $addon, DAY_IN_SECONDS );
 		}
 
 		if ( ! $addon || ! empty( $addon->error ) ) {
 			$addon = $this->getDefaultAddon( $sku );
-			aioseo()->transients->update( 'addon_' . $sku, $addon, 10 * MINUTE_IN_SECONDS );
+			aioseo()->cache->update( 'addon_' . $sku, $addon, 10 * MINUTE_IN_SECONDS );
 		}
 
 		// The API request will tell us if we can activate a plugin, but let's check if its already active.

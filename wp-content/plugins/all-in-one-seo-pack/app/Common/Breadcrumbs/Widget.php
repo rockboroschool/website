@@ -64,7 +64,10 @@ class Widget extends \WP_Widget {
 		}
 
 		// Breadcrumb.
-		aioseo()->breadcrumbs->frontend->display();
+		! empty( $_GET['legacy-widget-preview'] ) ? aioseo()->breadcrumbs->frontend->preview() : aioseo()->breadcrumbs->frontend->display();
+
+		// Workaround for a bug in the Gutenberg widget preview.
+		echo '<span style="display: none">a</span>';  // TODO: remove this when the preview bug is fixed.
 
 		echo $args['after_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}

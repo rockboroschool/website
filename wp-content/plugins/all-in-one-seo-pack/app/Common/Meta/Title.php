@@ -94,6 +94,8 @@ class Title {
 				return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->title );
 			}
 		}
+
+		return '';
 	}
 
 	/**

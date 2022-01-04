@@ -58,7 +58,52 @@ class Content {
 				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
 					return $this->terms( aioseo()->sitemap->indexName );
 				}
+
+				return [];
 		}
+
+		return [];
+	}
+
+	/**
+	 * Returns the total entries number for the requested sitemap.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return int The total entries number.
+	 */
+	public function getTotal() {
+		if ( ! in_array( aioseo()->sitemap->type, [ 'general', 'rss' ], true ) || ! $this->isEnabled() ) {
+			return 0;
+		}
+
+		switch ( aioseo()->sitemap->indexName ) {
+			case 'rss':
+				return count( $this->rss() );
+			case 'root':
+				if ( 'root' === aioseo()->sitemap->indexName && aioseo()->options->sitemap->general->indexes ) {
+					return count( aioseo()->sitemap->root->indexes() );
+				}
+				return count( $this->nonIndexed() );
+			default:
+				// Check if requested index has a dedicated method.
+				$methodName = aioseo()->helpers->dashesToCamelCase( aioseo()->sitemap->indexName );
+				if ( method_exists( $this, $methodName ) ) {
+					return count( $this->$methodName() );
+				}
+
+				// Check if requested index is a registered post type.
+				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
+					return aioseo()->sitemap->query->posts( aioseo()->sitemap->indexName, [ 'count' => true ] );
+				}
+
+				// Check if requested index is a registered taxonomy.
+				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
+					return aioseo()->sitemap->query->terms( aioseo()->sitemap->indexName, [ 'count' => true ] );
+				}
+		}
+
+		return 0;
 	}
 
 	/**
@@ -74,6 +119,10 @@ class Content {
 			return false;
 		}
 
+		if ( 'general' === aioseo()->sitemap->type ) {
+			return true;
+		}
+
 		if (
 			$options->sitemap->{aioseo()->sitemap->type}->has( 'indexes' ) &&
 			! $options->sitemap->{aioseo()->sitemap->type}->indexes &&
@@ -85,6 +134,7 @@ class Content {
 		if ( $options->sitemap->{aioseo()->sitemap->type}->postTypes->all ) {
 			return true;
 		}
+
 		$included = aioseo()->sitemap->helpers->includedPostTypes();
 		return ! empty( $included );
 	}
@@ -131,7 +181,7 @@ class Content {
 		}
 
 		// Return if we're determining the root indexes.
-		if ( ! empty( $additionalArgs['root'] ) ) {
+		if ( ! empty( $additionalArgs['root'] ) && $additionalArgs['root'] ) {
 			return $posts;
 		}
 
@@ -142,7 +192,7 @@ class Content {
 		foreach ( $posts as $post ) {
 			$entry = [
 				'loc'        => get_permalink( $post->ID ),
-				'lastmod'    => aioseo()->helpers->formatDateTime( $post->post_modified_gmt ),
+				'lastmod'    => aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt ),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'postTypes', $post, $postType ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'postTypes', $post, $postType ),
 			];
@@ -219,7 +269,8 @@ class Content {
 
 			$location = is_home()
 				? apply_filters( 'wpml_home_url', get_option( 'home' ) )
-				: apply_filters( 'wpml_permalink', $permalink, $translation->language_code );
+				: apply_filters( 'wpml_permalink', $entry['loc'], $translation->language_code, true );
+
 			if ( $rss ) {
 				$entry['guid'] = $location;
 				continue;
@@ -317,7 +368,7 @@ class Content {
 		}
 
 		// Return if we're determining the root indexes.
-		if ( ! empty( $additionalArgs['root'] ) ) {
+		if ( ! empty( $additionalArgs['root'] ) && $additionalArgs['root'] ) {
 			return $terms;
 		}
 
@@ -362,7 +413,7 @@ class Content {
 			return '';
 		}
 
-		return aioseo()->helpers->formatDateTime( $lastModified[0]->last_modified );
+		return aioseo()->helpers->dateTimeToIso8601( $lastModified[0]->last_modified );
 	}
 
 	/**
@@ -380,7 +431,7 @@ class Content {
 			$post         = aioseo()->helpers->getPost( $frontPageId );
 			$entries[] = [
 				'loc'        => aioseo()->helpers->maybeRemoveTrailingSlash( $frontPageUrl ),
-				'lastmod'    => $post ? aioseo()->helpers->formatDateTime( $post->post_modified_gmt ) : aioseo()->sitemap->helpers->lastModifiedPostTime(),
+				'lastmod'    => $post ? aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt ) : aioseo()->sitemap->helpers->lastModifiedPostTime(),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'homePage' ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'homePage' ),
 			];
@@ -406,6 +457,7 @@ class Content {
 				$entries[] = [
 					'loc'        => $page->url,
 					'lastmod'    => aioseo()->sitemap->helpers->lastModifiedAdditionalPage( $page ),
+					'isTimezone' => true,
 					'changefreq' => $page->frequency->value,
 					'priority'   => $page->priority->value
 				];
@@ -513,7 +565,7 @@ class Content {
 		$year    = '';
 		foreach ( $dates as $date ) {
 			$entry = [
-				'lastmod'    => aioseo()->helpers->formatDateTime( $date->post_modified_gmt ),
+				'lastmod'    => aioseo()->helpers->dateTimeToIso8601( $date->post_modified_gmt ),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'date' ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'date' ),
 			];
@@ -553,7 +605,7 @@ class Content {
 				'guid'        => get_permalink( $post->ID ),
 				'title'       => get_the_title( $post ),
 				'description' => get_post_field( 'post_excerpt', $post->ID ),
-				'pubDate'     => aioseo()->helpers->formatDateTime( $post->post_modified_gmt )
+				'pubDate'     => aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt )
 			];
 
 			$entries[] = $this->localizeEntries( $entry, $post, $post->post_type, true );

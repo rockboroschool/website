@@ -356,9 +356,9 @@ class BadBotBlocker {
 					}
 				}
 			}
-
-			return false;
 		}
+
+		return false;
 	}
 
 	/**

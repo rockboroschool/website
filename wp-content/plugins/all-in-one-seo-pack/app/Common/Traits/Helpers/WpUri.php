@@ -303,4 +303,25 @@ trait WpUri {
 	public function isUrl( $url ) {
 		return esc_url_raw( $url ) === $url;
 	}
+
+	/**
+	 * Retrieves the parameters for a given URL.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @param  string $url          The url.
+	 * @return array                The parameters.
+	 */
+	public function getParametersFromUrl( $url ) {
+		$parsedUrl  = wp_parse_url( wp_unslash( $url ) );
+		$parameters = [];
+
+		if ( empty( $parsedUrl['query'] ) ) {
+			return [];
+		}
+
+		wp_parse_str( $parsedUrl['query'], $parameters );
+
+		return $parameters;
+	}
 }

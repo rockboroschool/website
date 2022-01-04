@@ -110,7 +110,7 @@ class Image {
 	 * @since 4.0.0
 	 *
 	 * @param  WP_Post|int $post The post object or ID.
-	 * @return array             The image entries.
+	 * @return void
 	 */
 	public function scanPost( $post ) {
 		if ( is_numeric( $post ) ) {

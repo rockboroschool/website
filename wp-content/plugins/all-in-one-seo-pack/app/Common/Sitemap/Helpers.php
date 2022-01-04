@@ -95,7 +95,7 @@ class Helpers {
 			->result();
 
 		return ! empty( $lastModified[0]->last_modified )
-			? aioseo()->helpers->formatDateTime( $lastModified[0]->last_modified )
+			? aioseo()->helpers->dateTimeToIso8601( $lastModified[0]->last_modified )
 			: '';
 	}
 
@@ -142,10 +142,10 @@ class Helpers {
 					$lastModified = $timestamp;
 				}
 			}
-			return 0 !== $lastModified ? aioseo()->helpers->formatDateTime( gmdate( 'Y-m-d H:i:s', $timestamp ) ) : false;
+			return 0 !== $lastModified ? aioseo()->helpers->dateTimeToIso8601( gmdate( 'Y-m-d H:i:s', $timestamp ) ) : false;
 		}
 
-		return aioseo()->helpers->formatDateTime( gmdate( 'Y-m-d H:i:s', max( $pages ) ) );
+		return aioseo()->helpers->dateTimeToIso8601( gmdate( 'Y-m-d H:i:s', max( $pages ) ) );
 	}
 
 	/**
@@ -329,7 +329,7 @@ class Helpers {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $page The additional page object.
+	 * @param  object $page The additional page object.
 	 * @return string       The formatted datetime.
 	 */
 	public function lastModifiedAdditionalPage( $page ) {
@@ -419,21 +419,50 @@ class Helpers {
 
 		foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
 			if ( ! empty( $classes['helpers'] ) ) {
-				$urls = $urls + $classes['helpers']->getSitemapUrls();
+				$urls = array_merge( $urls, $classes['helpers']->getSitemapUrls() );
 			}
 		}
 
-		// Check if user has a custom filename from the V3 migration.
-		$filename = aioseo()->options->sitemap->general->advancedSettings->enable &&
-			! aioseo()->options->sitemap->general->advancedSettings->dynamic && aioseo()->sitemap->helpers->filename( 'general' )
-			? aioseo()->sitemap->helpers->filename( 'general' ) :
-			'sitemap';
 		if ( aioseo()->options->sitemap->general->enable ) {
-			$urls[] = 'Sitemap: ' . trailingslashit( home_url() ) . $filename . '.xml';
+			$urls[] = $this->getUrl( 'general' );
 		}
 		if ( aioseo()->options->sitemap->rss->enable ) {
-			$urls[] = 'Sitemap: ' . trailingslashit( home_url() ) . 'sitemap.rss';
+			$urls[] = $this->getUrl( 'rss' );
 		}
+
+		foreach ( $urls as &$url ) {
+			$url = 'Sitemap: ' . $url;
+		}
+
 		return $urls;
+	}
+
+	/**
+	 * Returns the URL of the given sitemap type.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @param  string $type The sitemap type.
+	 * @return string       The sitemap URL.
+	 */
+	public function getUrl( $type ) {
+		$url = home_url( 'sitemap.xml' );
+
+		if ( 'rss' === $type ) {
+			$url = home_url( 'sitemap.rss' );
+		}
+
+		if ( 'general' === $type ) {
+			// Check if user has a custom filename from the V3 migration.
+			$filename = $this->filename( 'general' ) ?: 'sitemap';
+			$url      = home_url( $filename . '.xml' );
+		}
+
+		$addon = aioseo()->addons->getLoadedAddon( $type );
+		if ( ! empty( $addon->helpers ) && method_exists( $addon->helpers, 'getUrl' ) ) {
+			$url = $addon->helpers->getUrl();
+		}
+
+		return $url;
 	}
 }

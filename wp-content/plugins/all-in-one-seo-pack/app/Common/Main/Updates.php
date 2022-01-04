@@ -47,7 +47,7 @@ class Updates {
 		$oldOptions = get_option( 'aioseop_options' );
 		if ( empty( $oldOptions ) && ! is_network_admin() && ! isset( $_GET['activate-multi'] ) ) {
 			// Sets 30 second transient for welcome screen redirect on activation.
-			aioseo()->transients->update( 'activation_redirect', true, 30 );
+			aioseo()->cache->update( 'activation_redirect', true, 30 );
 		}
 
 		if ( ! empty( $oldOptions['last_active_version'] ) ) {
@@ -107,6 +107,20 @@ class Updates {
 
 		if ( version_compare( $lastActiveVersion, '4.1.4.3', '<' ) ) {
 			$this->migrateDynamicSettings();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.5', '<' ) ) {
+			aioseo()->helpers->unscheduleAction( 'aioseo_cleanup_action_scheduler' );
+			// Schedule routine to remove our old transients from the options table.
+			aioseo()->helpers->scheduleSingleAction( aioseo()->cache->prune->getOptionCacheCleanAction(), MINUTE_IN_SECONDS );
+
+			// Refresh with new Redirects capability.
+			$this->accessControlNewCapabilities();
+
+			// Regenerate the sitemap if using a static one to update the data for the new stylesheets.
+			aioseo()->sitemap->regenerateStaticSitemap();
+
+			$this->fixSchemaTypeDefault();
 		}
 
 		do_action( 'aioseo_run_updates', $lastActiveVersion );
@@ -195,6 +209,7 @@ class Updates {
 		if ( ! aioseo()->db->tableExists( 'aioseo_posts' ) ) {
 			$tableName = $db->prefix . 'aioseo_posts';
 
+			// Incorrect defaults are adjusted below through migrations.
 			aioseo()->db->execute(
 				"CREATE TABLE {$tableName} (
 					id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -586,6 +601,23 @@ class Updates {
 					}
 				}
 			}
+		}
+	}
+
+	/**
+	 * Fixes the default value for the post schema type.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @return void
+	 */
+	private function fixSchemaTypeDefault() {
+		if ( aioseo()->db->tableExists( 'aioseo_posts' ) && aioseo()->db->columnExists( 'aioseo_posts', 'schema_type' ) ) {
+			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
+			aioseo()->db->execute(
+				"ALTER TABLE {$tableName}
+				MODIFY schema_type varchar(20) DEFAULT 'default'"
+			);
 		}
 	}
 }

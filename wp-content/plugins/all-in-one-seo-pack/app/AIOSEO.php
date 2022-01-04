@@ -121,6 +121,15 @@ namespace AIOSEO\Plugin {
 		public $templates;
 
 		/**
+		 * Holds our cache helper.
+		 *
+		 * @since 4.1.5
+		 *
+		 * @var Common\Utils\Cache
+		 */
+		public $cache;
+
+		/**
 		 * Main AIOSEO Instance.
 		 *
 		 * Insures that only one instance of AIOSEO exists in memory at any one
@@ -249,7 +258,13 @@ namespace AIOSEO\Plugin {
 		 * @return void
 		 */
 		private function preLoad() {
-			$this->db = new Common\Utils\Database();
+			$this->db         = new Common\Utils\Database();
+			$this->cache      = new Common\Utils\Cache();
+
+			// Backwards compatibility with addons. TODO: Remove this in the future.
+			$this->transients = $this->cache;
+
+			$this->preUpdates = $this->pro ? new Pro\Main\PreUpdates() : new Common\Main\PreUpdates();
 		}
 
 		/**
@@ -277,7 +292,6 @@ namespace AIOSEO\Plugin {
 				$translations->init();
 			}
 
-			$this->transients         = new Common\Utils\Transients();
 			$this->helpers            = $this->pro ? new Pro\Utils\Helpers() : new Common\Utils\Helpers();
 			$this->addons             = $this->pro ? new Pro\Utils\Addons() : new Common\Utils\Addons();
 			$this->tags               = $this->pro ? new Pro\Utils\Tags() : new Common\Utils\Tags();

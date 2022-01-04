@@ -102,7 +102,7 @@ class Main {
 	public function enqueueFrontEndAssets() {
 		$canManageSeo = apply_filters( 'aioseo_manage_seo', 'aioseo_manage_seo' );
 		if (
-			! is_user_logged_in() ||
+			! is_admin_bar_showing() ||
 			! ( current_user_can( $canManageSeo ) || aioseo()->access->canManage() )
 		) {
 			return;

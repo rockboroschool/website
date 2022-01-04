@@ -330,22 +330,9 @@ class ImportExport {
 	 * @return boolean True if an import is currently running.
 	 */
 	public function isImportRunning() {
-		$transients = aioseo()->db
-			->start( 'options' )
-			->select( 'option_name as name' )
-			->whereRaw( "`option_name` LIKE '_aioseo_cache_%'" )
-			->run()
-			->result();
+		$importsRunning = aioseo()->cache->get( 'import_%_meta_%' );
 
-		$foundImportTransient = false;
-		foreach ( $transients as $transient ) {
-			if ( preg_match( '#import_.*_meta_.*#', $transient->name ) ) {
-				$foundImportTransient = true;
-				break;
-			}
-		}
-
-		return $foundImportTransient;
+		return ! empty( $importsRunning );
 	}
 
 	/**

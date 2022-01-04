@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php if ( $description ) {
 		?><description><?php aioseo()->sitemap->output->escapeAndEcho( $description ); ?></description>
 		<?php }
-		?><?php if ( array_key_exists( 'pubDate', $entries[0] ) || ! $entries[0]['pubDate'] ) {
+		?><?php if ( isset( $entries[0] ) && ( array_key_exists( 'pubDate', $entries[0] ) || ! $entries[0]['pubDate'] ) ) {
 		?><lastBuildDate><?php aioseo()->sitemap->output->escapeAndEcho( $entries[0]['pubDate'] ); ?></lastBuildDate>
 		<?php }
 		?><docs>https://validator.w3.org/feed/docs/rss2.html</docs>

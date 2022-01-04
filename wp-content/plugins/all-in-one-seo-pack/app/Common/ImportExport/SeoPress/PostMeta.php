@@ -49,8 +49,8 @@ class PostMeta {
 	 */
 	public function scheduleImport() {
 		if ( aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->seoPress->postActionName, 0 ) ) {
-			if ( ! aioseo()->transients->get( 'import_post_meta_seopress' ) ) {
-				aioseo()->transients->update( 'import_post_meta_seopress', time(), WEEK_IN_SECONDS );
+			if ( ! aioseo()->cache->get( 'import_post_meta_seopress' ) ) {
+				aioseo()->cache->update( 'import_post_meta_seopress', time(), WEEK_IN_SECONDS );
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class PostMeta {
 	public function importPostMeta() {
 		$postsPerAction  = 100;
 		$publicPostTypes = implode( "', '", aioseo()->helpers->getPublicPostTypes( true ) );
-		$timeStarted     = gmdate( 'Y-m-d H:i:s', aioseo()->transients->get( 'import_post_meta_seopress' ) );
+		$timeStarted     = gmdate( 'Y-m-d H:i:s', aioseo()->cache->get( 'import_post_meta_seopress' ) );
 
 		$posts = aioseo()->db
 			->start( 'posts as p' )
@@ -81,7 +81,7 @@ class PostMeta {
 			->result();
 
 		if ( ! $posts || ! count( $posts ) ) {
-			aioseo()->transients->delete( 'import_post_meta_seopress' );
+			aioseo()->cache->delete( 'import_post_meta_seopress' );
 			return;
 		}
 
@@ -110,7 +110,7 @@ class PostMeta {
 		if ( count( $posts ) === $postsPerAction ) {
 			aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->seoPress->postActionName, 5 );
 		} else {
-			aioseo()->transients->delete( 'import_post_meta_seopress' );
+			aioseo()->cache->delete( 'import_post_meta_seopress' );
 		}
 	}
 

@@ -157,7 +157,7 @@ class PostSettings {
 	 * @since 4.0.0
 	 *
 	 * @param  WP_Post $post The current post.
-	 * @return string
+	 * @return void
 	 */
 	public function postSettingsMetabox() {
 		$this->postSettingsHiddenField();
@@ -219,7 +219,7 @@ class PostSettings {
 
 		$currentPost = json_decode( stripslashes( $_POST['aioseo-post-settings'] ), true ); // phpcs:ignore HM.Security.ValidatedSanitizedInput
 
-		// If there is no data, there likely was an error, e.g. if the hidden field wasn't populated on load and the user saved the post without making changes in the metabox - #2254
+		// If there is no data, there likely was an error, e.g. if the hidden field wasn't populated on load and the user saved the post without making changes in the metabox.
 		// In that case we should return to prevent a complete reset of the data.
 		if ( empty( $currentPost ) ) {
 			return;

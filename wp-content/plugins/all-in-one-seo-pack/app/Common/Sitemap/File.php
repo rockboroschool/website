@@ -77,24 +77,36 @@ class File {
 			'posts' === get_option( 'show_on_front' ) ||
 			( aioseo()->options->sitemap->general->additionalPages->enable && count( $pages ) )
 		) {
+			$entries            = aioseo()->sitemap->content->addl();
 			$filename           = "addl-$sitemapName.xml";
-			$files[ $filename ] = aioseo()->sitemap->content->addl();
+			$files[ $filename ] = [
+				'total'   => count( $entries ),
+				'entries' => $entries
+			];
 		}
 
 		if (
 			aioseo()->sitemap->helpers->lastModifiedPost() &&
 			aioseo()->options->sitemap->general->author
 		) {
+			$entries            = aioseo()->sitemap->content->author();
 			$filename           = "author-$sitemapName.xml";
-			$files[ $filename ] = aioseo()->sitemap->content->author();
+			$files[ $filename ] = [
+				'total'   => count( $entries ),
+				'entries' => $entries
+			];
 		}
 
 		if (
 			aioseo()->sitemap->helpers->lastModifiedPost() &&
 			aioseo()->options->sitemap->general->date
 		) {
+			$entries            = aioseo()->sitemap->content->date();
 			$filename           = "date-$sitemapName.xml";
-			$files[ $filename ] = aioseo()->sitemap->content->date();
+			$files[ $filename ] = [
+				'total'   => count( $entries ),
+				'entries' => $entries
+			];
 		}
 
 		$postTypes = aioseo()->sitemap->helpers->includedPostTypes();
@@ -106,15 +118,26 @@ class File {
 				if ( ! $posts ) {
 					continue;
 				}
+				$total = aioseo()->sitemap->query->posts( $postType, [ 'count' => true ] );
 
+				// We need to temporarily reset the linksPerIndex count here so that we can properly chunk.
+				aioseo()->sitemap->linksPerIndex = aioseo()->options->sitemap->general->linksPerIndex;
 				$chunks = aioseo()->sitemap->helpers->chunkEntries( $posts );
+				aioseo()->sitemap->linksPerIndex = PHP_INT_MAX;
+
 				if ( 1 === count( $chunks ) ) {
 					$filename           = "$postType-$sitemapName.xml";
-					$files[ $filename ] = $chunks[0];
+					$files[ $filename ] = [
+						'total'   => $total,
+						'entries' => $chunks[0]
+					];
 				} else {
 					for ( $i = 1; $i <= count( $chunks ); $i++ ) {
 						$filename           = "$postType-$sitemapName$i.xml";
-						$files[ $filename ] = $chunks[ $i - 1 ];
+						$files[ $filename ] = [
+							'total'   => $total,
+							'entries' => $chunks[ $i - 1 ]
+						];
 					}
 				}
 			}
@@ -129,15 +152,26 @@ class File {
 				if ( ! $terms ) {
 					continue;
 				}
+				$total = aioseo()->sitemap->query->terms( $taxonomy, [ 'count' => true ] );
 
+				// We need to temporarily reset the linksPerIndex count here so that we can properly chunk.
+				aioseo()->sitemap->linksPerIndex = aioseo()->options->sitemap->general->linksPerIndex;
 				$chunks = aioseo()->sitemap->helpers->chunkEntries( $terms );
+				aioseo()->sitemap->linksPerIndex = PHP_INT_MAX;
+
 				if ( 1 === count( $chunks ) ) {
 					$filename           = "$taxonomy-$sitemapName.xml";
-					$files[ $filename ] = $chunks[0];
+					$files[ $filename ] = [
+						'total'   => $total,
+						'entries' => $chunks[0]
+					];
 				} else {
 					for ( $i = 1; $i <= count( $chunks ); $i++ ) {
 						$filename           = "$taxonomy-$sitemapName$i.xml";
-						$files[ $filename ] = $chunks[ $i - 1 ];
+						$files[ $filename ] = [
+							'total'   => $total,
+							'entries' => $chunks[ $i - 1 ]
+						];
 					}
 				}
 			}
@@ -157,29 +191,33 @@ class File {
 		$sitemapName = aioseo()->sitemap->helpers->filename();
 		if ( aioseo()->sitemap->indexes ) {
 			$indexes = [];
-			foreach ( $files as $filename => $entries ) {
-				if ( empty( $entries ) ) {
+			foreach ( $files as $filename => $data ) {
+				if ( empty( $data['entries'] ) ) {
 					continue;
 				}
 				$indexes[] = [
 					'loc'     => trailingslashit( home_url() ) . $filename,
-					'lastmod' => array_values( $entries )[0]['lastmod']
+					'lastmod' => array_values( $data['entries'] )[0]['lastmod'],
+					'count'   => count( $data['entries'] )
 				];
 			}
-			$files[ "$sitemapName.xml" ] = $indexes;
-			foreach ( $files as $filename => $entries ) {
-				$this->writeSitemap( $filename, $entries );
+			$files[ "$sitemapName.xml" ] = [
+				'total'   => 0,
+				'entries' => $indexes,
+			];
+			foreach ( $files as $filename => $data ) {
+				$this->writeSitemap( $filename, $data['entries'], $data['total'] );
 			}
 			return;
 		}
 
 		$content = [];
-		foreach ( $files as $filename => $entries ) {
-			foreach ( $entries as $entry ) {
+		foreach ( $files as $filename => $data ) {
+			foreach ( $data['entries'] as $entry ) {
 				$content[] = $entry;
 			}
 		}
-		$this->writeSitemap( "$sitemapName.xml", $content );
+		$this->writeSitemap( "$sitemapName.xml", $content, count( $content ) );
 	}
 
 	/**
@@ -193,7 +231,7 @@ class File {
 	 * @param  array  $entries  The sitemap entries for the file.
 	 * @return void
 	 */
-	protected function writeSitemap( $filename, $entries ) {
+	protected function writeSitemap( $filename, $entries, $total = 0 ) {
 		$sitemapName                 = aioseo()->sitemap->helpers->filename();
 		aioseo()->sitemap->indexName = $filename;
 		if ( "$sitemapName.xml" === $filename && aioseo()->sitemap->indexes ) {
@@ -201,11 +239,13 @@ class File {
 			aioseo()->sitemap->indexName = 'root';
 		}
 
+		aioseo()->sitemap->saveXslData( $filename, $entries, $total );
+
 		ob_start();
-		aioseo()->sitemap->output->output( $entries );
+		aioseo()->sitemap->output->output( $entries, $total );
 		foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
 			if ( ! empty( $classes['output'] ) ) {
-				$classes['output']->output( $entries );
+				$classes['output']->output( $entries, $total );
 			}
 		}
 		$content = ob_get_clean();

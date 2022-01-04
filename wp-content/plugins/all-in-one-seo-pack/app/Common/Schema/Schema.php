@@ -38,7 +38,7 @@ class Schema {
 	 *
 	 * @var array
 	 */
-	private $webPageGraphs = [
+	protected $webPageGraphs = [
 		'WebPage',
 		'AboutPage',
 		'CheckoutPage',
@@ -208,30 +208,16 @@ class Schema {
 		$post           = is_object( $post ) ? $post : aioseo()->helpers->getPost();
 		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
 
-		$schemaType        = 'default';
-		$schemaTypeOptions = '';
-
-		// Get individual settings.
-		$metaData = aioseo()->meta->metaData->getMetaData( $post );
-		if ( $metaData && ! empty( $metaData->schema_type ) ) {
-			$schemaType        = $metaData->schema_type;
-			$schemaTypeOptions = json_decode( $metaData->schema_type_options );
+		if ( ! $dynamicOptions->searchAppearance->postTypes->has( $post->post_type ) ) {
+			return 'WebPage';
 		}
 
-		// Get global settings if set to default.
-		if ( 'default' === $schemaType && $dynamicOptions->searchAppearance->postTypes->has( $post->post_type ) ) {
-			$schemaType = $dynamicOptions->searchAppearance->postTypes->{$post->post_type}->schemaType;
-		}
-
+		$schemaType = $dynamicOptions->searchAppearance->postTypes->{$post->post_type}->schemaType;
 		switch ( $schemaType ) {
 			case 'WebPage':
-				$webPageGraph = ! empty( $metaData->schema_type ) && 'default' !== $metaData->schema_type ? $schemaTypeOptions->webPage->webPageType :
-					$dynamicOptions->searchAppearance->postTypes->{$post->post_type}->webPageType;
-				return ucfirst( $webPageGraph );
+				return ucfirst( $dynamicOptions->searchAppearance->postTypes->{$post->post_type}->webPageType );
 			case 'Article':
-				$articleGraph = ! empty( $metaData->schema_type ) && 'default' !== $metaData->schema_type ? $schemaTypeOptions->article->articleType :
-					$dynamicOptions->searchAppearance->postTypes->{$post->post_type}->articleType;
-				return [ 'WebPage', ucfirst( $articleGraph ) ];
+				return [ 'WebPage', ucfirst( $dynamicOptions->searchAppearance->postTypes->{$post->post_type}->articleType ) ];
 			case 'none':
 				return '';
 			default:
@@ -239,6 +225,7 @@ class Schema {
 				if ( 'default' === $schemaType ) {
 					return 'WebPage';
 				}
+
 				// Check if the schema type isn't already WebPage or one of its child graphs.
 				if ( in_array( $schemaType, $this->webPageGraphs, true ) ) {
 					return ucfirst( $schemaType );

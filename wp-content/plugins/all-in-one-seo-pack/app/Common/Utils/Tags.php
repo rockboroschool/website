@@ -791,7 +791,7 @@ class Tags {
 			$author   = new \WP_User( $post->post_author );
 			$postId   = empty( $id ) ? $post->ID : $id;
 			$category = get_the_category( $postId );
-		} elseif ( is_author() ) {
+		} elseif ( is_author() && is_a( get_queried_object(), 'WP_User' ) ) {
 			$author = get_queried_object();
 		}
 
@@ -886,7 +886,7 @@ class Tags {
 				// Fall through to post content if we're in the admin.
 				// This is needed since get_the_excerpt doesn't generate an excerpt from the post content outside of the loop.
 			case 'post_content':
-				return empty( $postId ) ? ( $sampleData ? __( 'An example of content from your page/post.', 'all-in-one-seo-pack' ) : '' ) : aioseo()->helpers->getContent( $post );
+				return empty( $postId ) ? ( $sampleData ? __( 'An example of content from your page/post.', 'all-in-one-seo-pack' ) : '' ) : aioseo()->helpers->getDescriptionFromContent( $post );
 			case 'category':
 			case 'taxonomy_title':
 				$title = $this->getTaxonomyTitle( $postId );
@@ -972,6 +972,8 @@ class Tags {
 				return $sampleData ? __( 'Sample Custom Field Value', 'all-in-one-seo-pack' ) : '';
 			case 'tax_name':
 				return $sampleData ? __( 'Sample Taxonomy Name Value', 'all-in-one-seo-pack' ) : '';
+			default:
+				return '';
 		}
 	}
 
@@ -1091,7 +1093,7 @@ class Tags {
 	 * @since 4.0.0
 	 *
 	 * @param  array $context A context array to append.
-	 * @return array          An array of context.
+	 * @return void
 	 */
 	public function addContext( $context ) {
 		$this->context = array_merge( $this->context, $context );
@@ -1103,7 +1105,7 @@ class Tags {
 	 * @since 4.0.0
 	 *
 	 * @param  array $tags A tags array to append.
-	 * @return array       An array of tags.
+	 * @return void
 	 */
 	public function addTags( $tags ) {
 		$this->tags = array_merge( $this->tags, $tags );

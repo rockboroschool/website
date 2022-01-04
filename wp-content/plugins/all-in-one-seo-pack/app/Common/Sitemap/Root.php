@@ -20,6 +20,7 @@ class Root {
 	 * @return array The indexes.
 	 */
 	public function indexes() {
+		$indexes = [];
 		if ( 'general' !== aioseo()->sitemap->type ) {
 			foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
 				if ( ! empty( $classes['root'] ) ) {
@@ -46,27 +47,26 @@ class Root {
 			$pages[] = $additionalPage;
 		}
 
-		$indexes = [];
-
-		$additionalPages = apply_filters( 'aioseo_sitemap_additional_pages', [] );
+		$additionalPagesEnabled = aioseo()->options->sitemap->general->additionalPages->enable;
+		$additionalPages        = apply_filters( 'aioseo_sitemap_additional_pages', $pages );
 		if (
 			'posts' === get_option( 'show_on_front' ) ||
-			( aioseo()->options->sitemap->general->additionalPages->enable && count( $pages ) ) ||
-			! in_array( 'page', $postTypes, true ) ||
-			! empty( $additionalPages )
+			( $additionalPagesEnabled && count( $additionalPages ) ) ||
+			! in_array( 'page', $postTypes, true )
 		) {
-			$indexes[] = $this->buildAdditionalIndexes();
+			$additionalPagesCount = $additionalPagesEnabled ? count( $additionalPages ) : 0;
+			// We need to increment by 1 if the home page is not included in page index.
+			$addOneAdditionalPage = 'posts' === get_option( 'show_on_front' ) || ! in_array( 'page', $postTypes, true );
+			$amountOfUrls         = $addOneAdditionalPage ? $additionalPagesCount + 1 : $additionalPagesCount;
+			$indexes[]            = $this->buildAdditionalIndexes( $amountOfUrls );
 		}
 
 		if ( $postTypes ) {
-			$hasPostArchive = false;
+			$postArchives = [];
+
 			foreach ( $postTypes as $postType ) {
 				$postIndexes = $this->buildIndexesPostType( $postType );
 				$indexes     = array_merge( $indexes, $postIndexes );
-
-				if ( empty( $postIndexes ) || $hasPostArchive ) {
-					continue;
-				}
 
 				if (
 					get_post_type_archive_link( $postType ) &&
@@ -76,12 +76,20 @@ class Root {
 						! aioseo()->dynamicOptions->searchAppearance->archives->$postType->advanced->robotsMeta->noindex
 					)
 				) {
-					$hasPostArchive = true;
-					$indexes[]      = [
-						'loc'     => aioseo()->helpers->localizedUrl( "/post-archive-$filename.xml" ),
-						'lastmod' => aioseo()->sitemap->helpers->lastModifiedPostTime( $postType )
-					];
+					$postArchives[ $postType ] = aioseo()->sitemap->helpers->lastModifiedPostTime( $postType );
 				}
+			}
+
+			if ( ! empty( $postArchives ) ) {
+				usort( $postArchives, function( $date1, $date2 ) {
+					return $date1 < $date2 ? 1 : 0;
+				} );
+
+				$indexes[] = [
+					'loc'     => aioseo()->helpers->localizedUrl( "/post-archive-$filename.xml" ),
+					'lastmod' => $postArchives[0],
+					'count'   => count( $postArchives )
+				];
 			}
 		}
 
@@ -104,7 +112,11 @@ class Root {
 				! aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindex
 			)
 		) {
-			$indexes[] = $this->buildIndex( 'author' );
+			$authors = get_users( [
+				'has_published_posts' => [ 'post' ]
+			] );
+
+			$indexes[] = $this->buildIndex( 'author', count( $authors ) );
 		}
 
 		if (
@@ -120,9 +132,25 @@ class Root {
 				! aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindex
 			)
 		) {
-			$indexes[] = $this->buildIndex( 'date' );
+			global $wpdb;
+			$result = $wpdb->get_results( $wpdb->prepare(
+				"SELECT count(*) as amountOfUrls FROM (
+					SELECT post_date
+					FROM {$wpdb->posts}
+					WHERE post_type = %s AND post_status = 'publish'
+					GROUP BY
+						YEAR(post_date),
+						MONTH(post_date)
+					LIMIT %d
+				) as dates",
+				'post',
+				50000
+			) );
+
+			$indexes[] = $this->buildIndex( 'date', $result[0]->amountOfUrls );
 		}
-		return $indexes;
+
+		return apply_filters( 'aioseo_sitemap_indexes', $indexes );
 	}
 
 	/**
@@ -130,14 +158,16 @@ class Root {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $indexName The index name.
-	 * @return array             The index.
+	 * @param  string  $indexName    The index name.
+	 * @param  integer $amountOfUrls The amount of URLs in the index.
+	 * @return array                 The index.
 	 */
-	public function buildIndex( $indexName ) {
+	public function buildIndex( $indexName, $amountOfUrls ) {
 		$filename = aioseo()->sitemap->filename;
 		return [
 			'loc'     => aioseo()->helpers->localizedUrl( "/$indexName-$filename.xml" ),
-			'lastmod' => aioseo()->sitemap->helpers->lastModifiedPostTime()
+			'lastmod' => aioseo()->sitemap->helpers->lastModifiedPostTime(),
+			'count'   => $amountOfUrls
 		];
 	}
 
@@ -146,13 +176,15 @@ class Root {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array The index.
+	 * @param  integer $amountOfurls The amount of additional pages.
+	 * @return array                 The index.
 	 */
-	public function buildAdditionalIndexes() {
+	public function buildAdditionalIndexes( $amountOfUrls ) {
 		$filename = aioseo()->sitemap->filename;
 		return [
 			'loc'     => aioseo()->helpers->localizedUrl( "/addl-$filename.xml" ),
-			'lastmod' => aioseo()->sitemap->helpers->lastModifiedAdditionalPagesTime()
+			'lastmod' => aioseo()->sitemap->helpers->lastModifiedAdditionalPagesTime(),
+			'count'   => $amountOfUrls
 		];
 	}
 
@@ -231,7 +263,10 @@ class Root {
 		for ( $i = 0; $i < count( $chunks ); $i++ ) {
 			$chunk       = array_values( $chunks[ $i ] );
 			$indexNumber = 1 < count( $chunks ) ? $i + 1 : '';
-			$index       = [ 'loc' => aioseo()->helpers->localizedUrl( "/$name-$filename$indexNumber.xml" ) ];
+			$index       = [
+				'loc'   => aioseo()->helpers->localizedUrl( "/$name-$filename$indexNumber.xml" ),
+				'count' => count( $chunks[ $i ] )
+			];
 
 			if ( isset( $entries[0]->ID ) ) {
 				$ids = array_map( function( $post ) {
@@ -247,7 +282,7 @@ class Root {
 					->result();
 
 				if ( ! empty( $lastModified[0]->last_modified ) ) {
-					$index['lastmod'] = aioseo()->helpers->formatDateTime( $lastModified[0]->last_modified );
+					$index['lastmod'] = aioseo()->helpers->dateTimeToIso8601( $lastModified[0]->last_modified );
 				}
 				$indexes[] = $index;
 				continue;
@@ -275,7 +310,7 @@ class Root {
 				->result();
 
 			if ( ! empty( $lastModified[0]->last_modified ) ) {
-				$index['lastmod'] = aioseo()->helpers->formatDateTime( $lastModified[0]->last_modified );
+				$index['lastmod'] = aioseo()->helpers->dateTimeToIso8601( $lastModified[0]->last_modified );
 			}
 			$indexes[] = $index;
 		}

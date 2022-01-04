@@ -13,15 +13,27 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 trait DateTime {
 	/**
-	 * Formats a timestamp as an ISO 8601 date.
+	 * Formats a date in ISO8601 format.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @param  string $date The date.
+	 * @return string       The date formatted in ISO8601 format.
+	 */
+	public function dateToIso8601( $date ) {
+		return date( 'Y-m-d', strtotime( $date ) );
+	}
+
+	/**
+	 * Formats a date & time in ISO8601 format.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $dateTime The raw datetime.
-	 * @return string           The formatted datetime.
+	 * @param  string $dateTime The date.
+	 * @return string           The date formatted in ISO8601 format.
 	 */
-	public function formatDateTime( $dateTime ) {
-		return gmdate( 'c', mysql2date( 'U', $dateTime ) );
+	public function dateTimeToIso8601( $dateTime ) {
+		return gmdate( 'c', strtotime( $dateTime ) );
 	}
 
 	/**
@@ -50,18 +62,6 @@ trait DateTime {
 	}
 
 	/**
-	 * Formats a date in ISO8601 format.
-	 *
-	 * @since 4.1.2
-	 *
-	 * @param  string $date The date.
-	 * @return string       The date formatted in ISO8601 format.
-	 */
-	public function dateToIso8601( $date ) {
-		return date( 'Y-m-d', strtotime( $date ) );
-	}
-
-	/**
 	 * Formats an amount of minutes in ISO8601 format.
 	 * This is used in our JSON schema to adhere to Google's standards.
 	 *
@@ -72,5 +72,19 @@ trait DateTime {
 	 */
 	public function minutesToIso8601( $minutes ) {
 		return "PT${minutes}M";
+	}
+
+	/**
+	 * Returns a MySQL formatted date.
+	 *
+	 * @since 4.1.5
+	 *
+	 * @param  int|string   $time Any format accepted by strtotime.
+	 * @return false|string       The MySQL formatted string.
+	 */
+	public function timeToMysql( $time ) {
+		$time = is_string( $time ) ? strtotime( $time ) : $time;
+
+		return date( 'Y-m-d H:i:s', $time );
 	}
 }

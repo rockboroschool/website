@@ -70,8 +70,8 @@ class Dashboard {
 
 		include_once( ABSPATH . WPINC . '/feed.php' );
 
-		$rssItems = aioseo()->transients->get( 'rss_feed' );
-		if ( false === $rssItems ) {
+		$rssItems = aioseo()->cache->get( 'rss_feed' );
+		if ( null === $rssItems ) {
 
 			$rss = fetch_feed( 'https://aioseo.com/feed/' );
 			if ( is_wp_error( $rss ) ) {
@@ -91,7 +91,7 @@ class Dashboard {
 			}
 			$rssItems = $cached;
 
-			aioseo()->transients->update( 'rss_feed', $cached, 12 * HOUR_IN_SECONDS );
+			aioseo()->cache->update( 'rss_feed', $cached, 12 * HOUR_IN_SECONDS );
 
 		}
 

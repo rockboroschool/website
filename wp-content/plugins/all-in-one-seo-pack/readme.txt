@@ -2,8 +2,8 @@
 Contributors: aioseo, smub, benjaminprojas
 Tags: SEO, Google Search Console, XML Sitemap, meta description, schema, meta title, rich snippets, woocommerce seo, local seo, open graph, google news sitemap, video sitemap, robots.txt, seo audit, content analysis, seo plugin, redirection
 Requires at least: 4.9
-Tested up to: 5.8.1
-Stable tag: 4.1.4.5
+Tested up to: 5.8.2
+Stable tag: 4.1.5.3
 License: GPLv2 or later
 Requires PHP: 5.4
 
@@ -13,7 +13,7 @@ The original WordPress SEO plugin. Improve your WordPress SEO rankings and traff
 
 = AIOSEO - The Best WordPress SEO Plugin & Toolkit =
 
-All in One SEO for WordPress is the original WordPress SEO plugin started in 2007. Over 2 million smart website owners use AIOSEO to properly setup WordPress SEO, so their websites can rank higher in search engines.
+All in One SEO for WordPress is the original WordPress SEO plugin started in 2007. Over 3 million smart website owners use AIOSEO to properly setup WordPress SEO, so their websites can rank higher in search engines.
 
 We believe you shouldn't have to hire an SEO expert or developer to properly setup WordPress SEO. That's why we built <a href="https://aioseo.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteplugin" rel="friend" title="All in One SEO for WordPress">AIOSEO</a> as the most comprehensive WordPress SEO plugin and marketing toolkit, so you can improve your website's SEO rankings and uncover new SEO growth opportunities in less than 10 minutes.
 
@@ -200,6 +200,50 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 
 == Changelog ==
+
+**New in Version 4.1.5.3**
+
+* Updated: Security hardening for REST API endpoints
+
+**New in Version 4.1.5.2**
+
+* Fixed: Conflicts with third-party plugins that may cause shortcodes to fail parsing
+
+**New in Version 4.1.5.1**
+
+* Fixed: Occasional race condition while trying to set Facebook Custom Image in a post
+* Fixed: RSS Sitemap returning a 404 when there are entries
+
+**New in Version 4.1.5**
+
+* New: Various sitemap enhancements
+* New: Custom 404 page for sitemaps when no posts/pages are included
+* New: OG data is now output on CPT archive pages
+* New: Redirects has a new user capability for managing settings
+* New: Flyout menu to provide helpful links and documentation
+* Updated: Refactored caching for efficiency and reliability
+* Updated: Action scheduler now cleans itself up to keep table usage low
+* Updated: Social network image can now parse images from page builders
+* Updated: Display of breadcrumbs block to include preview
+* Fixed: TruSEO performance issues when scanning base64 encoded images
+* Fixed: Invalid default post meta
+* Fixed: Rest API redirects when trailing slash is in use
+* Fixed: WPML urls in the sitemap occasionally resolving to 404
+* Fixed: Conflict with bbPress where admin menu items would disappear
+* Fixed: Conflict with Unlimted Member plugin where WP roles were reset
+* Fixed: Lodash conflict in classic editor
+* Fixed: Site crashing when activating 4.x when 3.x is currently active
+* Fixed: Incorrect default robots settings for taxonomy terms
+* Fixed: Loading of SEO menu CSS when admin menu bar is disabled
+* Fixed: Semrush integration occasionally unable to refresh access tokens
+* Fixed: Author smart tags throwing errors when themes or plugins alter the current queried object
+* Fixed: HTML Sitemap widget containing duplicate IDs on checkboxes
+* Fixed: Headline Analyzer appearing when users don't have the proper capability
+* Fixed: V3 migration showing #description after migrating
+* Fixed: Console errors when other plugins override the wp global JS object
+* Fixed: Default settings for Access Control on the SEO Manager role
+* Fixed: Setup Wizard conflicts with third-party plugins
+* Fixed: TruSEO JS console errors
 
 **New in version 4.1.4.4 - Released on September 21, 2021**
 
@@ -642,7 +686,7 @@ Yes. AIOSEO can help you with website SEO verification with various webmaster to
 
 There are many WordPress SEO plugins out there. Unlike others, AIOSEO WordPress SEO plugin is always reliable. Our SEO features are results focused (no bloat), and we offer exceptional customer support.
 
-AIOSEO is the original WordPress SEO plugin, and it's trusted by over 2 million website owners.
+AIOSEO is the original WordPress SEO plugin, and it's trusted by over 3 million website owners.
 
 
 == Screenshots ==
@@ -661,6 +705,6 @@ AIOSEO is the original WordPress SEO plugin, and it's trusted by over 2 million 
 
 == Upgrade Notice ==
 
-= 4.1.4.5 =
+= 4.1.5.3 =
 
 This update adds major improvements and bugfixes.

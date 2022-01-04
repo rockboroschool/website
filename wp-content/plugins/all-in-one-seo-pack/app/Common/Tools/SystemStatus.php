@@ -201,10 +201,6 @@ class SystemStatus {
 					'value'  => ini_get( 'memory_limit' )
 				],
 				[
-					'header' => __( 'PHP Allow Url fopen', 'all-in-one-seo-pack' ),
-					'value'  => ini_get( 'allow_url_fopen' ) ? __( 'Yes', 'all-in-one-seo-pack' ) : __( 'No', 'all-in-one-seo-pack' )
-				],
-				[
 					'header' => __( 'PHP Max Upload Size', 'all-in-one-seo-pack' ),
 					'value'  => ini_get( 'upload_max_filesize' )
 				],

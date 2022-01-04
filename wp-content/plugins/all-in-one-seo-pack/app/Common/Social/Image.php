@@ -135,7 +135,8 @@ class Image {
 	 * @return string         The image URL.
 	 */
 	public function getFirstImageInContent( $post ) {
-		preg_match_all( '|<img.*?src=[\'"](.*?)[\'"].*?>|i', $post->post_content, $matches );
+		$postContent = aioseo()->helpers->getContent( $post );
+		preg_match_all( '|<img.*?src=[\'"](.*?)[\'"].*?>|i', $postContent, $matches );
 
 		// Ignore cover block background image - WP >= 5.7.
 		if ( ! empty( $matches[0] ) && apply_filters( 'aioseo_social_image_ignore_cover_block', true, $post, $matches ) ) {

@@ -58,7 +58,7 @@ class Article extends Graph {
 		}
 
 		$image = $this->postImage( $post );
-		if ( $image ) {
+		if ( ! empty( $image ) ) {
 			$data['image'] = $image;
 		}
 		return $data;
@@ -90,7 +90,7 @@ class Article extends Graph {
 
 		if ( 'organization' === aioseo()->options->searchAppearance->global->schema->siteRepresents ) {
 			$logo = ( new Organization() )->logo();
-			if ( $logo ) {
+			if ( ! empty( $logo ) ) {
 				$logo['@id'] = trailingslashit( home_url() ) . '#articleImage';
 				return $logo;
 			}
@@ -105,5 +105,7 @@ class Article extends Graph {
 		if ( $imageId ) {
 			return $this->image( $imageId, 'articleImage' );
 		}
+
+		return [];
 	}
 }

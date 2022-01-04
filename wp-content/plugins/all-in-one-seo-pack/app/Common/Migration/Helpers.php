@@ -236,19 +236,10 @@ class Helpers {
 			->whereRaw( "`option_name` LIKE 'aioseo_options_internal%'" )
 			->run();
 
-		aioseo()->transients->delete( 'v3_migration_in_progress_posts' );
-		aioseo()->transients->delete( 'v3_migration_in_progress_terms' );
+		aioseo()->cache->delete( 'v3_migration_in_progress_posts' );
+		aioseo()->cache->delete( 'v3_migration_in_progress_terms' );
 
-		try {
-			if ( as_next_scheduled_action( 'aioseo_migrate_post_meta' ) ) {
-				as_unschedule_action( 'aioseo_migrate_post_meta', [], 'aioseo' );
-			}
-
-			if ( as_next_scheduled_action( 'aioseo_migrate_term_meta' ) ) {
-				as_unschedule_action( 'aioseo_migrate_term_meta', [], 'aioseo' );
-			}
-		} catch ( \Exception $e ) {
-			// Do nothing.
-		}
+		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_post_meta' );
+		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_term_meta' );
 	}
 }

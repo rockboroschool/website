@@ -128,10 +128,14 @@ trait Wp {
 	 */
 	public function getUserRoles() {
 		global $wp_roles;
-		if ( ! isset( $wp_roles ) ) {
-			$wp_roles = new \WP_Roles();
+
+		$wpRoles = $wp_roles;
+		if ( ! is_object( $wpRoles ) ) {
+			// Don't assign this to the global because otherwise WordPress won't override it.
+			$wpRoles = new \WP_Roles();
 		}
-		$roleNames = $wp_roles->get_names();
+
+		$roleNames = $wpRoles->get_names();
 		asort( $roleNames );
 
 		return $roleNames;

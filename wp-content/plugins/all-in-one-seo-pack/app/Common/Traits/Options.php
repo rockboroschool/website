@@ -1068,5 +1068,7 @@ trait Options {
 		if ( isset( aioseo()->{ $optionName } ) ) {
 			return aioseo()->{ $optionName };
 		}
+
+		return $this;
 	}
 }
