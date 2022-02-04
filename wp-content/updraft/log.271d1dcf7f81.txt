@@ -903,3 +903,40 @@
 0059.259 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
 0059.260 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
 0059.297 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0059.662 (0) Dropbox: quota usage: used=38.7 MB, total=2048 MB, available=2009.3 MB
+0059.668 (0) Dropbox: Attempt to upload: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip to: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip
+0060.543 (0) Dropbox chunked upload: 2 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 1048576, 9216 KB)
+0062.227 (0) Dropbox chunked upload: 20.4 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 10485760, 10240 KB)
+0064.209 (0) Dropbox chunked upload: 40.9 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 20971520, 10240 KB)
+0066.415 (0) Dropbox chunked upload: 61.3 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 31457280, 10240 KB)
+0068.957 (0) Dropbox chunked upload: 81.8 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 41943040, 10240 KB)
+0072.155 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEh4rgBBtwkFy2axxqsb-sNNktTsEbp_PplAQgI9pB-Ueh, 51294790, 10240 KB)
+0073.347 (0) Recording as successfully uploaded: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip
+0073.366 (0) Deleting local file: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip: OK
+0073.370 (0) Deleting zip manifest (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip.list.tmp)
+0073.373 (0) Dropbox: File upload success (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip): 50092 KB in 13s (3654 KB/s)
+0073.587 (0) Dropbox: quota usage: used=87.6 MB, total=2048 MB, available=1960.4 MB
+0073.590 (0) Dropbox: Attempt to upload: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip to: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip
+0076.817 (0) Dropbox chunked upload: 72.6 % uploaded (pid_upload_session:ABIEh40Uj27vLnZT4A7On2DAJADYEhAFLs1-Dv_a5RJ95FK8, 10485760, 10240 KB)
+0078.935 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEh40Uj27vLnZT4A7On2DAJADYEhAFLs1-Dv_a5RJ95FK8, 14440120, 10240 KB)
+0080.114 (0) Recording as successfully uploaded: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip
+0080.123 (0) Deleting local file: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip: OK
+0080.127 (0) Deleting zip manifest (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip.list.tmp)
+0080.128 (0) Dropbox: File upload success (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip): 14101 KB in 6s (2156 KB/s)
+0080.354 (0) Dropbox: quota usage: used=101.4 MB, total=2048 MB, available=1946.6 MB
+0080.358 (0) Dropbox: Attempt to upload: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip to: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip
+0082.714 (0) Dropbox chunked upload: 4 % uploaded (pid_upload_session:ABIEhxxcgpdT7KqXyQHJSer3HQNu1nCpnbQuMJ-io6xBXYGn, 10485760, 10240 KB)
+0085.536 (0) Dropbox chunked upload: 7.9 % uploaded (pid_upload_session:ABIEhxxcgpdT7KqXyQHJSer3HQNu1nCpnbQuMJ-io6xBXYGn, 20971520, 10240 KB)
+0087.859 (0) Dropbox chunked upload: 11.9 % uploaded (pid_upload_session:ABIEhxxcgpdT7KqXyQHJSer3HQNu1nCpnbQuMJ-io6xBXYGn, 31457280, 10240 KB)
+0090.520 (0) Dropbox chunked upload: 15.8 % uploaded (pid_upload_session:ABIEhxxcgpdT7KqXyQHJSer3HQNu1nCpnbQuMJ-io6xBXYGn, 41943040, 10240 KB)
+0093.320 (0) Dropbox chunked upload: 19.8 % uploaded (pid_upload_session:ABIEhxxcgpdT7KqXyQHJSer3HQNu1nCpnbQuMJ-io6xBXYGn, 52428800, 10240 KB)
+0096.0150.845 (0) Deleting local file: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip: OK
+0150.851 (0) Deleting zip manifest (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip.list.tmp)
+0150.855 (0) Dropbox: File upload success (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip): 258968 KB in 70s (3673 KB/s)
+0151.090 (0) Dropbox: quota usage: used=354.3 MB, total=2048 MB, available=1693.7 MB
+0151.093 (0) Dropbox: Attempt to upload: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip to: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip
+0151.867 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEh-yXmUr2IYtIlzTOoqfdTEL0NtfIgsnB3abCidsRXsZP, 1509, 10240 KB)
+0152.871 (0) Recording as successfully uploaded: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip
+0152.878 (0) Deleting local file: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip: OK
+0152.881 (0) Deleting zip manifest (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip.list.tmp)
+0152.883 (0) Dropbox: File upload success (backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip): 1 KB in 1s (0 KB/s)
