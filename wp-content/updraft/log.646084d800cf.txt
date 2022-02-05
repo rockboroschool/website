@@ -10917,3 +10917,9 @@
 0025.476 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
 0025.480 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
 0025.485 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0025.748 (0) Dropbox: quota usage: used=38.4 MB, total=2048 MB, available=2009.6 MB
+0025.752 (0) Dropbox: Attempt to upload: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip to: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip
+0027.169 (0) Dropbox chunked upload: 2 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 1048576, 6144 KB)
+0029.584 (0) Dropbox chunked upload: 14.3 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 7340032, 10240 KB)
+0031.964 (0) Dropbox chunked upload: 34.8 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 17825792, 10240 KB)
+0035.148 (0) Dropbox chunked upload: 55.2 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 28311552, 10240 KB)
