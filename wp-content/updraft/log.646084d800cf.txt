@@ -10923,3 +10923,56 @@
 0029.584 (0) Dropbox chunked upload: 14.3 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 7340032, 10240 KB)
 0031.964 (0) Dropbox chunked upload: 34.8 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 17825792, 10240 KB)
 0035.148 (0) Dropbox chunked upload: 55.2 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 28311552, 10240 KB)
+0037.346 (0) Dropbox chunked upload: 75.6 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 38797312, 10240 KB)
+0039.571 (0) Dropbox chunked upload: 96.1 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 49283072, 10240 KB)
+0041.672 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEiPGbB66JLPdFzLbFGgq173HurFG1FVgWDhqFPo417x72, 51294790, 10240 KB)
+0042.705 (0) Recording as successfully uploaded: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip
+0042.723 (0) Deleting local file: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip: OK
+0042.727 (0) Deleting zip manifest (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip.list.tmp)
+0042.736 (0) Dropbox: File upload success (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip): 50092 KB in 16s (2949 KB/s)
+0042.956 (0) Dropbox: quota usage: used=87.3 MB, total=2048 MB, available=1960.7 MB
+0042.960 (0) Dropbox: Attempt to upload: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip to: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip
+0044.745 (0) Dropbox chunked upload: 72.6 % uploaded (pid_upload_session:ABIEiCX8lNNtooduxODR_Ai-WlsS0y5S2O9Eol1h_UYD_W9f, 10485760, 10240 KB)
+0046.818 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEiCX8lNNtooduxODR_Ai-WlsS0y5S2O9Eol1h_UYD_W9f, 14440120, 10240 KB)
+0047.811 (0) Recording as successfully uploaded: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip
+0047.821 (0) Deleting local file: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip: OK
+0047.825 (0) Deleting zip manifest (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip.list.tmp)
+0047.829 (0) Dropbox: File upload success (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip): 14101 KB in 4s (2896 KB/s)
+0048.065 (0) Dropbox: quota usage: used=101.1 MB, total=2048 MB, available=1946.9 MB
+0048.070 (0) Dropbox: Attempt to upload: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip to: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip
+0048.694 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEiH376dIJ9df1dpAFEPgzAkzUdZEqQlxub3aT1T-9P2Ri, 1509, 10240 KB)
+0049.702 (0) Recording as successfully uploaded: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip
+0049.710 (0) Deleting local file: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip: OK
+0049.713 (0) Deleting zip manifest (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip.list.tmp)
+0049.716 (0) Dropbox: File upload success (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-others.zip): 1 KB in 1s (0 KB/s)
+0049.921 (0) Dropbox: quota usage: used=101.1 MB, total=2048 MB, available=1946.9 MB
+0049.925 (0) Dropbox: Attempt to upload: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-db.gz to: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-db.gz
+0050.806 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIEiDO19byaPF7ZF4lVaNsc02hBuoT5r47L-fKCn8TrkOny, 431305, 10240 KB)
+0051.919 (0) Recording as successfully uploaded: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-db.gz
+0051.927 (0) Deleting local file: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-db.gz: OK
+0051.931 (0) Dropbox: File upload success (backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-db.gz): 421 KB in 2s (209 KB/s)
+0051.948 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0051.955 (0) These backup set(s) were imported from a remote location, so will not be counted or pruned. Skipping: 1629229080, 1629050880
+0051.957 (0) Number of backup sets in history: 4; groups (db): 1
+0051.961 (0) Examining (for databases) backup set with group_id=0, nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0051.965 (0) This backup set is the backup set just made, so will not be deleted.
+0051.966 (0) Examining (for databases) backup set with group_id=0, nonce=1a337272a0cf, datestamp=1643565980 (Jan 30 2022 18:06:20)
+0051.968 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0051.971 (0) Number of backup sets in history: 4; groups (files): 1
+0051.983 (0) Examining (for files) backup set with nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0051.983 (0) This backup set is the backup set just made, so will not be deleted.
+0051.986 (0) This backup set is the backup set just made, so will not be deleted.
+0051.986 (0) This backup set is the backup set just made, so will not be deleted.
+0051.987 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0051.990 (0) Examining (for files) backup set with nonce=1a337272a0cf, datestamp=1643565980 (Jan 30 2022 18:06:20)
+0051.990 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0051.992 (0) Retain: saving new backup history (sets now: 4) and finishing retain operation
+0051.999 (0) Resume backup (646084d800cf, 0): finish run
+0052.007 (0) Decremented the semaphore (fd) by 1
+0052.011 (0) Semaphore (fd) unlocked
+0052.017 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0052.028 (0) An email has been scheduled for this job, because we are in debug mode
+0052.036 (0) Fetching RSS news feed
+0052.331 (0) Fetched RSS news feed; result is a: SimplePie
+0052.357 (0) Sending email ('Files and database (Full backup)') report (attachments: 1, size: 1544.7 KB) to: user@...
+0052.951 (0) The backup apparently succeeded and is now complete
