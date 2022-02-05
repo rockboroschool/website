@@ -4,3 +4,11 @@
 0000.043 () Dropbox: request deletion: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-plugins.zip
 0001.557 () Dropbox: deletion succeeded
 0001.566 () Dropbox: request deletion: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-themes.zip
+0002.240 () Dropbox: deletion succeeded
+0002.248 () Dropbox: request deletion: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-uploads.zip
+0003.123 () Dropbox: deletion succeeded
+0003.130 () Dropbox: request deletion: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-others.zip
+0003.686 () Dropbox: deletion succeeded
+0003.694 () Dropbox: request deletion: backup_2022-02-04-2053_Rockboro_Primary_School_271d1dcf7f81-db.gz
+0005.033 () Dropbox: deletion succeeded
+0005.045 () Local files deleted: 0. Remote files deleted: 5
