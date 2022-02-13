@@ -5,3 +5,4 @@
 0000.017 () File does not yet exist locally - needs downloading
 0000.022 () Requested file from remote service: dropbox: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip
 0000.372 () backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-plugins.zip: local file is status: 0/51294790 bytes; requesting next 51294790 bytes
+0003.320 () Remote fetch was successful (file size: 50092.6 KB)
