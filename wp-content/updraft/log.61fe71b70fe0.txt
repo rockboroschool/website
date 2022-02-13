@@ -1,0 +1,8 @@
+0000.045 () Opened log file at time: Sun, 13 Feb 2022 00:37:29 +0000 on https://rockboroschool.ie
+0000.056 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.69 WP: 5.8.2 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 14.1M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.060 () Free space on disk containing Updraft's temporary directory: 3360.1 MB
+0000.062 () Requested to obtain file: timestamp=1644065207, type=themes, index=0
+0000.070 () File does not yet exist locally - needs downloading
+0000.078 () Requested file from remote service: dropbox: backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip
+0000.314 () backup_2022-02-05-1246_Rockboro_Primary_School_646084d800cf-themes.zip: local file is status: 0/14440120 bytes; requesting next 14440120 bytes
+0001.993 () Remote fetch was successful (file size: 14101.7 KB)
