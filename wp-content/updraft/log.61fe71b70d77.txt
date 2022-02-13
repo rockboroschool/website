@@ -46,3 +46,8 @@
 0000.012 () Free space on disk containing Updraft's temporary directory: 3346.1 MB
 0000.016 () Requested to obtain file: timestamp=1644065207, type=db, index=0
 0000.020 () The file was found locally and matched the recorded size from the backup history (421.2 KB)
+0000.004 () Opened log file at time: Sun, 13 Feb 2022 00:46:18 +0000 on https://rockboroschool.ie
+0000.006 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.16.69 WP: 5.8.2 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 14.1M | 2M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.008 () Free space on disk containing Updraft's temporary directory: 3346.1 MB
+0000.009 () Requested to obtain file: timestamp=1644065207, type=db, index=0
+0000.012 () The file was found locally and matched the recorded size from the backup history (421.2 KB)
