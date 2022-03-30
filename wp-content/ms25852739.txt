@@ -1,0 +1,5 @@
+﻿{
+  "Description": "Domain ownership verification file for Microsoft 365 - place in the website root",
+  "Domain": "rockboroschool.ie",
+  "Id": "ffa33f81-437f-40b2-bf66-fdfc487408df"
+}
