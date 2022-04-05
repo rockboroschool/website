@@ -54,8 +54,8 @@ class Query {
 			}
 		}
 
-		$query = aioseo()->db
-			->start( aioseo()->db->db->posts . ' as p', true )
+		$query = aioseo()->core->db
+			->start( aioseo()->core->db->db->posts . ' as p', true )
 			->select( $fields )
 			->leftJoin( 'aioseo_posts as ap', '`ap`.`post_id` = `p`.`ID`' )
 			->where( 'p.post_status', 'attachment' === $includedPostTypes ? 'inherit' : 'publish' )
@@ -87,7 +87,7 @@ class Query {
 		// Exclude posts assigned to excluded terms.
 		$excludedTerms = aioseo()->sitemap->helpers->excludedTerms();
 		if ( $excludedTerms ) {
-			$termRelationshipsTable = aioseo()->db->db->prefix . 'term_relationships';
+			$termRelationshipsTable = aioseo()->core->db->db->prefix . 'term_relationships';
 			$query->whereRaw("
 				( `p`.`ID` NOT IN
 					(
@@ -146,6 +146,7 @@ class Query {
 			default:
 				break;
 		}
+
 		return $query;
 	}
 
@@ -188,6 +189,7 @@ class Query {
 		}
 
 		$query->whereRaw( "p.ID NOT IN ( $hiddenProductIds )" );
+
 		return $query;
 	}
 
@@ -242,6 +244,7 @@ class Query {
 		) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -270,10 +273,10 @@ class Query {
 			}
 		}
 
-		$termRelationshipsTable = aioseo()->db->db->prefix . 'term_relationships';
-		$termTaxonomyTable      = aioseo()->db->db->prefix . 'term_taxonomy';
-		$query = aioseo()->db
-			->start( aioseo()->db->db->terms . ' as t', true )
+		$termRelationshipsTable = aioseo()->core->db->db->prefix . 'term_relationships';
+		$termTaxonomyTable      = aioseo()->core->db->db->prefix . 'term_taxonomy';
+		$query = aioseo()->core->db
+			->start( aioseo()->core->db->db->terms . ' as t', true )
 			->select( $fields )
 			->whereRaw( "
 			( `t`.`term_id` IN
@@ -321,6 +324,7 @@ class Query {
 			// Add taxonomy name to object manually instead of querying it to prevent redundant join.
 			$term->taxonomy = $taxonomy;
 		}
+
 		return $terms;
 	}
 
@@ -332,7 +336,7 @@ class Query {
 	 * @return void
 	 */
 	public function resetImages() {
-		aioseo()->db
+		aioseo()->core->db
 			->update( 'aioseo_posts' )
 			->set(
 				[

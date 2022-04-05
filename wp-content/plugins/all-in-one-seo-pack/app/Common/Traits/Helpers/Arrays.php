@@ -26,6 +26,7 @@ trait Arrays {
 		if ( in_array( $value, $array, true ) ) {
 			unset( $array[ array_search( $value, $array, true ) ] );
 		};
+
 		return $array;
 	}
 
@@ -54,6 +55,7 @@ trait Arrays {
 				}
 			}
 		}
+
 		return false;
 	}
 

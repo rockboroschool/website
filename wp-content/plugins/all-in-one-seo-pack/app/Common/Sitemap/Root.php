@@ -22,7 +22,7 @@ class Root {
 	public function indexes() {
 		$indexes = [];
 		if ( 'general' !== aioseo()->sitemap->type ) {
-			foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
+			foreach ( aioseo()->sitemap->addons as $classes ) {
 				if ( ! empty( $classes['root'] ) ) {
 					$indexes = $classes['root']->indexes();
 					if ( $indexes ) {
@@ -30,6 +30,7 @@ class Root {
 					}
 				}
 			}
+
 			return $indexes;
 		}
 
@@ -164,6 +165,7 @@ class Root {
 	 */
 	public function buildIndex( $indexName, $amountOfUrls ) {
 		$filename = aioseo()->sitemap->filename;
+
 		return [
 			'loc'     => aioseo()->helpers->localizedUrl( "/$indexName-$filename.xml" ),
 			'lastmod' => aioseo()->sitemap->helpers->lastModifiedPostTime(),
@@ -181,6 +183,7 @@ class Root {
 	 */
 	public function buildAdditionalIndexes( $amountOfUrls ) {
 		$filename = aioseo()->sitemap->filename;
+
 		return [
 			'loc'     => aioseo()->helpers->localizedUrl( "/addl-$filename.xml" ),
 			'lastmod' => aioseo()->sitemap->helpers->lastModifiedAdditionalPagesTime(),
@@ -200,7 +203,7 @@ class Root {
 		$posts = aioseo()->sitemap->content->posts( $postType, [ 'root' => true ] );
 
 		if ( ! $posts ) {
-			foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
+			foreach ( aioseo()->sitemap->addons as $classes ) {
 				if ( ! empty( $classes['root'] ) ) {
 					$posts = $classes['root']->buildIndexesPostType( $postType );
 					if ( $posts ) {
@@ -213,6 +216,7 @@ class Root {
 		if ( ! $posts ) {
 			return [];
 		}
+
 		return $this->buildIndexes( $postType, $posts );
 	}
 
@@ -228,7 +232,7 @@ class Root {
 		$terms = aioseo()->sitemap->content->terms( $taxonomy, [ 'root' => true ] );
 
 		if ( ! $terms ) {
-			foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
+			foreach ( aioseo()->sitemap->addons as $classes ) {
 				if ( ! empty( $classes['root'] ) ) {
 					$terms = $classes['root']->buildIndexesTaxonomy( $taxonomy );
 					if ( $terms ) {
@@ -274,8 +278,8 @@ class Root {
 				}, $chunk );
 				$ids = implode( "', '", $ids );
 
-				$lastModified = aioseo()->db
-					->start( aioseo()->db->db->posts . ' as p', true )
+				$lastModified = aioseo()->core->db
+					->start( aioseo()->core->db->db->posts . ' as p', true )
 					->select( 'MAX(`p`.`post_modified_gmt`) as last_modified' )
 					->whereRaw( "( `p`.`ID` IN ( '$ids' ) )" )
 					->run()
@@ -294,9 +298,9 @@ class Root {
 			}
 			$termIds = implode( "', '", $termIds );
 
-			$termRelationshipsTable = aioseo()->db->db->prefix . 'term_relationships';
-			$lastModified = aioseo()->db
-				->start( aioseo()->db->db->posts . ' as p', true )
+			$termRelationshipsTable = aioseo()->core->db->db->prefix . 'term_relationships';
+			$lastModified = aioseo()->core->db
+				->start( aioseo()->core->db->db->posts . ' as p', true )
 				->select( 'MAX(`p`.`post_modified_gmt`) as last_modified' )
 				->whereRaw( "
 				( `p`.`ID` IN
@@ -314,6 +318,7 @@ class Root {
 			}
 			$indexes[] = $index;
 		}
+
 		return $indexes;
 	}
 }

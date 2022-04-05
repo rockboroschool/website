@@ -172,7 +172,7 @@ function seedprod_lite_admin_enqueue_scripts( $hook_suffix ) {
 			);
 		}
 
-		wp_enqueue_style( 'seedprod-google-fonts', 'https://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700&display=swap', false );
+		wp_enqueue_style( 'seedprod-google-fonts', 'https://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700&display=swap', false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
 		wp_enqueue_style(
 			'seedprod-fontawesome',
@@ -198,9 +198,13 @@ function seedprod_lite_admin_enqueue_scripts( $hook_suffix ) {
 add_action( 'admin_enqueue_scripts', 'seedprod_lite_admin_enqueue_scripts', 99999 );
 
 
-
+/**
+ * SeedProd Enqueue Styles.
+ *
+ * @return void
+ */
 function seedprod_lite_wp_enqueue_styles() {
-	 // wp_register_style(
+	// wp_register_style(
 	//     'seedprod-style',
 	//     SEEDPROD_PLUGIN_URL . 'public/css/seedprod-style.min.css',
 	//     false,
@@ -235,6 +239,13 @@ add_action( 'init', 'seedprod_lite_wp_enqueue_styles' );
  */
 add_filter( 'plugin_action_links', 'seedprod_lite_plugin_action_links', 10, 2 );
 
+/**
+ * Plugin action links.
+ *
+ * @param array  $links Action links.
+ * @param string $file  Plugin file.
+ * @return array $links Processed action links.
+ */
 function seedprod_lite_plugin_action_links( $links, $file ) {
 	$plugin_file = SEEDPROD_SLUG;
 
@@ -251,9 +262,16 @@ function seedprod_lite_plugin_action_links( $links, $file ) {
 
 add_action( 'admin_enqueue_scripts', 'seedprod_lite_deregister_backend_styles', PHP_INT_MAX );
 
+/**
+ * Deregister backend styles & scripts registered by the theme.
+ *
+ * @return void
+ */
 function seedprod_lite_deregister_backend_styles() {
-	 // remove scripts registered by the theme so they don't screw up our page's style
-	if ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'seedprod_lite_builder' ) !== false ) {
+	// remove scripts registered by the theme so they don't screw up our page's style
+	$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+	if ( null !== $page && strpos( $page, 'seedprod_lite_builder' ) !== false ) {
 		wp_dequeue_style( 'dashicons', 9999 );
 		$seedprod_builder_debug = get_option( 'seedprod_builder_debug' );
 		if ( empty( $seedprod_builder_debug ) ) {
@@ -305,17 +323,47 @@ function seedprod_lite_deregister_backend_styles() {
 					}
 				}
 			endforeach;
+
+			$suffix = '.min';
+			$wp_scripts->add( 'media-widgets', "/wp-admin/js/widgets/media-widgets$suffix.js", array( 'jquery', 'media-models', 'media-views' ) );
+			$wp_scripts->add_inline_script( 'media-widgets', 'wp.mediaWidgets.init();', 'after' );
+
+			$wp_scripts->add( 'media-audio-widget', "/wp-admin/js/widgets/media-audio-widget$suffix.js", array( 'media-widgets', 'media-audiovideo' ) );
+			$wp_scripts->add( 'media-image-widget', "/wp-admin/js/widgets/media-image-widget$suffix.js", array( 'media-widgets' ) );
+			$wp_scripts->add( 'media-video-widget', "/wp-admin/js/widgets/media-video-widget$suffix.js", array( 'media-widgets', 'media-audiovideo' ) );
+			$wp_scripts->add( 'text-widgets', "/wp-admin/js/widgets/text-widgets$suffix.js", array( 'jquery', 'editor', 'wp-util' ) );
+			$wp_scripts->add_inline_script( 'text-widgets', 'wp.textWidgets.init();', 'after' );
+
+			wp_enqueue_style( 'widgets' );
+			wp_enqueue_style( 'media-views' );
+
+			wp_get_current_user()->syntax_highlighting = 'false';
+
+			/** This action is documented in wp-admin/admin-header.php */
+			do_action( 'admin_print_scripts-widgets.php' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+
+			/** This action is documented in wp-admin/admin-footer.php */
+			do_action( 'admin_footer-widgets.php' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+
 		}
 	}
 }
 
-
 add_filter( 'admin_body_class', 'seedprod_lite_add_admin_body_classes' );
+
+/**
+ * Filters the CSS classes for the body tag in the admin.
+ *
+ * @param string $classes Space-separated string of class names.
+ * @return string $classes Space-separated string of class names.
+ */
 function seedprod_lite_add_admin_body_classes( $classes ) {
-	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'seedprod_lite' ) !== false ) {
+	$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+	if ( null !== $page && strpos( $page, 'seedprod_lite' ) !== false ) {
 		$classes .= ' seedprod-body seedprod-lite';
 	}
-	if ( ! empty( $_GET['page'] ) && ( strpos( $_GET['page'], 'seedprod_lite_builder' ) !== false ) ) {
+	if ( null !== $page && ( strpos( $page, 'seedprod_lite_builder' ) !== false ) ) {
 		$classes .= ' seedprod-builder seedprod-lite';
 	}
 	return $classes;
@@ -325,11 +373,18 @@ function seedprod_lite_add_admin_body_classes( $classes ) {
 // Review Request
 add_action( 'admin_footer_text', 'seedprod_lite_admin_footer' );
 
+/**
+ * Filters the “Thank you” text displayed in the admin footer.
+ *
+ * @param string $text Footer text.
+ * @return string $text Footer text.
+ */
 function seedprod_lite_admin_footer( $text ) {
 	global $current_screen;
 
 	if ( ! empty( $current_screen->id ) && strpos( $current_screen->id, 'seedprod' ) !== false && SEEDPROD_BUILD == 'lite' ) {
-		$url  = 'https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post';
+		$url = 'https://wordpress.org/support/plugin/coming-soon/reviews/?filter=5#new-post';
+		/* translators: 1: wordpress.org coming-soon plugin review, 2: wordpress.org coming-soon plugin review */
 		$text = sprintf( __( 'Please rate <strong>SeedProd</strong> <a href="%1$s" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a> on <a href="%2$s" target="_blank">WordPress.org</a> to help us spread the word. Thank you from the SeedProd team!', 'coming-soon' ), $url, $url );
 	}
 	return $text;
@@ -337,8 +392,16 @@ function seedprod_lite_admin_footer( $text ) {
 
 
 
+/**
+ * Filters the version/update text displayed in the admin footer.
+ *
+ * @param string $str Version/Update text.
+ * @return string $str Version/Update text.
+ */
 function seedprod_lite_change_footer_version( $str ) {
-	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'seedprod_lite' ) !== false ) {
+	$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+	if ( null !== $page && strpos( $page, 'seedprod_lite' ) !== false ) {
 		return $str . ' - SeedProd ' . SEEDPROD_VERSION;
 	}
 
@@ -348,270 +411,4 @@ add_filter( 'update_footer', 'seedprod_lite_change_footer_version', 9999 );
 
 
 
-/*
-add_action( 'admin_footer', 'seedprod_lite_print_admin_js_template');
-function seedprod_lite_print_admin_js_template() {
-	?>
-	<script id="seedprod-button-switch-mode" type="text/html">
-		<div id="seedprod-switch-mode">
-			<?php echo __( 'Edit with SeedProd', 'elementor' ); ?>
-		</div>
-	</script>
-	<?php
-}
-*/
-
-
-function seedprod_lite_add_admin_edit_seedprod() {
-	$screen = get_current_screen();
-	if ( 'page' === $screen->post_type ) {
-		$id                      = 0;
-		$is_seedprod             = 0;
-		$seedprod_template_label = 'seedprod_lite';
-		$is_seedprod_true        = 'seed_editor_false';
-		$remove_post_callback    = 'seedprod_lite_remove_post';
-		$seedprod_template_type  = 'template';
-
-
-		if ( ! empty( $_GET['post'] ) ) {
-			$id = absint($_GET['post']);
-
-			if ( ! empty( get_post_meta( $id, '_seedprod_page', true ) ) ) {
-				$is_seedprod            = get_post_meta( $id, '_seedprod_page', true );
-				$is_seedprod_true       = 'seed_editor_true';
-				$seedprod_template_type = 'builder';
-			}
-
-			if ( ! empty( get_post_field( 'post_content_filtered', $id ) ) ) {
-				$seedprod_template_type = 'builder';
-			}
-		}
-
-		if ( $seedprod_template_type == 'template' ) {
-			$edit_url = admin_url() . 'admin.php?page=' . $seedprod_template_label . '_template&id=' . $id . '#/template/' . $id;
-		} else {
-			$edit_url = admin_url() . 'admin.php?page=' . $seedprod_template_label . '_builder&id=' . $id . '#/setup/' . $id;
-		}
-
-		$edit_seedprod_label  = '<img src="' . SEEDPROD_PLUGIN_URL . 'public/svg/admin-bar-icon.svg" style="margin-right:7px; margin-top:5px">' . __( 'Edit with SeedProd', 'coming-soon' );
-		$back_wordpress_label = __( 'Back to WordPress Editor', 'coming-soon' );
-
-		$localizations = array( 
-			'ajax_url' => admin_url( 'admin-ajax.php' ), 
-			'nonce' =>  wp_create_nonce( 'seedprod_back_to_editor_'.$id ),
-		);
-
-		printf(
-			'
-        <div class="active-seed-prod-buttons">
-        <div class="' . $is_seedprod_true . '">
-            <span class="seedprod-off">
-            <a href="' . $edit_url . '" id="edit_seedprod_custom_link" class="edit_seedprod_custom_link button button-primary">
-            ' . $edit_seedprod_label . '
-            </a></span>
-            <span class="seedprod-on">
-            <a href="#back" class="back_to_wp_editor button">' . $back_wordpress_label . '</a>
-            </span>
-        </div>
-        </div>
-        <div class="seedprod_hidden_data">
-            <input type="hidden" class="_seedprod_template_type" name="_seedprod_template_type" value="' . $seedprod_template_type . '"/>
-            <input type="hidden" class="_seedprod_label" name="_seedprod_label" value="' . $seedprod_template_label . '"/>
-            <input type="hidden" class="_seedprod_template_edit_url" name="_seedprod_template_edit_url" value="' . $edit_url . '"/>
-            <input type="hidden" class="_seedprod_true" name="_seedprod_true" value="' . $is_seedprod_true . '"/>
-        </div>
-        '
-		);
-
-		echo '
-        <script type="text/javascript">
-        
-        jQuery(document).ready(function(){  
-
-            jQuery(document).on("click", ".edit_seedprod_custom_link", function(event) { 
-                
-                if(confirm("Please note by switching to SeedProd the current page\'s content will be replaced.")){
-                    
-                    var url_string = window.location;
-                    var url = new URL(url_string);
-                    var postid = url.searchParams.get("post");
-                    //console.log(postid);
-
-                    var post_ID = 0; 
-                    if(postid!=null){
-                        post_ID = jQuery("#post_ID").val();
-                    }
-                    //console.log(post_ID);
-
-                    var seedprod_template_type = jQuery("._seedprod_template_type").val();
-                    var seedprod_label = jQuery("._seedprod_label").val();
-                    var seedprod_template_edit_url = jQuery("._seedprod_template_edit_url").val();
-                    var seedprod_true = jQuery("._seedprod_true").val();
-                    
-                    var seedprod_template_edit_url_ = "";
-                    var admin_url = localizedVars.admin_url; 
-
-                    if(seedprod_template_type=="template"){
-                        seedprod_template_edit_url_ = `${admin_url}?page=${seedprod_label}_${seedprod_template_type}&id=${post_ID}#/template/${post_ID}`;
-                    }else{
-                        seedprod_template_edit_url_ = `${admin_url}?page=${seedprod_label}_${seedprod_template_type}&id=${post_ID}#/setup/${post_ID}`;
-                    }
-
-                    location.href = seedprod_template_edit_url_;
-
-                }
-                
-
-            });
-
-            jQuery(document).on("click", ".back_to_wp_editor", function(event) { 
-                
-                if (jQuery(".edit-post-header-toolbar").length) {
-                    wp.data.dispatch( "core/block-editor" ).resetBlocks([]);
-                    jQuery(".block-editor-block-list__layout").show();
-                }
-
-                if (jQuery("#postdivrich").length) {
-                    //jQuery("#postdivrich").show();
-                    //jQuery("#postdivrich .wp-editor-area").html("");
-                }
-                jQuery(".managed_by_seedprod").hide();
-                
-                var ajax_url = "' . $localizations['ajax_url'] . '";
-                var post_id =  jQuery("#post_ID").val();
-    
-                var formData = new FormData();
-                formData.append("action", "' . $remove_post_callback . '");
-				formData.append("nonce", "' . $localizations['nonce'] . '");
-                formData.append("post_id", post_id);
-                //console.log(formData);
-    
-                jQuery.ajax({ 
-                    type: "POST",
-                    url: ajax_url, 
-                    data: formData,
-                    cache: false,
-                    processData : false,
-                    contentType: false,
-                    success: function(data) {
-                        
-                        jQuery(".seed_editor_true").addClass("seed_editor_false");
-                        jQuery(".seed_editor_false").addClass("seed_editor_true");
-                        //console.log("removed seedprod settings");
-
-                        location.reload();
-
-                    },
-                });
-                
-            }); 
-        });
-        </script>
-        ';
-	}
-}
-
-
-add_action( 'admin_footer', 'seedprod_lite_add_admin_edit_seedprod' );
-add_action( 'edit_form_after_title', 'seedprod_lite_before_editor' );
-
-function seedprod_lite_before_editor() {
-	$seedprod_app_settings = get_option( 'seedprod_app_settings' );
-	if ( ! empty( $seedprod_app_settings ) ) {
-		$seedprod_app_settings = json_decode( stripslashes( $seedprod_app_settings ) );
-	} else {
-		// fail safe incase settings go missing
-		require_once SEEDPROD_PLUGIN_PATH . 'resources/data-templates/default-settings.php';
-		update_option( 'seedprod_app_settings', $seedprod_app_default_settings );
-		$seedprod_app_settings = json_decode( $seedprod_app_default_settings );
-	}
-	$disable_seedprod_button = $seedprod_app_settings->disable_seedprod_button;
-
-	if ( $disable_seedprod_button == false ) {
-		echo '
-        <div class="active-seed-prod-buttons-classic"></div>
-        <script type="text/javascript">
-        jQuery(document).ready(function(){  
-            var active_seedprod_btn = jQuery(".active-seed-prod-buttons").html();
-            jQuery(".active-seed-prod-buttons-classic").html(active_seedprod_btn);
-        });
-        </script>
-    ';
-	}
-}
-
-
-
-
-add_action( 'enqueue_block_editor_assets', 'seedprod_lite_link_injection_to_gutenberg_toolbar' );
-function seedprod_lite_link_injection_to_gutenberg_toolbar() {
-	$seedprod_app_settings = get_option( 'seedprod_app_settings' );
-	if ( ! empty( $seedprod_app_settings ) ) {
-		$seedprod_app_settings = json_decode( stripslashes( $seedprod_app_settings ) );
-	} else {
-		// fail safe incase settings go missing
-		require_once SEEDPROD_PLUGIN_PATH . 'resources/data-templates/default-settings.php';
-		update_option( 'seedprod_app_settings', $seedprod_app_default_settings );
-		$seedprod_app_settings = json_decode( $seedprod_app_default_settings );
-	}
-	$disable_seedprod_button = $seedprod_app_settings->disable_seedprod_button;
-
-	if ( $disable_seedprod_button == false ) {
-		$screen = get_current_screen();
-		if ( 'page' === $screen->post_type ) {
-			$localizations = array(
-				'admin_url'  => admin_url() . 'admin.php',
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'_wp_nonce'  => wp_create_nonce( 'ajax-nonce' ),
-				'plugin_url' => SEEDPROD_PLUGIN_URL,
-			);
-			wp_enqueue_script( 'seedprod-link-in-toolbar', SEEDPROD_PLUGIN_URL . 'public/js/toolbar.js', array(), '1.0', true );
-			wp_localize_script( 'seedprod-link-in-toolbar', 'localizedVars', $localizations );
-		}
-	}
-}
-
-add_filter( 'display_post_states', 'seedprod_lite_add_post_state', 10, 2 );
-function seedprod_lite_add_post_state( $post_states, $post ) {
-	$has_settings = get_post_meta( $post->ID, '_seedprod_page', true );
-
-	if ( $post->post_type == 'page' && ! empty( $has_settings ) ) {
-		$post_states['seedprod'] = 'SeedProd';
-	}
-	return $post_states;
-}
-
-
-
-
-function seedprod_lite_add_menu_item( $wp_admin_bar ) {
-	$seedprod_menu_link = 'admin.php?page=seedprod_lite_template&id=0#/template';
-
-	$args = array(
-		'id'     => 'seedprod_template',
-		'title'  => 'SeedProd Landing Page',
-		'href'   => $seedprod_menu_link,
-		'parent' => 'new-content',
-	);
-
-	$wp_admin_bar->add_node( $args );
-}
-
-add_action( 'admin_bar_menu', 'seedprod_lite_add_menu_item', 80 );
-
-
-add_action( 'wp_ajax_seedprod_lite_remove_post', 'seedprod_lite_remove_post' );
-
-function seedprod_lite_remove_post() {
-    if (check_ajax_referer('seedprod_back_to_editor_'.absint($_POST['post_id']), 'nonce') && current_user_can('delete_posts')) {
-        $post_id = absint($_POST['post_id']);
-        $data    = array(
-        'ID'           => $post_id,
-    	);
-
-        delete_post_meta($post_id, '_seedprod_page');
-        wp_die();
-    }
-}
-
-
+// nonce covered by menu capability check.

@@ -45,13 +45,39 @@ trait WpUri {
 	 * @return string             The URL.
 	 */
 	public function getUrl( $canonical = false ) {
+		$url = '';
 		if ( is_singular() ) {
-			$object = get_queried_object_id();
-			return $canonical ? wp_get_canonical_url( $object ) : get_permalink( $object );
+			$objectId = get_queried_object_id();
+
+			if ( $canonical ) {
+				$url = wp_get_canonical_url( $objectId );
+			}
+
+			if ( ! $url ) {
+				// wp_get_canonical_url() returns false if the post isn't published.
+				// Therefore, we must to fall back to the permalink if the post isn't published, e.g. draft post or attachment (inherit).
+				$url = get_permalink( $objectId );
+			}
 		}
 
+		if ( $url ) {
+			return $url;
+		}
+
+		// NOTE: network_home_url() will fall back to home_url() if the site isn't a multisite.
 		global $wp;
-		return trailingslashit( home_url( $wp->request ) );
+		if ( $wp->did_permalink ) {
+			$url = user_trailingslashit( network_home_url( $wp->request ) );
+		} else {
+			$url = user_trailingslashit( network_home_url( $_SERVER['REQUEST_URI'] ) );
+		}
+
+		$permalinkStructure = get_option( 'permalink_structure' );
+		if ( $canonical && $permalinkStructure ) {
+			$url = explode( '?', $url )[0];
+		}
+
+		return $url;
 	}
 
 	/**
@@ -67,6 +93,10 @@ trait WpUri {
 			return $canonicalUrl;
 		}
 
+		if ( is_404() ) {
+			return apply_filters( 'aioseo_canonical_url', '' );
+		}
+
 		$metaData = [];
 		$post     = $this->getPost();
 		if ( $post ) {
@@ -78,12 +108,14 @@ trait WpUri {
 		}
 
 		if ( $metaData && ! empty( $metaData->canonical_url ) ) {
-			return $metaData->canonical_url;
+			return apply_filters( 'aioseo_canonical_url', $this->makeUrlAbsolute( $metaData->canonical_url ) );
 		}
 
-		$url = $this->getUrl( true );
-		if ( aioseo()->options->searchAppearance->advanced->noPaginationForCanonical && 1 < $this->getPageNumber() ) {
-			$url = preg_replace( '#(\d+\/|(?<=\/)page\/\d+\/)$#', '', $url );
+		$url                      = $this->getUrl( true );
+		$noPaginationForCanonical = aioseo()->options->searchAppearance->advanced->noPaginationForCanonical;
+		$pageNumber               = $this->getPageNumber();
+		if ( $noPaginationForCanonical && 1 < $pageNumber ) {
+			$url = preg_replace( '/(\d+|(?<=\/)page\/\d+\/|(?<=\/)comment-page-\d+\/*(#comments)*)$/', '', $url );
 		}
 
 		$url = $this->maybeRemoveTrailingSlash( $url );
@@ -103,7 +135,7 @@ trait WpUri {
 	}
 
 	/**
-	 * Formats a given URl as an absolute URL if it is relative.
+	 * Formats a given URL as an absolute URL if it is relative.
 	 *
 	 * @since 4.0.0
 	 *
@@ -119,6 +151,7 @@ trait WpUri {
 				$url = home_url( $url );
 			}
 		}
+
 		return $url;
 	}
 
@@ -189,6 +222,7 @@ trait WpUri {
 	 */
 	public function getWpContentUrl() {
 		$info = wp_get_upload_dir();
+
 		return isset( $info['baseurl'] ) ? $info['baseurl'] : '';
 	}
 
@@ -211,8 +245,10 @@ trait WpUri {
 			// In that case we can still check if a post exists for the path by quering the DB.
 			// TODO: Add support for terms here.
 			$post = $this->getPostbyPath( $path, OBJECT, $this->getPublicPostTypes( true ) );
+
 			return is_object( $post );
 		}
+
 		return 200 === $status;
 	}
 
@@ -238,6 +274,7 @@ trait WpUri {
 			if ( '0' === $cached || 0 === $cached ) {
 				return false;
 			}
+
 			return get_post( $cached, $output );
 		}
 
@@ -251,7 +288,7 @@ trait WpUri {
 		$postTypes = is_array( $postType ) ? $postType : [ $postType, 'attachment' ];
 		$postTypes = "'" . implode( "','", $postTypes ) . "'";
 
-		$posts = aioseo()->db->start( 'posts' )
+		$posts = aioseo()->core->db->start( 'posts' )
 			->select( 'ID, post_name, post_parent, post_type' )
 			->whereRaw( "post_name in ( $postNames )" )
 			->whereRaw( "post_type in ( $postTypes )" )
@@ -289,6 +326,7 @@ trait WpUri {
 
 		// We cache misses as well as hits.
 		wp_cache_set( $cacheKey, $foundId, 'aioseo_posts_by_path' );
+
 		return $foundId ? get_post( $foundId, $output ) : false;
 	}
 
@@ -323,5 +361,30 @@ trait WpUri {
 		wp_parse_str( $parsedUrl['query'], $parameters );
 
 		return $parameters;
+	}
+
+	/**
+	 * Adds a leading slash to an url.
+	 *
+	 * @since 4.1.8
+	 *
+	 * @param  string $url The url.
+	 * @return string      The url with a leading slash.
+	 */
+	public function leadingSlashIt( $url ) {
+		return '/' . ltrim( $url, '/' );
+	}
+
+	/**
+	 * Returns the path from a permalink.
+	 * This function will help get the correct path from WP instalations in subfolders.
+	 *
+	 * @since 4.1.8
+	 *
+	 * @param  string $permalink A permalink from get_permalink().
+	 * @return string            The path without the home_url().
+	 */
+	public function getPermalinkPath( $permalink ) {
+		return  str_replace( get_home_url(), '', $permalink );
 	}
 }

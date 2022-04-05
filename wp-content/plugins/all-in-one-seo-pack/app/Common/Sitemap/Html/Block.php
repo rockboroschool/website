@@ -117,6 +117,7 @@ class Block extends \AIOSEO\Plugin\Common\Utils\Blocks {
 		}
 
 		$attributes = aioseo()->htmlSitemap->frontend->getAttributes( $attributes );
+
 		return aioseo()->htmlSitemap->frontend->output( false, $attributes );
 	}
 
@@ -131,6 +132,7 @@ class Block extends \AIOSEO\Plugin\Common\Utils\Blocks {
 	private function extractIds( $objects ) {
 		return array_map( function ( $object ) {
 			$object = json_decode( $object );
+
 			return (int) $object->value;
 		}, $objects );
 	}

@@ -418,6 +418,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 				'button2_action'    => 'http://action#notification/v3-migration-schema-number-reminder',
 				'start'             => gmdate( 'Y-m-d H:i:s' )
 			] );
+
 			return;
 		}
 		aioseo()->options->searchAppearance->global->schema->phone = $phoneNumber;

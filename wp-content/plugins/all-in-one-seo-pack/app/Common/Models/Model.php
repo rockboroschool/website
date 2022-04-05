@@ -132,7 +132,7 @@ class Model implements \JsonSerializable {
 			return false;
 		}
 
-		$query = aioseo()->db
+		$query = aioseo()->core->db
 			->start( $this->table )
 			->where( $this->pk, $var )
 			->limit( 1 )
@@ -166,12 +166,23 @@ class Model implements \JsonSerializable {
 			trim( $key );
 			$this->$key = $value;
 
+			if ( null === $value && in_array( $key, $this->nullFields, true ) ) {
+				continue;
+			}
+
 			if ( in_array( $key, $this->jsonFields, true ) ) {
 				$this->$key = json_decode( $value );
-			} elseif ( in_array( $key, $this->booleanFields, true ) ) {
+				continue;
+			}
+
+			if ( in_array( $key, $this->booleanFields, true ) ) {
 				$this->$key = (bool) $value;
-			} elseif ( in_array( $key, $this->numericFields, true ) ) {
+				continue;
+			}
+
+			if ( in_array( $key, $this->numericFields, true ) ) {
 				$this->$key = (int) $value;
+				continue;
 			}
 		}
 	}
@@ -186,8 +197,8 @@ class Model implements \JsonSerializable {
 	 * @return array         The array of valid columns for the database query.
 	 */
 	protected function filter( $key ) {
-		$table   = aioseo()->db->prefix . $this->table;
-		$results = aioseo()->db->execute( 'SHOW COLUMNS FROM `' . $table . '`', true );
+		$table   = aioseo()->core->db->prefix . $this->table;
+		$results = aioseo()->core->db->execute( 'SHOW COLUMNS FROM `' . $table . '`', true );
 		$fields  = [];
 		$skip    = [ 'created', 'updated' ];
 		$columns = $results->result();
@@ -291,7 +302,7 @@ class Model implements \JsonSerializable {
 	 * @return null
 	 */
 	public function delete() {
-		aioseo()->db
+		aioseo()->core->db
 			->delete( $this->table )
 			->where( $this->pk, $this->id )
 			->run();
@@ -314,7 +325,7 @@ class Model implements \JsonSerializable {
 			if ( isset( $this->$pk ) && '' !== $this->$pk ) {
 				// PK specified.
 				$pkv   = $this->$pk;
-				$query = aioseo()->db
+				$query = aioseo()->core->db
 					->start( $this->table )
 					->where( [ $pk => $pkv ] )
 					->run();
@@ -322,7 +333,7 @@ class Model implements \JsonSerializable {
 				if ( ! $query->nullSet() ) {
 					// Row exists in database.
 					$fields['updated'] = gmdate( 'Y-m-d H:i:s' );
-					aioseo()->db
+					aioseo()->core->db
 						->update( $this->table )
 						->set( $fields )
 						->where( [ $pk => $pkv ] )
@@ -334,7 +345,7 @@ class Model implements \JsonSerializable {
 					$fields['created'] = gmdate( 'Y-m-d H:i:s' );
 					$fields['updated'] = gmdate( 'Y-m-d H:i:s' );
 
-					$id = aioseo()->db
+					$id = aioseo()->core->db
 						->insert( $this->table )
 						->set( $fields )
 						->run()
@@ -348,7 +359,7 @@ class Model implements \JsonSerializable {
 				$fields['created'] = gmdate( 'Y-m-d H:i:s' );
 				$fields['updated'] = gmdate( 'Y-m-d H:i:s' );
 
-				$id = aioseo()->db
+				$id = aioseo()->core->db
 					->insert( $this->table )
 					->set( $fields )
 					->run()
@@ -421,8 +432,8 @@ class Model implements \JsonSerializable {
 			self::$columns[ get_called_class() ] = [];
 
 			// Let's set the columns that are available by default.
-			$table   = aioseo()->db->prefix . $this->table;
-			$results = aioseo()->db->execute( 'SHOW COLUMNS FROM `' . $table . '`', true );
+			$table   = aioseo()->core->db->prefix . $this->table;
+			$results = aioseo()->core->db->execute( 'SHOW COLUMNS FROM `' . $table . '`', true );
 
 			foreach ( $results->result() as $col ) {
 				self::$columns[ get_called_class() ][ $col->Field ] = $col->Default;
@@ -443,10 +454,26 @@ class Model implements \JsonSerializable {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return string JSON object.
+	 * @param  string $existingOptions The existing options in JSON.
+	 * @return string                  The existing options with defaults added in JSON.
 	 */
-	public static function getDefaultTabsOptions() {
-		return '{"tab":"general","tab_social":"facebook","tab_sidebar":"general","tab_modal":"general","tab_modal_social":"facebook"}';
+	public static function getDefaultTabsOptions( $existingOptions = '' ) {
+		$defaults = [
+			'tab'              => 'general',
+			'tab_social'       => 'facebook',
+			'tab_sidebar'      => 'general',
+			'tab_modal'        => 'general',
+			'tab_modal_social' => 'facebook'
+		];
+
+		if ( empty( $existingOptions ) ) {
+			return wp_json_encode( $defaults );
+		}
+
+		$existingOptions = json_decode( $existingOptions, true );
+		$existingOptions = array_replace_recursive( $defaults, $existingOptions );
+
+		return wp_json_encode( $existingOptions );
 	}
 
 	/**

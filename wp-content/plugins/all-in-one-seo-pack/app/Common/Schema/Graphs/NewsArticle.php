@@ -29,6 +29,7 @@ class NewsArticle extends Article {
 		$data['@id']      = aioseo()->schema->context['url'] . '#newsarticle';
 		// Translators: 1 - The date the article was published on.
 		$data['dateline'] = sprintf( __( 'Published on %1$s.', 'all-in-one-seo-pack' ), get_the_date( 'F j, Y' ) );
+
 		return $data;
 	}
 }

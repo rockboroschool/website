@@ -68,6 +68,7 @@ class Helpers {
 
 		// Trim internal and external whitespace.
 		$value = preg_replace( '/[\s]+/u', ' ', trim( $value ) );
+
 		return aioseo()->helpers->internationalize( $value );
 	}
 
@@ -106,6 +107,7 @@ class Helpers {
 		foreach ( $exceptions as $exception ) {
 			$string = preg_replace( "/$exception/", aioseo()->helpers->encodeOutputHtml( $exception ), $string );
 		}
+
 		return $string;
 	}
 }

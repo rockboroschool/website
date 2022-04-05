@@ -24,16 +24,16 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	);
 }
 // get settings
-if ( empty( $settings ) ) {
+if ( ! empty( $settings ) && isset( $settings->no_conflict_mode ) ) {
+	$google_fonts_str = seedprod_lite_construct_font_str( $settings );
+	$content          = $page->post_content;
+	$lpage_uuid       = get_post_meta( $page->ID, '_seedprod_page_uuid', true );
+} else {
 	global $wpdb, $post;
 	$settings         = json_decode( $post->post_content_filtered );
 	$google_fonts_str = seedprod_lite_construct_font_str( json_decode( $post->post_content_filtered, true ) );
 	$content          = $post->post_content;
 	$lpage_uuid       = get_post_meta( $post->ID, '_seedprod_page_uuid', true );
-} else {
-	$google_fonts_str = seedprod_lite_construct_font_str( $settings );
-	$content          = $page->post_content;
-	$lpage_uuid       = get_post_meta( $page->ID, '_seedprod_page_uuid', true );
 }
 
 // remove vue comment bug
@@ -44,7 +44,7 @@ $plugin_url = SEEDPROD_PLUGIN_URL;
 
 
 //check to see if we have a shortcode, form or giveaway
-$settings_str = serialize( $settings );
+$settings_str = wp_json_encode( $settings );
 if ( strpos( $settings_str, 'contact-form' ) !== false ) {
 	$settings->no_conflict_mode = false;
 }
@@ -52,24 +52,33 @@ if ( strpos( $settings_str, 'giveaway' ) !== false ) {
 	$settings->no_conflict_mode = false;
 }
 
-$include_seed_fb_sdk   = false;
+$include_seed_fb_sdk           = false;
+$include_seed_twitter_sdk      = false;
 $include_seedprod_headline_sdk = false;
 
 
 
 
 // get url
-$scheme = 'http';
-if ( $_SERVER['SERVER_PORT'] == '443' ) {
+$scheme             = 'http';
+$server_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+$server_http_host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+$server_port        = isset( $_SERVER['SERVER_PORT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) ) : '';
+if ( '443' == $server_port ) {
 	$scheme = 'https';
 }
-if ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ) {
+if ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' == $_SERVER['HTTP_X_FORWARDED_PROTO'] ) {
 	$scheme = 'https';
 }
-$ogurl = "$scheme://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$ogurl = "$scheme://$server_http_host$server_request_uri";
 
 // subscriber callback
-$seedprod_subscribe_callback_ajax_url = html_entity_decode( wp_nonce_url( admin_url() . 'admin-ajax.php?action=seedprod_lite_subscribe_callback', 'seedprod_lite_subscribe_callback' ) );
+$seedprod_subscribe_callback_ajax_url          = html_entity_decode( wp_nonce_url( admin_url() . 'admin-ajax.php?action=seedprod_lite_subscribe_callback', 'seedprod_lite_subscribe_callback' ) );
+$seedprod_subscribe_callback_fallback_ajax_url = '';
+$seedprod_subscribe_callback_ajax_url_parsed   = wp_parse_url( $seedprod_subscribe_callback_ajax_url );
+if ( ! empty( $seedprod_subscribe_callback_ajax_url_parsed['path'] ) ) {
+	$seedprod_subscribe_callback_fallback_ajax_url = $seedprod_subscribe_callback_ajax_url_parsed['path'] . '?' . $seedprod_subscribe_callback_ajax_url_parsed['query'];
+}
 
 // If site uses WP Rocket, disable minify
 seedprod_lite_wprocket_disable_minify();
@@ -78,7 +87,9 @@ seedprod_lite_wprocket_disable_minify();
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
 	add_filter( 'woocommerce_enqueue_styles', 'seedprod_lite_wc_dequeue_styles' );
-
+	/**
+	 * Remove WooCommerce Styles
+	 */
 	function seedprod_lite_wc_dequeue_styles( $enqueue_styles ) {
 		// Dequeue main syles as it may serve theme-specific styles for themes that may not match SeedProd page
 		unset( $enqueue_styles['woocommerce-general'] );
@@ -104,12 +115,12 @@ if ( ! empty( $settings ) ) {
 		echo 'sp-is-mobile';
 	}
 	?>
-	 <?php
-		if ( is_user_logged_in() ) {
-				echo 'sp-is-logged-in';
-		}
-		?>
-	 sp-seedprod sp-h-full">
+	<?php
+	if ( is_user_logged_in() ) {
+		echo 'sp-is-logged-in';
+	}
+	?>
+	sp-seedprod sp-h-full" <?php language_attributes(); ?>>
 <head>
 	<?php
 	if ( ! empty( $settings->no_conflict_mode ) ) {
@@ -132,7 +143,7 @@ if ( ! empty( $settings ) ) {
 
 
 <!-- Open Graph -->
-<meta property="og:url" content="<?php echo esc_url_raw($ogurl); ?>" />
+<meta property="og:url" content="<?php echo esc_url( $ogurl ); ?>" />
 <meta property="og:type" content="website" />
 		<?php if ( ! empty( $settings->seo_title ) ) : ?>
 <meta property="og:title" content="<?php echo esc_attr( $settings->seo_title ); ?>" />
@@ -141,9 +152,9 @@ if ( ! empty( $settings ) ) {
 <meta property="og:description" content="<?php echo esc_attr( $settings->seo_description ); ?>" />
 <?php endif; ?>
 		<?php if ( ! empty( $settings->social_thumbnail ) ) : ?>
-<meta property="og:image" content="<?php echo esc_url_raw($settings->social_thumbnail); ?>" />
+<meta property="og:image" content="<?php echo esc_url( $settings->social_thumbnail ); ?>" />
 <?php elseif ( ! empty( $settings->logo ) ) : ?>
-<meta property="og:image" content="<?php echo esc_url_raw($settings->logo); ?>" />
+<meta property="og:image" content="<?php echo esc_url( $settings->logo ); ?>" />
 <?php endif; ?>
 
 <!-- Twitter Card -->
@@ -155,52 +166,62 @@ if ( ! empty( $settings ) ) {
 <meta name="twitter:description" content="<?php echo esc_attr( $settings->seo_description ); ?>" />
 <?php endif; ?>
 		<?php if ( ! empty( $settings->social_thumbnail ) ) : ?>
-<meta property="twitter:image" content="<?php echo esc_url_raw($settings->social_thumbnail); ?>" />
+<meta property="twitter:image" content="<?php echo esc_url( $settings->social_thumbnail ); ?>" />
 <?php endif; ?>
 
 		<?php
 	}
 	?>
 	<?php if ( empty( $settings->no_conflict_mode ) ) : ?>
+		<?php
+		$sp_title = wp_title( '&raquo;', false );
+		if ( ! empty( $sp_title ) ) {
+			?>
 <title><?php wp_title(); ?></title>
+<?php } ?>
 <?php endif; ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Default CSS -->
-<link rel='stylesheet' id='seedprod-css-css'  href='<?php echo $plugin_url; ?>public/css/tailwind.min.css?ver=1.2.7.1' type='text/css' media='all' />
-<link rel='stylesheet' id='seedprod-fontawesome-css'  href='<?php echo $plugin_url; ?>public/fontawesome/css/all.min.css?ver=1.2.7.1' type='text/css' media='all' />
+<link rel='stylesheet' id='seedprod-css-css'  href='<?php echo esc_url( $plugin_url ); ?>public/css/tailwind.min.css?ver=<?php echo esc_attr( SEEDPROD_VERSION ); ?>' type='text/css' media='all' /> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+<link rel='stylesheet' id='seedprod-fontawesome-css'  href='<?php echo esc_url( $plugin_url ); ?>public/fontawesome/css/all.min.css?ver=<?php echo esc_attr( SEEDPROD_VERSION ); ?>' type='text/css' media='all' /> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+
+	<?php if ( true === $include_seedprod_headline_sdk ) { ?>
+	<link rel='stylesheet' id='seedprod-animate-css'  href='<?php echo esc_url( $plugin_url ); ?>public/css/sp-animate.min.css?ver=<?php echo esc_attr( SEEDPROD_VERSION ); ?>' type='text/css' media='all' /> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+<?php } ?>
+
 	<?php if ( ! empty( $google_fonts_str ) ) : ?>
 <!-- Google Font -->
-<link rel="stylesheet" href="<?php echo $google_fonts_str; ?>">
+<link rel="stylesheet" href="<?php echo esc_url( $google_fonts_str ); ?>"> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 <?php endif; ?>
 
 
-<?php
-?>
+	<?php
+	?>
 
 <!-- Global Styles -->
 <style>
-	<?php echo $settings->document->settings->headCss; ?>
+	<?php echo $settings->document->settings->headCss; // phpcs:ignore ?>
 
 	<?php if ( ! empty( $settings->document->settings->placeholderCss ) ) { ?>
-		<?php echo $settings->document->settings->placeholderCss; ?>
+		<?php echo $settings->document->settings->placeholderCss; // phpcs:ignore ?>
 <?php } ?>
 
 	<?php // Replace classnames for device visibility like below ?>
 
 	@media only screen and (max-width: 480px) {
 		<?php if ( ! empty( $settings->document->settings->mobileCss ) ) { ?>
-			<?php echo str_replace( '.sp-mobile-view', '', $settings->document->settings->mobileCss ); ?>
+			<?php echo str_replace( '.sp-mobile-view', '', $settings->document->settings->mobileCss );  // phpcs:ignore?>
 		<?php } ?>
 
 		<?php if ( ! empty( $settings->document->settings->mobileVisibilityCss ) ) { ?>
-			<?php echo str_replace( '.sp-mobile-view', '', $settings->document->settings->mobileVisibilityCss ); ?>
+			<?php echo str_replace( '.sp-mobile-view', '', $settings->document->settings->mobileVisibilityCss ); // phpcs:ignore ?>
 		<?php } ?>
 	}
 
 	@media only screen and (min-width: 480px) {
 		<?php if ( ! empty( $settings->document->settings->desktopVisibilityCss ) ) { ?>
-			<?php echo $settings->document->settings->desktopVisibilityCss; ?>
+			<?php echo $settings->document->settings->desktopVisibilityCss; // phpcs:ignore ?>
 		<?php } ?>
 	}
 
@@ -235,7 +256,7 @@ if ( ! empty( $settings ) ) {
 	<?php if ( ! empty( $settings->document->settings->customCss ) ) { ?>
 /* Custom CSS */
 		<?php
-		echo $settings->document->settings->customCss;
+		echo $settings->document->settings->customCss; // phpcs:ignore
 		?>
 	<?php } ?>
 </style>
@@ -243,18 +264,18 @@ if ( ! empty( $settings ) ) {
 <!-- JS -->
 <script>
 </script>
-	<?php 
+	<?php
 	?>
-<script src="<?php echo $plugin_url; ?>public/js/sp-scripts.min.js" defer></script>
+	<script src="<?php echo esc_url( $plugin_url ); ?>public/js/sp-scripts.min.js" defer></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 	<?php
 	?>
 
 	<?php if ( ! empty( $settings->document->settings->useVideoBg ) ) { ?>
-<script src="<?php echo $plugin_url; ?>public/js/tubular.js" defer></script>
+<script src="<?php echo esc_url( $plugin_url ); ?>public/js/tubular.js" defer></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 	<?php } ?>
 
-<?php 
-?>
+	<?php
+	?>
 
 
 	<?php
@@ -264,41 +285,35 @@ if ( ! empty( $settings ) ) {
 	} else {
 		$include_url = trailingslashit( includes_url() );
 		if ( empty( $settings->enable_wp_head_footer ) ) {
-			echo '<script src="' . $include_url . 'js/jquery/jquery.js"></script>' . "\n";
+			echo '<script src="' . esc_url( $include_url ) . 'js/jquery/jquery.min.js"></script>' . "\n"; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		}
 	}
 
 	?>
 	<?php
 	if ( ! empty( $settings->header_scripts ) ) {
-		echo $settings->header_scripts;
+		echo $settings->header_scripts; // phpcs:ignore
 	}
 	?>
 </head>
-<body class="spBg<?php echo esc_attr($settings->document->settings->bgPosition); ?> sp-h-full sp-antialiased sp-bg-slideshow">
+<body class="spBg<?php echo esc_attr( $settings->document->settings->bgPosition ); ?> sp-h-full sp-antialiased sp-bg-slideshow">
 	<?php
 	if ( ! empty( $settings->body_scripts ) ) {
-		echo $settings->body_scripts;
+		echo $settings->body_scripts; // phpcs:ignore
 	}
 	?>
 
-	<?php 
-	?>
-
-	<script>
-		window.twttr = (function (d,s,id) {
-			var t, js, fjs = d.getElementsByTagName(s)[0];
-			if (d.getElementById(id)) return; js=d.createElement(s); js.id=id;
-			js.src="https://platform.twitter.com/widgets.js";
-			fjs.parentNode.insertBefore(js, fjs);
-			return window.twttr || (t = { _e: [], ready: function(f){ t._e.push(f) } });
-		}(document, "script", "twitter-wjs"));
-	</script>
-
 	<?php
-	$actual_link = urlencode( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http' ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" );
-	$content     = str_replace( 'the_link', $actual_link, $content );
-	echo do_shortcode( $content );
+	?>
+	<?php
+	?>
+	<?php
+	$server_http_host   = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+	$server_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+	$actual_link        = rawurlencode( ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http' ) . "://$server_http_host$server_request_uri" );
+	$content            = str_replace( 'the_link', $actual_link, $content );
+	$content = do_shortcode( $content );
+	echo apply_filters( 'seedprod_lpage_content', $content );
 	?>
 
 
@@ -316,15 +331,20 @@ if ( ! empty( $settings ) ) {
 
 		?>
 <div class="sp-credit" >
-	<a target="_blank" href="<?php echo esc_url($aff_link); ?>" rel="nofollow"><span>made with</span><img src="<?php echo $plugin_url; ?>public/svg/powered-by-logo.svg"></a>
+	<a target="_blank" href="<?php echo esc_url( $aff_link ); ?>" rel="nofollow"><span>made with</span><img src="<?php echo esc_url( $plugin_url ); ?>public/svg/powered-by-logo.svg"></a>
 </div>
 		<?php
 	}
 	?>
 
 <script>
-	 <?php if ( wp_is_mobile() ) { echo 'var sp_is_mobile = true;';} else {echo 'var sp_is_mobile = false;';}?>
-	<?php 
+	<?php
+	if ( wp_is_mobile() ) {
+		echo 'var sp_is_mobile = true;';
+	} else {
+		echo 'var sp_is_mobile = false;';}
+	?>
+	<?php
 	?>
 
 </script>
@@ -336,7 +356,7 @@ if ( ! empty( $settings ) ) {
 	?>
 	<?php
 	if ( ! empty( $settings->footer_scripts ) ) {
-		echo $settings->footer_scripts;
+		echo $settings->footer_scripts; // phpcs:ignore
 	}
 	?>
 </body>

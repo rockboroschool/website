@@ -25,6 +25,7 @@ abstract class Importer {
 			$this->importSettings();
 			$this->importPostMeta();
 			$this->importTermMeta();
+
 			return;
 		}
 

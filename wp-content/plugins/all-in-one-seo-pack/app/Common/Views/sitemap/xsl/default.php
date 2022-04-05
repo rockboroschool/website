@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable
 $utmMedium = 'xml-sitemap';
-if ( 0 !== stripos( $sitemapPath, 'rss-sitemap' ) ) {
+if ( '/sitemap.rss' === $sitemapPath ) {
 	$utmMedium = 'rss-sitemap';
 }
 ?>

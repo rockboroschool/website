@@ -69,6 +69,7 @@ class Frontend {
 		$attributes['show_label']     = filter_var( $attributes['show_label'], FILTER_VALIDATE_BOOLEAN );
 		$attributes['nofollow_links'] = filter_var( $attributes['nofollow_links'], FILTER_VALIDATE_BOOLEAN );
 		$attributes['is_admin']       = filter_var( $attributes['is_admin'], FILTER_VALIDATE_BOOLEAN );
+
 		return $attributes;
 	}
 
@@ -82,6 +83,7 @@ class Frontend {
 	 */
 	private function formatDate( $date ) {
 		$dateFormat = apply_filters( 'aioseo_html_sitemap_date_format', get_option( 'date_format' ) );
+
 		return date_i18n( $dateFormat, strtotime( $date ) );
 	}
 
@@ -154,6 +156,8 @@ class Frontend {
 	 * @return string|void       The HTML sitemap.
 	 */
 	public function output( $echo = true, $attributes = [] ) {
+		$this->attributes = $attributes;
+
 		if ( ! aioseo()->options->sitemap->html->enable ) {
 			return;
 		}
@@ -167,15 +171,13 @@ class Frontend {
 			$attributes = $this->getAttributes();
 		}
 
-		// Setting this allows us to use the helper functions of the general sitemap.
-		$this->attributes = $attributes;
-
+		$noResultsMessage = esc_html__( 'No posts/terms could be found.', 'all-in-one-seo-pack' );
 		if ( empty( $this->attributes['post_types'] ) && empty( $this->attributes['taxonomies'] ) ) {
-			$message = esc_html__( 'No posts/terms could be found.', 'all-in-one-seo-pack' );
 			if ( $echo ) {
-				echo $message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $noResultsMessage; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
-			return $message;
+
+			return $noResultsMessage;
 		}
 
 		// TODO: Consider moving all remaining HTML code below to a dedicated view instead of printing it in PHP.
@@ -186,6 +188,7 @@ class Frontend {
 
 		$sitemap .= '<style>.aioseo-html-sitemap.labels-hidden ul { margin: 0; }</style>';
 
+		$hasPosts  = false;
 		$postTypes = $this->getIncludedObjects( $this->attributes['post_types'] );
 		foreach ( $postTypes as $postType ) {
 			if ( 'attachment' === $postType ) {
@@ -201,6 +204,8 @@ class Frontend {
 			if ( empty( $posts ) ) {
 				continue;
 			}
+
+			$hasPosts = true;
 
 			$postTypeObject = get_post_type_object( $postType );
 			$label          = ! empty( $postTypeObject->label ) ? $postTypeObject->label : ucfirst( $postType );
@@ -222,6 +227,7 @@ class Frontend {
 			}
 		}
 
+		$hasTerms   = false;
 		$taxonomies = $this->getIncludedObjects( $this->attributes['taxonomies'], false );
 		foreach ( $taxonomies as $taxonomy ) {
 			// Check if post type is still registered.
@@ -233,6 +239,8 @@ class Frontend {
 			if ( empty( $terms ) ) {
 				continue;
 			}
+
+			$hasTerms = true;
 
 			$taxonomyObject = get_taxonomy( $taxonomy );
 			$label          = ! empty( $taxonomyObject->label ) ? $taxonomyObject->label : ucfirst( $taxonomy );
@@ -256,9 +264,15 @@ class Frontend {
 
 		$sitemap .= '</div>';
 
+		// Check if we actually were able to fetch any results.
+		if ( ! $hasPosts && ! $hasTerms ) {
+			$sitemap = $noResultsMessage;
+		}
+
 		if ( $echo ) {
 			echo $sitemap; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
+
 		return $sitemap;
 	}
 
@@ -272,6 +286,7 @@ class Frontend {
 	 */
 	private function generateLabel( $label ) {
 		$labelTag = ! empty( $this->attributes['label_tag'] ) ? $this->attributes['label_tag'] : 'h4';
+
 		return $this->attributes['show_label']
 			? sprintf( '<%2$s>%1$s</%2$s>', esc_attr( $label ), wp_kses_post( $labelTag ) )
 			: '';
@@ -290,6 +305,7 @@ class Frontend {
 		foreach ( $objects as $object ) {
 			$list .= $this->generateListItem( $object ) . '</li>';
 		}
+
 		return $list . '</ul></div>';
 	}
 
@@ -332,6 +348,7 @@ class Frontend {
 
 			$li .= '</a>';
 		}
+
 		return $li;
 	}
 
@@ -366,6 +383,7 @@ class Frontend {
 			$list .= '</li>';
 		}
 		$list .= '</ul>';
+
 		return $list;
 	}
 
@@ -401,6 +419,7 @@ class Frontend {
 				$nestedLevel--;
 			}
 		}
+
 		return $tree;
 	}
 
@@ -437,6 +456,7 @@ class Frontend {
 			}
 		}
 		$objects = array_values( json_decode( wp_json_encode( $objects ), true ) );
+
 		return $objects;
 	}
 
@@ -462,6 +482,7 @@ class Frontend {
 				return $this->findParentAmongChildren( $parentChild->children, $child );
 			}
 		}
+
 		return [ $parentChildren, $found ];
 	}
 
@@ -493,6 +514,7 @@ class Frontend {
 				return in_array( $object, $publicObjects, true );
 			});
 		}
+
 		return $objects;
 	}
 }

@@ -2,25 +2,31 @@
 /**
  * Render Pages
  */
-
-
-class seedprod_lite_Render {
-
-
+class SeedProd_Lite_Render {
 	/**
 	 * Instance of this class.
-	 *
-	 * @since    1.0.0
 	 *
 	 * @var      object
 	 */
 	protected static $instance = null;
-	private $path              = null;
 
+	/**
+	 * Path.
+	 *
+	 * @var      string
+	 */
+	private $path = null;
+
+	/**
+	 * Set up class instance.
+	 */
 	public function __construct() {
 
+		$get_post_type = ! empty( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$get_preview   = ! empty( $_GET['preview'] ) ? sanitize_text_field( wp_unslash( $_GET['preview'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		// exit if preview
-		if ( ! empty( $_GET['post_type'] ) && ! empty( $_GET['preview'] ) && $_GET['post_type'] == 'seedprod' && $_GET['preview'] == 'true' ) {
+		if ( null !== $get_post_type && null !== $get_preview && 'seedprod' == $get_post_type && 'true' == $get_preview ) {
 			return false;
 		}
 
@@ -29,7 +35,7 @@ class seedprod_lite_Render {
 			if ( ! empty( $ts ) ) {
 				$seedprod_settings = json_decode( $ts, true );
 				if ( ! empty( $seedprod_settings ) ) {
-					extract( $seedprod_settings );
+					extract( $seedprod_settings ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 				}
 			} else {
 				return false;
@@ -53,7 +59,7 @@ class seedprod_lite_Render {
 						$priority = 1;
 					}
 					// jetpack subscribe
-					if ( isset( $_REQUEST['jetpack_subscriptions_widget'] ) ) {
+					if ( isset( $_REQUEST['jetpack_subscriptions_widget'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 						$priority = 11;
 					}
 
@@ -94,13 +100,16 @@ class seedprod_lite_Render {
 		return self::$instance;
 	}
 
+	/**
+	 * Remove NGG print scripts.
+	 *
+	 * @return void
+	 */
 	public function remove_ngg_print_scripts() {
 		if ( class_exists( 'C_Photocrati_Resource_Manager' ) ) {
 			remove_all_actions( 'wp_print_footer_scripts', 1 );
 		}
 	}
-
-
 
 
 	/**
@@ -117,26 +126,26 @@ class seedprod_lite_Render {
 			$seedprod_api_key = get_option( 'seedprod_api_key' );
 		}
 		if ( ! empty( $seedprod_api_key ) ) {
-			if ( isset( $_REQUEST['seedprod_token'] ) && $_REQUEST['seedprod_token'] == $seedprod_api_key ) {
-				if ( isset( $_REQUEST['seedprod_mode'] ) ) {
-					$mode              = absint($_REQUEST['seedprod_mode']);
+			if ( isset( $_REQUEST['seedprod_token'] ) && $_REQUEST['seedprod_token'] == $seedprod_api_key ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_REQUEST['seedprod_mode'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$mode              = absint( $_REQUEST['seedprod_mode'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$ts                = get_option( 'seedprod_settings' );
 					$seedprod_settings = json_decode( $ts, true );
 
 					if ( ! empty( $seedprod_settings ) ) {
-						if ( $mode == 0 ) {
+						if ( 0 == $mode ) {
 
 							echo '0';
 							$seedprod_settings['enable_coming_soon_mode'] = false;
 							$seedprod_settings['enable_maintenance_mode'] = false;
 
-						} elseif ( $mode == 1 ) {
+						} elseif ( 1 == $mode ) {
 
 							echo '1';
 							$seedprod_settings['enable_coming_soon_mode'] = true;
 							$seedprod_settings['enable_maintenance_mode'] = false;
 
-						} elseif ( $mode == 2 ) {
+						} elseif ( 2 == $mode ) {
 
 							echo '2';
 							$seedprod_settings['enable_coming_soon_mode'] = false;
@@ -144,17 +153,13 @@ class seedprod_lite_Render {
 
 						}
 
-						update_option( 'seedprod_settings', json_encode( $seedprod_settings ) );
+						update_option( 'seedprod_settings', wp_json_encode( $seedprod_settings ) );
 						exit();
 					}
 				}
 			}
 		}
 	}
-
-
-
-
 
 
 	/**
@@ -184,8 +189,8 @@ class seedprod_lite_Render {
 		global $wpdb;
 		$tablename = $wpdb->prefix . 'posts';
 		$sql       = "SELECT * FROM $tablename WHERE id= %d";
-		$safe_sql  = $wpdb->prepare( $sql, absint( $page_id ) );
-		$page      = $wpdb->get_row( $safe_sql );
+		$safe_sql  = $wpdb->prepare( $sql, absint( $page_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$page      = $wpdb->get_row( $safe_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$settings = json_decode( $page->post_content_filtered );
 
@@ -202,21 +207,21 @@ class seedprod_lite_Render {
 
 		// Exit if a custom login page
 		if ( ! empty( $settings->disable_default_excluded_urls ) ) {
-			if ( preg_match( '/privacy|imprint|login|admin|dashboard|account/i', $_SERVER['REQUEST_URI'] ) > 0 ) {
+			if ( preg_match( '/privacy|imprint|login|admin|dashboard|account/i', $get_request_uri ) > 0 ) {
 				return false;
 			}
 		}
 
 		//Exit if wysija double opt-in
-		if ( isset( $emaillist ) && $emaillist == 'wysija' && preg_match( '/wysija/i', $_SERVER['REQUEST_URI'] ) > 0 ) {
+		if ( isset( $emaillist ) && 'wysija' == $emaillist && preg_match( '/wysija/i', $get_request_uri ) > 0 ) {
 			return false;
 		}
 
-		if ( isset( $emaillist ) && $emaillist == 'mailpoet' && preg_match( '/mailpoet/i', $_SERVER['REQUEST_URI'] ) > 0 ) {
+		if ( isset( $emaillist ) && 'mailpoet' == $emaillist && preg_match( '/mailpoet/i', $get_request_uri ) > 0 ) {
 			return false;
 		}
 
-		if ( isset( $emaillist ) && $emaillist == 'mymail' && preg_match( '/confirm/i', $_SERVER['REQUEST_URI'] ) > 0 ) {
+		if ( isset( $emaillist ) && 'mymail' == $emaillist && preg_match( '/confirm/i', $get_request_uri ) > 0 ) {
 			return false;
 		}
 
@@ -224,7 +229,7 @@ class seedprod_lite_Render {
 		if ( ! empty( $settings->access_by_role ) && ! isset( $_COOKIE['wp-seedprod-bypass'] ) ) {
 			foreach ( $settings->access_by_role as $v ) {
 				$v = str_replace( ' ', '', strtolower( $v ) );
-				if ( $v == 'anyoneloggedin' && is_user_logged_in() ) {
+				if ( 'anyoneloggedin' == $v && is_user_logged_in() ) {
 					return false;
 				}
 				if ( current_user_can( $v ) ) {
@@ -257,23 +262,24 @@ class seedprod_lite_Render {
 		// set headers
 		if ( ! empty( $seedprod_settings->enable_maintenance_mode ) ) {
 			if ( empty( $settings ) ) {
-				echo __( 'Please create your Maintenance Page in the plugin settings.', 'seedprod-coming-soon-pro' );
+				echo esc_html__( 'Please create your Maintenance Page in the plugin settings.', 'coming-soon' );
 				exit();
 			}
 			header( 'HTTP/1.1 503 Service Temporarily Unavailable' );
 			header( 'Status: 503 Service Temporarily Unavailable' );
-			header( 'Retry-After: 86400' ); // retry in a day
+			$retry_after = apply_filters( 'seedprod_retry_after', '86400' );  // retry in a day
+			header( 'Retry-After: ' . $retry_after );
 		} elseif ( ! empty( $enable_redirect_mode ) ) {
 			if ( ! empty( $redirect_url ) ) {
 				wp_redirect( $redirect_url );
 				exit;
 			} else {
-				echo __( 'Please create enter your redirect url in the plugin settings.', 'seedprod-coming-soon-pro' );
+				echo esc_html__( 'Please create enter your redirect url in the plugin settings.', 'coming-soon' );
 				exit();
 			}
 		} else {
 			if ( empty( $settings ) ) {
-				echo __( 'Please create your Coming Soon Page in the plugin settings.', 'seedprod-coming-soon-pro' );
+				echo esc_html__( 'Please create your Coming Soon Page in the plugin settings.', 'coming-soon' );
 				exit();
 			}
 			header( 'HTTP/1.1 200 OK' );
@@ -293,7 +299,7 @@ class seedprod_lite_Render {
 		}
 
 		if ( ! empty( $page->html ) && 1 == 0 ) {
-			echo $page->html;
+			echo $page->html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
 			if ( file_exists( $path ) ) {
 				require_once $path;

@@ -33,6 +33,7 @@ class Options {
 			'yandex'                    => [ 'type' => 'string' ],
 			'baidu'                     => [ 'type' => 'string' ],
 			'pinterest'                 => [ 'type' => 'string' ],
+			'microsoftClarityProjectId' => [ 'type' => 'string' ],
 			'alexa'                     => [ 'type' => 'string' ],
 			'norton'                    => [ 'type' => 'string' ],
 			'miscellaneousVerification' => [ 'type' => 'html' ]
@@ -217,6 +218,7 @@ TEMPLATE
 			'twitter'            => [
 				'general'  => [
 					'enable'                  => [ 'type' => 'boolean', 'default' => true ],
+					'useOgData'               => [ 'type' => 'boolean', 'default' => true ],
 					'defaultCardType'         => [ 'type' => 'string', 'default' => 'summary' ],
 					'defaultImageSourcePosts' => [ 'type' => 'string', 'default' => 'default' ],
 					'customFieldImagePosts'   => [ 'type' => 'string' ],
@@ -469,7 +471,7 @@ TEMPLATE
 			$this->addValueToValuesArray( $this->defaultsMerged, $dbOptions )
 		);
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, apply_filters( 'aioseo_get_options', $options ) );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, apply_filters( 'aioseo_get_options', $options ) );
 
 		// Get the localized options.
 		$dbOptionsLocalized = get_option( $this->optionsName . '_localized' );
@@ -561,7 +563,7 @@ TEMPLATE
 		}
 
 		// Refactor options.
-		$cachedOptions = aioseo()->optionsCache->getOptions( $this->optionsName );
+		$cachedOptions = aioseo()->core->optionsCache->getOptions( $this->optionsName );
 		$dbOptions     = array_replace_recursive(
 			$cachedOptions,
 			$this->addValueToValuesArray( $cachedOptions, $options, [], true )
@@ -635,7 +637,7 @@ TEMPLATE
 			}
 		}
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, $dbOptions );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, $dbOptions );
 
 		// Update localized options.
 		update_option( $this->optionsName . '_localized', $this->localized );
@@ -709,30 +711,6 @@ TEMPLATE
 
 		return $options;
 	}
-
-	/**
-	 * Set a redirection URL after saving options or a slug ( 'reload' )
-	 *
-	 * @since 4.0.17
-	 *
-	 * @param  string $urlOrSlug
-	 * @return void
-	 */
-	public function setRedirection( $urlOrSlug ) {
-		$this->screenRedirection = $urlOrSlug;
-	}
-
-	/**
-	 * Get the redirection URL after saving options
-	 *
-	 * @since 4.0.17
-	 *
-	 * @return boolean|string The screen redirection URL.
-	 */
-	public function getRedirection() {
-		return $this->screenRedirection ? $this->screenRedirection : false;
-	}
-
 
 	/**
 	 * Indicate we need to flush rewrite rules on next load.

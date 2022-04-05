@@ -49,6 +49,10 @@ abstract class Filters {
 			add_filter( 'weglot_active_translation_before_treat_page', '__return_false' );
 		}
 
+		if ( preg_match( '#(\.xml)$#i', $_SERVER['REQUEST_URI'] ) ) {
+			add_filter( 'jetpack_boost_should_defer_js', '__return_false' );
+		}
+
 		// GoDaddy CDN compatibility.
 		add_filter( 'wpaas_cdn_file_ext', [ $this, 'goDaddySitemapXml' ] );
 
@@ -62,6 +66,12 @@ abstract class Filters {
 
 		// Bypass the JWT Auth plugin's unnecessary restrictions. https://wordpress.org/plugins/jwt-auth/
 		add_filter( 'jwt_auth_default_whitelist', [ $this, 'allowRestRoutes' ] );
+
+		// Clear the site authors cache.
+		add_action( 'profile_update', [ $this, 'clearAuthorsCache' ] );
+		add_action( 'user_register', [ $this, 'clearAuthorsCache' ] );
+
+		add_filter( 'aioseo_public_post_types', [ $this, 'removeFalsePublicPostTypes' ] );
 	}
 
 	/**
@@ -96,12 +106,8 @@ abstract class Filters {
 			return;
 		}
 
-		$newPost = Models\Post::getPost( $newPostId );
-		if ( $newPost->exists() ) {
-			return;
-		}
-
-		$columns = $originalAioseoPost->getColumns();
+		$newAioseoPost = Models\Post::getPost( $newPostId );
+		$columns       = $originalAioseoPost->getColumns();
 		foreach ( $columns as $column => $value ) {
 			// Skip the ID column.
 			if ( 'id' === $column ) {
@@ -109,13 +115,13 @@ abstract class Filters {
 			}
 
 			if ( 'post_id' === $column ) {
-				$newPost->$column = $newPostId;
+				$newAioseoPost->$column = $newPostId;
 				continue;
 			}
 
-			$newPost->$column = $originalAioseoPost->$column;
+			$newAioseoPost->$column = $originalAioseoPost->$column;
 		}
-		$newPost->save();
+		$newAioseoPost->save();
 	}
 
 	/**
@@ -178,6 +184,7 @@ abstract class Filters {
 	public function goDaddySitemapXml( $extensions ) {
 		$key = array_search( 'xml', $extensions, true );
 		unset( $extensions[ $key ] );
+
 		return $extensions;
 	}
 
@@ -223,6 +230,7 @@ abstract class Filters {
 				$actions = 'after' === $position ? array_merge( $actions, $link ) : array_merge( $link, $actions );
 			}
 		}
+
 		return $actions;
 	}
 
@@ -251,5 +259,46 @@ abstract class Filters {
 		return array_merge( $allowList, [
 			'/aioseo/'
 		] );
+	}
+
+	/**
+	 * Clear the site authors cache when user is updated or registered.
+	 *
+	 * @since 4.1.8
+	 *
+	 * @return void
+	 */
+	public function clearAuthorsCache() {
+		aioseo()->core->cache->delete( 'site_authors' );
+	}
+
+	/**
+	 * Filters out post types that aren't really public when getPublicPostTypes() is called.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @param  array[Object]|array[string] $postTypes The post types
+	 * @return array[Object]|array[string]            The filtered post types.
+	 */
+	public function removeFalsePublicPostTypes( $postTypes ) {
+		$elementorEnabled = isset( aioseo()->postSettings->integrations['elementor'] ) &&
+			aioseo()->postSettings->integrations['elementor']->isPluginActive();
+
+		if ( ! $elementorEnabled ) {
+			return $postTypes;
+		}
+
+		foreach ( $postTypes as $index => $postType ) {
+			if ( is_string( $postType ) && 'elementor_library' === $postType ) {
+				unset( $postTypes[ $index ] );
+				continue;
+			}
+
+			if ( is_array( $postType ) && 'elementor_library' === $postType['name'] ) {
+				unset( $postTypes[ $index ] );
+			}
+		}
+
+		return array_values( $postTypes );
 	}
 }

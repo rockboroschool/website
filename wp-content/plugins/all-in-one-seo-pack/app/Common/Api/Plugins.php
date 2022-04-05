@@ -31,7 +31,7 @@ class Plugins {
 			], 400 );
 		}
 
-		if ( ! current_user_can( 'install_plugins' ) ) {
+		if ( ! aioseo()->addons->canInstall() ) {
 			return new \WP_REST_Response( [
 				'success' => false,
 				'message' => $error
@@ -53,6 +53,57 @@ class Plugins {
 				$failed[] = $plugin['plugin'];
 			} else {
 				$completed[ $plugin['plugin'] ] = $result;
+			}
+		}
+
+		return new \WP_REST_Response( [
+			'success'   => true,
+			'completed' => $completed,
+			'failed'    => $failed
+		], 200 );
+	}
+
+	/**
+	 * Upgrade plugins from vue.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function upgradePlugins( $request ) {
+		$error = esc_html__( 'Plugin update failed. Please check permissions and try again.', 'all-in-one-seo-pack' );
+		$body  = $request->get_json_params();
+
+		if ( ! is_array( $body ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => $error
+			], 400 );
+		}
+
+		if ( ! aioseo()->addons->canUpdate() ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => $error
+			], 400 );
+		}
+
+		$failed    = [];
+		$completed = [];
+		foreach ( $body as $plugin ) {
+			if ( empty( $plugin['plugin'] ) ) {
+				return new \WP_REST_Response( [
+					'success' => false,
+					'message' => $error
+				], 400 );
+			}
+
+			$result = aioseo()->addons->upgradeAddon( $plugin['plugin'] );
+			if ( ! $result ) {
+				$failed[] = $plugin['plugin'];
+			} else {
+				$completed[ $plugin['plugin'] ] = aioseo()->addons->getAddon( $plugin['plugin'], true );
 			}
 		}
 

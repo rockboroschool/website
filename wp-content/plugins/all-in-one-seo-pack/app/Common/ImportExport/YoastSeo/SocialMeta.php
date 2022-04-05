@@ -100,6 +100,11 @@ class SocialMeta {
 		if ( 'page' === get_option( 'show_on_front' ) ) {
 			$staticHomePageId = get_option( 'page_on_front' );
 
+			// We must check if the ID exists because one might select the static homepage option but not actually set one.
+			if ( ! $staticHomePageId ) {
+				return;
+			}
+
 			$aioseoPost = Models\Post::getPost( (int) $staticHomePageId );
 			$aioseoPost->set( [
 				'og_object_type' => 'website'

@@ -22,41 +22,15 @@ class PreUpdates {
 			return;
 		}
 
-		$lastActiveVersion = $this->getInternalOptions( [ 'internal', 'lastActiveVersion' ] );
+		$lastActiveVersion = aioseo()->internalOptions->internal->lastActiveVersion;
+		if ( aioseo()->version !== $lastActiveVersion ) {
+			// Bust the table/columns cache so that we can start the update migrations with a fresh slate.
+			aioseo()->internalOptions->database->installedTables = '';
+		}
 
 		if ( version_compare( $lastActiveVersion, '4.1.5', '<' ) ) {
 			$this->createCacheTable();
 		}
-	}
-
-	/**
-	 * Manually get and parse internal options.
-	 *
-	 * @since 4.1.5
-	 *
-	 * @param  string|array $options         An array of option keys.
-	 * @return mixed|null                    The option value or null.
-	 */
-	private function getInternalOptions( $options ) {
-		$internalOptions = json_decode( get_option( 'aioseo_options_internal' ) );
-
-		if ( empty( $internalOptions ) ) {
-			return null;
-		}
-
-		if ( ! is_array( $options ) ) {
-			$options = [ $options ];
-		}
-
-		foreach ( $options as $option ) {
-			if ( ! isset( $internalOptions->{$option} ) ) {
-				return null;
-			}
-
-			$internalOptions = $internalOptions->{$option};
-		}
-
-		return $internalOptions;
 	}
 
 	/**
@@ -67,7 +41,7 @@ class PreUpdates {
 	 * @return void
 	 */
 	public function createCacheTable() {
-		$db             = aioseo()->db->db;
+		$db             = aioseo()->core->db->db;
 		$charsetCollate = '';
 
 		if ( ! empty( $db->charset ) ) {
@@ -77,11 +51,11 @@ class PreUpdates {
 			$charsetCollate .= " COLLATE {$db->collate}";
 		}
 
-		$tableName = aioseo()->cache->getTableName();
-		if ( ! aioseo()->db->tableExists( $tableName ) ) {
+		$tableName = aioseo()->core->cache->getTableName();
+		if ( ! aioseo()->core->db->tableExists( $tableName ) ) {
 			$tableName = $db->prefix . $tableName;
 
-			aioseo()->db->execute(
+			aioseo()->core->db->execute(
 				"CREATE TABLE {$tableName} (
 					`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 					`key` varchar(80) NOT NULL,

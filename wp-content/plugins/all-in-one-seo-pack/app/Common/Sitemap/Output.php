@@ -20,7 +20,7 @@ class Output {
 	 * @param  array $entries The sitemap entries.
 	 * @return void
 	 */
-	public function output( $entries ) {
+	public function output( $entries ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		if ( ! in_array( aioseo()->sitemap->type, [ 'general', 'rss' ], true ) ) {
 			return;
 		}

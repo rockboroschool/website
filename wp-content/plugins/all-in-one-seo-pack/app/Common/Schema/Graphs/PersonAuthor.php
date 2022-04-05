@@ -60,6 +60,7 @@ class PersonAuthor extends Person {
 				'#id' => aioseo()->schema->context['url'] . '#profilepage'
 			];
 		}
+
 		return $data;
 	}
 }

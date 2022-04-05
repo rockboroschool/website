@@ -30,7 +30,7 @@ if ( 'xml-sitemap' !== $data['utmMedium'] ) {
 	<div class="empty-sitemap">
 		<h2 class="empty-sitemap__title">
 			<?php _e( 'Whoops!', 'all-in-one-seo-pack' ); ?>
-			<br/>
+			<br />
 			<?php _e( 'There are no posts here', 'all-in-one-seo-pack' ); ?>
 		</h2>
 		<div class="empty-sitemap__buttons">
@@ -43,9 +43,9 @@ if ( 'xml-sitemap' !== $data['utmMedium'] ) {
 		<?php if ( $canManageSitemap ) : ?>
 			<div class="aioseo-alert yellow">
 				<?php
-					// Translators: 2 - Opening HTML link tag, 3 - Closing HTML link tag.
 					echo sprintf(
-						__( 'Didn\'t expect to see this? Make sure your sitemap is enabled and your content is set to be indexed. %sLearn More →%s', 'all-in-one-seo-pack' ),
+						// Translators: 1 - Opening HTML link tag, 2 - Closing HTML link tag.
+						__( 'Didn\'t expect to see this? Make sure your sitemap is enabled and your content is set to be indexed. %1$sLearn More →%2$s', 'all-in-one-seo-pack' ),
 						'<a target="_blank" href="' . aioseo()->helpers->utmUrl( AIOSEO_MARKETING_URL . 'docs/how-to-fix-a-404-error-when-viewing-your-sitemap/', $data['utmMedium'], 'learn-more' ) . '">',
 						'</a>'
 					);

@@ -29,18 +29,21 @@ class Notices {
 	 * @since 4.0.0
 	 */
 	public function __construct() {
-		add_action( 'updated_option', [ $this, 'maybeResetBlogVisibility' ], 10, 3 );
-		add_action( 'init', [ $this, 'init' ], 2 );
 		add_action( 'aioseo_admin_notifications_update', [ $this, 'update' ] );
 
-		if ( is_admin() ) {
-			$this->review              = new Review();
-			$this->migration           = new Migration();
-			$this->import              = new Import();
-			$this->deprecatedWordPress = new DeprecatedWordPress();
-
-			add_action( 'admin_notices', [ $this, 'notice' ] );
+		if ( ! is_admin() ) {
+			return;
 		}
+
+		add_action( 'updated_option', [ $this, 'maybeResetBlogVisibility' ], 10, 3 );
+		add_action( 'init', [ $this, 'init' ], 2 );
+
+		$this->review              = new Review();
+		$this->migration           = new Migration();
+		$this->import              = new Import();
+		$this->deprecatedWordPress = new DeprecatedWordPress();
+
+		add_action( 'admin_notices', [ $this, 'notice' ] );
 	}
 
 	/**
@@ -52,7 +55,7 @@ class Notices {
 	 */
 	public function init() {
 		// If our tables do not exist, create them now.
-		if ( ! aioseo()->db->tableExists( 'aioseo_notifications' ) ) {
+		if ( ! aioseo()->core->db->tableExists( 'aioseo_notifications' ) ) {
 			aioseo()->updates->addInitialCustomTablesForV4();
 		}
 
@@ -69,20 +72,16 @@ class Notices {
 	 * @return void
 	 */
 	private function maybeUpdate() {
-		if ( ! aioseo()->options->advanced->announcements ) {
-			return false;
+		$nextRun = aioseo()->core->cache->get( 'admin_notifications_update' );
+		if ( null !== $nextRun && time() < $nextRun ) {
+			return;
 		}
 
-		try {
-			if ( ! as_next_scheduled_action( 'aioseo_admin_notifications_update' ) ) {
-				as_schedule_recurring_action( strtotime( 'tomorrow + 1 hour' ), DAY_IN_SECONDS, 'aioseo_admin_notifications_update', [], 'aioseo' );
+		// Schedule the action.
+		aioseo()->helpers->scheduleAsyncAction( 'aioseo_admin_notifications_update' );
 
-				// Run the task immediately using an async action.
-				as_enqueue_async_action( 'aioseo_admin_notifications_update', [], 'aioseo' );
-			}
-		} catch ( \Exception $e ) {
-			// Do nothing.
-		}
+		// Update the cache.
+		aioseo()->core->cache->update( 'admin_notifications_update', time() + DAY_IN_SECONDS );
 	}
 
 	/**
@@ -96,7 +95,7 @@ class Notices {
 		$notifications = $this->fetch();
 		foreach ( $notifications as $notification ) {
 			// First, let's check to see if this notification already exists. If so, we want to override it.
-			$n = aioseo()->db
+			$n = aioseo()->core->db
 				->start( 'aioseo_notifications' )
 				->where( 'notification_id', $notification->id )
 				->run()
@@ -390,6 +389,7 @@ class Notices {
 			if ( $notification->exists() ) {
 				Models\Notification::deleteNotificationByName( 'blog-visibility' );
 			}
+
 			return;
 		}
 
@@ -429,6 +429,7 @@ class Notices {
 			if ( $notification->exists() ) {
 				Models\Notification::deleteNotificationByName( 'description-format' );
 			}
+
 			return;
 		}
 
@@ -437,6 +438,7 @@ class Notices {
 			if ( $notification->exists() ) {
 				Models\Notification::deleteNotificationByName( 'description-format' );
 			}
+
 			return;
 		}
 
@@ -482,6 +484,7 @@ class Notices {
 				}
 
 				Models\Notification::deleteNotificationByName( 'blog-visibility' );
+
 				return;
 			}
 
@@ -518,6 +521,7 @@ class Notices {
 		if ( $notification->exists() ) {
 			$notification->content = $content;
 			$notification->save();
+
 			return;
 		}
 
@@ -574,6 +578,7 @@ class Notices {
 		if ( $notification->exists() ) {
 			$notification->content = $content;
 			$notification->save();
+
 			return;
 		}
 

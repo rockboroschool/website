@@ -63,8 +63,10 @@ class Semrush {
 		$responseCode = wp_remote_retrieve_response_code( $response );
 		if ( 200 === $responseCode ) {
 			$tokens = json_decode( wp_remote_retrieve_body( $response ) );
+
 			return self::saveTokens( $tokens, $time );
 		}
+
 		return false;
 	}
 
@@ -79,6 +81,7 @@ class Semrush {
 		$refreshToken = aioseo()->internalOptions->integrations->semrush->refreshToken;
 		if ( empty( $refreshToken ) ) {
 			self::reset();
+
 			return false;
 		}
 
@@ -96,8 +99,10 @@ class Semrush {
 		$responseCode = wp_remote_retrieve_response_code( $response );
 		if ( 200 === $responseCode ) {
 			$tokens = json_decode( wp_remote_retrieve_body( $response ) );
+
 			return self::saveTokens( $tokens, $time );
 		}
+
 		return false;
 	}
 
@@ -124,6 +129,7 @@ class Semrush {
 	 */
 	public static function hasExpired() {
 		$tokens = self::getTokens();
+
 		return time() >= $tokens['expires'];
 	}
 
@@ -167,6 +173,7 @@ class Semrush {
 		aioseo()->internalOptions->integrations->semrush->tokenType    = $tokens->token_type;
 		aioseo()->internalOptions->integrations->semrush->expires      = $time + $tokens->expires_in;
 		aioseo()->internalOptions->integrations->semrush->refreshToken = $tokens->refresh_token;
+
 		return true;
 	}
 
@@ -188,7 +195,7 @@ class Semrush {
 		}
 
 		$transientKey = 'semrush_keyphrases_' . $keyphrase . '_' . $database;
-		$results      = aioseo()->cache->get( $transientKey );
+		$results      = aioseo()->core->cache->get( $transientKey );
 
 		if ( null !== $results ) {
 			return $results;
@@ -210,7 +217,7 @@ class Semrush {
 		$response = wp_remote_get( $url );
 		$body     = json_decode( wp_remote_retrieve_body( $response ) );
 
-		aioseo()->cache->update( $transientKey, $body );
+		aioseo()->core->cache->update( $transientKey, $body );
 
 		return $body;
 	}

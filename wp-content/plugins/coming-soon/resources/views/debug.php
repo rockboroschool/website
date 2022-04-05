@@ -1,21 +1,21 @@
 <h1 class="sp-text-xl sp-mt-4 sp-mb-1"><?php esc_html_e( 'System Information', 'coming-soon' ); ?></h1>
-<textarea readonly="readonly" style="width: 100%; height: 500px"><?php echo esc_textarea(seedprod_lite_get_system_info()); ?></textarea>
+<textarea readonly="readonly" style="width: 100%; height: 500px"><?php echo esc_textarea( seedprod_lite_get_system_info() ); ?></textarea>
 
 
 <?php
-if ( ! empty( $_POST['sp_reset_cs'] ) && $_POST['sp_reset_cs'] == 1 ) {
+if (  ! empty( $_POST['sp_reset_cs'] ) && 1 == $_POST['sp_reset_cs'] ) {
 	update_option( 'seedprod_coming_soon_page_id', false );
 }
-if ( ! empty( $_POST['sp_reset_mm'] ) && $_POST['sp_reset_mm'] == 1 ) {
+if (  ! empty( $_POST['sp_reset_mm'] ) && 1 == $_POST['sp_reset_mm'] ) {
 	update_option( 'seedprod_maintenance_mode_page_id', false );
 }
-if ( ! empty( $_POST['sp_reset_p404'] ) && $_POST['sp_reset_p404'] == 1 ) {
+if (  ! empty( $_POST['sp_reset_p404'] ) && 1 == $_POST['sp_reset_p404'] ) {
 	update_option( 'seedprod_404_page_id', false );
 }
-if ( ! empty( $_POST['sp_reset_loginp'] ) && $_POST['sp_reset_loginp'] == 1 ) {
+if (  ! empty( $_POST['sp_reset_loginp'] ) && 1 == $_POST['sp_reset_loginp'] ) {
 	update_option( 'seedprod_login_page_id', false );
 }
-if ( ! empty( $_POST['sp_builder_debug'] ) && $_POST['sp_builder_debug'] == 1 ) {
+if (  ! empty( $_POST['sp_builder_debug'] ) && 1 == $_POST['sp_builder_debug'] ) {
 	update_option( 'seedprod_builder_debug', true );
 } elseif ( ! empty( $_POST ) ) {
 	update_option( 'seedprod_builder_debug', false );
@@ -30,6 +30,7 @@ $seedprod_builder_debug = get_option( 'seedprod_builder_debug' );
 <p><strong>Updated.</strong></p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>
 <?php } ?>
 <form method="post" novalidate="novalidate">
+<?php wp_nonce_field( 'debug-reset' ); ?>
 <table class="form-table" role="presentation">
 <tbody>
 <tr>

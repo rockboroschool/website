@@ -23,6 +23,7 @@ class Blocks {
 		global $wp_version;
 		if ( version_compare( $wp_version, '5.8', '<' ) ) {
 			add_filter( 'block_categories', [ $this, 'blockCategories' ], 10 );
+
 			return;
 		}
 		add_filter( 'block_categories_all', [ $this, 'blockCategories' ], 10 );
@@ -85,7 +86,7 @@ class Blocks {
 	 * @return bool In gutenberg.
 	 */
 	public function isGBEditor() {
-		return \defined( 'REST_REQUEST' ) && REST_REQUEST && ! empty( $_REQUEST['context'] ) && 'edit' === $_REQUEST['context']; // phpcs:ignore HM.Security.NonceVerification.Recommended
+		return defined( 'REST_REQUEST' ) && REST_REQUEST && ! empty( $_REQUEST['context'] ) && 'edit' === $_REQUEST['context']; // phpcs:ignore HM.Security.NonceVerification.Recommended
 	}
 
 	/**

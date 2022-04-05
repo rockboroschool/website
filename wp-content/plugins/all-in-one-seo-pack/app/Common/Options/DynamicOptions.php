@@ -92,7 +92,7 @@ class DynamicOptions {
 			$this->addValueToValuesArray( $this->defaultsMerged, $dbOptions )
 		);
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, $dbOptions );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, $dbOptions );
 
 		// Get the localized options.
 		$dbOptionsLocalized = get_option( $this->optionsName . '_localized' );
@@ -115,7 +115,7 @@ class DynamicOptions {
 			return;
 		}
 
-		$cachedOptions = aioseo()->optionsCache->getOptions( $this->optionsName );
+		$cachedOptions = aioseo()->core->optionsCache->getOptions( $this->optionsName );
 
 		aioseo()->dynamicBackup->maybeBackup( $cachedOptions );
 
@@ -125,7 +125,7 @@ class DynamicOptions {
 			$this->addValueToValuesArray( $cachedOptions, $options, [], true )
 		);
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, $dbOptions );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, $dbOptions );
 
 		// Update localized options.
 		update_option( $this->optionsName . '_localized', $this->localized );
@@ -318,8 +318,7 @@ class DynamicOptions {
 	 * @return array The default options.
 	 */
 	protected function getDefaultSearchAppearanceOptions() {
-		// phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
-		return [
+		return [ // phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 			'show'     => [ 'type' => 'boolean', 'default' => true ],
 			'advanced' => [
 				'robotsMeta'                => [
@@ -339,8 +338,7 @@ class DynamicOptions {
 				'showPostThumbnailInSearch' => [ 'type' => 'boolean', 'default' => true ],
 				'showMetaBox'               => [ 'type' => 'boolean', 'default' => true ]
 			]
-		];
-		// phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		]; // phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 	}
 
 	/**

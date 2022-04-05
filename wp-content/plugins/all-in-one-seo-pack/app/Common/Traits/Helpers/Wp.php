@@ -24,102 +24,6 @@ trait Wp {
 	private static $connection = false;
 
 	/**
-	 * Helper method to enqueue scripts.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string $script The script to enqueue.
-	 * @param  string $url    The URL of the script.
-	 * @param  bool   $vue    Whether or not this is a vue script.
-	 * @return void
-	 */
-	public function enqueueScript( $script, $url, $vue = true ) {
-		if ( ! wp_script_is( $script, 'enqueued' ) ) {
-			wp_enqueue_script(
-				$script,
-				$this->getScriptUrl( $url, $vue ),
-				[],
-				aioseo()->version,
-				true
-			);
-		}
-	}
-
-	/**
-	 * Helper method to enqueue stylesheets.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string $style The stylesheet to enqueue.
-	 * @param  string $url   The URL of the stylesheet.
-	 * @param  bool   $vue    Whether or not this is a vue stylesheet.
-	 * @return void
-	 */
-	public function enqueueStyle( $style, $url, $vue = true ) {
-		if ( ! wp_style_is( $style, 'enqueued' ) && $this->shouldEnqueue( $url ) ) {
-			wp_enqueue_style(
-				$style,
-				$this->getScriptUrl( $url, $vue ),
-				[],
-				aioseo()->version
-			);
-		}
-	}
-
-	/** Whether or not we should enqueue a file.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string $url The url to check against.
-	 * @return bool        Whether or not we should enqueue.
-	 */
-	private function shouldEnqueue( $url ) {
-		$version  = strtoupper( aioseo()->versionPath );
-		$host     = defined( 'AIOSEO_DEV_' . $version ) ? constant( 'AIOSEO_DEV_' . $version ) : false;
-
-		if ( ! $host ) {
-			return true;
-		}
-
-		if ( false !== strpos( $url, 'chunk-common.css' ) ) {
-			// return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Retrieve the proper URL for this script or style.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string $url The url.
-	 * @param  bool   $vue Whether or not this is a vue script.
-	 * @return string      The modified url.
-	 */
-	public function getScriptUrl( $url, $vue = true ) {
-		$version  = strtoupper( aioseo()->versionPath );
-		$host     = $vue && defined( 'AIOSEO_DEV_' . $version ) ? constant( 'AIOSEO_DEV_' . $version ) : false;
-		$localUrl = $url;
-		$url      = plugins_url( 'dist/' . aioseo()->versionPath . '/assets/' . $url, AIOSEO_FILE );
-
-		if ( ! $host ) {
-			return $url;
-		}
-
-		if ( $host && ! self::$connection ) {
-			$splitHost        = explode( ':', str_replace( '/', '', str_replace( 'http://', '', str_replace( 'https://', '', $host ) ) ) );
-			self::$connection = @fsockopen( $splitHost[0], $splitHost[1] ); // phpcs:ignore WordPress
-		}
-
-		if ( ! self::$connection ) {
-			return $url;
-		}
-
-		return $host . $localUrl;
-	}
-
-	/**
 	 * Returns user roles in the current WP install.
 	 *
 	 * @since 4.0.0
@@ -198,11 +102,47 @@ trait Wp {
 				'adminUrl'    => admin_url( $pluginUpgrader->pluginAdminUrls[ $key ] ),
 				'canInstall'  => aioseo()->addons->canInstall(),
 				'canActivate' => aioseo()->addons->canActivate(),
+				'canUpdate'   => aioseo()->addons->canUpdate(),
 				'wpLink'      => ! empty( $pluginUpgrader->wpPluginLinks[ $key ] ) ? $pluginUpgrader->wpPluginLinks[ $key ] : null
 			];
 		}
 
 		return $plugins;
+	}
+
+	/**
+	 * Get all registered Post Statuses.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @param  boolean $statusesOnly Whether or not to only return statuses.
+	 * @return array              An array of post statuses.
+	 */
+	public function getPublicPostStatuses( $statusesOnly = false ) {
+		$allStatuses = get_post_stati( [ 'show_in_admin_all_list' => true ], 'objects' );
+
+		$postStatuses = [];
+		foreach ( $allStatuses as $status => $data ) {
+			if (
+				! $data->public &&
+				! $data->protected &&
+				! $data->private
+			) {
+				continue;
+			}
+
+			if ( $statusesOnly ) {
+				$postStatuses[] = $status;
+				continue;
+			}
+
+			$postStatuses[] = [
+				'label'  => $data->label,
+				'status' => $status
+			];
+		}
+
+		return $postStatuses;
 	}
 
 	/**
@@ -266,7 +206,7 @@ trait Wp {
 			];
 		}
 
-		return $postTypes;
+		return apply_filters( 'aioseo_public_post_types', $postTypes, $namesOnly, $hasArchivesOnly );
 	}
 
 	/**
@@ -326,7 +266,7 @@ trait Wp {
 			];
 		}
 
-		return $taxonomies;
+		return apply_filters( 'aioseo_public_taxonomies', $taxonomies, $namesOnly );
 	}
 
 	/**
@@ -345,9 +285,9 @@ trait Wp {
 
 		$rolesWhere = [];
 		foreach ( $roles as $role ) {
-			$rolesWhere[] = '(um.meta_key = \'' . aioseo()->db->db->prefix . 'capabilities\' AND um.meta_value LIKE \'%\"' . $role . '\"%\')';
+			$rolesWhere[] = '(um.meta_key = \'' . aioseo()->core->db->db->prefix . 'capabilities\' AND um.meta_value LIKE \'%\"' . $role . '\"%\')';
 		}
-		$dbUsers = aioseo()->db->start( 'users as u' )
+		$dbUsers = aioseo()->core->db->start( 'users as u' )
 			->select( 'u.ID, u.display_name, u.user_nicename, u.user_email' )
 			->join( 'usermeta as um', 'u.ID = um.user_id' )
 			->whereRaw( '(' . implode( ' OR ', $rolesWhere ) . ')' )
@@ -357,7 +297,7 @@ trait Wp {
 
 		foreach ( $dbUsers as $dbUser ) {
 			$users[] = [
-				'id'          => intval( $dbUser->ID ),
+				'id'          => (int) $dbUser->ID,
 				'displayName' => $dbUser->display_name,
 				'niceName'    => $dbUser->user_nicename,
 				'email'       => $dbUser->user_email,
@@ -366,6 +306,44 @@ trait Wp {
 		}
 
 		return $users;
+	}
+
+	/**
+	 * Retrieve a list of site authors.
+	 *
+	 * @since 4.1.8
+	 *
+	 * @return array An array of user data.
+	 */
+	public function getSiteAuthors() {
+		$authors = aioseo()->core->cache->get( 'site_authors' );
+		if ( null === $authors ) {
+			// phpcs:disable WordPress.DB.SlowDBQuery, HM.Performance.SlowMetaQuery
+			global $wpdb;
+			$users = get_users(
+				[
+					'meta_key'     => $wpdb->prefix . 'user_level',
+					'meta_value'   => '0',
+					'meta_compare' => '!=',
+					'blog_id'      => 0
+				]
+			);
+			// phpcs:enable WordPress.DB.SlowDBQuery, HM.Performance.SlowMetaQuery
+
+			$authors = [];
+			foreach ( $users as $user ) {
+				$authors[] = [
+					'id'          => (int) $user->ID,
+					'displayName' => $user->display_name,
+					'niceName'    => $user->user_nicename,
+					'email'       => $user->user_email,
+					'gravatar'    => get_avatar_url( $user->user_email )
+				];
+			}
+			aioseo()->core->cache->update( 'site_authors', $authors, 12 * HOUR_IN_SECONDS );
+		}
+
+		return $authors;
 	}
 
 	/**
@@ -379,6 +357,7 @@ trait Wp {
 		if ( ! get_theme_support( 'custom-logo' ) ) {
 			return false;
 		}
+
 		return get_theme_mod( 'custom_logo' );
 	}
 
@@ -399,26 +378,8 @@ trait Wp {
 		if ( empty( $image ) ) {
 			return false;
 		}
+
 		return $image[0];
-	}
-
-	/**
-	 * Returns the filesystem object if we have access to it.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  array         $args The connection args.
-	 * @return WP_Filesystem       The filesystem object.
-	 */
-	public function wpfs( $args = [] ) {
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
-		WP_Filesystem( $args );
-
-		global $wp_filesystem;
-		if ( is_object( $wp_filesystem ) ) {
-			return $wp_filesystem;
-		}
-		return false;
 	}
 
 	/**
@@ -442,6 +403,7 @@ trait Wp {
 	 */
 	public function isPostTypeNoindexed( $postType ) {
 		$noindexedPostTypes = $this->getNoindexedPostTypes();
+
 		return in_array( $postType, $noindexedPostTypes, true );
 	}
 
@@ -466,6 +428,7 @@ trait Wp {
 	 */
 	public function isTaxonomyNoindexed( $taxonomy ) {
 		$noindexedTaxonomies = $this->getNoindexedTaxonomies();
+
 		return in_array( $taxonomy, $noindexedTaxonomies, true );
 	}
 
@@ -487,6 +450,7 @@ trait Wp {
 				$noindexed[] = $name;
 			}
 		}
+
 		return $noindexed;
 	}
 
@@ -506,6 +470,7 @@ trait Wp {
 				$names[] = aioseo()->helpers->internationalize( $category->cat_name );
 			}
 		}
+
 		return $names;
 	}
 
@@ -528,6 +493,7 @@ trait Wp {
 				}
 			}
 		}
+
 		return $names;
 	}
 
@@ -549,5 +515,122 @@ trait Wp {
 
 		$mofile = $domain . '-' . get_user_locale() . '.mo';
 		load_textdomain( $domain, WP_LANG_DIR . '/plugins/' . $mofile );
+	}
+
+	/**
+	 * Get the page builder the given Post ID was built with.
+	 *
+	 * @since 4.1.7
+	 *
+	 * @param  int         $postId The Post ID.
+	 * @return bool|string         The page builder or false if not built with page builders.
+	 */
+	public function getPostPageBuilderName( $postId ) {
+		foreach ( aioseo()->postSettings->integrations as $integration => $pageBuilder ) {
+			if ( $pageBuilder->isBuiltWith( $postId ) ) {
+				return $integration;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if the current user can edit posts of the given post type.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @param  string $postType The name of the post type.
+	 * @return bool             Whether the user can edit posts of the given post type.
+	 */
+	public function canEditPostType( $postType ) {
+		$capabilities = $this->getPostTypeCapabilities( $postType );
+
+		return current_user_can( $capabilities['edit_posts'] );
+	}
+
+	/**
+	 * Returns a list of capabilities for the given post type.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @param  string $postType The name of the post type.
+	 * @return array            The capabilities.
+	 */
+	public function getPostTypeCapabilities( $postType ) {
+		static $capabilities = [];
+		if ( isset( $capabilities[ $postType ] ) ) {
+			return $capabilities[ $postType ];
+		}
+
+		$postTypeObject = get_post_type_object( $postType );
+		if ( ! is_a( $postTypeObject, 'WP_Post_Type' ) ) {
+			$capabilities[ $postType ] = [];
+
+			return $capabilities[ $postType ];
+		}
+
+		if ( ! is_array( $postTypeObject->capability_type ) ) {
+			$postTypeObject->capability_type = [
+				$postTypeObject->capability_type,
+				$postTypeObject->capability_type . 's'
+			];
+		}
+
+		// Singular base for meta capabilities, plural base for primitive capabilities.
+		list( $singularBase, $pluralBase ) = $postTypeObject->capability_type;
+
+		$capabilities[ $postType ] = [
+			'edit_post'          => 'edit_' . $singularBase,
+			'read_post'          => 'read_' . $singularBase,
+			'delete_post'        => 'delete_' . $singularBase,
+			'edit_posts'         => 'edit_' . $pluralBase,
+			'edit_others_posts'  => 'edit_others_' . $pluralBase,
+			'delete_posts'       => 'delete_' . $pluralBase,
+			'publish_posts'      => 'publish_' . $pluralBase,
+			'read_private_posts' => 'read_private_' . $pluralBase,
+		];
+
+		return $capabilities[ $postType ];
+	}
+
+	/**
+	 * Checks if the current user can edit terms of the given taxonomy.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @param  string $taxonomy The name of the taxonomy.
+	 * @return bool             Whether the user can edit posts of the given taxonomy.
+	 */
+	public function canEditTaxonomy( $taxonomy ) {
+		$capabilities = $this->getTaxonomyCapabilities( $taxonomy );
+
+		return current_user_can( $capabilities['edit_terms'] );
+	}
+
+	/**
+	 * Returns a list of capabilities for the given taxonomy.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @param  string $postType The name of the taxonomy.
+	 * @return array            The capabilities.
+	 */
+	public function getTaxonomyCapabilities( $taxonomy ) {
+		static $capabilities = [];
+		if ( isset( $capabilities[ $taxonomy ] ) ) {
+			return $capabilities[ $taxonomy ];
+		}
+
+		$taxonomyObject = get_taxonomy( $taxonomy );
+		if ( ! is_a( $taxonomyObject, 'WP_Taxonomy' ) ) {
+			$capabilities[ $taxonomy ] = [];
+
+			return $capabilities[ $taxonomy ];
+		}
+
+		$capabilities[ $taxonomy ] = (array) $taxonomyObject->cap;
+
+		return $capabilities[ $taxonomy ];
 	}
 }

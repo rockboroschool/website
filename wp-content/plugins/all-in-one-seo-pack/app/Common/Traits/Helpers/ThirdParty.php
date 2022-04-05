@@ -24,17 +24,19 @@ trait ThirdParty {
 	}
 
 	/**
-	 * Returns if the page is a WooCommerce page (Cart, Checkout, ...).
+	 * Checks if the current page is a special WooCommerce page (Cart, Checkout, ...).
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  int     $postId The post ID.
-	 * @return boolean         Whether the page is a WooCommerce page or not.
+	 * @param  int         $postId The post ID.
+	 * @return string|bool         The type of page or false if it isn't a WooCommerce page.
 	 */
-	public function isWooCommercePage( $postId = false ) {
+	public function isWooCommercePage( $postId = 0 ) {
 		if ( ! $this->isWooCommerceActive() ) {
 			return false;
 		}
+
+		$postId = $postId ? $postId : get_the_ID();
 
 		static $cartPageId;
 		if ( ! $cartPageId ) {
@@ -56,16 +58,37 @@ trait ThirdParty {
 			$termsPageId = (int) get_option( 'woocommerce_terms_page_id' );
 		}
 
-		if (
-			$cartPageId === (int) $postId ||
-			$checkoutPageId === (int) $postId ||
-			$myAccountPageId === (int) $postId ||
-			$termsPageId === (int) $postId
-		) {
-			return true;
+		switch ( $postId ) {
+			case $cartPageId:
+				return 'cart';
+			case $checkoutPageId:
+				return 'checkout';
+			case $myAccountPageId:
+				return 'myAccount';
+			case $termsPageId:
+				return 'terms';
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Checks whether the current page is a special WooCommerce page we shouldn't show our schema settings for.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @param  int  $postId The post ID.
+	 * @return bool         Whether the current page is a disallowed WooCommerce page.
+	 */
+	public function isWooCommercePageWithoutSchema( $postId = 0 ) {
+		$page = $this->isWooCommercePage( $postId );
+		if ( ! $page ) {
+			return false;
 		}
 
-		return false;
+		$disallowedPages = [ 'cart', 'checkout', 'myAccount' ];
+
+		return in_array( $page, $disallowedPages, true );
 	}
 
 	/**
@@ -81,11 +104,12 @@ trait ThirdParty {
 			return false;
 		}
 
-		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRest() && function_exists( 'is_shop' ) ) {
+		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRestRequest() && function_exists( 'is_shop' ) ) {
 			return is_shop();
 		}
 
 		$id = ! $id && ! empty( $_GET['post'] ) ? (int) wp_unslash( $_GET['post'] ) : (int) $id; // phpcs:ignore HM.Security.ValidatedSanitizedInput
+
 		return $id && wc_get_page_id( 'shop' ) === $id;
 	}
 
@@ -102,11 +126,12 @@ trait ThirdParty {
 			return false;
 		}
 
-		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRest() && function_exists( 'is_cart' ) ) {
+		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRestRequest() && function_exists( 'is_cart' ) ) {
 			return is_cart();
 		}
 
 		$id = ! $id && ! empty( $_GET['post'] ) ? (int) wp_unslash( $_GET['post'] ) : (int) $id; // phpcs:ignore HM.Security.ValidatedSanitizedInput
+
 		return $id && wc_get_page_id( 'cart' ) === $id;
 	}
 
@@ -123,11 +148,12 @@ trait ThirdParty {
 			return false;
 		}
 
-		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRest() && function_exists( 'is_checkout' ) ) {
+		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRestRequest() && function_exists( 'is_checkout' ) ) {
 			return is_checkout();
 		}
 
 		$id = ! $id && ! empty( $_GET['post'] ) ? (int) wp_unslash( $_GET['post'] ) : (int) $id; // phpcs:ignore HM.Security.ValidatedSanitizedInput
+
 		return $id && wc_get_page_id( 'checkout' ) === $id;
 	}
 
@@ -144,11 +170,12 @@ trait ThirdParty {
 			return false;
 		}
 
-		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRest() && function_exists( 'is_account_page' ) ) {
+		if ( ! is_admin() && ! aioseo()->helpers->isAjaxCronRestRequest() && function_exists( 'is_account_page' ) ) {
 			return is_account_page();
 		}
 
 		$id = ! $id && ! empty( $_GET['post'] ) ? (int) wp_unslash( $_GET['post'] ) : (int) $id; // phpcs:ignore HM.Security.ValidatedSanitizedInput
+
 		return $id && wc_get_page_id( 'myaccount' ) === $id;
 	}
 

@@ -43,7 +43,7 @@ class Widget extends \WP_Widget {
 			'id_base' => $widgetSlug
 		];
 
-		// Translators: 1 - The short plugin name ("AIOSEO").
+		// Translators: 1 - The plugin short name ("AIOSEO").
 		parent::__construct( $widgetSlug, sprintf( esc_html__( '%1$s - HTML Sitemap', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_SHORT_NAME ), $widgetOptions, $controlOptions );
 	}
 
@@ -84,7 +84,7 @@ class Widget extends \WP_Widget {
 	 * @param  array $oldOptions The old options.
 	 * @return array             The new options.
 	 */
-	public function update( $newOptions, $oldOptions ) {
+	public function update( $newOptions, $oldOptions ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$settings = [
 			'title',
 			'order',
@@ -103,7 +103,7 @@ class Widget extends \WP_Widget {
 		$includedPostTypes = [];
 		if ( ! empty( $newOptions['post_types'] ) ) {
 			$postTypes = $this->getPublicPostTypes( true );
-			foreach ( $newOptions['post_types'] as $index => $v ) {
+			foreach ( $newOptions['post_types'] as $v ) {
 				if ( is_numeric( $v ) ) {
 					$includedPostTypes[] = $postTypes[ $v ];
 				} else {
@@ -116,7 +116,7 @@ class Widget extends \WP_Widget {
 		$includedTaxonomies = [];
 		if ( ! empty( $newOptions['taxonomies'] ) ) {
 			$taxonomies = aioseo()->helpers->getPublicTaxonomies( true );
-			foreach ( $newOptions['taxonomies'] as $index => $v ) {
+			foreach ( $newOptions['taxonomies'] as $v ) {
 				if ( is_numeric( $v ) ) {
 					$includedTaxonomies[] = $taxonomies[ $v ];
 				} else {
@@ -176,6 +176,7 @@ class Widget extends \WP_Widget {
 				break;
 			}
 		}
+
 		return array_values( $postTypes );
 	}
 
@@ -191,6 +192,7 @@ class Widget extends \WP_Widget {
 		$ids = array_map( 'trim', explode( ',', $ids ) );
 		$ids = array_filter( $ids, 'is_numeric' );
 		$ids = esc_sql( implode( ', ', $ids ) );
+
 		return $ids;
 	}
 }

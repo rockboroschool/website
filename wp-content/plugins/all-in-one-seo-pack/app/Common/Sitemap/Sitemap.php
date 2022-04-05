@@ -93,6 +93,7 @@ class Sitemap {
 
 		if ( $isGeneralSitemapStatic ) {
 			Models\Notification::deleteNotificationByName( 'sitemap-static-files' );
+
 			return;
 		}
 
@@ -104,7 +105,7 @@ class Sitemap {
 
 		$detectedFiles = [];
 		if ( ! $isGeneralSitemapStatic ) {
-			foreach ( $files as $index => $filename ) {
+			foreach ( $files as $filename ) {
 				if ( preg_match( '#.*sitemap.*#', $filename ) ) {
 					// We don't want to delete the video sitemap here at all.
 					$isVideoSitemap = preg_match( '#.*video.*#', $filename ) ? true : false;
@@ -129,6 +130,7 @@ class Sitemap {
 	protected function maybeShowStaticSitemapNotification( $detectedFiles ) {
 		if ( ! count( $detectedFiles ) ) {
 			Models\Notification::deleteNotificationByName( 'sitemap-static-files' );
+
 			return;
 		}
 
@@ -214,6 +216,7 @@ class Sitemap {
 		if ( preg_match( '#(.*sitemap[0-9]*?.xml|.*sitemap[0-9]*?.xml.gz|.*sitemap.rss)$#i', $request ) ) {
 			return $request;
 		}
+
 		return $redirect;
 	}
 
@@ -231,11 +234,12 @@ class Sitemap {
 			$params[] = 'aiosp_sitemap_page';
 		}
 
-		foreach ( $this->addons as $addon => $classes ) {
+		foreach ( $this->addons as $classes ) {
 			if ( ! empty( $classes['sitemap'] ) ) {
 				$params = $classes['sitemap']->addWhitelistParams( $params );
 			}
 		}
+
 		return $params;
 	}
 
@@ -282,13 +286,14 @@ class Sitemap {
 		$options = aioseo()->options->noConflict();
 		if ( ! $options->sitemap->{aioseo()->sitemap->type}->enable ) {
 			$this->notFoundPage();
+
 			return;
 		}
 
 		$entries = aioseo()->sitemap->content->get();
 		$total   = aioseo()->sitemap->content->getTotal();
 		if ( ! $entries ) {
-			foreach ( $this->addons as $addon => $classes ) {
+			foreach ( $this->addons as $classes ) {
 				if ( ! empty( $classes['content'] ) ) {
 					$entries = $classes['content']->get();
 					$total   = count( $entries );
@@ -316,7 +321,7 @@ class Sitemap {
 
 		$this->headers();
 		aioseo()->sitemap->output->output( $entries );
-		foreach ( $this->addons as $addon => $classes ) {
+		foreach ( $this->addons as $classes ) {
 			if ( ! empty( $classes['output'] ) ) {
 				$classes['output']->output( $entries );
 			}
@@ -368,7 +373,7 @@ class Sitemap {
 		];
 
 		// Set a high expiration date so we still have the cache for static sitemaps.
-		aioseo()->cache->update( 'aioseo_sitemap_' . $fileName, $data, MONTH_IN_SECONDS );
+		aioseo()->core->cache->update( 'aioseo_sitemap_' . $fileName, $data, MONTH_IN_SECONDS );
 	}
 
 	/**
@@ -381,7 +386,7 @@ class Sitemap {
 	protected function determineContext() {
 		global $wp_query;
 		$this->type          = 'rss' === $wp_query->query_vars['aiosp_sitemap_path'] ? 'rss' : 'general';
-		$this->filename      = 'sitemap';
+		$this->filename      = $this->helpers->filename();
 		$this->indexName     = $wp_query->query_vars['aiosp_sitemap_path'];
 		$this->pageNumber    = ! empty( $wp_query->query_vars['aiosp_sitemap_page'] ) ? $wp_query->query_vars['aiosp_sitemap_page'] - 1 : 0;
 		$this->indexes       = aioseo()->options->sitemap->general->indexes;
@@ -390,7 +395,7 @@ class Sitemap {
 		// The sitemap isn't statically generated if we get here.
 		$this->isStatic = false;
 
-		foreach ( $this->addons as $addon => $classes ) {
+		foreach ( $this->addons as $classes ) {
 			if ( ! empty( $classes['sitemap'] ) ) {
 				$classes['sitemap']->determineContext();
 			}
@@ -411,7 +416,7 @@ class Sitemap {
 	 * @return void
 	 */
 	protected function doesFileExist() {
-		foreach ( $this->addons as $addon => $classes ) {
+		foreach ( $this->addons as $classes ) {
 			if ( ! empty( $classes['sitemap'] ) ) {
 				$classes['sitemap']->doesFileExist();
 			}
@@ -427,7 +432,7 @@ class Sitemap {
 		}
 
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
-		if ( ! file_exists( get_home_path() . $_SERVER['REQUEST_URI'] ) ) {
+		if ( ! aioseo()->core->fs->exists( get_home_path() . $_SERVER['REQUEST_URI'] ) ) {
 			$this->scheduleRegeneration();
 		}
 	}
@@ -508,11 +513,11 @@ class Sitemap {
 			$advanced      = aioseo()->options->sitemap->general->advancedSettings->enable;
 			$excludeImages = aioseo()->options->sitemap->general->advancedSettings->excludeImages;
 			$sitemapParams = aioseo()->helpers->getParametersFromUrl( $sitemapUrl );
-			$xslParams     = aioseo()->cache->get( 'aioseo_sitemap_' . trim( $sitemapPath, '/' ) );
+			$xslParams     = aioseo()->core->cache->get( 'aioseo_sitemap_' . trim( $sitemapPath, '/' ) );
 			// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 			// Translators: 1 - The sitemap name, 2 - The current page.
-			$title = sprintf( __( '%s Sitemap %s', 'all-in-one-seo-pack' ), $sitemapName, $currentPage > 1 ? $currentPage : '' );
+			$title = sprintf( __( '%1$s Sitemap %2$s', 'all-in-one-seo-pack' ), $sitemapName, $currentPage > 1 ? $currentPage : '' );
 			$title = trim( $title );
 
 			echo '<?xml version="1.0" encoding="' . esc_attr( $charset ) . '"?>';
@@ -520,7 +525,7 @@ class Sitemap {
 			exit;
 		}
 
-		foreach ( $this->addons as $addon => $classes ) {
+		foreach ( $this->addons as $classes ) {
 			if ( ! empty( $classes['sitemap'] ) ) {
 				$classes['sitemap']->xsl();
 			}

@@ -26,6 +26,7 @@ class Meta {
 		$this->keywords     = new Keywords();
 		$this->amp          = new Amp();
 		$this->links        = new Links();
+		$this->robots       = new Robots();
 
 		add_action( 'delete_post', [ $this, 'deletePostMeta' ], 1000, 2 );
 	}

@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile
 /*
 Name:	nameparse.php
 Version: 0.2a

@@ -52,6 +52,7 @@ abstract class Graph {
 		if ( ! empty( $caption ) ) {
 			$data['caption'] = $caption;
 		}
+
 		return $data;
 	}
 
@@ -175,6 +176,7 @@ abstract class Graph {
 		} else {
 			$socialUrls['twitterUrl'] = '';
 		}
+
 		return array_values( array_filter( $socialUrls ) );
 	}
 
@@ -198,6 +200,7 @@ abstract class Graph {
 				$data[ $k ] = $value;
 			}
 		}
+
 		return $data;
 	}
 }

@@ -103,6 +103,7 @@ class Included {
 		if ( in_array( (int) $term->term_id, $ids, true ) ) {
 			return true;
 		}
+
 		return false;
 	}
 }

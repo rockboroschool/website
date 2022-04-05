@@ -27,6 +27,7 @@ class BlogPosting extends Article {
 
 		$data['@type'] = 'BlogPosting';
 		$data['@id']   = aioseo()->schema->context['url'] . '#blogposting';
+
 		return $data;
 	}
 }

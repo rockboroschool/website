@@ -1,20 +1,23 @@
 <?php
 
 /**
- * Save Settings
+ * Save Settings: Coming Soon Mode, Maintenance Mode, Login Page, 404 Page
  */
 function seedprod_lite_save_settings() {
 	if ( check_ajax_referer( 'seedprod_nonce' ) ) {
+		if ( ! current_user_can( apply_filters( 'seedprod_save_settings_capability', 'edit_others_posts' ) ) ) {
+			wp_send_json_error( null, 400 );
+		}
 		if ( ! empty( $_POST['settings'] ) ) {
-			$settings = stripslashes_deep( $_POST['settings'] );
+			$settings = wp_unslash( $_POST['settings'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			$s = json_decode( $settings );
-			$s->api_key = sanitize_text_field($s->api_key);
-			$s->enable_coming_soon_mode = sanitize_text_field($s->enable_coming_soon_mode);
-			$s->enable_maintenance_mode = sanitize_text_field($s->enable_maintenance_mode);
-			$s->enable_login_mode = sanitize_text_field($s->enable_login_mode);
-			$s->enable_404_mode = sanitize_text_field($s->enable_404_mode);
 
+			$s->api_key                 = sanitize_text_field( $s->api_key );
+			$s->enable_coming_soon_mode = sanitize_text_field( $s->enable_coming_soon_mode );
+			$s->enable_maintenance_mode = sanitize_text_field( $s->enable_maintenance_mode );
+			$s->enable_login_mode       = sanitize_text_field( $s->enable_login_mode );
+			$s->enable_404_mode         = sanitize_text_field( $s->enable_404_mode );
 
 			// Get old settings to check if there has been a change
 			$settings_old = get_option( 'seedprod_settings' );
@@ -45,13 +48,13 @@ function seedprod_lite_save_settings() {
 				$update['ID'] = $id;
 
 				// Publish page when active
-				if ( $s->$setting === true ) {
+				if ( true === $s->$setting || '1' === $s->$setting ) {
 					$update['post_status'] = 'publish';
 					wp_update_post( $update );
 				}
 
 				// Unpublish page when inactive
-				if ( $s->$setting === false ) {
+				if ( false === $s->$setting ) {
 					$update['post_status'] = 'draft';
 					wp_update_post( $update );
 				}
@@ -76,20 +79,27 @@ function seedprod_lite_save_settings() {
 	}
 }
 
-
+/**
+ * Save App Settings
+ */
 function seedprod_lite_save_app_settings() {
 	if ( check_ajax_referer( 'seedprod_lite_save_app_settings' ) ) {
-
+		if ( ! current_user_can( apply_filters( 'seedprod_save_app_settings_capability', 'manage_options' ) ) ) {
+			wp_send_json_error( null, 400 );
+		}
 		if ( ! empty( $_POST['app_settings'] ) ) {
 
-			$app_settings = stripslashes_deep( $_POST['app_settings'] );
-			if ( isset( $app_settings['disable_seedprod_button'] ) && $app_settings['disable_seedprod_button'] == 'true' ) {
-				$app_settings['disable_seedprod_button'] = true;
+			$app_settings = wp_unslash( $_POST['app_settings'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			// security: create new settings array so we make sure we only set/allow our settings
+			$new_app_settings = array();
+
+			if ( isset( $app_settings['disable_seedprod_button'] ) && 'true' === $app_settings['disable_seedprod_button'] ) {
+				$new_app_settings['disable_seedprod_button'] = true;
 			} else {
-				$app_settings['disable_seedprod_button'] = false;
+				$new_app_settings['disable_seedprod_button'] = false;
 			}
-			$app_settings['facebook_g_app_id'] = sanitize_text_field($app_settings['facebook_g_app_id']);
-			$app_settings_encode = wp_json_encode( $app_settings );
+			$new_app_settings['facebook_g_app_id'] = sanitize_text_field( $app_settings['facebook_g_app_id'] );
+			$app_settings_encode                   = wp_json_encode( $new_app_settings );
 
 			update_option( 'seedprod_app_settings', $app_settings_encode );
 			$response = array(

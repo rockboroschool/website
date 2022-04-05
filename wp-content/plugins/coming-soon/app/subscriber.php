@@ -1,10 +1,18 @@
 <?php
+/**
+ * Backend funtions for Subscribers functionality.
+ */
 
-/*
- * subscribers Datatable
+/**
+ * Get Datatable Info for the Subscribers page.
+ *
+ * @return JSON object.
  */
 function seedprod_lite_subscribers_datatable() {
 	if ( check_ajax_referer( 'seedprod_nonce' ) ) {
+		if ( ! current_user_can( apply_filters( 'seedprod_subscriber_capability', 'list_users' ) ) ) {
+			wp_send_json_error();
+		}
 		$data         = array( '' );
 		$current_page = 1;
 		if ( ! empty( absint( $_GET['current_page'] ) ) ) {
@@ -14,8 +22,8 @@ function seedprod_lite_subscribers_datatable() {
 
 		$filter = null;
 		if ( ! empty( $_GET['filter'] ) ) {
-			$filter = sanitize_text_field( $_GET['filter'] );
-			if ( $filter == 'all' ) {
+			$filter = sanitize_text_field( wp_unslash( $_GET['filter'] ) );
+			if ( 'all' === $filter ) {
 				$filter = null;
 			}
 		}
@@ -25,12 +33,12 @@ function seedprod_lite_subscribers_datatable() {
 		}
 
 		$results = array();
-		//var_dump($results);
+
 		$data = array();
 		foreach ( $results as $v ) {
 
 				// Format Date
-			$created_at = date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $v->created ) );
+			$created_at = gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $v->created ) );
 
 			// Load Data
 			$data[] = array(

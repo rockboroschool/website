@@ -29,11 +29,12 @@ class HeadlineAnalyzer {
 	 * @return void
 	 */
 	public function enqueue() {
-		if ( ! aioseo()->helpers->isScreenBase( 'post' ) ) {
-			return;
-		}
-
-		if ( ! aioseo()->access->hasCapability( 'aioseo_page_analysis' ) ) {
+		global $wp_version;
+		if (
+			! aioseo()->helpers->isScreenBase( 'post' ) ||
+			version_compare( $wp_version, '5.2', '<' ) ||
+			! aioseo()->access->hasCapability( 'aioseo_page_analysis' )
+		) {
 			return;
 		}
 
@@ -46,22 +47,12 @@ class HeadlineAnalyzer {
 		}
 
 		$path = '/vendor/jwhennessey/phpinsight/autoload.php';
-		if ( ! file_exists( AIOSEO_DIR . $path ) ) {
+		if ( ! aioseo()->core->fs->exists( AIOSEO_DIR . $path ) ) {
 			return;
 		}
 		require AIOSEO_DIR . $path;
 
-		aioseo()->helpers->enqueueScript(
-			'aioseo-headline-analyzer',
-			'js/headline-analyzer.js',
-			false
-		);
-
-		aioseo()->helpers->enqueueStyle(
-			'aioseo-headline-analyzer',
-			'css/headline-analyzer.css',
-			false
-		);
+		aioseo()->core->assets->load( 'src/react/headline-analyzer/main.js' );
 	}
 
 	/**
@@ -110,6 +101,7 @@ class HeadlineAnalyzer {
 		if ( ! $title || ' ' === $title || trim( $title ) === '' ) {
 			$result->err = true;
 			$result->msg = 'The headline is invalid.';
+
 			return $result;
 		}
 
@@ -231,18 +223,21 @@ class HeadlineAnalyzer {
 	public function matchWords( $headline, $explodedHeadline, $words ) {
 		$foundMatches = [];
 		foreach ( $words as $word ) {
+			$strippedWord = preg_replace( '/[^A-Za-z0-9 ]/', '', $word );
+
 			// Check if word is a phrase.
 			if ( strpos( $word, ' ' ) !== false ) {
-				if ( strpos( $headline, $word ) !== false ) {
+				if ( strpos( $headline, $strippedWord ) !== false ) {
 					$foundMatches[] = $word;
 				}
 				continue;
 			}
 			// Check if it is a single word.
-			if ( in_array( $word, $explodedHeadline, true ) ) {
+			if ( in_array( $strippedWord, $explodedHeadline, true ) ) {
 				$foundMatches[] = $word;
 			}
 		}
+
 		return $foundMatches;
 	}
 
@@ -336,7 +331,7 @@ class HeadlineAnalyzer {
 			__( 'free', 'all-in-one-seo-pack' ),
 			__( 'focus', 'all-in-one-seo-pack' ),
 			__( 'remarkable', 'all-in-one-seo-pack' ),
-			__( 'conﬁdential', 'all-in-one-seo-pack' ),
+			__( 'confidential', 'all-in-one-seo-pack' ),
 			__( 'sale', 'all-in-one-seo-pack' ),
 			__( 'wanted', 'all-in-one-seo-pack' ),
 			__( 'obsession', 'all-in-one-seo-pack' ),
@@ -423,19 +418,19 @@ class HeadlineAnalyzer {
 			__( 'zinger', 'all-in-one-seo-pack' ),
 			__( 'suddenly', 'all-in-one-seo-pack' ),
 			__( 'it\'s here', 'all-in-one-seo-pack' ),
-			__( 'terriﬁc', 'all-in-one-seo-pack' ),
-			__( 'simpliﬁed', 'all-in-one-seo-pack' ),
+			__( 'terrific', 'all-in-one-seo-pack' ),
+			__( 'simplified', 'all-in-one-seo-pack' ),
 			__( 'perspective', 'all-in-one-seo-pack' ),
 			__( 'just arrived', 'all-in-one-seo-pack' ),
 			__( 'breakthrough', 'all-in-one-seo-pack' ),
 			__( 'tremendous', 'all-in-one-seo-pack' ),
 			__( 'launching', 'all-in-one-seo-pack' ),
-			__( 'sure ﬁre', 'all-in-one-seo-pack' ),
+			__( 'sure fire', 'all-in-one-seo-pack' ),
 			__( 'emerging', 'all-in-one-seo-pack' ),
 			__( 'helpful', 'all-in-one-seo-pack' ),
 			__( 'skill', 'all-in-one-seo-pack' ),
 			__( 'soar', 'all-in-one-seo-pack' ),
-			__( 'proﬁtable', 'all-in-one-seo-pack' ),
+			__( 'profitable', 'all-in-one-seo-pack' ),
 			__( 'special offer', 'all-in-one-seo-pack' ),
 			__( 'reduced', 'all-in-one-seo-pack' ),
 			__( 'beautiful', 'all-in-one-seo-pack' ),
@@ -636,7 +631,7 @@ class HeadlineAnalyzer {
 			__( 'make', 'all-in-one-seo-pack' ),
 			__( 'reasons', 'all-in-one-seo-pack' ),
 			__( 'year', 'all-in-one-seo-pack' ),
-			__( 'ﬁrst', 'all-in-one-seo-pack' ),
+			__( 'first', 'all-in-one-seo-pack' ),
 			__( 'makes', 'all-in-one-seo-pack' ),
 			__( 'right', 'all-in-one-seo-pack' ),
 			__( 'years', 'all-in-one-seo-pack' ),
@@ -694,17 +689,17 @@ class HeadlineAnalyzer {
 			__( 'feeble', 'all-in-one-seo-pack' ),
 			__( 'gullible', 'all-in-one-seo-pack' ),
 			__( 'double', 'all-in-one-seo-pack' ),
-			__( 'ﬁre', 'all-in-one-seo-pack' ),
+			__( 'fire', 'all-in-one-seo-pack' ),
 			__( 'hack', 'all-in-one-seo-pack' ),
-			__( 'ﬂeece', 'all-in-one-seo-pack' ),
+			__( 'fleece', 'all-in-one-seo-pack' ),
 			__( 'had enough', 'all-in-one-seo-pack' ),
 			__( 'invasion', 'all-in-one-seo-pack' ),
 			__( 'drowning', 'all-in-one-seo-pack' ),
-			__( 'ﬂoundering', 'all-in-one-seo-pack' ),
+			__( 'floundering', 'all-in-one-seo-pack' ),
 			__( 'happy', 'all-in-one-seo-pack' ),
 			__( 'ironclad', 'all-in-one-seo-pack' ),
 			__( 'dumb', 'all-in-one-seo-pack' ),
-			__( 'ﬂush', 'all-in-one-seo-pack' ),
+			__( 'flush', 'all-in-one-seo-pack' ),
 			__( 'hate', 'all-in-one-seo-pack' ),
 			__( 'irresistibly', 'all-in-one-seo-pack' ),
 			__( 'hazardous', 'all-in-one-seo-pack' ),
@@ -715,7 +710,7 @@ class HeadlineAnalyzer {
 			__( 'helpless', 'all-in-one-seo-pack' ),
 			__( 'it looks like a', 'all-in-one-seo-pack' ),
 			__( 'embarrass', 'all-in-one-seo-pack' ),
-			__( 'for the ﬁrst time', 'all-in-one-seo-pack' ),
+			__( 'for the first time', 'all-in-one-seo-pack' ),
 			__( 'help are the', 'all-in-one-seo-pack' ),
 			__( 'jackpot', 'all-in-one-seo-pack' ),
 			__( 'forbidden', 'all-in-one-seo-pack' ),
@@ -734,7 +729,7 @@ class HeadlineAnalyzer {
 			__( 'hope', 'all-in-one-seo-pack' ),
 			__( 'killer', 'all-in-one-seo-pack' ),
 			__( 'frantic', 'all-in-one-seo-pack' ),
-			__( 'horriﬁc', 'all-in-one-seo-pack' ),
+			__( 'horrific', 'all-in-one-seo-pack' ),
 			__( 'know it all', 'all-in-one-seo-pack' ),
 			__( 'epic', 'all-in-one-seo-pack' ),
 			__( 'how to make', 'all-in-one-seo-pack' ),
@@ -749,7 +744,7 @@ class HeadlineAnalyzer {
 			__( 'lawsuit', 'all-in-one-seo-pack' ),
 			__( 'frugal', 'all-in-one-seo-pack' ),
 			__( 'illegal', 'all-in-one-seo-pack' ),
-			__( 'fulﬁll', 'all-in-one-seo-pack' ),
+			__( 'fulfill', 'all-in-one-seo-pack' ),
 			__( 'lick', 'all-in-one-seo-pack' ),
 			__( 'explode', 'all-in-one-seo-pack' ),
 			__( 'lies', 'all-in-one-seo-pack' ),
@@ -789,7 +784,7 @@ class HeadlineAnalyzer {
 			__( 'official', 'all-in-one-seo-pack' ),
 			__( 'luxurious', 'all-in-one-seo-pack' ),
 			__( 'on the', 'all-in-one-seo-pack' ),
-			__( 'proﬁt', 'all-in-one-seo-pack' ),
+			__( 'profit', 'all-in-one-seo-pack' ),
 			__( 'scary', 'all-in-one-seo-pack' ),
 			__( 'lying', 'all-in-one-seo-pack' ),
 			__( 'outlawed', 'all-in-one-seo-pack' ),
@@ -845,7 +840,7 @@ class HeadlineAnalyzer {
 			__( 'myths', 'all-in-one-seo-pack' ),
 			__( 'poor', 'all-in-one-seo-pack' ),
 			__( 'remarkably', 'all-in-one-seo-pack' ),
-			__( 'six-ﬁgure', 'all-in-one-seo-pack' ),
+			__( 'six-figure', 'all-in-one-seo-pack' ),
 			__( 'never again', 'all-in-one-seo-pack' ),
 			__( 'research', 'all-in-one-seo-pack' ),
 			__( 'surrender', 'all-in-one-seo-pack' ),
@@ -888,7 +883,7 @@ class HeadlineAnalyzer {
 			__( 'teetering', 'all-in-one-seo-pack' ),
 			__( 'unauthorized', 'all-in-one-seo-pack' ),
 			__( 'spectacular', 'all-in-one-seo-pack' ),
-			__( 'temporary ﬁx', 'all-in-one-seo-pack' ),
+			__( 'temporary fix', 'all-in-one-seo-pack' ),
 			__( 'unbelievably', 'all-in-one-seo-pack' ),
 			__( 'spine', 'all-in-one-seo-pack' ),
 			__( 'tempting', 'all-in-one-seo-pack' ),

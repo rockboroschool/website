@@ -15,7 +15,7 @@ function seedprod_lite_install_addon() {
 
 	// Install the addon.
 	if ( isset( $_POST['plugin'] ) ) {
-		$download_url = sanitize_text_field($_POST['plugin']);
+		$download_url = sanitize_text_field( wp_unslash( $_POST['plugin'] ) );
 
 		global $hook_suffix;
 
@@ -34,7 +34,8 @@ function seedprod_lite_install_addon() {
 
 		// Start output bufferring to catch the filesystem form if credentials are needed.
 		ob_start();
-		if ( false === ( $creds = request_filesystem_credentials( $url, $method, false, false, null ) ) ) {
+		$creds = request_filesystem_credentials( $url, $method, false, false, null );
+		if ( false === $creds ) {
 			$form = ob_get_clean();
 			echo wp_json_encode( array( 'form' => $form ) );
 			wp_die();
@@ -59,7 +60,7 @@ function seedprod_lite_install_addon() {
 		}
 
 		// Create the plugin upgrader with our custom skin.
-		$installer = new Plugin_Upgrader( $skin = new SeedProd_Skin() );
+		$installer = new Plugin_Upgrader( new SeedProd_Skin() );
 		$installer->install( $download_url );
 
 		// Flush the cache and return the newly installed plugin basename.
@@ -93,11 +94,12 @@ function seedprod_lite_deactivate_addon() {
 
 	$type = 'addon';
 	if ( ! empty( $_POST['type'] ) ) {
-		$type = sanitize_key( $_POST['type'] );
+		$type = sanitize_key( wp_unslash( $_POST['type'] ) );
 	}
 
 	if ( isset( $_POST['plugin'] ) ) {
-		deactivate_plugins( $_POST['plugin'] );
+		$plugin = sanitize_text_field( wp_unslash( $_POST['plugin'] ) );
+		deactivate_plugins( $plugin );
 
 		if ( 'plugin' === $type ) {
 			wp_send_json_success( esc_html__( 'Plugin deactivated.', 'coming-soon' ) );
@@ -127,10 +129,11 @@ function seedprod_lite_activate_addon() {
 	if ( isset( $_POST['plugin'] ) ) {
 		$type = 'addon';
 		if ( ! empty( $_POST['type'] ) ) {
-			$type = sanitize_key( $_POST['type'] );
+			$type = sanitize_key( wp_unslash( $_POST['type'] ) );
 		}
 
-		$activate = activate_plugins( $_POST['plugin'] );
+		$plugin   = sanitize_text_field( wp_unslash( $_POST['plugin'] ) );
+		$activate = activate_plugins( $plugin );
 
 		if ( ! is_wp_error( $activate ) ) {
 			if ( 'plugin' === $type ) {
@@ -144,6 +147,11 @@ function seedprod_lite_activate_addon() {
 	wp_send_json_error( esc_html__( 'Could not activate addon. Please activate from the Plugins page.', 'coming-soon' ) );
 }
 
+/**
+ * Get plugin list.
+ *
+ * @return void
+ */
 function seedprod_lite_get_plugins_list() {
 	check_ajax_referer( 'seedprod_lite_get_plugins_list', 'nonce' );
 
@@ -194,6 +202,11 @@ function seedprod_lite_get_plugins_list() {
 	wp_send_json( $response );
 }
 
+/**
+ * Get plugins array.
+ *
+ * @return array $response Contains plugins and their installation states as an associative array.
+ */
 function seedprod_lite_get_plugins_array() {
 	$am_plugins  = array(
 		'google-analytics-for-wordpress/googleanalytics.php' => 'monsterinsights',
@@ -242,6 +255,11 @@ function seedprod_lite_get_plugins_array() {
 	return $response;
 }
 
+/**
+ * Get form plugins list.
+ *
+ * @return array $response Contains array of plugins and installation states as integers.
+ */
 function seedprod_lite_get_form_plugins_list() {
 	$am_plugins  = array(
 		'wpforms/wpforms.php'      => 'wpforms',
@@ -266,6 +284,11 @@ function seedprod_lite_get_form_plugins_list() {
 	return $response;
 }
 
+/**
+ * Get giveaway plugins list.
+ *
+ * @return array $response An array of giveaway plugins and their installation statuses.
+ */
 function seedprod_lite_get_giveaway_plugins_list() {
 	$am_plugins  = array(
 		'rafflepress-pro/rafflepress-pro.php' => 'rafflepress-pro',
@@ -290,7 +313,11 @@ function seedprod_lite_get_giveaway_plugins_list() {
 	return $response;
 }
 
-
+/**
+ * Get SEO Plugins list.
+ *
+ * @return array $response An array of SEO plugins and their installation statuses.
+ */
 function seedprod_lite_get_seo_plugins_list() {
 	$am_plugins  = array(
 		'all-in-one-seo-pack/all_in_one_seo_pack.php'     => 'all-in-one',
@@ -319,6 +346,11 @@ function seedprod_lite_get_seo_plugins_list() {
 	return $response;
 }
 
+/**
+ * Get analytics plugins list.
+ *
+ * @return array $response An array of analytics plugins and their installation statuses.
+ */
 function seedprod_lite_get_analytics_plugins_list() {
 	$am_plugins  = array(
 		'google-analytics-for-wordpress/googleanalytics.php' => 'monster-insights',
@@ -343,6 +375,12 @@ function seedprod_lite_get_analytics_plugins_list() {
 	return $response;
 }
 
+/**
+ * Get plugins install url.
+ *
+ * @param string $slug Plugin slug.
+ * @return string $url URL with wp_nonce added to query.
+ */
 function seedprod_lite_get_plugins_install_url( $slug ) {
 	$action = 'install-plugin';
 	$url    = wp_nonce_url(
@@ -357,11 +395,15 @@ function seedprod_lite_get_plugins_install_url( $slug ) {
 	);
 
 	return $url;
-
 }
 
+/**
+ * Get plugins activate URL.
+ *
+ * @param string $slug Plugin slug.
+ * @return string $url URL with wp_nonce added to query.
+ */
 function seedprod_lite_get_plugins_activate_url( $slug ) {
-	$url = wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . urlencode( $slug ), 'activate-plugin_' . $slug );
+	$url = wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . rawurlencode( $slug ), 'activate-plugin_' . $slug );
 	return $url;
-
 }

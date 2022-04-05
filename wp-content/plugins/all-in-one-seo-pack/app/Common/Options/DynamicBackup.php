@@ -115,6 +115,7 @@ class DynamicBackup {
 		$backup = json_decode( get_option( $this->optionsName ), true );
 		if ( empty( $backup ) ) {
 			update_option( $this->optionsName, '{}' );
+
 			return;
 		}
 

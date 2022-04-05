@@ -17,6 +17,7 @@ class Helpers {
 	use TraitHelpers\ActionScheduler;
 	use TraitHelpers\Arrays;
 	use TraitHelpers\Constants;
+	use TraitHelpers\Deprecated;
 	use TraitHelpers\DateTime;
 	use TraitHelpers\Language;
 	use TraitHelpers\Shortcodes;
@@ -62,6 +63,7 @@ class Helpers {
 
 		// Return the new URL.
 		$url = add_query_arg( $args, $url );
+
 		return $esc ? esc_url( $url ) : $url;
 	}
 
@@ -73,7 +75,7 @@ class Helpers {
 	 * @return boolean True if we are, false if not.
 	 */
 	public function isDev() {
-		return defined( 'AIOSEO_DEV_VERSION' ) || isset( $_REQUEST['aioseo-dev'] ); // phpcs:ignore HM.Security.NonceVerification.Recommended
+		return aioseo()->isDev || isset( $_REQUEST['aioseo-dev'] ); // phpcs:ignore HM.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -195,6 +197,7 @@ class Helpers {
 		}
 		$i = floor( log( $bytes ) / log( 1024 ) );
 		$sizes = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
+
 		return [
 			'original' => $bytes,
 			'readable' => sprintf( '%.02F', $bytes / pow( 1024, $i ) ) * 1 . ' ' . $sizes[ $i ]
@@ -217,6 +220,7 @@ class Helpers {
 				return (bool) $value;
 			case 'string':
 				$value = aioseo()->helpers->decodeHtmlEntities( $value );
+
 				return aioseo()->helpers->encodeOutputHtml( wp_strip_all_tags( wp_check_invalid_utf8( trim( $value ) ) ) );
 			case 'integer':
 				return intval( $value );
@@ -227,6 +231,7 @@ class Helpers {
 				foreach ( (array) $value as $child ) {
 					$sanitized[] = aioseo()->helpers->sanitizeOption( $child );
 				}
+
 				return $sanitized;
 			default:
 				return false;
@@ -248,12 +253,13 @@ class Helpers {
 		}
 
 		$string = trim( $string );
-		if ( is_serialized( $string ) && false === $this->stringContains( $string, 'O:' ) ) {
+		if ( is_serialized( $string ) && ! $this->stringContains( $string, 'O:' ) ) {
 			// We want to add extra hardening for PHP versions greater than 5.6.
 			return version_compare( PHP_VERSION, '7.0', '<' )
 				? @unserialize( $string )
 				: @unserialize( $string, [ 'allowed_classes' => false ] ); // phpcs:disable PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound
 		}
+
 		return $string;
 	}
 }

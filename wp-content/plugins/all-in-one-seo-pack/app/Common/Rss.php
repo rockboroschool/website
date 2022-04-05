@@ -27,7 +27,7 @@ class Rss {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $content The
+	 * @param  string $content The post excerpt.
 	 * @return void
 	 */
 	public function addRssContentExcerpt( $content ) {
@@ -40,6 +40,7 @@ class Rss {
 	 * @since 4.0.0
 	 *
 	 * @param  string $content The post content.
+	 * @param  string $type    Type of feed.
 	 * @return string          The post content with prepended/appended content.
 	 */
 	public function addRssContent( $content, $type = 'complete' ) {
@@ -49,6 +50,14 @@ class Rss {
 		}
 
 		if ( is_feed() ) {
+			global $wp_query;
+			$isHome = is_home();
+			if ( $isHome ) {
+				// If this feed is for the static blog page, we must temporarily set "is_home" to false.
+				// Otherwise any getPost() calls will return the blog page object for every post in the feed.
+				$wp_query->is_home = false;
+			}
+
 			$before = aioseo()->tags->replaceTags( aioseo()->options->rssContent->before, get_the_ID() );
 			$after  = aioseo()->tags->replaceTags( aioseo()->options->rssContent->after, get_the_ID() );
 
@@ -58,6 +67,9 @@ class Rss {
 				}
 				$content = aioseo()->helpers->decodeHtmlEntities( $before ) . $content . aioseo()->helpers->decodeHtmlEntities( $after );
 			}
+
+			// Set back to the original value.
+			$wp_query->is_home = $isHome;
 		}
 
 		return $content;

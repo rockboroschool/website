@@ -2145,6 +2145,20 @@ a:focus{outline:0;box-shadow:none}
 .sp-notification-button{background:#0f8a5e !important;border:#0f8a5e !important;color:#fff !important;text-decoration:none !important;text-shadow:none !important}
 .sp-notification-alt-button{border:1px solid #af9ca6 !important;color:#4f394d !important;background:transparent !important}
 .sp-alt-notification-button-y{padding-top:.18rem !important;padding-bottom:.18rem !important}
+.seedprod-modal-mask{position:fixed !important;z-index:99999 !important;top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;overflow-y:auto !important;-webkit-transform:translate3d(0,0,0) !important;transform:translate3d(0,0,0) !important;display:flex !important;transition:opacity .3s ease;width:100%;height:100%;background-color:rgba(0,0,0,0.5)}
+.seedprod-modal-wrapper{display:flex !important;margin:auto !important;width:100% !important;padding-left:80px;padding-right:80px}
+.seedprod-modal-header{display:none}
+.sp-modal-close-btn{background-color:transparent;border:0}
+.seedprod-modal-container{width:600px;background-color:#fff;flex:1 !important;width:100% !important;margin:100px auto;padding:0;background-color:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(35,8,32,0.6);transition:all .3s ease}
+.seedprod-modal-container .seedprod-modal-body{margin:0}
+.seedprod-modal-container .sp-modal-left{border-top-left-radius:10px;border-bottom-left-radius:10px}
+.seedprod-modal-container .sp-modal-right{border-top-right-radius:10px;border-bottom-right-radius:10px}
+.seedprod-modal-header h3{margin-top:0}
+.seedprod-modal-body{margin:20px 0}
+.seedprod-modal-enter,.seedprod-modal-leave{opacity:0}
+.seedprod-modal-enter .seedprod-modal-container,.seedprod-modal-leave .seedprod-modal-container{-webkit-transform:scale(1.1);transform:scale(1.1)}
+.sp-w-720px .seedprod-modal-container{max-width:720px;border-radius:3px}
+.sp-w-1020px .seedprod-modal-container{max-width:1020px}
 @media(min-width:640px){.sm\:sp-sr-only{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0,0,0,0) !important;white-space:nowrap !important;border-width:0 !important}
 .sm\:sp-not-sr-only{position:static !important;width:auto !important;height:auto !important;padding:0 !important;margin:0 !important;overflow:visible !important;clip:auto !important;white-space:normal !important}
 .sm\:focus\:sp-sr-only:focus{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0,0,0,0) !important;white-space:nowrap !important;border-width:0 !important}

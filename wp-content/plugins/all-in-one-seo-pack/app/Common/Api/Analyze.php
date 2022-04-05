@@ -25,8 +25,8 @@ class Analyze {
 		$analyzeUrl       = ! empty( $body['url'] ) ? esc_url_raw( urldecode( $body['url'] ) ) : null;
 		$refreshResults   = ! empty( $body['refresh'] ) ? (bool) $body['refresh'] : false;
 		$analyzeOrHomeUrl = ! empty( $analyzeUrl ) ? $analyzeUrl : home_url();
-		$responseCode     = null === aioseo()->cache->get( 'analyze_site_code' ) ? [] : aioseo()->cache->get( 'analyze_site_code' );
-		$responseBody     = null === aioseo()->cache->get( 'analyze_site_body' ) ? [] : aioseo()->cache->get( 'analyze_site_body' );
+		$responseCode     = null === aioseo()->core->cache->get( 'analyze_site_code' ) ? [] : aioseo()->core->cache->get( 'analyze_site_code' );
+		$responseBody     = null === aioseo()->core->cache->get( 'analyze_site_body' ) ? [] : aioseo()->core->cache->get( 'analyze_site_body' );
 		if (
 			empty( $responseCode ) ||
 			empty( $responseCode[ $analyzeOrHomeUrl ] ) ||
@@ -54,14 +54,15 @@ class Analyze {
 			$responseCode[ $analyzeOrHomeUrl ] = wp_remote_retrieve_response_code( $response );
 			$responseBody[ $analyzeOrHomeUrl ] = json_decode( wp_remote_retrieve_body( $response ) );
 
-			aioseo()->cache->update( 'analyze_site_code', $responseCode, 10 * MINUTE_IN_SECONDS );
-			aioseo()->cache->update( 'analyze_site_body', $responseBody, 10 * MINUTE_IN_SECONDS );
+			aioseo()->core->cache->update( 'analyze_site_code', $responseCode, 10 * MINUTE_IN_SECONDS );
+			aioseo()->core->cache->update( 'analyze_site_body', $responseBody, 10 * MINUTE_IN_SECONDS );
 		}
 
 		if ( 200 !== $responseCode[ $analyzeOrHomeUrl ] || empty( $responseBody[ $analyzeOrHomeUrl ]->success ) || ! empty( $responseBody[ $analyzeOrHomeUrl ]->error ) ) {
 			if ( ! empty( $responseBody[ $analyzeOrHomeUrl ]->error ) && 'invalid-token' === $responseBody[ $analyzeOrHomeUrl ]->error ) {
 				aioseo()->internalOptions->internal->siteAnalysis->reset();
 			}
+
 			return new \WP_REST_Response( [
 				'success'  => false,
 				'response' => $responseBody[ $analyzeOrHomeUrl ]
@@ -71,10 +72,6 @@ class Analyze {
 		if ( $analyzeUrl ) {
 			$competitors = aioseo()->internalOptions->internal->siteAnalysis->competitors;
 			$competitors = array_reverse( $competitors, true );
-
-			if ( empty( $competitors[ $analyzeUrl ] ) ) {
-				$competitors[ $analyzeUrl ] = '';
-			}
 
 			$competitors[ $analyzeUrl ] = wp_json_encode( $responseBody[ $analyzeOrHomeUrl ] );
 
@@ -90,30 +87,6 @@ class Analyze {
 		aioseo()->internalOptions->internal->siteAnalysis->results = wp_json_encode( $responseBody[ $analyzeOrHomeUrl ]->results );
 
 		return new \WP_REST_Response( $responseBody[ $analyzeOrHomeUrl ], 200 );
-	}
-
-	/**
-	 * Analyzes the title for SEO.
-	 *
-	 * @since 4.1.2
-	 *
-	 * @param  \WP_REST_Request  $request The REST Request
-	 * @return \WP_REST_Response          The response.
-	 */
-	public static function analyzeHeadline( $request ) {
-		$body  = $request->get_json_params();
-		$title = ! empty( $body['title'] ) ? sanitize_text_field( $body['title'] ) : '';
-
-		if ( ! $title ) {
-			return new \WP_REST_Response( [
-				'success' => false,
-				'message' => 'Title is missing.'
-			], 400 );
-		}
-
-		$result = aioseo()->headlineAnalyzer->getResult( $title );
-
-		return new \WP_REST_Response( $result, 200 );
 	}
 
 	/**
@@ -136,5 +109,64 @@ class Analyze {
 		aioseo()->internalOptions->internal->siteAnalysis->competitors = $competitors;
 
 		return new \WP_REST_Response( $competitors, 200 );
+	}
+
+	/**
+	 * Analyzes the title for SEO.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request.
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function analyzeHeadline( $request ) {
+		$body                = $request->get_json_params();
+		$headline            = ! empty( $body['headline'] ) ? sanitize_text_field( $body['headline'] ) : '';
+		$shouldStoreHeadline = ! empty( $body['shouldStoreHeadline'] ) ? rest_sanitize_boolean( $body['shouldStoreHeadline'] ) : false;
+
+		if ( empty( $headline ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => __( 'Please enter a valid headline.', 'all-in-one-seo-pack' )
+			], 400 );
+		}
+
+		$result = aioseo()->headlineAnalyzer->getResult( $headline );
+
+		$headlines = aioseo()->internalOptions->internal->headlineAnalysis->headlines;
+		$headlines = array_reverse( $headlines, true );
+
+		$headlines[ $headline ] = wp_json_encode( $result );
+
+		$headlines = array_reverse( $headlines, true );
+
+		// Store the headlines with the latest one.
+		if ( $shouldStoreHeadline ) {
+			aioseo()->internalOptions->internal->headlineAnalysis->headlines = $headlines;
+		}
+
+		return new \WP_REST_Response( $headlines, 200 );
+	}
+
+	/**
+	 * Deletes the analyzed Headline for SEO.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request.
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function deleteHeadline( $request ) {
+		$body     = $request->get_json_params();
+		$headline = sanitize_text_field( $body['headline'] );
+
+		$headlines = aioseo()->internalOptions->internal->headlineAnalysis->headlines;
+
+		unset( $headlines[ $headline ] );
+
+		// Reset the headlines.
+		aioseo()->internalOptions->internal->headlineAnalysis->headlines = $headlines;
+
+		return new \WP_REST_Response( $headlines, 200 );
 	}
 }

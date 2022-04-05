@@ -61,6 +61,7 @@ class Article extends Graph {
 		if ( ! empty( $image ) ) {
 			$data['image'] = $image;
 		}
+
 		return $data;
 	}
 
@@ -92,6 +93,7 @@ class Article extends Graph {
 			$logo = ( new Organization() )->logo();
 			if ( ! empty( $logo ) ) {
 				$logo['@id'] = trailingslashit( home_url() ) . '#articleImage';
+
 				return $logo;
 			}
 		} else {

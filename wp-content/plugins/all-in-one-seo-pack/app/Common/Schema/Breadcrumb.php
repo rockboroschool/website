@@ -36,6 +36,7 @@ class Breadcrumb {
 		if ( is_post_type_hierarchical( $post->post_type ) ) {
 			return $this->setPositions( $this->postHierarchical( $post ) );
 		}
+
 		return $this->setPositions( $this->postNonHierarchical( $post ) );
 	}
 
@@ -66,6 +67,7 @@ class Breadcrumb {
 				$post = false;
 			}
 		} while ( $post );
+
 		return $breadcrumbs;
 	}
 
@@ -103,8 +105,10 @@ class Breadcrumb {
 		$dateName    = null;
 		$timestamp   = strtotime( $post->post_date_gmt );
 		foreach ( $pairs as $tag => $object ) {
+			// Escape the delimiter.
+			$escObject = aioseo()->helpers->escapeRegex( $object );
 			// Determine the slug for the object.
-			preg_match( "#.*${object}[/]#", $permalink, $url );
+			preg_match( "/.*{$escObject}[\/]/", $permalink, $url );
 			if ( empty( $url[0] ) ) {
 				continue;
 			}
@@ -174,6 +178,7 @@ class Breadcrumb {
 				array_unshift( $breadcrumbs, $breadcrumb );
 			}
 		}
+
 		return $breadcrumbs;
 	}
 
@@ -204,6 +209,7 @@ class Breadcrumb {
 				$term = false;
 			}
 		} while ( $term );
+
 		return $this->setPositions( $breadcrumbs );
 	}
 
@@ -271,6 +277,7 @@ class Breadcrumb {
 			) ),
 			'type'        => 'CollectionPage'
 		];
+
 		return $this->setPositions( $breadcrumbs );
 	}
 
@@ -307,6 +314,7 @@ class Breadcrumb {
 		foreach ( $breadcrumbs as $index => &$breadcrumb ) {
 			$breadcrumb['position'] = $index + 1;
 		}
+
 		return $breadcrumbs;
 	}
 
@@ -323,6 +331,7 @@ class Breadcrumb {
 			$graph     = array_values( array_diff( $graph, [ 'WebPage' ] ) );
 			$graph = 1 === count( $graph ) ? $graph[0] : 'WebPage';
 		}
+
 		return $graph;
 	}
 }

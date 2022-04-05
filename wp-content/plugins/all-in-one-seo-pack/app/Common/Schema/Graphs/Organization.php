@@ -54,6 +54,7 @@ class Organization extends Graph {
 				];
 			}
 		}
+
 		return $data;
 	}
 

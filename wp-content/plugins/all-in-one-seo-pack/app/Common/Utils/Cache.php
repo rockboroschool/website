@@ -49,15 +49,6 @@ class Cache {
 	protected $prefix = '';
 
 	/**
-	 * Class constructor.
-	 *
-	 * @since 4.1.5
-	 */
-	public function __construct() {
-		$this->prune = new CachePrune();
-	}
-
-	/**
 	 * Returns the cache value for a key if it exists and is not expired.
 	 *
 	 * @since 4.1.5
@@ -74,7 +65,7 @@ class Cache {
 		// Are we searching for a group of keys?
 		$isLikeGet = preg_match( '/%/', $key );
 
-		$result = aioseo()->db
+		$result = aioseo()->core->db
 			->start( $this->table )
 			->select( '`key`, `value`' )
 			->whereRaw( '( `expiration` IS NULL OR `expiration` > \'' . aioseo()->helpers->timeToMysql( time() ) . '\' )' );
@@ -130,7 +121,7 @@ class Cache {
 		$value      = serialize( $value );
 		$expiration = 0 < $expiration ? aioseo()->helpers->timeToMysql( time() + $expiration ) : null;
 
-		aioseo()->db->insert( $this->table )
+		aioseo()->core->db->insert( $this->table )
 			->set( [
 				'key'        => $this->prepareKey( $key ),
 				'value'      => $value,
@@ -159,7 +150,7 @@ class Cache {
 	public function delete( $key ) {
 		$key = $this->prepareKey( $key );
 
-		aioseo()->db->delete( $this->table )
+		aioseo()->core->db->delete( $this->table )
 			->where( 'key', $key )
 			->run();
 
@@ -199,8 +190,17 @@ class Cache {
 
 			return;
 		}
-		aioseo()->db->truncate( $this->table )->run();
+
+		// If we find the activation redirect, we'll need to reset it after clearing.
+		$activationRedirect = $this->get( 'activation_redirect' );
+
+		aioseo()->core->db->truncate( $this->table )->run();
+
 		$this->clearStatic();
+
+		if ( $activationRedirect ) {
+			$this->update( 'activation_redirect', $activationRedirect, 30 );
+		}
 	}
 
 	/**
@@ -214,7 +214,7 @@ class Cache {
 	public function clearPrefix( $prefix ) {
 		$prefix = $this->prepareKey( $prefix );
 
-		aioseo()->db->delete( $this->table )
+		aioseo()->core->db->delete( $this->table )
 			->whereRaw( "`key` LIKE '$prefix%'" )
 			->run();
 

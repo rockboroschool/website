@@ -51,6 +51,7 @@ class Person extends Graph {
 		if ( $socialUrls ) {
 			$data['sameAs'] = $socialUrls;
 		}
+
 		return $data;
 	}
 
@@ -77,6 +78,7 @@ class Person extends Graph {
 		if ( $socialUrls ) {
 			$data['sameAs'] = $socialUrls;
 		}
+
 		return $data;
 	}
 }

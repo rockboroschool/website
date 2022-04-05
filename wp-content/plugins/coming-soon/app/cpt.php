@@ -1,6 +1,10 @@
 <?php
 
-// Register Custom Post Type
+/**
+ * Reguster seedprod custom post type.
+ *
+ * @return void
+ */
 function seedprod_lite_post_type() {
 
 	$args = array(
@@ -9,11 +13,12 @@ function seedprod_lite_post_type() {
 		'capability_type'    => 'page',
 		'show_ui'            => false,
 		'publicly_queryable' => true,
+		'can_export'         => false,
 	);
 	register_post_type( 'seedprod', $args );
 
 }
 $sedprod_pt = post_type_exists( 'seedprod' );
-if ( $sedprod_pt === false ) {
+if ( false === $sedprod_pt ) {
 	add_action( 'init', 'seedprod_lite_post_type', 0 );
 }

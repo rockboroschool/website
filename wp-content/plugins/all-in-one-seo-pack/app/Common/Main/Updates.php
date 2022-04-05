@@ -47,7 +47,7 @@ class Updates {
 		$oldOptions = get_option( 'aioseop_options' );
 		if ( empty( $oldOptions ) && ! is_network_admin() && ! isset( $_GET['activate-multi'] ) ) {
 			// Sets 30 second transient for welcome screen redirect on activation.
-			aioseo()->cache->update( 'activation_redirect', true, 30 );
+			aioseo()->core->cache->update( 'activation_redirect', true, 30 );
 		}
 
 		if ( ! empty( $oldOptions['last_active_version'] ) ) {
@@ -112,7 +112,7 @@ class Updates {
 		if ( version_compare( $lastActiveVersion, '4.1.5', '<' ) ) {
 			aioseo()->helpers->unscheduleAction( 'aioseo_cleanup_action_scheduler' );
 			// Schedule routine to remove our old transients from the options table.
-			aioseo()->helpers->scheduleSingleAction( aioseo()->cache->prune->getOptionCacheCleanAction(), MINUTE_IN_SECONDS );
+			aioseo()->helpers->scheduleSingleAction( aioseo()->core->cachePrune->getOptionCacheCleanAction(), MINUTE_IN_SECONDS );
 
 			// Refresh with new Redirects capability.
 			$this->accessControlNewCapabilities();
@@ -121,6 +121,31 @@ class Updates {
 			aioseo()->sitemap->regenerateStaticSitemap();
 
 			$this->fixSchemaTypeDefault();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.6', '<' ) ) {
+			// Clear the cache so addons get reset.
+			aioseo()->core->cache->clear();
+
+			// Remove the recurring scheduled action for notifications.
+			aioseo()->helpers->unscheduleAction( 'aioseo_admin_notifications_update' );
+
+			$this->migrateOgTwitterImageColumns();
+
+			// Set the OG data to false for current installs.
+			aioseo()->options->social->twitter->general->useOgData = false;
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.8', '<' ) ) {
+			$this->addLimitModifiedDateColumn();
+
+			// Refresh with new Redirects Page capability.
+			$this->accessControlNewCapabilities();
+		}
+
+		if ( version_compare( $lastActiveVersion, '4.1.9', '<' ) ) {
+			$this->fixTaxonomyTags();
+			$this->removeRevisionRecords();
 		}
 
 		do_action( 'aioseo_run_updates', $lastActiveVersion );
@@ -151,9 +176,17 @@ class Updates {
 	 * @return void
 	 */
 	public function updateLatestVersion() {
-		if ( aioseo()->version !== aioseo()->internalOptions->internal->lastActiveVersion ) {
-			aioseo()->internalOptions->internal->lastActiveVersion = aioseo()->version;
+		if ( aioseo()->internalOptions->internal->lastActiveVersion === aioseo()->version ) {
+			return;
 		}
+
+		aioseo()->internalOptions->internal->lastActiveVersion = aioseo()->version;
+
+		// Bust the tableExists and columnExists cache.
+		aioseo()->internalOptions->database->installedTables = '';
+
+		// Bust the DB cache so we can make sure that everything is fresh.
+		aioseo()->core->db->bustCache();
 	}
 
 	/**
@@ -164,7 +197,7 @@ class Updates {
 	 * @return void
 	 */
 	public function addInitialCustomTablesForV4() {
-		$db             = aioseo()->db->db;
+		$db             = aioseo()->core->db->db;
 		$charsetCollate = '';
 
 		if ( ! empty( $db->charset ) ) {
@@ -175,10 +208,10 @@ class Updates {
 		}
 
 		// Check for notifications table.
-		if ( ! aioseo()->db->tableExists( 'aioseo_notifications' ) ) {
+		if ( ! aioseo()->core->db->tableExists( 'aioseo_notifications' ) ) {
 			$tableName = $db->prefix . 'aioseo_notifications';
 
-			aioseo()->db->execute(
+			aioseo()->core->db->execute(
 				"CREATE TABLE {$tableName} (
 					id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 					slug varchar(13) NOT NULL,
@@ -206,11 +239,11 @@ class Updates {
 			);
 		}
 
-		if ( ! aioseo()->db->tableExists( 'aioseo_posts' ) ) {
+		if ( ! aioseo()->core->db->tableExists( 'aioseo_posts' ) ) {
 			$tableName = $db->prefix . 'aioseo_posts';
 
 			// Incorrect defaults are adjusted below through migrations.
-			aioseo()->db->execute(
+			aioseo()->core->db->execute(
 				"CREATE TABLE {$tableName} (
 					id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 					post_id bigint(20) unsigned NOT NULL,
@@ -269,6 +302,9 @@ class Updates {
 				) {$charsetCollate};"
 			);
 		}
+
+		// Reset the cache for the installed tables.
+		aioseo()->internalOptions->database->installedTables = '';
 	}
 
 	/**
@@ -298,12 +334,15 @@ class Updates {
 	 * @return void
 	 */
 	public function addImageScanDateColumn() {
-		if ( ! aioseo()->db->columnExists( 'aioseo_posts', 'image_scan_date' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
-			aioseo()->db->execute(
+		if ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'image_scan_date' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				ADD image_scan_date datetime DEFAULT NULL AFTER images"
 			);
+
+			// Reset the cache for the installed tables.
+			aioseo()->internalOptions->database->installedTables = '';
 		}
 	}
 
@@ -315,9 +354,9 @@ class Updates {
 	 * @return void
 	 */
 	public function disableTwitterUseOgDefault() {
-		if ( aioseo()->db->tableExists( 'aioseo_posts' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
-			aioseo()->db->execute(
+		if ( aioseo()->core->db->tableExists( 'aioseo_posts' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				MODIFY twitter_use_og tinyint(1) DEFAULT 0"
 			);
@@ -332,9 +371,9 @@ class Updates {
 	 * @return void
 	 */
 	public function updateMaxImagePreviewDefault() {
-		if ( aioseo()->db->tableExists( 'aioseo_posts' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
-			aioseo()->db->execute(
+		if ( aioseo()->core->db->tableExists( 'aioseo_posts' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				MODIFY robots_max_imagepreview varchar(20) DEFAULT 'large'"
 			);
@@ -349,7 +388,7 @@ class Updates {
 	 * @return void
 	 */
 	public function removeDuplicateRecords() {
-		$duplicates = aioseo()->db->start( 'aioseo_posts' )
+		$duplicates = aioseo()->core->db->start( 'aioseo_posts' )
 			->select( 'post_id, min(id) as id' )
 			->groupBy( 'post_id having count(post_id) > 1' )
 			->orderBy( 'count(post_id) DESC' )
@@ -364,7 +403,7 @@ class Updates {
 			$postId        = $duplicate->post_id;
 			$firstRecordId = $duplicate->id;
 
-			aioseo()->db->delete( 'aioseo_posts' )
+			aioseo()->core->db->delete( 'aioseo_posts' )
 				->whereRaw( "( id > $firstRecordId AND post_id = $postId )" )
 				->run();
 		}
@@ -378,9 +417,9 @@ class Updates {
 	 * @return void
 	 */
 	public function removeLocationColumn() {
-		if ( aioseo()->db->columnExists( 'aioseo_posts', 'location' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
-			aioseo()->db->execute(
+		if ( aioseo()->core->db->columnExists( 'aioseo_posts', 'location' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				DROP location"
 			);
@@ -399,7 +438,7 @@ class Updates {
 			return;
 		}
 
-		aioseo()->db->update( 'aioseo_posts as ap' )
+		aioseo()->core->db->update( 'aioseo_posts as ap' )
 			->join( 'posts as p', 'ap.post_id = p.ID' )
 			->where( 'p.post_type', 'product' )
 			->set(
@@ -419,14 +458,17 @@ class Updates {
 	 * @return void
 	 */
 	public function addNotificationsNewColumn() {
-		if ( ! aioseo()->db->columnExists( 'aioseo_notifications', 'new' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_notifications';
-			aioseo()->db->execute(
+		if ( ! aioseo()->core->db->columnExists( 'aioseo_notifications', 'new' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_notifications';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				ADD new tinyint(1) NOT NULL DEFAULT 1 AFTER dismissed"
 			);
 
-			aioseo()->db
+			// Reset the cache for the installed tables.
+			aioseo()->internalOptions->database->installedTables = '';
+
+			aioseo()->core->db
 				->update( 'aioseo_notifications' )
 				->where( 'new', 1 )
 				->set( 'new', 0 )
@@ -612,12 +654,136 @@ class Updates {
 	 * @return void
 	 */
 	private function fixSchemaTypeDefault() {
-		if ( aioseo()->db->tableExists( 'aioseo_posts' ) && aioseo()->db->columnExists( 'aioseo_posts', 'schema_type' ) ) {
-			$tableName = aioseo()->db->db->prefix . 'aioseo_posts';
-			aioseo()->db->execute(
+		if ( aioseo()->core->db->tableExists( 'aioseo_posts' ) && aioseo()->core->db->columnExists( 'aioseo_posts', 'schema_type' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
 				"ALTER TABLE {$tableName}
 				MODIFY schema_type varchar(20) DEFAULT 'default'"
 			);
 		}
+	}
+
+	/**
+	 * Add in image with/height columns and image URL for caching.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @return void
+	 */
+	protected function migrateOgTwitterImageColumns() {
+		if ( aioseo()->core->db->tableExists( 'aioseo_posts' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+
+			// OG Columns.
+			if ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'og_image_url' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} ADD og_image_url text DEFAULT NULL AFTER og_image_type"
+				);
+			}
+
+			if ( aioseo()->core->db->columnExists( 'aioseo_posts', 'og_custom_image_height' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} CHANGE COLUMN og_custom_image_height og_image_height int(11) DEFAULT NULL AFTER og_image_url"
+				);
+			} elseif ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'og_image_height' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} ADD og_image_height int(11) DEFAULT NULL AFTER og_image_url"
+				);
+			}
+
+			if ( aioseo()->core->db->columnExists( 'aioseo_posts', 'og_custom_image_width' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} CHANGE COLUMN og_custom_image_width og_image_width int(11) DEFAULT NULL AFTER og_image_url"
+				);
+			} elseif ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'og_image_width' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} ADD og_image_width int(11) DEFAULT NULL AFTER og_image_url"
+				);
+			}
+
+			// Twitter image url columnn.
+			if ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'twitter_image_url' ) ) {
+				aioseo()->core->db->execute(
+					"ALTER TABLE {$tableName} ADD twitter_image_url text DEFAULT NULL AFTER twitter_image_type"
+				);
+			}
+
+			// Reset the cache for the installed tables.
+			aioseo()->internalOptions->database->installedTables = '';
+		}
+	}
+
+	/**
+	 * Adds the limit modified date column to our posts table.
+	 *
+	 * @since 4.1.8
+	 *
+	 * @return void
+	 */
+	private function addLimitModifiedDateColumn() {
+		if ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'limit_modified_date' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_posts';
+			aioseo()->core->db->execute(
+				"ALTER TABLE {$tableName}
+				ADD limit_modified_date tinyint(1) NOT NULL DEFAULT 0 AFTER local_seo"
+			);
+
+			// Reset the cache for the installed tables.
+			aioseo()->internalOptions->database->installedTables = '';
+		}
+	}
+
+	/**
+	 * Fixes tags that should not be in the search appearance taxonomy options.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @return void
+	 */
+	protected function fixTaxonomyTags() {
+		$searchAppearanceTaxonomies = aioseo()->dynamicOptions->searchAppearance->taxonomies->all();
+
+		$replaces = [
+			'#breadcrumb_separator' => '#separator_sa',
+			'#breadcrumb_'          => '#',
+			'#blog_title'           => '#site_title'
+		];
+
+		foreach ( $searchAppearanceTaxonomies as $taxonomy => $searchAppearanceTaxonomy ) {
+			aioseo()->dynamicOptions->searchAppearance->taxonomies->{$taxonomy}->title = str_replace(
+				array_keys( $replaces ),
+				array_values( $replaces ),
+				$searchAppearanceTaxonomy['title']
+			);
+
+			aioseo()->dynamicOptions->searchAppearance->taxonomies->{$taxonomy}->metaDescription = str_replace(
+				array_keys( $replaces ),
+				array_values( $replaces ),
+				$searchAppearanceTaxonomy['metaDescription']
+			);
+		}
+
+	}
+
+	/**
+	 * Removes any AIOSEO Post records for revisions.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @return void
+	 */
+	private function removeRevisionRecords() {
+		$postsTableName       = aioseo()->db->prefix . 'posts';
+		$aioseoPostsTableName = aioseo()->db->prefix . 'aioseo_posts';
+		aioseo()->db->execute(
+			"DELETE FROM `$aioseoPostsTableName`
+			WHERE `post_id` IN (
+				SELECT `ID`
+				FROM `$postsTableName`
+				WHERE `post_parent` != 0
+				AND `post_type` = 'revision'
+				AND `post_status` = 'inherit'
+			)"
+		);
 	}
 }

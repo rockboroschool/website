@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Coming Soon Page, Maintenance Mode & Landing Pages by SeedProd
+Plugin Name: Coming Soon Page, Maintenance Mode, Landing Pages & WordPress Website Builder by SeedProd
 Plugin URI: https://www.seedprod.com
-Description: The #1 Coming Soon Page, Under Construction & Maintenance Mode plugin for WordPress.
-Version:  6.6.0
+Description: The Easiest WordPress Drag & Drop Page Builder that allows you to build your webiste, create Landing Pages, Coming Soon Pages, Maintenance Mode Pages and more.
+Version:  6.10.0
 Author: SeedProd
 Author URI: https://www.seedprod.com
 TextDomain: coming-soon
@@ -16,7 +16,7 @@ License: GPLv2 or later
  */
 define( 'SEEDPROD_BUILD', 'lite' );
 define( 'SEEDPROD_SLUG', 'coming-soon/coming-soon.php' );
-define( 'SEEDPROD_VERSION', '6.6.0' );
+define( 'SEEDPROD_VERSION', '6.10.0' );
 define( 'SEEDPROD_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 // Example output: /Applications/MAMP/htdocs/wordpress/wp-content/plugins/seedprod/
 define( 'SEEDPROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -35,20 +35,19 @@ if ( defined( 'SEEDPROD_LOCAL_JS' ) ) {
 
 
 
-
 /**
  * Load Translation
  */
 function seedprod_lite_load_textdomain() {
 	load_plugin_textdomain( 'coming-soon', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 }
+
 add_action( 'plugins_loaded', 'seedprod_lite_load_textdomain' );
 
 
 /**
  * Upon activation of the plugin check php version, load defaults and show welcome screen.
  */
-
 function seedprod_lite_activation() {
 	seedprod_lite_check_for_free_version();
 
@@ -89,7 +88,6 @@ register_activation_hook( __FILE__, 'seedprod_lite_activation' );
 /**
  * Deactivate Flush Rules
  */
-
 function seedprod_lite_deactivate() {
 	wp_clear_scheduled_hook( 'seedprod_notifications' );
 }

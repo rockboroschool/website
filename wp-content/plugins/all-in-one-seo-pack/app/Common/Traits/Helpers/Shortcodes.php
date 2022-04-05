@@ -48,9 +48,10 @@ trait Shortcodes {
 	 * @param  string $content      The post content.
 	 * @param  array  $tagsToRemove Shortcode tags that should be removed before parsing the content.
 	 * @param  bool   $override     Whether shortcodes should be parsed regardless of the context. Needed for ActionScheduler actions.
+	 * @param  int    $postId       The post ID.
 	 * @return string $content      The post content with shortcodes replaced.
 	 */
-	public function doShortcodes( $content, $tagsToRemove = [], $override = false ) {
+	public function doShortcodes( $content, $tagsToRemove = [], $override = false, $postId = null ) {
 		if (
 			! $override &&
 			(
@@ -76,7 +77,19 @@ trait Shortcodes {
 			remove_shortcode( $shortcodeTag );
 		}
 
+		global $post;
+		if ( ! empty( $postId ) ) {
+			// Add the current post to the loop so that shortcodes can use it if needed.
+			$post = get_post( $postId );
+			setup_postdata( $post );
+		}
+
 		$content = do_shortcode( $content );
+
+		if ( ! empty( $postId ) ) {
+			// Reset the main query again.
+			wp_reset_postdata();
+		}
 
 		// Add back shortcodes as remove_shortcode() disables them site-wide.
 		foreach ( $tagsToRemove as $shortcodeTag => $shortcodeCallback ) {
@@ -95,9 +108,10 @@ trait Shortcodes {
 	 * @param  string $content     The content.
 	 * @param  array  $allowedTags The allowed shortcode tags.
 	 * @param  array  $wildcards   The wildcards.
+	 * @param  int    $postId      The post ID.
 	 * @return string              The content with shortcodes replaced.
 	 */
-	public function doAllowedShortcodes( $content, $allowedTags = [], $wildcards = [] ) {
+	public function doAllowedShortcodes( $content, $allowedTags = [], $wildcards = [], $postId = null ) {
 		// Extract list of shortcodes from the post content.
 		$tags = $this->getShortcodeTags( $content );
 		if ( ! count( $tags ) ) {
@@ -114,7 +128,8 @@ trait Shortcodes {
 		}
 
 		$tagsToRemove = array_diff( $tags, $allowedTags );
-		return $this->doShortcodes( $content, $tagsToRemove, true );
+
+		return $this->doShortcodes( $content, $tagsToRemove, true, $postId );
 	}
 
 	/**

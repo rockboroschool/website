@@ -8,12 +8,21 @@ function seedprod_lite_admin_bar_menu( $wp_admin_bar ) {
 	$ts                = get_option( 'seedprod_settings' );
 	$seedprod_settings = json_decode( $ts, true );
 
+	// get preview mode
+	$theme_preview_mode = get_option( 'seedprod_theme_template_preview_mode' );
+	if ( ! empty( $theme_preview_mode ) ) {
+		$theme_preview_mode = true;
+	} else {
+		$theme_preview_mode = false;
+	}
+
 	// if (empty($seedprod_settings['enable_coming_soon_mode']) && empty($seedprod_settings['enable_maintenance_mode'])) {
 	//     return false;
 	// }
 
 	// Disable if page line editor open
-	if ( isset( $_GET['pl_edit'] ) ) {
+	$pl_edit = isset( $_GET['pl_edit'] ) ? sanitize_text_field( wp_unslash( $_GET['pl_edit'] ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $pl_edit ) {
 		return false;
 	}
 
@@ -37,9 +46,11 @@ function seedprod_lite_admin_bar_menu( $wp_admin_bar ) {
         </svg></span>';
 	$text = '<span>SeedProd</span>';
 	if ( ! empty( $seedprod_settings['enable_coming_soon_mode'] ) ) {
-		$text = '<span>' . __( 'Coming Soon Mode Active', 'seedprod-coming-soon-pro' ) . '</span>';
+		$text = '<span>' . __( 'Coming Soon Mode Active', 'coming-soon' ) . '</span>';
 	} elseif ( ! empty( $seedprod_settings['enable_maintenance_mode'] ) ) {
-		$text = '<span>' . __( 'Maintenance Mode Active', 'seedprod-coming-soon-pro' ) . '</span>';
+		$text = '<span>' . __( 'Maintenance Mode Active', 'coming-soon' ) . '</span>';
+	} elseif ( ! empty( $theme_preview_mode ) ) {
+		$text = '<span>' . __( 'Theme Preview Mode Active', 'coming-soon' ) . '</span>';
 	}
 
 	$notification = '';
@@ -65,4 +76,4 @@ function seedprod_lite_admin_bar_menu( $wp_admin_bar ) {
 
 }
 
-
+// nonce covered by menu item capability.

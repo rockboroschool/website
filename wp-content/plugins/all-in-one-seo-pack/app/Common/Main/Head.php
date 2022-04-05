@@ -35,13 +35,13 @@ class Head {
 
 		$this->analytics    = new GoogleAnalytics();
 		$this->links        = new Meta\Links();
-		$this->robots       = new Meta\Robots();
 		$this->keywords     = new Meta\Keywords();
 		$this->verification = new Meta\SiteVerification();
 		$this->views        = [
-			'meta'   => AIOSEO_DIR . '/app/Common/Views/main/meta.php',
-			'social' => AIOSEO_DIR . '/app/Common/Views/main/social.php',
-			'schema' => AIOSEO_DIR . '/app/Common/Views/main/schema.php'
+			'meta'    => AIOSEO_DIR . '/app/Common/Views/main/meta.php',
+			'social'  => AIOSEO_DIR . '/app/Common/Views/main/social.php',
+			'schema'  => AIOSEO_DIR . '/app/Common/Views/main/schema.php',
+			'clarity' => AIOSEO_DIR . '/app/Common/Views/main/clarity.php'
 		];
 	}
 
@@ -107,6 +107,7 @@ class Head {
 			return self::$pageTitle;
 		}
 		self::$pageTitle = aioseo()->meta->title->filterPageTitle( $wpTitle );
+
 		return self::$pageTitle;
 	}
 

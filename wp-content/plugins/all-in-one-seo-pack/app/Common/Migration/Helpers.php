@@ -189,6 +189,7 @@ class Helpers {
 		}
 
 		$string = preg_replace( '/%([a-f0-9]{2}[^%]*)%/i', '#$1#', $string );
+
 		return $string;
 	}
 
@@ -232,12 +233,12 @@ class Helpers {
 	 * @return void
 	 */
 	public static function redoMigration() {
-		aioseo()->db->delete( 'options' )
+		aioseo()->core->db->delete( 'options' )
 			->whereRaw( "`option_name` LIKE 'aioseo_options_internal%'" )
 			->run();
 
-		aioseo()->cache->delete( 'v3_migration_in_progress_posts' );
-		aioseo()->cache->delete( 'v3_migration_in_progress_terms' );
+		aioseo()->core->cache->delete( 'v3_migration_in_progress_posts' );
+		aioseo()->core->cache->delete( 'v3_migration_in_progress_terms' );
 
 		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_post_meta' );
 		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_term_meta' );

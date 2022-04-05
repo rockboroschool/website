@@ -169,6 +169,7 @@ class Filter {
 			}
 
 			Models\Notification::deleteNotificationByName( 'deprecated-filters-v2' );
+
 			return;
 		}
 

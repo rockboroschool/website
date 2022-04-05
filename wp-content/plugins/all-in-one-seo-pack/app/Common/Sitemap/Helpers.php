@@ -35,6 +35,7 @@ class Helpers {
 		if ( ! $type ) {
 			$type = isset( aioseo()->sitemap->type ) ? aioseo()->sitemap->type : 'general';
 		}
+
 		return apply_filters( 'aioseo_sitemap_filename', aioseo()->options->sitemap->$type->filename );
 	}
 
@@ -64,6 +65,7 @@ class Helpers {
 		if ( ! $query->post_count ) {
 			return false;
 		}
+
 		return $query->posts[0];
 	}
 
@@ -81,8 +83,8 @@ class Helpers {
 			$postTypes = implode( "', '", $postTypes );
 		}
 
-		$query = aioseo()->db
-			->start( aioseo()->db->db->posts . ' as p', true )
+		$query = aioseo()->core->db
+			->start( aioseo()->core->db->db->posts . ' as p', true )
 			->select( 'MAX(`p`.`post_modified_gmt`) as last_modified' )
 			->where( 'p.post_status', 'publish' )
 			->whereRaw( "( `p`.`post_type` IN ( '$postTypes' ) )" );
@@ -142,6 +144,7 @@ class Helpers {
 					$lastModified = $timestamp;
 				}
 			}
+
 			return 0 !== $lastModified ? aioseo()->helpers->dateTimeToIso8601( gmdate( 'Y-m-d H:i:s', $timestamp ) ) : false;
 		}
 
@@ -160,6 +163,7 @@ class Helpers {
 		// Remove URL parameters.
 		$url = strtok( $url, '?' );
 		$url = htmlspecialchars( $url, ENT_COMPAT, 'UTF-8', false );
+
 		return aioseo()->helpers->makeUrlAbsolute( $url );
 	}
 
@@ -175,6 +179,7 @@ class Helpers {
 		if ( ! $this->performance ) {
 			$this->performance['time']   = microtime( true );
 			$this->performance['memory'] = ( memory_get_peak_usage( true ) / 1024 ) / 1024;
+
 			return;
 		}
 
@@ -236,6 +241,7 @@ class Helpers {
 				}
 			}
 		}
+
 		return $postTypes;
 	}
 
@@ -248,8 +254,8 @@ class Helpers {
 	 * @return bool             Whether or not there is an indexed post.
 	 */
 	private function checkForIndexedPost( $postType ) {
-		$posts = aioseo()->db
-			->start( aioseo()->db->db->posts . ' as p', true )
+		$posts = aioseo()->core->db
+			->start( aioseo()->core->db->db->posts . ' as p', true )
 			->select( 'p.ID' )
 			->join( 'aioseo_posts as ap', '`ap`.`post_id` = `p`.`ID`' )
 			->where( 'p.post_status', 'attachment' === $postType ? 'inherit' : 'publish' )
@@ -262,6 +268,7 @@ class Helpers {
 		if ( $posts && count( $posts ) ) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -309,6 +316,7 @@ class Helpers {
 				continue;
 			}
 		}
+
 		return $taxonomies;
 	}
 
@@ -417,7 +425,7 @@ class Helpers {
 			return $urls;
 		}
 
-		foreach ( aioseo()->sitemap->addons as $addon => $classes ) {
+		foreach ( aioseo()->sitemap->addons as $classes ) {
 			if ( ! empty( $classes['helpers'] ) ) {
 				$urls = array_merge( $urls, $classes['helpers']->getSitemapUrls() );
 			}

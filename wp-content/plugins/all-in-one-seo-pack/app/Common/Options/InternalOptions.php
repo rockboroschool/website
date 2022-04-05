@@ -56,6 +56,9 @@ class InternalOptions {
 				'results'      => [ 'type' => 'string' ],
 				'competitors'  => [ 'type' => 'array', 'default' => [], 'preserveHtml' => true ]
 			],
+			'headlineAnalysis'  => [
+				'headlines' => [ 'type' => 'array', 'default' => [] ]
+			],
 			'wizard'            => [ 'type' => 'string' ],
 			'category'          => [ 'type' => 'string' ],
 			'categoryOther'     => [ 'type' => 'string' ],
@@ -68,6 +71,9 @@ class InternalOptions {
 				'expires'      => [ 'type' => 'string' ],
 				'refreshToken' => [ 'type' => 'string' ]
 			]
+		],
+		'database'     => [
+			'installedTables' => [ 'type' => 'string' ]
 		]
 		// phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 	];
@@ -106,7 +112,7 @@ class InternalOptions {
 			$this->addValueToValuesArray( $this->defaultsMerged, $dbOptions )
 		);
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, apply_filters( 'aioseo_get_options_internal', $options ) );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, apply_filters( 'aioseo_get_options_internal', $options ) );
 
 		// Get the localized options.
 		$dbOptionsLocalized = get_option( $this->optionsName . '_localized' );
@@ -141,7 +147,7 @@ class InternalOptions {
 		}
 
 		// Refactor options.
-		$cachedOptions = aioseo()->optionsCache->getOptions( $this->optionsName );
+		$cachedOptions = aioseo()->core->optionsCache->getOptions( $this->optionsName );
 		$dbOptions     = array_replace_recursive(
 			$cachedOptions,
 			$this->addValueToValuesArray( $cachedOptions, $options, [], true )
@@ -149,7 +155,7 @@ class InternalOptions {
 
 		$dbOptions['internal']['siteAnalysis']['competitors']['value'] = $this->sanitizeField( $options['internal']['siteAnalysis']['competitors'], 'array', true );
 
-		aioseo()->optionsCache->setOptions( $this->optionsName, $dbOptions );
+		aioseo()->core->optionsCache->setOptions( $this->optionsName, $dbOptions );
 
 		// Update localized options.
 		update_option( $this->optionsName . '_localized', $this->localized );

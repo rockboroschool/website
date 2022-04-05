@@ -41,6 +41,7 @@ class WebSite extends Graph {
 				'query-input' => 'required name=search_term_string',
 			];
 		}
+
 		return $data;
 	}
 }

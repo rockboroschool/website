@@ -26,14 +26,15 @@ trait ActionScheduler {
 	 *
 	 * @since 4.0.13
 	 *
-	 * @param  string  $actionName The action name.
-	 * @param  int     $time       The time to add to the current time.
-	 * @param  array   $args       Args passed down to the action.
-	 * @return boolean             Whether the action was scheduled.
+	 * @param  string  $actionName    The action name.
+	 * @param  int     $time          The time to add to the current time.
+	 * @param  array   $args          Args passed down to the action.
+	 * @param  bool    $forceSchedule Whether we should schedule a new action regardless of whether one is already set.
+	 * @return boolean                Whether the action was scheduled.
 	 */
-	public function scheduleSingleAction( $actionName, $time, $args = [] ) {
+	public function scheduleSingleAction( $actionName, $time, $args = [], $forceSchedule = false ) {
 		try {
-			if ( ! $this->isScheduledAction( $actionName ) ) {
+			if ( $forceSchedule || ! $this->isScheduledAction( $actionName ) ) {
 				as_schedule_single_action( time() + $time, $actionName, $args, $this->actionSchedulerGroup );
 
 				return true;
@@ -56,11 +57,28 @@ trait ActionScheduler {
 	 */
 	public function isScheduledAction( $actionName, $args = [] ) {
 		// We need to check for pending actions specifically since we otherwise cannot schedule another action while one is running (e.g. image and video sitemap scans).
-		$actions = as_get_scheduled_actions( [
+		$pendingArgs = [
 			'hook'     => $actionName,
 			'status'   => \ActionScheduler_Store::STATUS_PENDING,
 			'per_page' => 1
-		]);
+		];
+
+		$runningArgs = [
+			'hook'     => $actionName,
+			'status'   => \ActionScheduler_Store::STATUS_RUNNING,
+			'per_page' => 1
+		];
+
+		if ( ! empty( $args ) ) {
+			$pendingArgs['args'] = $args;
+			$runningArgs['args'] = $args;
+		}
+
+		$actions = array_merge(
+			as_get_scheduled_actions( $pendingArgs ),
+			as_get_scheduled_actions( $runningArgs )
+		);
+
 		return ! empty( $actions );
 	}
 
@@ -98,6 +116,7 @@ trait ActionScheduler {
 		try {
 			if ( ! $this->isScheduledAction( $actionName ) ) {
 				as_schedule_recurring_action( time() + $time, $interval, $actionName, $args, $this->actionSchedulerGroup );
+
 				return true;
 			}
 		} catch ( \RuntimeException $e ) {
@@ -105,5 +124,23 @@ trait ActionScheduler {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Schedule a single async action.
+	 *
+	 * @since 4.1.6
+	 *
+	 * @param  string $actionName The name of the action.
+	 * @param  array  $args       Any relevant arguments.
+	 * @return void
+	 */
+	public function scheduleAsyncAction( $actionName, $args = [] ) {
+		try {
+			// Run the task immediately using an async action.
+			as_enqueue_async_action( $actionName, $args, $this->actionSchedulerGroup );
+		} catch ( \Exception $e ) {
+			// Do nothing.
+		}
 	}
 }

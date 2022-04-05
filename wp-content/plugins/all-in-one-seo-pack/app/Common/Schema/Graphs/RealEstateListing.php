@@ -36,6 +36,7 @@ class RealEstateListing extends WebPage {
 		}
 
 		$data['datePosted'] = mysql2date( DATE_W3C, $post->post_date_gmt, false );
+
 		return $data;
 	}
 }

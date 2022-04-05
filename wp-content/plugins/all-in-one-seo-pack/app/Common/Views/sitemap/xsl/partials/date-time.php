@@ -19,14 +19,14 @@ if ( empty( $data['datetime'] ) || empty( $data['node'] ) ) {
 <div class="date">
 	<xsl:choose>
 		<?php foreach ( $data['datetime'] as $slug => $datetime ) : ?>
-			<xsl:when test="contains(<?php echo esc_attr( $data['node'] ); ?>, '<?php echo esc_attr( $slug ); ?>')"><?php echo esc_html( $datetime['date'] ); ?></xsl:when>
+			<xsl:when test="<?php echo esc_attr( $data['node'] ); ?> = '<?php echo esc_attr( $slug ); ?>'"><?php echo esc_html( $datetime['date'] ); ?></xsl:when>
 		<?php endforeach; ?>
 	</xsl:choose>
 </div>
 <div class="time">
 	<xsl:choose>
 		<?php foreach ( $data['datetime'] as $slug => $datetime ) : ?>
-			<xsl:when test="contains(<?php echo esc_attr( $data['node'] ); ?>, '<?php echo esc_attr( $slug ); ?>')"><?php echo esc_html( $datetime['time'] ); ?></xsl:when>
+			<xsl:when test="<?php echo esc_attr( $data['node'] ); ?> = '<?php echo esc_attr( $slug ); ?>'"><?php echo esc_html( $datetime['time'] ); ?></xsl:when>
 		<?php endforeach; ?>
 	</xsl:choose>
 </div>

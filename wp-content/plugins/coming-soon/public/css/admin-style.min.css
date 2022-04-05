@@ -439,6 +439,7 @@ button.swal-styled{-webkit-box-shadow:none;box-shadow:none}
 .swal2-modal .swal2-close{font-size:1.5em !important}
 .vue-popover-theme{z-index:10;outline:0}
 .v-popover .trigger{display:block !important}
+.sp-highlight-theme-template{-webkit-box-shadow:inset 0 0 1px 1px #0f8a5e;box-shadow:inset 0 0 1px 1px #0f8a5e;position:absolute;width:100%;height:100%;top:0;left:0}
 .sp-highlight-section{-webkit-box-shadow:inset 0 0 1px 1px #7036bb;box-shadow:inset 0 0 1px 1px #7036bb;position:absolute;width:100%;height:100%;top:0;left:0}
 .sp-highlight-row{-webkit-box-shadow:inset 0 0 1px 1px #3f5fd1;box-shadow:inset 0 0 1px 1px #3f5fd1}
 .sp-highlight-block{-webkit-box-shadow:inset 0 0 1px 1px #dd4a1f;box-shadow:inset 0 0 1px 1px #dd4a1f}
@@ -454,7 +455,7 @@ button.swal-styled{-webkit-box-shadow:none;box-shadow:none}
 h1.seedprod-highlight-option::before{bottom:-15px;padding:1px 4px}
 .help_tip{cursor:pointer;padding:0 5px;font-size:13px;vertical-align:middle}
 #nprogress{pointer-events:none}
-#nprogress .bar{background:#f3510a;position:fixed;z-index:999999;top:0;left:0;width:100%;height:2px}
+#nprogress .bar{background:#f3510a;margin:0;position:fixed;z-index:999999;top:0;left:0;width:100%;height:2px}
 #nprogress .peg{display:block;position:absolute;right:0;width:100px;height:100%;-webkit-box-shadow:0 0 10px #f3510a,0 0 5px #f3510a;box-shadow:0 0 10px #f3510a,0 0 5px #f3510a;opacity:1;-webkit-transform:rotate(3deg) translate(0,-4px);transform:rotate(3deg) translate(0,-4px)}
 #nprogress .spinner{display:block;position:fixed;z-index:1031;top:15px;right:15px}
 #nprogress .spinner-icon{width:18px;height:18px;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:1031;border:solid 2px transparent;border-top-color:#29d;border-left-color:#29d;border-radius:50%;-webkit-animation:nprogress-spinner 400ms linear infinite;animation:nprogress-spinner 400ms linear infinite}
@@ -719,8 +720,9 @@ div.mce-inline-toolbar-grp.mce-arrow-up:after{border-bottom-color:#230820 !impor
 .fade-enter,.fade-leave-to{opacity:0}
 .sp-preview-hidden{display:none !important}
 .sp-wp-button{display:inline-block;padding:.5em .75em;font-weight:600;border-radius:3px}
-.sp-wp-button-transparent{background-color:transparent;border:1px solid currentColor}
+.sp-wp-button-transparent{background-color:#7b6b7a;border:1px solid #7b6b7a;color:#fff}
 .sp-wp-button-transparent:hover{background-color:#4f394d;border-color:#4f394d;color:#fff}
+.loading:after{content:' .';-webkit-animation:dots 1s steps(5,end) infinite;animation:dots 1s steps(5,end) infinite}
 @-webkit-keyframes hightlight_pulse_color{0%{-webkit-box-shadow:inset 0 0 1px 1px red;box-shadow:inset 0 0 1px 1px red}
 50%{-webkit-box-shadow:inset 0 0 1px 1px #fff;box-shadow:inset 0 0 1px 1px #fff}
 100%{-webkit-box-shadow:inset 0 0 1px 1px #f3510b;box-shadow:inset 0 0 1px 1px #f3510b}
@@ -731,4 +733,12 @@ div.mce-inline-toolbar-grp.mce-arrow-up:after{border-bottom-color:#230820 !impor
 100%{-webkit-transform:rotate(360deg)}
 }@keyframes nprogress-spinner{0%{-webkit-transform:rotate(0);transform:rotate(0)}
 100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}
+}@-webkit-keyframes dots{0%,20%{color:rgba(0,0,0,0);text-shadow:.25em 0 0 rgba(0,0,0,0),0.5em 0 0 rgba(0,0,0,0)}
+40%{color:black;text-shadow:.25em 0 0 rgba(0,0,0,0),0.5em 0 0 rgba(0,0,0,0)}
+60%{text-shadow:.25em 0 0 black,0.5em 0 0 rgba(0,0,0,0)}
+80%,100%{text-shadow:.25em 0 0 black,0.5em 0 0 black}
+}@keyframes dots{0%,20%{color:rgba(0,0,0,0);text-shadow:.25em 0 0 rgba(0,0,0,0),0.5em 0 0 rgba(0,0,0,0)}
+40%{color:black;text-shadow:.25em 0 0 rgba(0,0,0,0),0.5em 0 0 rgba(0,0,0,0)}
+60%{text-shadow:.25em 0 0 black,0.5em 0 0 rgba(0,0,0,0)}
+80%,100%{text-shadow:.25em 0 0 black,0.5em 0 0 black}
 }

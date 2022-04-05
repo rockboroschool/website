@@ -99,7 +99,7 @@ class Tools {
 		// Translators: 1 - The plugin name ("All in One SEO"), 2 - The Site URL.
 		$html = sprintf( __( '%1$s Debug Info from %2$s', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_NAME, aioseo()->helpers->getSiteDomain() ) . "\r\n------------------\r\n\r\n";
 		$info = CommonTools\SystemStatus::getSystemStatusInfo();
-		foreach ( $info as $key => $group ) {
+		foreach ( $info as $group ) {
 			if ( empty( $group['results'] ) ) {
 				continue;
 			}
