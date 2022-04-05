@@ -26,7 +26,7 @@ class EnqueueAssets{
         // wp_enqueue_script('jquery');
         wp_register_style( 'pdfp-public',  PDFP_PLUGIN_DIR. 'dist/public.css', array(), PDFP_PLUGIN_VERSION );
 
-        // wp_register_script( 'bplugins-plyrio', PDFP_PLUGIN_DIR. 'assets/js/plyr.js', array(), PDFP_PLUGIN_VERSION, true );
+        wp_register_script( 'pdfp-public', PDFP_PLUGIN_DIR. 'dist/public.js', array(), PDFP_PLUGIN_VERSION, true );
     }
 
     /**

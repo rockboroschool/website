@@ -203,7 +203,7 @@ var MonsterInsights = function () {
 		) ? extension.length : extension.indexOf( "?" ) ); /* Remove the query after the file name, if there is one */
 		extension = extension.substring( extension.lastIndexOf( "/" ) + 1, extension.length ); /* Remove everything before the last slash in the path */
 		if ( extension.length > 0 && extension.indexOf( '.' ) !== - 1 ) { /* If there's a period left in the URL, then there's a extension. Else it is not a extension. */
-			extension = extension.substring( extension.indexOf( "." ) + 1 ); /* Remove everything but what's after the first period */
+			extension = extension.substring( extension.lastIndexOf( "." ) + 1 ); /* Remove everything but what's after the first period */
 			return extension;
 		} else {
 			return "";
@@ -615,13 +615,6 @@ var MonsterInsights = function () {
 					} else if ( type == 'external' ) {
 						beforeUnloadChanged = true;
 						window.onbeforeunload = function ( e ) {
-							if ( !event.defaultPrevented ) {
-								if ( event.preventDefault ) {
-									event.preventDefault();
-								} else {
-									event.returnValue = false;
-								}
-							}
 
 							fieldsArray = {
 								event_category: 'outbound-link',
@@ -641,7 +634,6 @@ var MonsterInsights = function () {
 							}
 
 							__gtagTrackerSendDual( 'event', action || link, fieldsArray, valuesArray );
-							setTimeout( __gtagTrackerHitBack, 1000 );
 						};
 					} else if ( type == 'cross-hostname' ) {
 						beforeUnloadChanged = true;

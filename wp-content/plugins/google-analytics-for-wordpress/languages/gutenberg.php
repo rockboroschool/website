@@ -142,6 +142,18 @@ $generated_i18n_strings = array(
 	// Reference: src/blocks/popular-posts-widget/index.js:476
 	__( 'Display Comments', 'google-analytics-for-wordpress' ),
 
+	// Reference: src/plugins/exclude-page-tracking/components/pro-badge.js:11
+	__( 'This is a PRO feature.', 'google-analytics-for-wordpress' ),
+
+	// Reference: src/plugins/exclude-page-tracking/components/pro-badge.js:12
+	__( 'Upgrade', 'google-analytics-for-wordpress' ),
+
+	// Reference: src/plugins/exclude-page-tracking/index.js:29
+	__( 'Toggle to prevent Google Analytics from tracking this page.', 'google-analytics-for-wordpress' ),
+
+	// Reference: src/plugins/exclude-page-tracking/index.js:30
+	__( 'Exclude page from Google Analytics Tracking', 'google-analytics-for-wordpress' ),
+
 	// Reference: src/plugins/monsterinsights-Headline-Analyzer/components/HeadlinePanelCharacterCount.js:10
 	__( 'Character Count', 'google-analytics-for-wordpress' ),
 

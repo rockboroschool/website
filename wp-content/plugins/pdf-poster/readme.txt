@@ -3,8 +3,8 @@ Contributors: abuhayat, shehabulislam
 Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
-Tested up to: 5.8
-Stable tag: 2.0.7
+Tested up to: 5.9.2
+Stable tag: 2.0.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,15 @@ If you find a conflict between our plugin and a third-party plugin, please let u
 4. Full Screen preview 
 
 == Changelog ==
+
+= 2.0.10 - 4/5/2022 =
+* solved - "Oops! You forgot to select a pdf file."
+
+= 2.0.9 - 4/4/2022 =
+* Fixed SSL issue
+
+= 2.0.8 - 1/26/2022 =
+* Fixed Responsive issue
 
 = 2.0.7 =
 * Forbidden issue fixed

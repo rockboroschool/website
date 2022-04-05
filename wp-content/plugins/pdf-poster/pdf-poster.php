@@ -3,7 +3,7 @@
  * Plugin Name: PDF Poster 
  * Plugin URI:  http://pdfposter.com/
  * Description: You can easily Embed pdf file in wordress post, page, widget area and theme template file. 
- * Version:     2.0.7
+ * Version:     2.0.10
  * Author:      bPlugins LLC
  * Author URI:  https://bplugins.com
  * License:     GPLv3
@@ -14,9 +14,9 @@
  use PDFP\Model\Import;
 /*Some Set-up*/
 define('PDFP_PLUGIN_DIR', plugin_dir_url(__FILE__)); 
-define('PDFP_PLUGIN_VERSION',  '2.0.7' ); 
-define('PDFP_VER',  '2.0.7' ); 
-define('IMPORT_VER',  '1.0.0' ); 
+define('PDFP_PLUGIN_VERSION',  '2.0.10' ); 
+define('PDFP_VER',  '2.0.10' ); 
+define('IMPORT_VER',  '1.1.0' ); 
 
 function pdfp_load_textdomain() {
     load_plugin_textdomain( 'pdfp', false, dirname( __FILE__ ) . "/languages" );
@@ -38,10 +38,10 @@ function pdfp_plugin_redirect() {
         delete_option('pdfp_plugin_do_activation_redirect');
         wp_redirect('edit.php?post_type=pdfposter&page=pdfp-support');
     }
-    // if(get_option('pdfp_import', '0') != IMPORT_VER){
-    //     Import::importMeta();
-    //     update_option('pdfp_import', IMPORT_VER);
-    // }
+    if(get_option('pdfp_import', '0') != IMPORT_VER){
+        Import::meta();
+        update_option('pdfp_import', IMPORT_VER);
+    }
 
 }
 

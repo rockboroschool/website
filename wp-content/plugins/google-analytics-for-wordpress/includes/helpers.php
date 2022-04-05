@@ -60,6 +60,15 @@ function monsterinsights_track_user( $user_id = -1 ) {
 	return apply_filters( 'monsterinsights_track_user', $track_user, $user );
 }
 
+/**
+ * Skip tracking status.
+ *
+ * @return bool
+ */
+function monsterinsights_skip_tracking() {
+    return (bool) apply_filters( 'monsterinsights_skip_tracking', false );
+}
+
 function monsterinsights_get_client_id( $payment_id = false ) {
 	if ( is_object( $payment_id ) ) {
 		$payment_id = $payment_id->ID;
@@ -1690,11 +1699,15 @@ function monsterinsights_load_gutenberg_app() {
 function monsterinsights_get_frontend_analytics_script_atts() {
 	$attr_string = '';
 
-	$attributes = apply_filters( 'monsterinsights_tracking_analytics_script_attributes', array(
-		'type'         => "text/javascript",
-		'data-cfasync' => 'false',
-		'data-wpfc-render' => 'false'
-	) );
+    $default_attributes = [
+		'data-cfasync'     => 'false',
+		'data-wpfc-render' => 'false',
+    ];
+    if ( ! current_theme_supports( 'html5', 'script' ) ) {
+		$default_attributes['type'] = 'text/javascript';
+    }
+
+	$attributes = apply_filters( 'monsterinsights_tracking_analytics_script_attributes', $default_attributes);
 
 	if ( ! empty( $attributes ) ) {
 		foreach ( $attributes as $attr_name => $attr_value ) {
@@ -1707,6 +1720,35 @@ function monsterinsights_get_frontend_analytics_script_atts() {
 	}
 
 	return $attr_string;
+}
+
+/**
+ * Helper function instead of wp_localize_script with our script tag attributes.
+ *
+ * @return string
+ * @since 8.5.0
+ *
+ */
+function monsterinsights_localize_script( $handle, $object_name, $data, $priority = 100 ) {
+	$theme_supports_html5 = current_theme_supports( 'html5', 'script' );
+	$script_js = ! $theme_supports_html5 ? "/* <![CDATA[ */\n" : '';
+	$script_js .= "var $object_name = " . wp_json_encode( $data ) . ';';
+	$script_js .= ! $theme_supports_html5 ? "/* ]]> */\n" : '';
+
+	$script = sprintf(
+		"<script%s id='%s-js-extra'>%s</script>\n",
+		monsterinsights_get_frontend_analytics_script_atts(),
+		esc_attr( $handle ),
+		$script_js
+	);
+
+	add_filter( 'script_loader_tag', function ( $tag, $current_handle ) use ($handle, $script){
+		if ( $current_handle !== $handle ) {
+			return $tag;
+		}
+
+		return $tag . $script;
+	}, $priority, 2 );
 }
 
 /**

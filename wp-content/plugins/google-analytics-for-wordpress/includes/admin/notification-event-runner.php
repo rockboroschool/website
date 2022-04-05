@@ -117,6 +117,8 @@ class MonsterInsights_Notification_Event_Runner {
 		$notifications = $this->get_registered_notifications();
 		$last_runs     = $this->get_notifications_last_run();
 
+		$current_runs = 0;
+
 		// Loop through registered notifications.
 		foreach ( $notifications as $notification ) {
 			/**¬
@@ -133,11 +135,20 @@ class MonsterInsights_Notification_Event_Runner {
 				$time_now   = time();
 				if ( $time_since < $time_now ) {
 					// Interval passed since it ran so let's add this one.
-					$notification->add_notification();
+
+					$current_runs ++;
+					$added_notification = $notification->add_notification();
+
 					// Update the last run date as right now.
-					$this->update_last_run( $notification->notification_id );
-					// Let's not add multiple notifications at the same time.
-					break;
+					$this->update_last_run($notification->notification_id);
+
+					// Avoid adding multiple notifications at the same time, and
+					// also avoid running more than 5 notifications that returned
+					// no data, otherwise this request would take too long
+					if ( $added_notification || $current_runs > 5 ) {
+						// Let's not add multiple notifications at the same time.
+						break;
+					}
 				}
 			}
 		}

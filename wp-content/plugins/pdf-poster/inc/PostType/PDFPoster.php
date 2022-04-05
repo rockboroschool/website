@@ -23,7 +23,6 @@ class Podcast{
             
             add_filter( 'filter_block_editor_meta_boxes', [$this, 'remove_metabox'] );
             add_action('use_block_editor_for_post', [$this, 'forceGutenberg'], 10, 2);
-            
         }
     }
 
@@ -173,7 +172,6 @@ class Podcast{
         $pluginUpdated = 1630223686;
         $publishDate = get_the_date('U', $post);
         $currentTime = current_time("U");
-
     
         if ($this->post_type === $post->post_type) {
             if($gutenberg){
@@ -181,7 +179,7 @@ class Podcast{
                     update_post_meta($post->ID, 'isGutenberg', true);
                     return true;
                 }else {
-                    if($isGutenberg || $pluginUpdated < $publishDate){
+                    if($isGutenberg){
                         return true;
                     }else {
                         remove_post_type_support($this->post_type, 'editor');

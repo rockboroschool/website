@@ -68,6 +68,8 @@ function monsterinsights_gutenberg_editor_assets() {
 		}
 	}
 
+	$posttype = monsterinsights_get_current_post_type();
+
 	// Localize script for sidebar plugins.
 	wp_localize_script(
 		'monsterinsights-gutenberg-editor-js',
@@ -76,7 +78,7 @@ function monsterinsights_gutenberg_editor_assets() {
 			'ajaxurl'                      => admin_url( 'admin-ajax.php' ),
 			'nonce'                        => wp_create_nonce( 'monsterinsights_gutenberg_headline_nonce' ),
 			'allowed_post_types'           => apply_filters( 'monsterinsights_headline_analyzer_post_types', array( 'post' ) ),
-			'current_post_type'            => monsterinsights_get_current_post_type(),
+			'current_post_type'            => $posttype,
 			'translations'                 => wp_get_jed_locale_data( monsterinsights_is_pro_version() ? 'ga-premium' : 'google-analytics-for-wordpress' ),
 			'is_headline_analyzer_enabled' => apply_filters( 'monsterinsights_headline_analyzer_enabled', true ) && 'true' !== monsterinsights_get_option( 'disable_headline_analyzer' ),
 			'reports_url'                  => add_query_arg( 'page', 'monsterinsights_reports', admin_url( 'admin.php' ) ),
@@ -85,6 +87,7 @@ function monsterinsights_gutenberg_editor_assets() {
 			'license_type'                 => MonsterInsights()->license->get_license_type(),
 			'upgrade_url'                  => monsterinsights_get_upgrade_link( 'gutenberg', 'products' ),
 			'install_woocommerce_url'      => $install_woocommerce_url,
+			'supports_custom_fields'       => post_type_supports( $posttype, 'custom-fields' ),
 		)
 	);
 }

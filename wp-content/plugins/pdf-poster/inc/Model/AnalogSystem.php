@@ -23,17 +23,17 @@ class AnalogSystem{
     public static function getData($id){
         $options = [];
 
-        $infos = [
-            
-        ];
+        $infos = [];
 
+        $height = self::GPM($id, 'height', ['height' => 1122, 'unit' => 'px']);
+        $width = self::GPM($id, 'width', ['width' => 100, 'unit' => '%']);
         $template = array(
-            'file' => self::get_post_meta($id, 'meta-image', ''),
-            'height' => self::get_post_meta($id, 'pdfp_onei_pp_height', 1122).'px',
-            'width' => self::get_post_meta($id, 'pdfp_onei_pp_width', false) ? self::get_post_meta($id, 'pdfp_onei_pp_width', false).'px' : '100%',
+            'file' => self::GPM($id, 'source', ''),
+            'height' => $height['height'].$height['unit'],
+            'width' => $width['width'].$width['unit'],
             'classes' => '',
-            'showName' => self::get_post_meta($id, 'pdfp_onei_pp_pgname', false),
-            'print' => self::get_post_meta($id, 'pdfp_onei_pp_print', false),
+            'showName' => self::GPM($id, 'show_filename', false, true),
+            'print' => self::GPM($id, 'print', false, 'false') == '1' ? 'vera' : false
         );
 
         return [
@@ -59,7 +59,7 @@ class AnalogSystem{
     }
 
     public static function GPM($id, $key, $default = false, $true = false){
-        $meta = metadata_exists( 'post', $id, 'h5vp_playlist_options' ) ? get_post_meta($id, 'h5vp_playlist_options', true) : '';
+        $meta = metadata_exists( 'post', $id, '_fpdf' ) ? get_post_meta($id, '_fpdf', true) : '';
         if(isset($meta[$key]) && $meta != ''){
             if($true == true){
                 if($meta[$key] == '1'){
@@ -76,18 +76,4 @@ class AnalogSystem{
         return $default;
     }
 
-    private static function get_videos($id, $key, $default = null, $true = false){
-        $meta = metadata_exists( 'post', $id, 'h5vp_playlist' ) ? get_post_meta( $id, 'h5vp_playlist', true ) : '';
-        if(isset($meta[$key]) && $meta[$key] != '' && $true == true){
-            return true;
-        }elseif(isset($meta[$key]) && $meta[$key] != '') {
-            return $meta[$key];
-        }else {
-            return $default;
-        }
-    }
-
-    public static function getQuickPlayerData(){
-        
-    }
 }

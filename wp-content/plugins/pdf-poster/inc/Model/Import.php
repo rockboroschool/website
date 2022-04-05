@@ -3,6 +3,37 @@ namespace PDFP\Model;
 
 class Import{
 
+    public static function meta(){
+        $query = new \WP_Query(array(
+            'post_type' => 'pdfposter',
+            'post_status' => 'any',
+            'posts_per_page' => -1
+        ));
+
+        $output = [];
+        while($query->have_posts()): $query->the_post();
+            $id = \get_the_ID();
+            
+            $meta = [
+                'source' => get_post_meta($id, 'meta-image', true),
+                'height' => [
+                    'height' => get_post_meta($id, 'pdfp_onei_pp_height', true) == '' ? 840 : get_post_meta($id, 'pdfp_onei_pp_height', true),
+                    'unit' => 'px'
+                ],
+                'width' => [
+                    'width' => get_post_meta($id, 'pdfp_onei_pp_width', true) == '' ? 100 : get_post_meta($id, 'pdfp_onei_pp_width', true),
+                    'unit' => get_post_meta($id, 'pdfp_onei_pp_width', true) == '' ? '%' : 'px',
+                ],
+                'print' => get_post_meta($id, 'pdfp_onei_pp_print', true) == 'on' ? true : false,
+                'showName' => get_post_meta($id, 'pdfp_onei_pp_pgname', true) == 'on' ? true : false
+            ];
+
+            if (\metadata_exists('post', $id, '_fpdf') == false) {
+                \update_post_meta($id, '_fpdf', $meta);
+            }
+        endwhile;
+    }
+
     public static function importMeta(){
         $pdfs = self::createBlock();
         foreach($pdfs as $pdf){

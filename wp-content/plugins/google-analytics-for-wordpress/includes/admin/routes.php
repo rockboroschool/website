@@ -112,6 +112,7 @@ class MonsterInsights_Rest_Routes {
 			'network_v4'                          => $auth->get_network_v4_id(),
 			'network_viewname'                    => $auth->get_network_viewname(),
 			'network_manual_ua'                   => $auth->get_network_manual_ua(),
+			'network_manual_v4'                   => $auth->get_network_manual_v4_id(),
 			'network_measurement_protocol_secret' => $auth->get_network_measurement_protocol_secret(),
 			'connected_type'                      => $auth->get_connected_type(),
 		) );
@@ -653,6 +654,7 @@ class MonsterInsights_Rest_Routes {
 			}
 		} else if ( isset( $_POST['manual_ua_code'] ) && empty( $manual_ua_code ) ) {
 			wp_send_json_error( array(
+				'ua_error' => 1,
 				'error' => __( 'Invalid UA code', 'google-analytics-for-wordpress' ),
 			) );
 		}
@@ -706,7 +708,8 @@ class MonsterInsights_Rest_Routes {
 			}
 		} else if ( isset( $_POST['manual_v4_code'] ) && empty( $manual_v4_code ) ) {
 			wp_send_json_error( array(
-				'error' => __( 'Invalid UA code', 'google-analytics-for-wordpress' ),
+				'v4_error' => 1,
+				'error' => __( 'Invalid GAv4 code', 'google-analytics-for-wordpress' ),
 			) );
 		}
 
@@ -928,8 +931,12 @@ class MonsterInsights_Rest_Routes {
 			$data = apply_filters( 'monsterinsights_vue_reports_data', $report->get_data( $args ), $report_name, $report );
 		}
 
-		if ( ! empty( $data['success'] ) && ! empty( $data['data'] ) ) {
-			wp_send_json_success( $data['data'] );
+		if ( ! empty( $data['success'] ) ) {
+			if ( empty( $data['data'] ) ) {
+				wp_send_json_success( new stdclass() );
+			} else {
+				wp_send_json_success( $data['data'] );
+			}
 		} else if ( isset( $data['success'] ) && false === $data['success'] && ! empty( $data['error'] ) ) {
 			// Use a custom handler for invalid_grant errors.
 			if ( strpos( $data['error'], 'invalid_grant' ) > 0 ) {

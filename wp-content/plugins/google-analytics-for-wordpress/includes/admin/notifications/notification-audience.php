@@ -11,6 +11,8 @@ final class MonsterInsights_Notification_Audience extends MonsterInsights_Notifi
 	public $notification_id = 'monsterinsights_notification_audience';
 	public $notification_interval = 30; // in days
 	public $notification_type = array( 'basic', 'lite', 'master', 'plus', 'pro' );
+	public $notification_category = 'insight';
+	public $notification_priority = 2;
 
 	/**
 	 * Build Notification
@@ -30,7 +32,7 @@ final class MonsterInsights_Notification_Audience extends MonsterInsights_Notifi
 		}
 
 		// Translators: Audience notification title
-		$notification['title'] = sprintf( __( '%s%% of your Audience is from %s', 'google-analytics-for-wordpress' ), $data['percentage'], $data['country'] );
+		$notification['title'] = sprintf( __( '%s%% of Your Audience is From %s', 'google-analytics-for-wordpress' ), $data['percentage'], $data['country'] );
 		// Translators: Audience notification content
 		$notification['content'] = sprintf( __( 'Is your site properly translated? By adding translated content specific to your audience you could gain big boosts in pageviews, time spent on page and a reduced bounce rate.<br><br>If you need help choosing a translation plugin to get you started take a look at %sthis article%s for the best options available.', 'google-analytics-for-wordpress' ), '<a href="' . $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ) . '" target="_blank">', '</a>' );
 		$notification['btns']    = array(

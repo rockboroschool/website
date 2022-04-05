@@ -26,6 +26,7 @@ class Atomic_Admin_Menu extends Admin_Menu {
 		add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_scripts' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'dequeue_scripts' ), 20 );
 		add_action( 'wp_ajax_sidebar_state', array( $this, 'ajax_sidebar_state' ) );
+		add_action( 'wp_ajax_jitm_dismiss', array( $this, 'wp_ajax_jitm_dismiss' ) );
 
 		if ( ! $this->is_api_request ) {
 			add_filter( 'submenu_file', array( $this, 'override_the_theme_installer' ), 10, 2 );
@@ -114,32 +115,32 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	 * Adds Plugins menu.
 	 */
 	public function add_plugins_menu() {
-		/**
-		 * Whether to enable the marketplace feature entrypoint.
-		 * This filter is specific to WPCOM, that's why there is no
-		 * need to use `jetpack_` prefix.
-		 *
-		 * @use add_filter( 'wpcom_marketplace_enabled', '__return_true' );
-		 * @module masterbar
-		 * @since 10.3
-		 * @param bool $wpcom_marketplace_enabled Load the WordPress.com Marketplace feature. Default to false.
-		 */
-		if ( apply_filters( 'wpcom_marketplace_enabled', false ) ) {
-			global $submenu;
-			$plugins_submenu = $submenu['plugins.php'];
-			$slug_to_update  = 'plugin-install.php';
+		global $submenu;
 
-			// Move "Add New" plugin submenu ( `plugin-install.php` ) to the top position.
-			foreach ( $plugins_submenu as $submenu_key => $submenu_keys ) {
-				if ( $submenu_keys[2] === $slug_to_update ) {
-					// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-					$submenu['plugins.php'] = array( $submenu_key => $plugins_submenu[ $submenu_key ] ) + $plugins_submenu;
-				}
-			}
+		// Hide Add new plugin and plugin file editor menu.
+		if ( ! $this->has_atomic_supported_plan() ) {
+			parent::add_plugins_menu();
 
-			$submenus_to_update = array( $slug_to_update => 'https://wordpress.com/plugins/' . $this->domain );
-			$this->update_submenus( 'plugins.php', $submenus_to_update );
+			return;
 		}
+
+		if ( ! isset( $submenu['plugins.php'] ) ) {
+			return;
+		}
+
+		$plugins_submenu = $submenu['plugins.php'];
+
+		// Move "Add New" plugin submenu to the top position.
+		foreach ( $plugins_submenu as $submenu_key => $submenu_keys ) {
+			if ( 'plugin-install.php' === $submenu_keys[2] ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				$submenu['plugins.php'] = array( $submenu_key => $plugins_submenu[ $submenu_key ] ) + $plugins_submenu;
+			}
+		}
+
+		$submenus_to_update = array( 'plugin-install.php' => 'https://wordpress.com/plugins/' . $this->domain );
+
+		$this->update_submenus( 'plugins.php', $submenus_to_update );
 	}
 
 	/**
@@ -272,6 +273,9 @@ class Atomic_Admin_Menu extends Admin_Menu {
 				'tracks_impression_cta_name'   => $message->tracks->display->props->cta_name,
 				'tracks_click_event_name'      => $message->tracks->click->name,
 				'tracks_click_cta_name'        => $message->tracks->click->props->cta_name,
+				'dismissible'                  => $message->is_dismissible,
+				'feature_class'                => $message->feature_class,
+				'id'                           => $message->id,
 			);
 		}
 	}
@@ -347,7 +351,10 @@ class Atomic_Admin_Menu extends Admin_Menu {
 			);
 		}
 		add_submenu_page( 'options-general.php', esc_attr__( 'Hosting Configuration', 'jetpack' ), __( 'Hosting Configuration', 'jetpack' ), 'manage_options', 'https://wordpress.com/hosting-config/' . $this->domain, null, 11 );
-		add_submenu_page( 'options-general.php', esc_attr__( 'Jetpack', 'jetpack' ), __( 'Jetpack', 'jetpack' ), 'manage_options', 'https://wordpress.com/settings/jetpack/' . $this->domain, null, 12 );
+
+		if ( $this->has_atomic_supported_plan() ) {
+			add_submenu_page( 'options-general.php', esc_attr__( 'Jetpack', 'jetpack' ), __( 'Jetpack', 'jetpack' ), 'manage_options', 'https://wordpress.com/settings/jetpack/' . $this->domain, null, 12 );
+		}
 
 		// Page Optimize is active by default on all Atomic sites and registers a Settings > Performance submenu which
 		// would conflict with our own Settings > Performance that links to Calypso, so we hide it it since the Calypso
@@ -398,6 +405,16 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	}
 
 	/**
+	 * Handle ajax requests to dismiss a just-in-time-message
+	 */
+	public function wp_ajax_jitm_dismiss() {
+		check_ajax_referer( 'jitm_dismiss' );
+		$jitm = \Automattic\Jetpack\JITMS\JITM::get_instance();
+		$jitm->dismiss( $_REQUEST['id'], $_REQUEST['feature_class'] );
+		wp_die();
+	}
+
+	/**
 	 * Hide Calypso Search menu for Atomic sites.
 	 *
 	 * For simple sites, where search dashboard doesn't exist, we use the Calypso page / menu item.
@@ -406,5 +423,17 @@ class Atomic_Admin_Menu extends Admin_Menu {
 	 */
 	public function hide_search_menu_for_calypso() {
 		$this->hide_submenu_page( 'jetpack', 'https://wordpress.com/jetpack-search/' . $this->domain );
+	}
+
+	/**
+	 * Check if site has Atomic supported plan. `Atomic_Plan_Manager` lives in wpcomsh
+	 */
+	protected function has_atomic_supported_plan() {
+		// Fallback to default behavior if Atomic_Plan_Manager doesn't exists.
+		if ( ! class_exists( 'Atomic_Plan_Manager' ) ) {
+			return true;
+		}
+
+		return \Atomic_Plan_Manager::has_atomic_supported_plan();
 	}
 }

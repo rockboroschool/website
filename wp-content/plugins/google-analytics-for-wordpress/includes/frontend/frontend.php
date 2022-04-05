@@ -15,18 +15,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Get frontend tracking options.
+ * Print Monsterinsights frontend tracking script.
  *
- * This function is used to return an array of parameters
- * for the frontend_output() function to output. These are
- * generally dimensions and turned on GA features.
- *
- * @return array Array of the options to use.
+ * @return void
  * @since 7.0.0
  * @access public
  *
  */
 function monsterinsights_tracking_script() {
+    if ( monsterinsights_skip_tracking() ) {
+        return;
+    }
+
 	require_once plugin_dir_path( MONSTERINSIGHTS_PLUGIN_FILE ) . 'includes/frontend/class-tracking-abstract.php';
 
 	$mode = is_preview() ? 'preview' : MonsterInsights()->get_tracking_mode();
@@ -63,6 +63,10 @@ add_action( 'wp_head', 'monsterinsights_tracking_script', 6 );
  *
  */
 function monsterinsights_events_tracking() {
+	if ( monsterinsights_skip_tracking() ) {
+		return;
+	}
+
 	$track_user = monsterinsights_track_user();
 
 	if ( $track_user ) {

@@ -15,13 +15,9 @@ class PDFTemplate{
         
         $iid = self::$uniqid;
         $t = $data['template'];
-        // $settings = $data;
-        // unset($settings['template']);
 		
         ob_start();
-        // echo "<pre>";
-        // print_r($data['template']);
-        // echo "</pre>";
+    
 		?>
 		<style>
             <?php echo esc_html(self::renderStyle($data['template'])); ?>
@@ -51,12 +47,12 @@ class PDFTemplate{
 
     public static function enqueueEssentialAssets(){
         wp_enqueue_style( 'pdfp-public');
-        // wp_enqueue_script( 'pdp-public');
+        wp_enqueue_script( 'pdfp-public');
     }
 
     public static function renderStyle($template){
         $id = self::$uniqid;
-        // self::addStyle("#$id", ['margin-bottom' => '25px']);      
+        self::addStyle("#$id iframe", ['width' => $template['width']]);      
 
         $output = '';
         foreach(self::$styles as $selector => $style){

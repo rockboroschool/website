@@ -3,8 +3,8 @@ Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, google analytics dashboard, google analytics widget, WooCommerce stats, analytics dashboard, universal google analytics, statistics, tracking, stats, google, google analytics by yoast, ga, monster insights, monsterinsights, universal analytics, web stats, ecommerce, ecommerce tracking
 Requires at least: 4.8.0
-Tested up to: 5.8
-Stable tag: 8.3.0
+Tested up to: 5.9
+Stable tag: 8.5.0
 Requires PHP: 5.5
 License: GPL v3
 
@@ -61,7 +61,7 @@ We have even created customized reports to help you filter through the noise and
 
 * **Audience Report** helps you get to know your visitors in a whole new way. It shows you detailed insights like which country your visitors are coming from, what are they most interested in, which device are they using, their age, gender, and a whole lot more. You can use this demographics report and audience clues to tweak your website design and content accordingly.
 
-* **Publishers Report ** helps you understand which pages your visitors are arriving, and which pages they are leaving from. Designed specifically for blogs and other resource sites, this powerful report will show you which outbound links are getting clicked so you can easily optimize for higher conversions.
+* **Publishers Report** helps you understand which pages your visitors are arriving, and which pages they are leaving from. Designed specifically for blogs and other resource sites, this powerful report will show you which outbound links are getting clicked so you can easily optimize for higher conversions.
 
 * **Behavior Report** shows you exactly how people find your website, which keywords did they search for, who referred them, what did they click on your site, and more. You can use these useful stats to identify low-hanging fruits, new partnership opportunities, and promotional areas to focus on.
 
@@ -212,6 +212,10 @@ We understand Google Analytics better than any other analytics plugin for WordPr
 * Custom Dimensions Tracking - Enable Google analytics custom dimensions tracking for WordPress.
 * Author Tracking - See author stats and discover who's the most popular author on your site.
 * Popular Post Tracking - See which blog post and section is the most popular.
+* YouTube Google Analytics - Easily and automatically track embedded YouTube video starts, stops, and progression of your YouTube videos.
+* Vimeo Google Analytics - Easily and automatically track embedded Vimeo video starts, stops, and progression of your YouTube videos.
+* HTML5 Video Google Analytics - Easily and automatically track embedded HTML5 video starts, stops, and progression of your YouTube videos.
+* Exclude from Tracking - Disable the loading of the Google Analytics tracking on specific pages or posts.
 * Contextual Insights - Get actionable tips on how to improve engagement and get more visitors based on your site's traffic.
 * Headline Analyzer - Get more clicks and improve SEO following suggestions from our Headline Analyzer directly in the WordPress editor
 * Custom Post Type Tracking - Track the performance of your custom post types.
@@ -288,6 +292,42 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
+= 8.5.0: March 31, 2022 =
+- Tweak: We enhanced and optimized the backend styles.
+- Fixed: We fixed a few PHP warnings when no add-ons are installed.
+- Fixed: We optimized the filters to add dynamic attributes in all frontend script tags.
+
+
+= 8.4.0: February 28, 2022 =
+- Fixed: We fixed the plugin requirements for Forms Addons version 2.2.1+
+- Fixed: We optimized the popular posts widgets display in edit screens
+- Fixed: We fixed console errors for users who have CookieYes enabled
+- Fixed: We fixed custom dimensions for all single post types.
+
+= 8.3.4: February 10, 2022 =
+- Fixed: Resolved a PHP Notice message some users received after upgrading to 8.3.3
+
+= 8.3.3: February 09, 2022 =
+- Fixed: We fixed the PDF reports format.
+- Tweak: We optimized the Ajax requests for notifications.
+
+= 8.3.2: January 25, 2022 =
+- Fixed: We fixed the fatal error that occurred due to a generic class name conflict.
+- Fixed: Fixed errors some users were having with our Exclude from Tracking feature.
+
+= 8.3.1: January 24, 2022 =
+- New: With our new Exclude from Tracking Feature admins can now exclude any page or post from tracking.
+- Fixed: We fixed the local gtag.js where it didn’t work with only the GAv4 connection.
+- Fixed: We fixed the messages in the plugin settings based on the Media Addon activation status.
+- Tweak: We categorized and enhanced the plugin notifications.
+- Fixed: We fixed Javascript errors when the CookieBot plugin is active and the Forms addon is not.
+- Fixed: We fixed UTM parameters in tracking links.
+- Fixed: We remove the type attribute from the script tag if the current theme supports html5.
+- Fixed: We fixed GA4 eCommerce missing events.
+- Fixed: We fixed the incorrect numbers for Year In Review average page views.
+- Fixed: We fixed the integration with Enfold theme Ajax forms where conversions were not being tracked.
+- Fixed: We fixed the backward compatibility for AffiliateWP versions below 2.7.
+
 = 8.3.0: December 14, 2021 =
 - New: With our limited-time only Year in Review report you’ll be able to see how your site performed in 2020 and how to improve in 2021. This report will be automatically available from January 1 to January 14, 2022 inside the Reports section of MonsterInsights.
 - New In Pro: Introducing the MonsterInsights Media addon which allows for impression and video watch time tracking for videos uploaded to WordPress, embedded from YouTube or embedded from Vimeo automatically!

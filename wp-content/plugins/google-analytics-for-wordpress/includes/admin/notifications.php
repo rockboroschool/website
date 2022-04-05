@@ -332,7 +332,17 @@ class MonsterInsights_Notifications {
 	public function get_active_notifications() {
 		$notifications = $this->get();
 
-		return isset( $notifications['active'] ) ? $notifications['active'] : array();
+		// Show only 5 active notifications plus any that has a priority of 1
+		$all_active = isset( $notifications['active'] ) ? $notifications['active'] : array();
+		$displayed  = array();
+
+		foreach ( $all_active as $notification ) {
+			if ( ( isset( $notification['priority'] ) && $notification['priority'] === 1 ) || count( $displayed ) < 5 ) {
+				$displayed[] = $notification;
+			}
+		}
+
+		return $displayed;
 	}
 
 	/**
@@ -361,6 +371,29 @@ class MonsterInsights_Notifications {
 	}
 
 	/**
+	 * Check if a notification has been dismissed before
+	 *
+	 * @param $notification
+	 *
+	 * @return bool
+	 */
+	public function is_dismissed( $notification ) {
+		if ( empty( $notification['id'] ) ) {
+			return true;
+		}
+
+		$option = $this->get_option();
+
+		foreach ( $option['dismissed'] as $item ) {
+			if ( $item['id'] === $notification['id'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Add a manual notification event.
 	 *
 	 * @param array $notification Notification data.
@@ -370,36 +403,49 @@ class MonsterInsights_Notifications {
 	 */
 	public function add( $notification ) {
 
-		if ( empty( $notification['id'] ) ) {
-			return;
+		if ( empty( $notification['id'] ) || $this->is_dismissed( $notification ) ) {
+			return false;
 		}
 
 		$option = $this->get_option();
 
-		foreach ( $option['dismissed'] as $item ) {
+        $current_notifications = $option['events'];
+
+		foreach ( $current_notifications as $item ) {
 			if ( $item['id'] === $notification['id'] ) {
-				return;
+				return false;
 			}
 		}
 
-		foreach ( $option['events'] as $item ) {
-			if ( $item['id'] === $notification['id'] ) {
-				return;
-			}
-		}
+        $notification = $this->verify( array( $notification ) );
 
-		$notification = $this->verify( array( $notification ) );
+        $notifications = array_merge( $notification, $current_notifications );
+
+        //  Sort notifications by priority
+		usort( $notifications, function( $a, $b ) {
+			if ( ! isset( $a['priority'] ) || ! isset( $b['priority'] ) ) {
+				return 0;
+			}
+
+			if ( $a['priority'] == $b['priority'] ) {
+				return 0;
+			}
+
+			return $a['priority'] < $b['priority'] ? -1 : 1;
+		});
 
 		update_option(
 			$this->option_name,
 			array(
 				'update'    => $option['update'],
 				'feed'      => $option['feed'],
-				'events'    => array_merge( $notification, $option['events'] ),
+				'events'    => $notifications,
 				'dismissed' => $option['dismissed'],
 			),
 			false
 		);
+
+		return true;
 	}
 
 	/**
