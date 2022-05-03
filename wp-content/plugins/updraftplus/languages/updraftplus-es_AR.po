@@ -156,7 +156,7 @@ msgstr "Leé más sobre el estilo de acceso a los buckets"
 msgid "Bucket access style"
 msgstr "Estilo de acceso a Buckets"
 
-#: src/methods/s3.php:1251
+#: src/methods/s3.php:1260
 msgid "Failure: No endpoint details were given."
 msgstr "Error: No se brindaron detalles del endpoint."
 
@@ -349,11 +349,11 @@ msgstr ""
 msgid "The plugin you wish to activate is either not installed or has been removed recently."
 msgstr ""
 
-#: src/backup.php:3854
+#: src/backup.php:3864
 msgid "two unsuccessful attempts were made to include it, and it will now be omitted from the backup"
 msgstr ""
 
-#: src/backup.php:3850
+#: src/backup.php:3860
 msgid "a second attempt is being made (upon further failure it will be skipped)"
 msgstr ""
 
@@ -870,8 +870,8 @@ msgstr "¿Ya tenés espacio?"
 msgid "Need to get space?"
 msgstr "¿Necesitás espacio?"
 
-#: src/methods/s3.php:215, src/methods/s3.php:216, src/methods/s3.php:227,
-#: src/methods/s3.php:228
+#: src/methods/s3.php:214, src/methods/s3.php:215, src/methods/s3.php:226,
+#: src/methods/s3.php:227
 msgid "Error: Failed to initialise"
 msgstr "Error: No se pudo inicializar"
 
@@ -3584,7 +3584,7 @@ msgstr "Esta URL de WebDAV se genera completando las opciones de abajo. Si no co
 msgid "No response data was received. This usually indicates a network connectivity issue (e.g. an outgoing firewall or overloaded network) between this site and UpdraftPlus.com."
 msgstr "No se recibieron datos de respuesta. Esto generalmente indica un problema de conectividad de red (por ejemplo, un firewall saliente o una red sobrecargada) entre este sitio y UpdraftPlus.com."
 
-#: src/methods/s3.php:1299
+#: src/methods/s3.php:1306
 msgid "The AWS access key looks to be wrong (valid %s access keys begin with \"AK\")"
 msgstr "La clave de acceso a AWS parece no ser correcta (las claves de acceso válidas %s comienzan por \"AK\")"
 
@@ -4538,11 +4538,11 @@ msgid "Updraft Vault"
 msgstr "Updraft Vault"
 
 #: src/addons/azure.php:443, src/addons/backblaze.php:564,
-#: src/addons/googlecloud.php:1024, src/methods/s3.php:1327
+#: src/addons/googlecloud.php:1024, src/methods/s3.php:1334
 msgid "Delete failed:"
 msgstr "Falló el borrado:"
 
-#: src/backup.php:4179
+#: src/backup.php:4189
 msgid "The zip engine returned the message: %s."
 msgstr "El motor zip devolvió este mensaje: %s."
 
@@ -4958,8 +4958,8 @@ msgid "AWS authentication failed"
 msgstr "Falla en la autenticación de AWS"
 
 #: src/addons/s3-enhanced.php:164
-msgid "Cannot create new AWS user, since the old AWS toolkit is being used."
-msgstr "No se puede crear un nuevo usuario de AWS, ya que se está utilizando el antiguo kit de herramientas de AWS."
+msgid "Cannot create new AWS user, since an unknown AWS toolkit is being used."
+msgstr ""
 
 #: src/addons/s3-enhanced.php:133
 msgid "You need to enter a bucket"
@@ -4981,7 +4981,7 @@ msgstr "Tenés que ingresar una clave de acceso de administrador"
 msgid "If you have an AWS admin user, then you can use this wizard to quickly create a new AWS (IAM) user with access to only this bucket (rather than your whole account)"
 msgstr "Si tenés un usuario administrador de AWS podés usar este asistente para crear rápidamente un nuevo usuario de AWS (IAM) con acceso solo a este bucket (en lugar de a toda la cuenta)."
 
-#: src/methods/s3.php:971
+#: src/methods/s3.php:970
 msgid "To create a new IAM sub-user and access key that has access only to this bucket, upgrade to Premium."
 msgstr ""
 
@@ -5081,7 +5081,7 @@ msgstr "Lista completa de caracteristicas"
 msgid "Backup (where relevant) plugins, themes and the WordPress database with UpdraftPlus before updating"
 msgstr "Hacer un respaldo (cuando sea relevante) de los plugins, temas y la base de datos de WordPress con UpdraftPlus antes de actualizar"
 
-#: src/methods/s3.php:217, src/methods/s3.php:229
+#: src/methods/s3.php:216, src/methods/s3.php:228
 msgid "%s Error: Failed to initialise"
 msgstr "%s Error: Fallo al inicializar"
 
@@ -5279,15 +5279,15 @@ msgstr "Etiqueta de respaldo:"
 msgid "Error: unexpected file read fail"
 msgstr "Error: inesperada falla en lectura de archivo"
 
-#: src/backup.php:4185
+#: src/backup.php:4195
 msgid "check your log for more details."
 msgstr "Chequeá el log (registro) para mas detalles."
 
-#: src/backup.php:4183
+#: src/backup.php:4193
 msgid "your web hosting account appears to be full; please see: %s"
 msgstr "Tu cuenta de hosting pareciera llena; por favor mirá: %s"
 
-#: src/backup.php:4181
+#: src/backup.php:4191
 msgid "A zip error occurred"
 msgstr "Ocurrió un error de compresión zip"
 
@@ -6022,7 +6022,7 @@ msgstr "No hay respaldos de la ubicación: no se encontró nada que respaldar"
 msgid "Remove"
 msgstr "Eliminar"
 
-#: src/methods/s3.php:920
+#: src/methods/s3.php:919
 msgid "Other %s FAQs."
 msgstr "Otras %s preguntas frecuentes (FAQs)."
 
@@ -6486,7 +6486,7 @@ msgstr "Logo de %s"
 msgid "did not return the expected response - check your log file for more details"
 msgstr "no devolvió la respuesta esperada - revisá tu archivo de registro para más detalles"
 
-#: src/methods/s3.php:367
+#: src/methods/s3.php:366
 msgid "The required %s PHP module is not installed - ask your web hosting company to enable it"
 msgstr "El módulo PHP requerido (%s) no está instalado - pregunte a tu proveedor de hosting web sobre tu habilitación"
 
@@ -6649,7 +6649,7 @@ msgstr "URL del contenido:"
 msgid "You should check the file ownerships and permissions in your WordPress installation"
 msgstr "Deberías revisár los permisos de los archivos de tu instalación de WordPress"
 
-#: src/backup.php:4172, src/class-updraftplus.php:985
+#: src/backup.php:4182, src/class-updraftplus.php:985
 msgid "Your free space in your hosting account is very low - only %s Mb remain"
 msgstr "Tu espacio libre en tu cuenta de hosting es muy bajo - solo quedan %s MB "
 
@@ -7199,7 +7199,7 @@ msgstr "No se pudo encontrar el archivo de respaldo de este archivo. El método 
 msgid "Moving unpacked backup into place..."
 msgstr "Moviendo el respaldo desempaquetada a tu lugar..."
 
-#: src/backup.php:3815, src/backup.php:4125
+#: src/backup.php:3825, src/backup.php:4135
 msgid "Failed to open the zip file (%s) - %s"
 msgstr "Fallo al abrir el archivo zip (%s) - %s"
 
@@ -7288,7 +7288,7 @@ msgstr "Tamaño del archivo:"
 #: src/addons/googlecloud.php:1234, src/addons/migrator.php:497,
 #: src/addons/migrator.php:500, src/addons/migrator.php:503,
 #: src/admin.php:1312, src/admin.php:2884, src/admin.php:4974,
-#: src/backup.php:4179, src/class-updraftplus.php:5165,
+#: src/backup.php:4189, src/class-updraftplus.php:5165,
 #: src/class-updraftplus.php:5165, src/updraftplus.php:158
 msgid "Go here for more information."
 msgstr "Más información aquí."
@@ -7360,7 +7360,7 @@ msgstr "Falló la autenticación %s"
 #: src/class-updraftplus.php:4876, src/class-updraftplus.php:4878,
 #: src/class-updraftplus.php:5056, src/class-updraftplus.php:5063,
 #: src/class-updraftplus.php:5140, src/methods/googledrive.php:534,
-#: src/methods/s3.php:396
+#: src/methods/s3.php:395
 msgid "Error: %s"
 msgstr "Error: %s"
 
@@ -7376,7 +7376,7 @@ msgstr "El directorio de respaldo especificado <b>no></b> existe."
 msgid "Warning: %s"
 msgstr "Aviso: %s"
 
-#: src/backup.php:3844
+#: src/backup.php:3854
 msgid "A very large file was encountered: %s (size: %s Mb)"
 msgstr "Se encontró un archivo muy grande: %s (tamaño: %s MB)"
 
@@ -7436,15 +7436,15 @@ msgstr "Chequeá los permisos de los archivos: no se pudo crear ni entrar al dir
 msgid "Some servers advertise encrypted FTP as available, but then time-out (after a long time) when you attempt to use it. If you find this happening, then go into the \"Expert Options\" (below) and turn off SSL there."
 msgstr "Algunos servidores anuncian FTP cifrado como disponible, pero luego se agota el tiempo de espera (después de mucho tiempo) cuando se intenta utilizarlo. Si te pasa esto, andá a las \"Opciones de experto\" (a continuación) y desactivá  allí el uso de SSL."
 
-#: src/methods/s3.php:906
+#: src/methods/s3.php:905
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support and ask for them to enable it."
 msgstr "Tu instalación PHP del servidor no incluye un módulo requerido (%s). Por favor, contactate con el soporte de tu proveedor de hosting web y pregunte sobre el mismo para habilitarlo."
 
-#: src/methods/s3.php:1320
+#: src/methods/s3.php:1327
 msgid "Please check your access credentials."
 msgstr "Por favor, revisá sus credenciales de acceso."
 
-#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1297
+#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1304
 msgid "The error reported by %s was:"
 msgstr "El error reportado por %s fue:"
 
@@ -7582,11 +7582,11 @@ msgstr "Volviendo a explorar (buscando respaldos subidas manualmente al hosting 
 msgid "Begun looking for this entity"
 msgstr "Comenzando a buscar esta entidad"
 
-#: src/methods/s3.php:543, src/methods/s3.php:730, src/methods/s3.php:840
+#: src/methods/s3.php:542, src/methods/s3.php:729, src/methods/s3.php:839
 msgid "Error: Failed to access bucket %s. Check your permissions and credentials."
 msgstr "Error: Fallo al acceder al cubo %s. Revisa tus permisos y credenciales."
 
-#: src/methods/s3.php:821, src/methods/s3.php:865
+#: src/methods/s3.php:820, src/methods/s3.php:864
 msgid "Error: Failed to download %s. Check your permissions and credentials."
 msgstr "Error: Fallo al descargar %s. Revisa tus permisos y credenciales."
 
@@ -7861,90 +7861,90 @@ msgstr "error: %s (más información en el registro)"
 msgid "You do not appear to be authenticated with Dropbox"
 msgstr "No parece estar autenticado con Dropbox"
 
-#: src/methods/s3.php:1315
+#: src/methods/s3.php:1322
 msgid "The communication with %s was not encrypted."
 msgstr "La comunicación con %s no fue cifrada."
 
-#: src/methods/s3.php:1313
+#: src/methods/s3.php:1320
 msgid "The communication with %s was encrypted."
 msgstr "La comunicación con %s fue cifrada."
 
-#: src/addons/googlecloud.php:1020, src/methods/s3.php:1310
+#: src/addons/googlecloud.php:1020, src/methods/s3.php:1317
 msgid "We accessed the bucket, and were able to create files within it."
 msgstr "Accedimos correctamente al cubo, y pudimos crear archivos en él."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "We successfully accessed the bucket, but the attempt to create a file in it failed."
 msgstr "Accedimos correctamente al cubo, pero el intento de crear un archivo en él falló."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "Failure"
 msgstr "Fallo"
 
-#: src/addons/backblaze.php:533, src/methods/s3.php:1295
+#: src/addons/backblaze.php:533, src/methods/s3.php:1302
 msgid "Failure: We could not successfully access or create such a bucket. Please check your access credentials, and if those are correct then try another bucket name (as another %s user may already have taken your name)."
 msgstr "Fallo: No pudimos acceder o crear un cubo correctamente. Por favor, revisá tus credenciales de acceso, y si estas son correctas entonces prueba con otro nombre de cubo (quizás otro usuario de %s pueda tener ya uno con tu nombre)."
 
-#: src/methods/openstack2.php:150, src/methods/s3.php:1289
+#: src/methods/openstack2.php:150, src/methods/s3.php:1296
 msgid "Region"
 msgstr "Región"
 
 #: src/addons/googlecloud.php:140, src/addons/googlecloud.php:974,
-#: src/methods/s3.php:1246
+#: src/methods/s3.php:1255
 msgid "Failure: No bucket details were given."
 msgstr "Fallo: No se dieron los detalles del cubo."
 
-#: src/methods/s3.php:1224
+#: src/methods/s3.php:1233
 msgid "API secret"
 msgstr "API secret"
 
-#: src/methods/s3.php:989
+#: src/methods/s3.php:988
 msgid "Enter only a bucket name or a bucket and path. Examples: mybucket, mybucket/mypath"
 msgstr "Ingresá solo un nombre de cubo o un cubo y ruta. Ejemplos: mucubo, micubo/miruta"
 
-#: src/methods/s3.php:988
+#: src/methods/s3.php:987
 msgid "%s location"
 msgstr "Ubicación de %s"
 
-#: src/methods/s3.php:984
+#: src/methods/s3.php:983
 msgid "%s secret key"
 msgstr "Clave secreta de %s"
 
-#: src/methods/s3.php:980
+#: src/methods/s3.php:979
 msgid "%s access key"
 msgstr "clave de acceso %s"
 
-#: src/methods/s3.php:918
+#: src/methods/s3.php:917
 msgid "If you see errors about SSL certificates, then please go here for help."
 msgstr "Si ve errores sobre certificados SSL, vaya aquí para obtener ayuda."
 
-#: src/methods/s3.php:916
+#: src/methods/s3.php:915
 msgid "Get your access key and secret key from your <a href=\"%s\">%s console</a>, then pick a (globally unique - all %s users) bucket name (letters and numbers) (and optionally a path) to use for storage. This bucket will be created for you if it does not already exist."
 msgstr "Obtené tu clave de acceso y tu clave secreta desde tu <a href=\"%s\">consola de %s</a>, después, elegí un (único globalmente - todos los usuarios %s) nombre de cubo (letras y números) (y, opcionalmente, una ruta) para utilizarlo para el almacenamiento. Este cubo será creado para vos, si aún no existe."
 
-#: src/methods/s3.php:833
+#: src/methods/s3.php:832
 msgid "%s Error: Failed to download %s. Check your permissions and credentials."
 msgstr "%s Error: Fallo al descargar %s. Chequeá tus permisos y credenciales."
 
-#: src/methods/s3.php:521
+#: src/methods/s3.php:520
 msgid "%s re-assembly error (%s): (see log file for more)"
 msgstr "Error de %s al reensamblar (%s): (mirá el archivo de registro para más información)"
 
-#: src/methods/s3.php:517
+#: src/methods/s3.php:516
 msgid "upload (%s): re-assembly failed (see log for more details)"
 msgstr "subida (%s): reensamblado fallido (ver el registro para más detalles)"
 
-#: src/methods/s3.php:501
+#: src/methods/s3.php:500
 msgid "chunk %s: upload failed"
 msgstr "trozo de %s: falló la subida"
 
-#: src/methods/s3.php:491
+#: src/methods/s3.php:490
 msgid "error: file %s was shortened unexpectedly"
 msgstr "Error: el archivo %s fue reducido inesperadamente"
 
-#: src/methods/s3.php:469
+#: src/methods/s3.php:468
 msgid "%s upload: getting uploadID for multipart upload failed - see log file for more details"
 msgstr "%s subida: falló la obtención de una ID de subida para la subida multiparte - mirá el archivo del archivo de registro para más información"
 
@@ -7976,7 +7976,7 @@ msgid "Username"
 msgstr "Nombre de usuario"
 
 #: src/methods/cloudfiles-new.php:181, src/methods/cloudfiles.php:534,
-#: src/methods/s3.php:1220
+#: src/methods/s3.php:1229
 msgid "API key"
 msgstr "Clave API"
 
@@ -7990,12 +7990,12 @@ msgstr "Clave API"
 #: src/methods/ftp.php:426, src/methods/ftp.php:430,
 #: src/methods/openstack2.php:180, src/methods/openstack2.php:185,
 #: src/methods/openstack2.php:190, src/methods/openstack2.php:195,
-#: src/methods/s3.php:1220, src/methods/s3.php:1224
+#: src/methods/s3.php:1229, src/methods/s3.php:1233
 msgid "Failure: No %s was given."
 msgstr "Fallo: %s no fue dado."
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative."
 msgstr "El módulo %s de UpdraftPlus <strong>requiere</strong> %s. Por favor, no solicite soporte; no hay alternativa."
 
@@ -8036,7 +8036,7 @@ msgid "Error opening local file: Failed to download"
 msgstr "Error al abrir el archivo local: Fallo al descargar"
 
 #: src/addons/sftp.php:188, src/methods/openstack-base.php:314,
-#: src/methods/s3.php:434, src/methods/s3.php:446, src/methods/s3.php:447
+#: src/methods/s3.php:433, src/methods/s3.php:445, src/methods/s3.php:446
 msgid "%s Error: Failed to upload"
 msgstr "Error %s: Fallo al subir"
 
@@ -8113,7 +8113,7 @@ msgstr "has identificado tu cuenta %s."
 #: src/addons/sftp.php:633, src/addons/webdav.php:341,
 #: src/addons/wp-cli.php:494, src/methods/addon-base-v2.php:370,
 #: src/methods/cloudfiles.php:590, src/methods/googledrive.php:613,
-#: src/methods/openstack-base.php:535, src/methods/s3.php:1310
+#: src/methods/openstack-base.php:535, src/methods/s3.php:1317
 msgid "Success"
 msgstr "Correcto"
 
@@ -8295,7 +8295,7 @@ msgid "Your web server's PHP/Curl installation does not support https access. Co
 msgstr "La instalación PHP/Curl de tu servidor web no soporta el acceso https. Las comunicaciones con %s estarán sin cifrar. Solicitale a tu proveedor de hosting que instale Curl/SSL para poder obtener la posibilidad de cifrar (mediante un complemento)."
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support."
 msgstr "Tu instalación de servidor web PHP no incluye un módulo requerido (%s). Por favor, contactate con el soporte de tu proveedor de hosting web."
 
@@ -8888,8 +8888,8 @@ msgstr "Tenés menos del %s de espacio libre en el disco en el que UpdraftPlus e
 #: src/admin.php:4288, src/admin.php:4290, src/admin.php:5925,
 #: src/admin.php:6205, src/methods/cloudfiles-new.php:96,
 #: src/methods/cloudfiles.php:455, src/methods/ftp.php:344,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:906,
-#: src/methods/s3.php:910, src/methods/updraftvault.php:345,
+#: src/methods/openstack-base.php:576, src/methods/s3.php:905,
+#: src/methods/s3.php:909, src/methods/updraftvault.php:345,
 #: src/templates/wp-admin/settings/downloading-and-restoring.php:27,
 #: src/templates/wp-admin/settings/tab-backups.php:27,
 #: src/udaddons/updraftplus-addons.php:303
@@ -8909,7 +8909,7 @@ msgid "Infinite recursion: consult your log for more information"
 msgstr "Bucle infinito: consulte tu archivo de registro para más información"
 
 #: src/addons/azure.php:267, src/class-updraftplus.php:4663,
-#: src/methods/googledrive.php:1343, src/methods/s3.php:396
+#: src/methods/googledrive.php:1343, src/methods/s3.php:395
 msgid "File not found"
 msgstr "Archivo no encontrado"
 

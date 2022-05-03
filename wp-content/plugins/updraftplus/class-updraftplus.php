@@ -96,6 +96,7 @@ class UpdraftPlus {
 			'UpdraftPlus_Filesystem_Functions' => 'includes/class-filesystem-functions.php',
 			'UpdraftPlus_Storage_Methods_Interface' => 'includes/class-storage-methods-interface.php',
 			'UpdraftPlus_Job_Scheduler' => 'includes/class-job-scheduler.php',
+			'UpdraftPlus_HTTP_Error_Descriptions' => 'includes/class-http-error-descriptions.php',
 		);
 		
 		foreach ($load_classes as $class => $relative_path) {
@@ -2028,8 +2029,8 @@ class UpdraftPlus {
 
 		if ($full_info) {
 			$arr = array(
-				'plugins' => array('path' => untrailingslashit(WP_PLUGIN_DIR), 'description' => __('Plugins', 'updraftplus')),
-				'themes' => array('path' => WP_CONTENT_DIR.'/themes', 'description' => __('Themes', 'updraftplus')),
+				'plugins' => array('path' => untrailingslashit(WP_PLUGIN_DIR), 'description' => __('Plugins', 'updraftplus'), 'singular_description' => __('Plugin', 'updraftplus')),
+				'themes' => array('path' => WP_CONTENT_DIR.'/themes', 'description' => __('Themes', 'updraftplus'), 'singular_description' => __('Theme', 'updraftplus')),
 				'uploads' => array('path' => untrailingslashit($wp_upload_dir['basedir']), 'description' => __('Uploads', 'updraftplus'))
 			);
 		} else {
@@ -2122,7 +2123,7 @@ class UpdraftPlus {
 		if ('E_DEPRECATED' == $e_type && !empty($this->no_deprecation_warnings)) {
 			return false;
 		}
-		
+
 		return "PHP event: code $e_type: $errstr (line $errline, $errfile)";
 
 	}
@@ -2295,8 +2296,19 @@ class UpdraftPlus {
 
 		$first_run = apply_filters('updraftplus_filerun_firstrun', 0);
 
-		// We don't want to be in permanent conflict with the overlap detector
-		if ($resumption_no >= $first_run + 8 && $resumption_no < $first_run + 15 && $resume_interval >= 300) {
+		// April 2022: a similar situation is handled further down, but takes longer to kick in; so extra check has been added (a case where the first runtime under cli was > 4 hours was followed by running under cgi-fci with only 20 minute resumption times; it's better to detect this early)
+		if ($resumption_no == $first_run + 1 && $resume_interval >= 600 && '' != PHP_SAPI) {
+			
+			$last_sapi = $this->jobdata_get('last_sapi');
+			
+			if ('' != $last_sapi && PHP_SAPI != $last_sapi) {
+				$resume_interval = $this->get_initial_resume_interval();
+				$this->log(sprintf("Run environment has changed (%s -> %s) - resetting resumption interval to %d", $last_sapi, PHP_SAPI, $resume_interval));
+				$this->jobdata_set('last_sapi', PHP_SAPI);
+			}
+			
+			// We don't want to be in permanent conflict with the overlap detector
+		} elseif ($resumption_no >= $first_run + 8 && $resumption_no < $first_run + 15 && $resume_interval >= 300) {
 
 			// $time_passed is set earlier
 			list($max_time, $timings_string, $run_times_known) = UpdraftPlus_Manipulation_Functions::max_time_passed($time_passed, $resumption_no - 1, $first_run);
@@ -2624,6 +2636,10 @@ class UpdraftPlus {
 			if ('begun' == $this->jobdata_get('prune')) {
 				// Begun, but not finished
 				$this->log('Restarting backup prune operation');
+				$updraftplus_backup->do_prune_standalone();
+				$allow_email = true;
+			} elseif ('finished' != $this->jobdata_get('prune')) {
+				// If prune has not begun or finished but we have undone files then start it
 				$updraftplus_backup->do_prune_standalone();
 				$allow_email = true;
 			}
@@ -3137,6 +3153,23 @@ class UpdraftPlus {
 	}
 
 	/**
+	 * Get the initial resumption interval, in seconds
+	 *
+	 * @return Integer
+	 */
+	private function get_initial_resume_interval() {
+		// Allow the resume interval to be more than 300 if last time we know we went beyond that - but never more than 600
+		if (defined('UPDRAFTPLUS_INITIAL_RESUME_INTERVAL') && is_numeric(UPDRAFTPLUS_INITIAL_RESUME_INTERVAL)) {
+			$resume_interval = UPDRAFTPLUS_INITIAL_RESUME_INTERVAL;
+		} else {
+			$resume_interval = (int) min(max(300, get_site_transient('updraft_initial_resume_interval')), 600);
+		}
+		// We delete it because we only want to know about behaviour found during the very last backup run (so, if you move servers then old data is not retained)
+		delete_site_transient('updraft_initial_resume_interval');
+		return $resume_interval;
+	}
+	
+	/**
 	 * This procedure initiates a backup run
 	 * $backup_files/$backup_database: true/false = yes/no (over-write allowed); 1/0 = yes/no (force)
 	 *
@@ -3327,14 +3360,7 @@ class UpdraftPlus {
 			return false;
 		}
 		
-		// Allow the resume interval to be more than 300 if last time we know we went beyond that - but never more than 600
-		if (defined('UPDRAFTPLUS_INITIAL_RESUME_INTERVAL') && is_numeric(UPDRAFTPLUS_INITIAL_RESUME_INTERVAL)) {
-			$resume_interval = UPDRAFTPLUS_INITIAL_RESUME_INTERVAL;
-		} else {
-			$resume_interval = (int) min(max(300, get_site_transient('updraft_initial_resume_interval')), 600);
-		}
-		// We delete it because we only want to know about behaviour found during the very last backup run (so, if you move servers then old data is not retained)
-		delete_site_transient('updraft_initial_resume_interval');
+		$resume_interval = $this->get_initial_resume_interval();
 
 		$job_file_entities = array();
 		if ($backup_files) {
@@ -3380,6 +3406,8 @@ class UpdraftPlus {
 			$one_shot,
 			'followsups_allowed',
 			$followups_allowed,
+			'last_sapi',
+			PHP_SAPI,
 		);
 
 		if ($one_shot) update_site_option('updraft_oneshotnonce', $this->nonce);

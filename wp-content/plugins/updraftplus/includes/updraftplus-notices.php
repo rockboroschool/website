@@ -244,7 +244,7 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 				'prefix' => '',
 				'title' => __('Spring sale - 20% off UpdraftPlus Premium until May 31st', 'updraftplus'),
 				'text' => __('To benefit, use this discount code:', 'updraftplus').' ',
-				'image' => 'notices/spring.png',
+				'image' => 'notices/updraft_logo.png', // TODO: Change image and date back to april/spring next year
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'campaign' => 'spring',
 				'button_meta' => 'updraftplus',

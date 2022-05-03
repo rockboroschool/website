@@ -156,7 +156,7 @@ msgstr ""
 msgid "Bucket access style"
 msgstr ""
 
-#: src/methods/s3.php:1251
+#: src/methods/s3.php:1260
 msgid "Failure: No endpoint details were given."
 msgstr ""
 
@@ -349,11 +349,11 @@ msgstr ""
 msgid "The plugin you wish to activate is either not installed or has been removed recently."
 msgstr ""
 
-#: src/backup.php:3854
+#: src/backup.php:3864
 msgid "two unsuccessful attempts were made to include it, and it will now be omitted from the backup"
 msgstr ""
 
-#: src/backup.php:3850
+#: src/backup.php:3860
 msgid "a second attempt is being made (upon further failure it will be skipped)"
 msgstr ""
 
@@ -870,8 +870,8 @@ msgstr ""
 msgid "Need to get space?"
 msgstr ""
 
-#: src/methods/s3.php:215, src/methods/s3.php:216, src/methods/s3.php:227,
-#: src/methods/s3.php:228
+#: src/methods/s3.php:214, src/methods/s3.php:215, src/methods/s3.php:226,
+#: src/methods/s3.php:227
 msgid "Error: Failed to initialise"
 msgstr ""
 
@@ -3584,7 +3584,7 @@ msgstr ""
 msgid "No response data was received. This usually indicates a network connectivity issue (e.g. an outgoing firewall or overloaded network) between this site and UpdraftPlus.com."
 msgstr ""
 
-#: src/methods/s3.php:1299
+#: src/methods/s3.php:1306
 msgid "The AWS access key looks to be wrong (valid %s access keys begin with \"AK\")"
 msgstr ""
 
@@ -4538,11 +4538,11 @@ msgid "Updraft Vault"
 msgstr ""
 
 #: src/addons/azure.php:443, src/addons/backblaze.php:564,
-#: src/addons/googlecloud.php:1024, src/methods/s3.php:1327
+#: src/addons/googlecloud.php:1024, src/methods/s3.php:1334
 msgid "Delete failed:"
 msgstr ""
 
-#: src/backup.php:4179
+#: src/backup.php:4189
 msgid "The zip engine returned the message: %s."
 msgstr ""
 
@@ -4958,7 +4958,7 @@ msgid "AWS authentication failed"
 msgstr ""
 
 #: src/addons/s3-enhanced.php:164
-msgid "Cannot create new AWS user, since the old AWS toolkit is being used."
+msgid "Cannot create new AWS user, since an unknown AWS toolkit is being used."
 msgstr ""
 
 #: src/addons/s3-enhanced.php:133
@@ -4981,7 +4981,7 @@ msgstr ""
 msgid "If you have an AWS admin user, then you can use this wizard to quickly create a new AWS (IAM) user with access to only this bucket (rather than your whole account)"
 msgstr ""
 
-#: src/methods/s3.php:971
+#: src/methods/s3.php:970
 msgid "To create a new IAM sub-user and access key that has access only to this bucket, upgrade to Premium."
 msgstr ""
 
@@ -5081,7 +5081,7 @@ msgstr "Teljes funkció lista"
 msgid "Backup (where relevant) plugins, themes and the WordPress database with UpdraftPlus before updating"
 msgstr ""
 
-#: src/methods/s3.php:217, src/methods/s3.php:229
+#: src/methods/s3.php:216, src/methods/s3.php:228
 msgid "%s Error: Failed to initialise"
 msgstr ""
 
@@ -5279,15 +5279,15 @@ msgstr ""
 msgid "Error: unexpected file read fail"
 msgstr ""
 
-#: src/backup.php:4185
+#: src/backup.php:4195
 msgid "check your log for more details."
 msgstr ""
 
-#: src/backup.php:4183
+#: src/backup.php:4193
 msgid "your web hosting account appears to be full; please see: %s"
 msgstr ""
 
-#: src/backup.php:4181
+#: src/backup.php:4191
 msgid "A zip error occurred"
 msgstr ""
 
@@ -6022,7 +6022,7 @@ msgstr "Biztonsági mentés nélküli könyvtár: nem található semmi, amit el
 msgid "Remove"
 msgstr "Eltávolítás"
 
-#: src/methods/s3.php:920
+#: src/methods/s3.php:919
 msgid "Other %s FAQs."
 msgstr "Más %s GYIK."
 
@@ -6486,7 +6486,7 @@ msgstr ""
 msgid "did not return the expected response - check your log file for more details"
 msgstr ""
 
-#: src/methods/s3.php:367
+#: src/methods/s3.php:366
 msgid "The required %s PHP module is not installed - ask your web hosting company to enable it"
 msgstr ""
 
@@ -6649,7 +6649,7 @@ msgstr ""
 msgid "You should check the file ownerships and permissions in your WordPress installation"
 msgstr ""
 
-#: src/backup.php:4172, src/class-updraftplus.php:985
+#: src/backup.php:4182, src/class-updraftplus.php:985
 msgid "Your free space in your hosting account is very low - only %s Mb remain"
 msgstr ""
 
@@ -7199,7 +7199,7 @@ msgstr ""
 msgid "Moving unpacked backup into place..."
 msgstr ""
 
-#: src/backup.php:3815, src/backup.php:4125
+#: src/backup.php:3825, src/backup.php:4135
 msgid "Failed to open the zip file (%s) - %s"
 msgstr ""
 
@@ -7288,7 +7288,7 @@ msgstr ""
 #: src/addons/googlecloud.php:1234, src/addons/migrator.php:497,
 #: src/addons/migrator.php:500, src/addons/migrator.php:503,
 #: src/admin.php:1312, src/admin.php:2884, src/admin.php:4974,
-#: src/backup.php:4179, src/class-updraftplus.php:5165,
+#: src/backup.php:4189, src/class-updraftplus.php:5165,
 #: src/class-updraftplus.php:5165, src/updraftplus.php:158
 msgid "Go here for more information."
 msgstr ""
@@ -7360,7 +7360,7 @@ msgstr ""
 #: src/class-updraftplus.php:4876, src/class-updraftplus.php:4878,
 #: src/class-updraftplus.php:5056, src/class-updraftplus.php:5063,
 #: src/class-updraftplus.php:5140, src/methods/googledrive.php:534,
-#: src/methods/s3.php:396
+#: src/methods/s3.php:395
 msgid "Error: %s"
 msgstr ""
 
@@ -7376,7 +7376,7 @@ msgstr ""
 msgid "Warning: %s"
 msgstr ""
 
-#: src/backup.php:3844
+#: src/backup.php:3854
 msgid "A very large file was encountered: %s (size: %s Mb)"
 msgstr ""
 
@@ -7436,15 +7436,15 @@ msgstr ""
 msgid "Some servers advertise encrypted FTP as available, but then time-out (after a long time) when you attempt to use it. If you find this happening, then go into the \"Expert Options\" (below) and turn off SSL there."
 msgstr ""
 
-#: src/methods/s3.php:906
+#: src/methods/s3.php:905
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support and ask for them to enable it."
 msgstr ""
 
-#: src/methods/s3.php:1320
+#: src/methods/s3.php:1327
 msgid "Please check your access credentials."
 msgstr ""
 
-#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1297
+#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1304
 msgid "The error reported by %s was:"
 msgstr ""
 
@@ -7582,11 +7582,11 @@ msgstr ""
 msgid "Begun looking for this entity"
 msgstr ""
 
-#: src/methods/s3.php:543, src/methods/s3.php:730, src/methods/s3.php:840
+#: src/methods/s3.php:542, src/methods/s3.php:729, src/methods/s3.php:839
 msgid "Error: Failed to access bucket %s. Check your permissions and credentials."
 msgstr ""
 
-#: src/methods/s3.php:821, src/methods/s3.php:865
+#: src/methods/s3.php:820, src/methods/s3.php:864
 msgid "Error: Failed to download %s. Check your permissions and credentials."
 msgstr ""
 
@@ -7861,90 +7861,90 @@ msgstr "hiba: %s (nézze meg a naplót a továbbiakért)"
 msgid "You do not appear to be authenticated with Dropbox"
 msgstr "Úgy tűnik, nem hitelesített a Dropbox-szal."
 
-#: src/methods/s3.php:1315
+#: src/methods/s3.php:1322
 msgid "The communication with %s was not encrypted."
 msgstr ""
 
-#: src/methods/s3.php:1313
+#: src/methods/s3.php:1320
 msgid "The communication with %s was encrypted."
 msgstr ""
 
-#: src/addons/googlecloud.php:1020, src/methods/s3.php:1310
+#: src/addons/googlecloud.php:1020, src/methods/s3.php:1317
 msgid "We accessed the bucket, and were able to create files within it."
 msgstr "Sikerült hozzáférni a bucket-hez (csoporthoz), és létrehozni fájlokat benne."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "We successfully accessed the bucket, but the attempt to create a file in it failed."
 msgstr "Sikerült hozzáférni a bucket-hez (csoporthoz), de a fájl létrehozási kísérlet meghiúsult."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "Failure"
 msgstr "Hiba"
 
-#: src/addons/backblaze.php:533, src/methods/s3.php:1295
+#: src/addons/backblaze.php:533, src/methods/s3.php:1302
 msgid "Failure: We could not successfully access or create such a bucket. Please check your access credentials, and if those are correct then try another bucket name (as another %s user may already have taken your name)."
 msgstr ""
 
-#: src/methods/openstack2.php:150, src/methods/s3.php:1289
+#: src/methods/openstack2.php:150, src/methods/s3.php:1296
 msgid "Region"
 msgstr ""
 
 #: src/addons/googlecloud.php:140, src/addons/googlecloud.php:974,
-#: src/methods/s3.php:1246
+#: src/methods/s3.php:1255
 msgid "Failure: No bucket details were given."
 msgstr "Hiba: Nem adott meg bucket (csoport) részleteket"
 
-#: src/methods/s3.php:1224
+#: src/methods/s3.php:1233
 msgid "API secret"
 msgstr "API titkos kulcs (secret)"
 
-#: src/methods/s3.php:989
+#: src/methods/s3.php:988
 msgid "Enter only a bucket name or a bucket and path. Examples: mybucket, mybucket/mypath"
 msgstr ""
 
-#: src/methods/s3.php:988
+#: src/methods/s3.php:987
 msgid "%s location"
 msgstr ""
 
-#: src/methods/s3.php:984
+#: src/methods/s3.php:983
 msgid "%s secret key"
 msgstr ""
 
-#: src/methods/s3.php:980
+#: src/methods/s3.php:979
 msgid "%s access key"
 msgstr ""
 
-#: src/methods/s3.php:918
+#: src/methods/s3.php:917
 msgid "If you see errors about SSL certificates, then please go here for help."
 msgstr ""
 
-#: src/methods/s3.php:916
+#: src/methods/s3.php:915
 msgid "Get your access key and secret key from your <a href=\"%s\">%s console</a>, then pick a (globally unique - all %s users) bucket name (letters and numbers) (and optionally a path) to use for storage. This bucket will be created for you if it does not already exist."
 msgstr ""
 
-#: src/methods/s3.php:833
+#: src/methods/s3.php:832
 msgid "%s Error: Failed to download %s. Check your permissions and credentials."
 msgstr ""
 
-#: src/methods/s3.php:521
+#: src/methods/s3.php:520
 msgid "%s re-assembly error (%s): (see log file for more)"
 msgstr ""
 
-#: src/methods/s3.php:517
+#: src/methods/s3.php:516
 msgid "upload (%s): re-assembly failed (see log for more details)"
 msgstr ""
 
-#: src/methods/s3.php:501
+#: src/methods/s3.php:500
 msgid "chunk %s: upload failed"
 msgstr ""
 
-#: src/methods/s3.php:491
+#: src/methods/s3.php:490
 msgid "error: file %s was shortened unexpectedly"
 msgstr ""
 
-#: src/methods/s3.php:469
+#: src/methods/s3.php:468
 msgid "%s upload: getting uploadID for multipart upload failed - see log file for more details"
 msgstr ""
 
@@ -7976,7 +7976,7 @@ msgid "Username"
 msgstr "Felhasználónév"
 
 #: src/methods/cloudfiles-new.php:181, src/methods/cloudfiles.php:534,
-#: src/methods/s3.php:1220
+#: src/methods/s3.php:1229
 msgid "API key"
 msgstr "API kulcs"
 
@@ -7990,12 +7990,12 @@ msgstr "API kulcs"
 #: src/methods/ftp.php:426, src/methods/ftp.php:430,
 #: src/methods/openstack2.php:180, src/methods/openstack2.php:185,
 #: src/methods/openstack2.php:190, src/methods/openstack2.php:195,
-#: src/methods/s3.php:1220, src/methods/s3.php:1224
+#: src/methods/s3.php:1229, src/methods/s3.php:1233
 msgid "Failure: No %s was given."
 msgstr "Hiba: Nincs %s megadva"
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative."
 msgstr ""
 
@@ -8036,7 +8036,7 @@ msgid "Error opening local file: Failed to download"
 msgstr "Hiba a helyi fájl megnyitásánál: Nem sikerült a letöltés"
 
 #: src/addons/sftp.php:188, src/methods/openstack-base.php:314,
-#: src/methods/s3.php:434, src/methods/s3.php:446, src/methods/s3.php:447
+#: src/methods/s3.php:433, src/methods/s3.php:445, src/methods/s3.php:446
 msgid "%s Error: Failed to upload"
 msgstr "%s hiba: Nem sikerült feltölteni"
 
@@ -8113,7 +8113,7 @@ msgstr ""
 #: src/addons/sftp.php:633, src/addons/webdav.php:341,
 #: src/addons/wp-cli.php:494, src/methods/addon-base-v2.php:370,
 #: src/methods/cloudfiles.php:590, src/methods/googledrive.php:613,
-#: src/methods/openstack-base.php:535, src/methods/s3.php:1310
+#: src/methods/openstack-base.php:535, src/methods/s3.php:1317
 msgid "Success"
 msgstr "Siker"
 
@@ -8295,7 +8295,7 @@ msgid "Your web server's PHP/Curl installation does not support https access. Co
 msgstr ""
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support."
 msgstr ""
 
@@ -8888,8 +8888,8 @@ msgstr "Kevesebb, mint %s szabad terület áll rendelkezésre a lemezen, ahol az
 #: src/admin.php:4288, src/admin.php:4290, src/admin.php:5925,
 #: src/admin.php:6205, src/methods/cloudfiles-new.php:96,
 #: src/methods/cloudfiles.php:455, src/methods/ftp.php:344,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:906,
-#: src/methods/s3.php:910, src/methods/updraftvault.php:345,
+#: src/methods/openstack-base.php:576, src/methods/s3.php:905,
+#: src/methods/s3.php:909, src/methods/updraftvault.php:345,
 #: src/templates/wp-admin/settings/downloading-and-restoring.php:27,
 #: src/templates/wp-admin/settings/tab-backups.php:27,
 #: src/udaddons/updraftplus-addons.php:303
@@ -8909,7 +8909,7 @@ msgid "Infinite recursion: consult your log for more information"
 msgstr "Végtelen rekurzió: nézze meg a naplót további információért"
 
 #: src/addons/azure.php:267, src/class-updraftplus.php:4663,
-#: src/methods/googledrive.php:1343, src/methods/s3.php:396
+#: src/methods/googledrive.php:1343, src/methods/s3.php:395
 msgid "File not found"
 msgstr "Nincs meg a fájl"
 

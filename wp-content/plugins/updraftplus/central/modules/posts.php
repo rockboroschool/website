@@ -1345,6 +1345,8 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 	 * @return array
 	 */
 	public function get_authors($params = array()) {
+		global $updraftcentral_main;
+
 		// If expected parameters are empty or does not exists then set them to some default values
 		$page = !empty($params['page']) ? (int) $params['page'] : 1;
 		$per_page = !empty($params['per_page']) ? (int) $params['per_page'] : 15;
@@ -1353,14 +1355,23 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 		$order = !empty($params['order']) ? strtoupper($params['order']) : 'ASC';
 		$orderby = !empty($params['orderby']) ? $params['orderby'] : 'display_name';
 
-		$users = get_users(array(
+		$get_user_params = array(
 			'number' => $per_page,
 			'paged' => $page,
 			'offset' => $offset,
-			'who' => $who,
 			'order' => $order,
 			'orderby' => $orderby,
-		));
+		);
+
+		// WP 5.9 deprecated the 'who' parameter and introduces the 'capability'
+		// parameter, thus we'll be replacing the 'who' parameter in 5.9 or higher
+		if (version_compare($updraftcentral_main->get_wordpress_version(), '5.9', '<')) {
+			$get_user_params['who'] = $who;
+		} else {
+			$get_user_params['capability'] = array('edit_posts');
+		}
+
+		$users = get_users($get_user_params);
 
 		$authors = array();
 		$locale = get_locale();

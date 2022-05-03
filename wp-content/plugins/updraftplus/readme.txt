@@ -3,7 +3,7 @@ Contributors: Backup with UpdraftPlus, DavidAnderson, DNutbourne, aporter, snigh
 Tags: backup, restore, database backup, wordpress backup, cloud backup, s3, dropbox, google drive, onedrive, ftp, backups
 Requires at least: 3.2
 Tested up to: 5.9
-Stable tag: 1.22.11
+Stable tag: 1.22.12
 Author URI: https://updraftplus.com
 Donate link: https://david.dw-perspective.org.uk/donate
 License: GPLv3 or later
@@ -169,6 +169,24 @@ The <a href="https://updraftplus.com/news/">UpdraftPlus backup blog</a> is the b
 N.B. Paid versions of UpdraftPlus Backup / Restore have a version number which is 1 higher in the first digit, and has an extra component on the end, but the changelog below still applies. i.e. changes listed for 1.16.32.x of the free version correspond to changes made in 2.16.32.x of the paid version.
 
 
+
+= 1.22.12 - 29/Apr/2022 =
+
+* FEATURE: Added the ability to select which themes and plugins to Restore
+* FEATURE: Allow existing local backups to be sent to a remote site when migrating
+* TWEAK: Tweak to allow the Amazon S3 setup wizard to run if the internal S3 library is active
+* TWEAK: The WordPress sidebar menu overlaps the popover tour box
+* TWEAK: Attempt to upload a zip file after it's been created to save on storage space
+* TWEAK: Add MySQL maximum packet size to Advanced Tools -> Site Information
+* TWEAK: Only output the expected table rows when starting to process the table
+* TWEAK: Fix get_users parameter that has been deprecated on WP 5.9 in UpdraftCentral posts controller.
+* TWEAK: Do not call escapeshellarg() for SCP if we know it is unnecessary (prevents problems on hosts lacking the function for trivial use cases)
+* TWEAK: Detect change of run-time environment on first resumption and re-set previously detected resumption interval if likely to be helpful
+* TWEAK: Improve the FTP Handlebars template by taking PHP code out of it
+* TWEAK: Convert HTTP error codes to their meanings
+* TWEAK: Some plugins are loading their own incomplete mcrypt_* functions try and detect this and recover
+* TWEAK: Ensure the local backup file is cleaned up if an earlier failed remote storage upload later succeeds
+* TWEAK: Include plugin version when getting details from UpdraftPlus Vault to allow features that depend upon a sufficiently up-to-date version
 
 = 1.22.11 - 15/Mar/2022 =
 
@@ -1504,4 +1522,4 @@ Reliance upon any non-English translation is at your own risk; UpdraftPlus can g
 We recognise and thank those mentioned at https://updraftplus.com/acknowledgements/ for code and/or libraries used and/or modified under the terms of their open source licences.
 
 == Upgrade Notice ==
-* 1.22.11: Various tweaks/fixes to handling of S3 using bundled internal library, plus other small tweaks. 1.22.9 had a fix for a reflected XSS security defect. See changelog for fuller details. A recommended update for all.
+* 1.22.12: Various tweaks and fixes, the ability to select individual themes/plugins to restore. See changelog for full details. A recommended update for all.

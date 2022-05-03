@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ecd24f7615fe236497b073a1f0ce655f3120f082',
+        'reference' => 'c5d84ce63acfbb747a0a06bd1c337faa445d9944',
         'name' => 'updraftplus/updraftplus',
         'dev' => false,
     ),
@@ -239,12 +239,12 @@
             'dev_requirement' => false,
         ),
         'guzzlehttp/psr7' => array(
-            'pretty_version' => '1.8.3',
-            'version' => '1.8.3.0',
+            'pretty_version' => '1.8.5',
+            'version' => '1.8.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
             'aliases' => array(),
-            'reference' => '1afdd860a2566ed3c2b0b4a3de6e23434a79ec85',
+            'reference' => '337e3ad8e5716c15f9657bd214d16cc5e69df268',
             'dev_requirement' => false,
         ),
         'kriswallsmith/assetic' => array(
@@ -421,7 +421,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'ecd24f7615fe236497b073a1f0ce655f3120f082',
+            'reference' => 'c5d84ce63acfbb747a0a06bd1c337faa445d9944',
             'dev_requirement' => false,
         ),
         'vakata/jstree' => array(

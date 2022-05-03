@@ -156,7 +156,7 @@ msgstr ""
 msgid "Bucket access style"
 msgstr ""
 
-#: src/methods/s3.php:1251
+#: src/methods/s3.php:1260
 msgid "Failure: No endpoint details were given."
 msgstr ""
 
@@ -349,11 +349,11 @@ msgstr ""
 msgid "The plugin you wish to activate is either not installed or has been removed recently."
 msgstr ""
 
-#: src/backup.php:3854
+#: src/backup.php:3864
 msgid "two unsuccessful attempts were made to include it, and it will now be omitted from the backup"
 msgstr ""
 
-#: src/backup.php:3850
+#: src/backup.php:3860
 msgid "a second attempt is being made (upon further failure it will be skipped)"
 msgstr ""
 
@@ -870,8 +870,8 @@ msgstr ""
 msgid "Need to get space?"
 msgstr ""
 
-#: src/methods/s3.php:215, src/methods/s3.php:216, src/methods/s3.php:227,
-#: src/methods/s3.php:228
+#: src/methods/s3.php:214, src/methods/s3.php:215, src/methods/s3.php:226,
+#: src/methods/s3.php:227
 msgid "Error: Failed to initialise"
 msgstr ""
 
@@ -3586,7 +3586,7 @@ msgstr "Denne WebDAV URL genereres ved at udfylde nedenstående muligheder. Hvis
 msgid "No response data was received. This usually indicates a network connectivity issue (e.g. an outgoing firewall or overloaded network) between this site and UpdraftPlus.com."
 msgstr "Ingen respons data blev modtaget. Dette indikerer normalt et netværksforbindelseproblem (fx en udgående firewall eller et overbelastet netværk) mellem dette websted og UpdraftPlus.com."
 
-#: src/methods/s3.php:1299
+#: src/methods/s3.php:1306
 msgid "The AWS access key looks to be wrong (valid %s access keys begin with \"AK\")"
 msgstr "AWS adgangskoden er tilsyneladende forkert (gyldige %s adgangskoder begynder med \"AK\")"
 
@@ -4540,11 +4540,11 @@ msgid "Updraft Vault"
 msgstr "Updraft Vault"
 
 #: src/addons/azure.php:443, src/addons/backblaze.php:564,
-#: src/addons/googlecloud.php:1024, src/methods/s3.php:1327
+#: src/addons/googlecloud.php:1024, src/methods/s3.php:1334
 msgid "Delete failed:"
 msgstr "Sletning mislykkedes:"
 
-#: src/backup.php:4179
+#: src/backup.php:4189
 msgid "The zip engine returned the message: %s."
 msgstr "Zip returnerede denne besked: %s."
 
@@ -4960,8 +4960,8 @@ msgid "AWS authentication failed"
 msgstr "AWS godkendelse mislykkedes"
 
 #: src/addons/s3-enhanced.php:164
-msgid "Cannot create new AWS user, since the old AWS toolkit is being used."
-msgstr "Kan ikke oprette ny AWS bruger, da det gamle AWS toolkit bliver brugt."
+msgid "Cannot create new AWS user, since an unknown AWS toolkit is being used."
+msgstr ""
 
 #: src/addons/s3-enhanced.php:133
 msgid "You need to enter a bucket"
@@ -4983,7 +4983,7 @@ msgstr "Du skal indtaste en admin adgangsnøgle"
 msgid "If you have an AWS admin user, then you can use this wizard to quickly create a new AWS (IAM) user with access to only this bucket (rather than your whole account)"
 msgstr "Hvis du har en AWS admin brugerkonto, kan du bruge denne guide til hurtigt at oprette en ny AWS (IAM) bruger med adgang til kun denne spand (i stedet for hele din konto)"
 
-#: src/methods/s3.php:971
+#: src/methods/s3.php:970
 msgid "To create a new IAM sub-user and access key that has access only to this bucket, upgrade to Premium."
 msgstr ""
 
@@ -5083,7 +5083,7 @@ msgstr "Komplet liste over funktioner"
 msgid "Backup (where relevant) plugins, themes and the WordPress database with UpdraftPlus before updating"
 msgstr "Lav backup (hvis relevant) af plugins, temaer og WordPress database med UpdraftPlus før du opdaterer"
 
-#: src/methods/s3.php:217, src/methods/s3.php:229
+#: src/methods/s3.php:216, src/methods/s3.php:228
 msgid "%s Error: Failed to initialise"
 msgstr "%s Fejl: Kunne ikke initialiseres"
 
@@ -5281,15 +5281,15 @@ msgstr "Backup etiket:"
 msgid "Error: unexpected file read fail"
 msgstr "Fejl: Uventet fejl ved læsning af fil"
 
-#: src/backup.php:4185
+#: src/backup.php:4195
 msgid "check your log for more details."
 msgstr "tjek din log for flere detaljer."
 
-#: src/backup.php:4183
+#: src/backup.php:4193
 msgid "your web hosting account appears to be full; please see: %s"
 msgstr "din web-udbyder konto ser ud til at være fyldt; venligst se: %s"
 
-#: src/backup.php:4181
+#: src/backup.php:4191
 msgid "A zip error occurred"
 msgstr "En zip fejl opstod"
 
@@ -6024,7 +6024,7 @@ msgstr "Ingen backup af lokation: Der blev ikke fundet noget at tage backup af"
 msgid "Remove"
 msgstr "Fjern"
 
-#: src/methods/s3.php:920
+#: src/methods/s3.php:919
 msgid "Other %s FAQs."
 msgstr "Andre %s FAQ's."
 
@@ -6488,7 +6488,7 @@ msgstr "%s logo"
 msgid "did not return the expected response - check your log file for more details"
 msgstr "returnerede ikke det forventede svar - tjek din log-fil for flere detaljer"
 
-#: src/methods/s3.php:367
+#: src/methods/s3.php:366
 msgid "The required %s PHP module is not installed - ask your web hosting company to enable it"
 msgstr "Det nødvendige %s PHP modul er ikke installeret - ret henvendelse til dit hostingfirma for at få dette aktiveret"
 
@@ -6651,7 +6651,7 @@ msgstr "Indholds-URL:"
 msgid "You should check the file ownerships and permissions in your WordPress installation"
 msgstr "Du bedes tjekke filejerskab og -tilladelser i din WordPress installation"
 
-#: src/backup.php:4172, src/class-updraftplus.php:985
+#: src/backup.php:4182, src/class-updraftplus.php:985
 msgid "Your free space in your hosting account is very low - only %s Mb remain"
 msgstr "Din ledige plads på din hosting-konto er meget lille - kun %s Mb tilbage"
 
@@ -7201,7 +7201,7 @@ msgstr "Backup-arkivet for denne fil kunne ikke findes. Den anvendte fjernlagerm
 msgid "Moving unpacked backup into place..."
 msgstr "Flytter upakket backup på plads..."
 
-#: src/backup.php:3815, src/backup.php:4125
+#: src/backup.php:3825, src/backup.php:4135
 msgid "Failed to open the zip file (%s) - %s"
 msgstr "Kunne ikke åbne zip-filen (%s) - %s"
 
@@ -7290,7 +7290,7 @@ msgstr "Filstørrelse:"
 #: src/addons/googlecloud.php:1234, src/addons/migrator.php:497,
 #: src/addons/migrator.php:500, src/addons/migrator.php:503,
 #: src/admin.php:1312, src/admin.php:2884, src/admin.php:4974,
-#: src/backup.php:4179, src/class-updraftplus.php:5165,
+#: src/backup.php:4189, src/class-updraftplus.php:5165,
 #: src/class-updraftplus.php:5165, src/updraftplus.php:158
 msgid "Go here for more information."
 msgstr "Find mere information her."
@@ -7362,7 +7362,7 @@ msgstr "%s tilladelse fejlede"
 #: src/class-updraftplus.php:4876, src/class-updraftplus.php:4878,
 #: src/class-updraftplus.php:5056, src/class-updraftplus.php:5063,
 #: src/class-updraftplus.php:5140, src/methods/googledrive.php:534,
-#: src/methods/s3.php:396
+#: src/methods/s3.php:395
 msgid "Error: %s"
 msgstr "Fejl: %s"
 
@@ -7378,7 +7378,7 @@ msgstr "Dette backup-arkiv eksisterer <b>ikke</b>."
 msgid "Warning: %s"
 msgstr "Advarsel: %s"
 
-#: src/backup.php:3844
+#: src/backup.php:3854
 msgid "A very large file was encountered: %s (size: %s Mb)"
 msgstr "En meget stor fil blev fundet: %s (størrelse: %s Mb)"
 
@@ -7438,15 +7438,15 @@ msgstr "Undersøg dine fil-tilladelser: Kunne ikke skabe og tilføje arkivet:"
 msgid "Some servers advertise encrypted FTP as available, but then time-out (after a long time) when you attempt to use it. If you find this happening, then go into the \"Expert Options\" (below) and turn off SSL there."
 msgstr "Nogle servere angiver krypteret FTP som tilgængelig, men melder time-out (efter lang tid), når du forsøger at bruge det. Hvis du oplever dette, skal du gå ind under \"Ekspertindstillinger\" (nedenfor) og slå SSL fra."
 
-#: src/methods/s3.php:906
+#: src/methods/s3.php:905
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support and ask for them to enable it."
 msgstr "Din web-servers PHP installation indeholder ikke et nødvendigt modul (%s). Venligst kontakt din web hosting udbyders support og bed dem om at tilføje modulet."
 
-#: src/methods/s3.php:1320
+#: src/methods/s3.php:1327
 msgid "Please check your access credentials."
 msgstr "Venligst tjek dine adgangsindstillinger."
 
-#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1297
+#: src/addons/s3-enhanced.php:219, src/methods/s3.php:1304
 msgid "The error reported by %s was:"
 msgstr "Fejlen meddelt af %s var:"
 
@@ -7584,11 +7584,11 @@ msgstr "Scanner igen (søger efter backup's, du manuelt har uploaded til det int
 msgid "Begun looking for this entity"
 msgstr "Søgning efter denne enhed er startet"
 
-#: src/methods/s3.php:543, src/methods/s3.php:730, src/methods/s3.php:840
+#: src/methods/s3.php:542, src/methods/s3.php:729, src/methods/s3.php:839
 msgid "Error: Failed to access bucket %s. Check your permissions and credentials."
 msgstr ""
 
-#: src/methods/s3.php:821, src/methods/s3.php:865
+#: src/methods/s3.php:820, src/methods/s3.php:864
 msgid "Error: Failed to download %s. Check your permissions and credentials."
 msgstr ""
 
@@ -7863,90 +7863,90 @@ msgstr "fejl: %s (se logfil for mere information)"
 msgid "You do not appear to be authenticated with Dropbox"
 msgstr "Det lader ikke til, at du har adgang til Dropbox"
 
-#: src/methods/s3.php:1315
+#: src/methods/s3.php:1322
 msgid "The communication with %s was not encrypted."
 msgstr "Kommunikationen med %s var ikke krypteret."
 
-#: src/methods/s3.php:1313
+#: src/methods/s3.php:1320
 msgid "The communication with %s was encrypted."
 msgstr "Kommunikationen med %s var krypteret."
 
-#: src/addons/googlecloud.php:1020, src/methods/s3.php:1310
+#: src/addons/googlecloud.php:1020, src/methods/s3.php:1317
 msgid "We accessed the bucket, and were able to create files within it."
 msgstr "Vi har fået adgang til gruppen, og vi kunne oprette filer i den."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "We successfully accessed the bucket, but the attempt to create a file in it failed."
 msgstr "Vi har fået adgang til gruppen, men forsøget på at oprette en fil i den mislykkedes."
 
 #: src/addons/googlecloud.php:1014, src/addons/googlecloud.php:1028,
-#: src/methods/s3.php:1308, src/methods/s3.php:1320
+#: src/methods/s3.php:1315, src/methods/s3.php:1327
 msgid "Failure"
 msgstr "Fejl"
 
-#: src/addons/backblaze.php:533, src/methods/s3.php:1295
+#: src/addons/backblaze.php:533, src/methods/s3.php:1302
 msgid "Failure: We could not successfully access or create such a bucket. Please check your access credentials, and if those are correct then try another bucket name (as another %s user may already have taken your name)."
 msgstr "Fejl: Vi kunne ikke få adgang til eller oprette sådan en gruppe. Tjek venligst dine adgangsoplysninger, og hvis de er korrekt, så prøv et andet gruppenavn (da en anden %s bruger måske allerede har taget dit navn)."
 
-#: src/methods/openstack2.php:150, src/methods/s3.php:1289
+#: src/methods/openstack2.php:150, src/methods/s3.php:1296
 msgid "Region"
 msgstr "Region"
 
 #: src/addons/googlecloud.php:140, src/addons/googlecloud.php:974,
-#: src/methods/s3.php:1246
+#: src/methods/s3.php:1255
 msgid "Failure: No bucket details were given."
 msgstr "Fejl: Ingen gruppedetaljer blev oplyst."
 
-#: src/methods/s3.php:1224
+#: src/methods/s3.php:1233
 msgid "API secret"
 msgstr "API hemmelighed"
 
-#: src/methods/s3.php:989
+#: src/methods/s3.php:988
 msgid "Enter only a bucket name or a bucket and path. Examples: mybucket, mybucket/mypath"
 msgstr "Indtast kun et gruppenavn eller en gruppe og sti. Eksempler: mingruppe, mingruppe/minsti"
 
-#: src/methods/s3.php:988
+#: src/methods/s3.php:987
 msgid "%s location"
 msgstr "%s lokation"
 
-#: src/methods/s3.php:984
+#: src/methods/s3.php:983
 msgid "%s secret key"
 msgstr "%s sikkerhedsnøgle"
 
-#: src/methods/s3.php:980
+#: src/methods/s3.php:979
 msgid "%s access key"
 msgstr "%s adgangsnøgle"
 
-#: src/methods/s3.php:918
+#: src/methods/s3.php:917
 msgid "If you see errors about SSL certificates, then please go here for help."
 msgstr "Hvis du ser fejl vedrørende SSL-certifikater, kan du få hjælp her."
 
-#: src/methods/s3.php:916
+#: src/methods/s3.php:915
 msgid "Get your access key and secret key from your <a href=\"%s\">%s console</a>, then pick a (globally unique - all %s users) bucket name (letters and numbers) (and optionally a path) to use for storage. This bucket will be created for you if it does not already exist."
 msgstr ""
 
-#: src/methods/s3.php:833
+#: src/methods/s3.php:832
 msgid "%s Error: Failed to download %s. Check your permissions and credentials."
 msgstr "%s Fejl: Kunne ikke downloade %s. Tjek dine tilladelser og person-oplysninger."
 
-#: src/methods/s3.php:521
+#: src/methods/s3.php:520
 msgid "%s re-assembly error (%s): (see log file for more)"
 msgstr "%s genskabelses-fejl (%s): (Se logfilen for mere info)"
 
-#: src/methods/s3.php:517
+#: src/methods/s3.php:516
 msgid "upload (%s): re-assembly failed (see log for more details)"
 msgstr ""
 
-#: src/methods/s3.php:501
+#: src/methods/s3.php:500
 msgid "chunk %s: upload failed"
 msgstr ""
 
-#: src/methods/s3.php:491
+#: src/methods/s3.php:490
 msgid "error: file %s was shortened unexpectedly"
 msgstr ""
 
-#: src/methods/s3.php:469
+#: src/methods/s3.php:468
 msgid "%s upload: getting uploadID for multipart upload failed - see log file for more details"
 msgstr "%s upload: Det mislykkedes af få upload-ID til multi upload - Se logfilen for flere detaljer."
 
@@ -7978,7 +7978,7 @@ msgid "Username"
 msgstr "Brugernavn"
 
 #: src/methods/cloudfiles-new.php:181, src/methods/cloudfiles.php:534,
-#: src/methods/s3.php:1220
+#: src/methods/s3.php:1229
 msgid "API key"
 msgstr "API-nøgle"
 
@@ -7992,12 +7992,12 @@ msgstr "API-nøgle"
 #: src/methods/ftp.php:426, src/methods/ftp.php:430,
 #: src/methods/openstack2.php:180, src/methods/openstack2.php:185,
 #: src/methods/openstack2.php:190, src/methods/openstack2.php:195,
-#: src/methods/s3.php:1220, src/methods/s3.php:1224
+#: src/methods/s3.php:1229, src/methods/s3.php:1233
 msgid "Failure: No %s was given."
 msgstr "Fejl: Der blev ikke angivet et %s"
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative."
 msgstr "UpdraftPlus's %s modul <strong>kræver</strong> %s. Vær venlig ikke at kontakte support; der er intet alternativ."
 
@@ -8038,7 +8038,7 @@ msgid "Error opening local file: Failed to download"
 msgstr "Fejl ved åbning af lokal fil: Kunne ikke downloade."
 
 #: src/addons/sftp.php:188, src/methods/openstack-base.php:314,
-#: src/methods/s3.php:434, src/methods/s3.php:446, src/methods/s3.php:447
+#: src/methods/s3.php:433, src/methods/s3.php:445, src/methods/s3.php:446
 msgid "%s Error: Failed to upload"
 msgstr "%s Fejl: Upload mislykkedes."
 
@@ -8115,7 +8115,7 @@ msgstr "du har autentificeret din %s konto."
 #: src/addons/sftp.php:633, src/addons/webdav.php:341,
 #: src/addons/wp-cli.php:494, src/methods/addon-base-v2.php:370,
 #: src/methods/cloudfiles.php:590, src/methods/googledrive.php:613,
-#: src/methods/openstack-base.php:535, src/methods/s3.php:1310
+#: src/methods/openstack-base.php:535, src/methods/s3.php:1317
 msgid "Success"
 msgstr "Succes"
 
@@ -8297,7 +8297,7 @@ msgid "Your web server's PHP/Curl installation does not support https access. Co
 msgstr "Din webservers PHP/Curl-installation understøtter ikke HTTPS-adgang. Kommunikation med %s vil være ukrypteret. Bed din webudbyder installere Curl/SSL for at få mulighed for kryptering (via en add-on)."
 
 #: src/methods/cloudfiles-new.php:96, src/methods/cloudfiles.php:455,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:910
+#: src/methods/openstack-base.php:576, src/methods/s3.php:909
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support."
 msgstr "Dit websteds PHP-installation bruger ikke et nødvendigt modul (%s). Kontakt venligst din hostingudbyder's support."
 
@@ -8890,8 +8890,8 @@ msgstr "Du har mindre end %s ledig plads på disken, som UpdraftPlus er konfigur
 #: src/admin.php:4288, src/admin.php:4290, src/admin.php:5925,
 #: src/admin.php:6205, src/methods/cloudfiles-new.php:96,
 #: src/methods/cloudfiles.php:455, src/methods/ftp.php:344,
-#: src/methods/openstack-base.php:576, src/methods/s3.php:906,
-#: src/methods/s3.php:910, src/methods/updraftvault.php:345,
+#: src/methods/openstack-base.php:576, src/methods/s3.php:905,
+#: src/methods/s3.php:909, src/methods/updraftvault.php:345,
 #: src/templates/wp-admin/settings/downloading-and-restoring.php:27,
 #: src/templates/wp-admin/settings/tab-backups.php:27,
 #: src/udaddons/updraftplus-addons.php:303
@@ -8911,7 +8911,7 @@ msgid "Infinite recursion: consult your log for more information"
 msgstr "Uendelig rekursion: se din log for mere information"
 
 #: src/addons/azure.php:267, src/class-updraftplus.php:4663,
-#: src/methods/googledrive.php:1343, src/methods/s3.php:396
+#: src/methods/googledrive.php:1343, src/methods/s3.php:395
 msgid "File not found"
 msgstr "Fil ikke fundet"
 
