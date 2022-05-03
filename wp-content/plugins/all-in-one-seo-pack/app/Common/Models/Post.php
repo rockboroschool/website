@@ -57,6 +57,7 @@ class Post extends Model {
 		'robots_noimageindex',
 		'robots_noodp',
 		'robots_notranslate',
+		'limit_modified_date',
 	];
 
 	/**

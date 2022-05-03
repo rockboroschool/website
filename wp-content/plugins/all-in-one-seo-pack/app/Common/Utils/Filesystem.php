@@ -246,8 +246,10 @@ class Filesystem {
 		if (
 			! is_a( $this->fs, 'WP_Filesystem_Base' ) ||
 			(
+				// Errors is a WP_Error object.
 				! empty( $this->fs->errors ) &&
-				$this->fs->errors->has_errors()
+				// We directly check if the errors array is empty for compatibility with WP < 5.1.
+				! empty( $this->fs->errors->errors )
 			)
 		) {
 			return false;

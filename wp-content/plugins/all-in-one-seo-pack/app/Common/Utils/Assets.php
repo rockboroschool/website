@@ -35,8 +35,8 @@ class Assets {
 	public function __construct( $core ) {
 		$this->core              = $core;
 		$this->version           = aioseo()->version;
-		$this->manifestFile      = AIOSEO_DIR . '/dist/' . aioseo()->versionPath . '/manifest.json';
-		$this->assetManifestFile = AIOSEO_DIR . '/dist/' . aioseo()->versionPath . '/manifest-assets.json';
+		$this->manifestFile      = AIOSEO_DIR . '/dist/' . aioseo()->versionPath . '/manifest.php';
+		$this->assetManifestFile = AIOSEO_DIR . '/dist/' . aioseo()->versionPath . '/manifest-assets.php';
 		$this->isDev             = aioseo()->isDev;
 
 		if ( $this->isDev ) {
@@ -44,7 +44,7 @@ class Assets {
 			$this->port   = getenv( 'VITE_AIOSEO_DEV_PORT' );
 		}
 
-		add_filter( 'script_loader_tag', [ $this, 'scriptLoaderTag' ], 10, 2 );
+		add_filter( 'script_loader_tag', [ $this, 'scriptLoaderTag' ], 10, 3 );
 		add_action( 'admin_head', [ $this, 'devRefreshRuntime' ] );
 		add_action( 'wp_head', [ $this, 'devRefreshRuntime' ] );
 	}
@@ -68,7 +68,7 @@ class Assets {
 	 * @return string The base path URL.
 	 */
 	private function basePath() {
-		return plugins_url( 'dist/' . aioseo()->versionPath . '/assets/', AIOSEO_FILE );
+		return $this->normalizeAssetsHost( plugins_url( 'dist/' . aioseo()->versionPath . '/assets/', AIOSEO_FILE ) );
 	}
 
 	/**

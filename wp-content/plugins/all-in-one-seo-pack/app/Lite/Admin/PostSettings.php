@@ -37,7 +37,7 @@ class PostSettings extends CommonAdmin\PostSettings {
 			$taxonomies = aioseo()->helpers->getPublicTaxonomies();
 			foreach ( $taxonomies as $taxonomy ) {
 				add_action( $taxonomy['name'] . '_edit_form', [ $this, 'addTaxonomyUpsell' ] );
-				add_action( $taxonomy['name'] . '_add_form', [ $this, 'addTaxonomyUpsell' ] );
+				add_action( 'after-' . $taxonomy['name'] . '-table', [ $this, 'addTaxonomyUpsell' ] );
 			}
 		}
 	}

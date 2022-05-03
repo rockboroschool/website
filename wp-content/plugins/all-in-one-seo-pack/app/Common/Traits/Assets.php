@@ -83,10 +83,12 @@ trait Assets {
 	 * @param  string $handle The handle for the script.
 	 * @return string         The modified tag.
 	 */
-	public function scriptLoaderTag( $tag, $handle ) {
+	public function scriptLoaderTag( $tag, $handle, $src ) {
 		if ( $this->skipModuleTag( $handle ) ) {
 			return $tag;
 		}
+
+		$tag = str_replace( $src, $this->normalizeAssetsHost( $src ), $tag );
 
 		// Remove the type and re-add it as module.
 		$tag = preg_replace( '/type=[\'"].*?[\'"]/', '', $tag );
@@ -343,8 +345,8 @@ trait Assets {
 			return $file;
 		}
 
-		$content = $this->core->fs->getContents( $this->manifestFile );
-		$file    = json_decode( $content, true );
+		require( $this->manifestFile );
+		$file = json_decode( $manifestJson, true ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 		return $file;
 	}
@@ -362,8 +364,8 @@ trait Assets {
 			return $file;
 		}
 
-		$content = $this->core->fs->getContents( $this->assetManifestFile );
-		$file    = json_decode( $content, true );
+		require( $this->assetManifestFile );
+		$file = json_decode( $manifestJson, true ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
 		return $file;
 	}
@@ -441,7 +443,13 @@ trait Assets {
 			return $this->shouldLoadDevScripts;
 		}
 
-		if ( ! $this->isDev ) {
+		if (
+			! $this->isDev ||
+			(
+				defined( 'AIOSEO_LOAD_DEV_SCRIPTS' ) &&
+				false === AIOSEO_LOAD_DEV_SCRIPTS
+			)
+		) {
 			$this->shouldLoadDevScripts = false;
 
 			return $this->shouldLoadDevScripts;
@@ -502,5 +510,59 @@ trait Assets {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Normalize the assets host. Some sites manually set the WP_PLUGINS_URL
+	 * and if that domain has www. and the site_url does not, then it will fail to load
+	 * our assets. This doesn't fix the issue 100% because it will still fail on
+	 * sub-domains that don't have the proper CORS headers. Those sites will need
+	 * manual fixes.
+	 *
+	 * 4.1.10
+	 *
+	 * @param  string $path The path to normalize.
+	 * @return string       The normalized path.
+	 */
+	public function normalizeAssetsHost( $path ) {
+		static $paths = [];
+		if ( isset( $paths[ $path ] ) ) {
+			return apply_filters( 'aioseo_normalize_assets_host', $paths[ $path ] );
+		}
+
+		// We need to verify the domain on the $path attribute matches
+		// what's in site_url() for our assets or they won't load.
+		$siteUrl        = site_url();
+		$siteUrlEscaped = aioseo()->helpers->escapeRegex( $siteUrl );
+		if ( preg_match( "/^$siteUrlEscaped/i", $path ) ) {
+			$paths[ $path ] = $path;
+
+			return apply_filters( 'aioseo_normalize_assets_host', $paths[ $path ] );
+		}
+
+		// We now know that the path doesn't contain the site_url().
+		$newPath        = $path;
+		$siteUrlParsed  = wp_parse_url( $siteUrl );
+		$host           = aioseo()->helpers->escapeRegex( str_replace( 'www.', '', $siteUrlParsed['host'] ) );
+		$scheme         = aioseo()->helpers->escapeRegex( $siteUrlParsed['scheme'] );
+
+		$siteUrlHasWww = preg_match( "/^{$scheme}:\/\/www\.$host/", $siteUrl );
+		$pathHasWww    = preg_match( "/^{$scheme}:\/\/www\.$host/", $path );
+
+		// Check if the path contains www.
+		if ( $pathHasWww && ! $siteUrlHasWww ) {
+			// If the path contains www., we want to strip it out.
+			$newPath = preg_replace( "/^({$scheme}:\/\/)(www\.)($host)/", '$1$3', $path );
+		}
+
+		// Check if the site_url contains www.
+		if ( $siteUrlHasWww && ! $pathHasWww ) {
+			// If the site_url contains www., we want to add it in to the path.
+			$newPath = preg_replace( "/^({$scheme}:\/\/)($host)/", '$1www.$2', $path );
+		}
+
+		$paths[ $path ] = $newPath;
+
+		return apply_filters( 'aioseo_normalize_assets_host', $paths[ $path ] );
 	}
 }
