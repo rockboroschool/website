@@ -1,0 +1,93 @@
+0000.018 (0) Opened log file at time: Sun, 08 May 2022 18:07:35 +0000 on https://rockboroschool.ie
+0000.031 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.22.12 WP: 5.9.3 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 13.2M | 4M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.035 (0) Free space on disk containing Updraft's temporary directory: 3039.9 MB
+0000.041 (0) Deleting old log file: log.6fa8c1e81745.txt
+0000.046 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB:  (schedule: weekly)
+0000.049 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.198 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1651428271, seconds_ago=604984)
+0000.209 (0) Set semaphore last lock (fd) time to 2022-05-08 18:07:35
+0000.211 (0) Semaphore lock (fd) complete
+0000.230 (0) Backup run: resumption=0, nonce=9bfa0c872ea0, file_nonce=9bfa0c872ea0 begun at=1652033255 (0s ago), job type=backup
+0000.239 (0) Scheduling a resumption (1) after 300 seconds (1652033555) in case this run gets aborted
+0000.878 (0) Checking if we have a zip executable available
+0000.883 (0) Testing: /usr/bin/zip
+0000.899 (0) Output: zip warning: binziptest/test.zip not found or empty
+0000.903 (0) Output: adding: binziptest/subdir1/	(in=0) (out=0) (stored 0%)
+0000.906 (0) Output: adding: binziptest/subdir1/subdir2/	(in=0) (out=0) (stored 0%)
+0000.910 (0) Output: adding: binziptest/subdir1/subdir2/test.html	(in=131) (out=107) (deflated 18%)
+0000.911 (0) Output: total bytes=131, compressed=107 -> 18% savings
+0000.917 (0) Output: adding: binziptest/subdir1/subdir2/test2.html	(in=138) (out=113) (deflated 18%)
+0000.920 (0) Output: total bytes=269, compressed=220 -> 18% savings
+0001.012 (0) Working binary zip found: /usr/bin/zip
+0001.019 (0) Zip engine: found/will use a binary zip: /usr/bin/zip
+0001.023 (0) Creation of backups of directories: beginning
+0001.028 (0) No backup of plugins: excluded by user's options
+0001.031 (0) No backup of themes: excluded by user's options
+0001.034 (0) No backup of uploads: excluded by user's options
+0001.037 (0) No backup of others: excluded by user's options
+0001.046 (0) Saving backup status to database (elements: 0)
+0001.057 (0) Beginning creation of database dump (WordPress DB)
+0001.061 (0) SQL compatibility mode is: NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0001.199 (0) Table wp_options: Total expected rows (via COUNT): 531
+0001.286 (0) Table wp_options: Rows added in this batch (next record: 2415739): 527 (uncompressed bytes in this segment=457340) in 0.13 seconds
+0001.303 (0) Table wp_options: finishing file(s) (2, 63.2 KB)
+0001.325 (0) Table wp_users: Total expected rows (via COUNT): 5
+0001.328 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.336 (0) Table wp_users: Rows added in this batch (next record: 8): 5 (uncompressed bytes in this segment=2233) in 0.02 seconds
+0001.350 (0) Table wp_users: finishing file(s) (2, 1 KB)
+0001.373 (0) Table wp_usermeta: Total expected rows (via COUNT): 132
+0001.376 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.384 (0) Table wp_usermeta: Rows added in this batch (next record: 216): 132 (uncompressed bytes in this segment=9823) in 0.02 seconds
+0001.398 (0) Table wp_usermeta: finishing file(s) (2, 3.1 KB)
+0001.418 (0) Table wp_actionscheduler_actions: Total expected rows (via COUNT): 43
+0001.420 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.428 (0) Table wp_actionscheduler_actions: Rows added in this batch (next record: 43872): 43 (uncompressed bytes in this segment=15581) in 0.03 seconds
+0001.441 (0) Table wp_actionscheduler_actions: finishing file(s) (2, 1.9 KB)
+0001.448 (0) Table wp_actionscheduler_claims: Total expected rows (via COUNT): 0
+0001.455 (0) Table wp_actionscheduler_claims: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=636) in 0.01 seconds
+0001.463 (0) Table wp_actionscheduler_claims: finishing file(s) (2, 0.4 KB)
+0001.474 (0) Table wp_actionscheduler_groups: Total expected rows (via COUNT): 2
+0001.478 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.483 (0) Table wp_actionscheduler_groups: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=705) in 0.01 seconds
+0001.494 (0) Table wp_actionscheduler_groups: finishing file(s) (2, 0.4 KB)
+0001.500 (0) Table wp_actionscheduler_logs: Total expected rows (via COUNT): 123
+0001.504 (0) Table is relatively small; fetch_rows will thus be: 200 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.511 (0) Table wp_actionscheduler_logs: Rows added in this batch (next record: 128734): 123 (uncompressed bytes in this segment=11957) in 0.01 seconds
+0001.523 (0) Table wp_actionscheduler_logs: finishing file(s) (2, 1.6 KB)
+0001.541 (0) Table wp_commentmeta: Total expected rows (via COUNT): 0
+0001.547 (0) Table wp_commentmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=685) in 0.02 seconds
+0001.559 (0) Table wp_commentmeta: finishing file(s) (2, 0.4 KB)
+0001.575 (0) Table wp_comments: Total expected rows (via COUNT): 0
+0001.583 (0) Table wp_comments: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1705) in 0.02 seconds
+0001.591 (0) Table wp_comments: finishing file(s) (2, 0.5 KB)
+0001.607 (0) Table wp_links: Total expected rows (via COUNT): 0
+0001.612 (0) Table wp_links: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1310) in 0.01 seconds
+0001.622 (0) Table wp_links: finishing file(s) (2, 0.5 KB)
+0001.690 (0) Table wp_postmeta: Total expected rows (approximate): 2240
+0001.747 (0) Table wp_postmeta: Rows added in this batch (next record: 8237): 2187 (uncompressed bytes in this segment=458865) in 0.12 seconds
+0001.776 (0) Table wp_postmeta: finishing file(s) (2, 44.5 KB)
+0001.958 (0) Table wp_posts: Total expected rows (via COUNT): 729
+0002.217 (0) Table wp_posts: Rows added in this batch (next record: 1052): 729 (uncompressed bytes in this segment=1075144) in 0.43 seconds
+0002.234 (0) Table wp_posts: finishing file(s) (2, 148.3 KB)
+0002.240 (0) Table wp_term_relationships: Total expected rows (approximate): 112
+0002.251 (0) Table wp_term_relationships: Rows added in this batch (next record: 100000): 112 (uncompressed bytes in this segment=2293) in 0.01 seconds
+0002.262 (0) Table wp_term_relationships: finishing file(s) (2, 0.7 KB)
+0002.276 (0) Table wp_term_taxonomy: Total expected rows (via COUNT): 27
+0002.279 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0002.286 (0) Table wp_term_taxonomy: Rows added in this batch (next record: 27): 27 (uncompressed bytes in this segment=1862) in 0.02 seconds
+0002.299 (0) Table wp_term_taxonomy: finishing file(s) (2, 0.7 KB)
+0002.325 (0) Table wp_termmeta: Total expected rows (via COUNT): 0
+0002.330 (0) Table wp_termmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=658) in 0.02 seconds
+0002.339 (0) Table wp_termmeta: finishing file(s) (2, 0.4 KB)
+0002.354 (0) Table wp_terms: Total expected rows (via COUNT): 27
+0002.357 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0002.366 (0) Table wp_terms: Rows added in this batch (next record: 27): 27 (uncompressed bytes in this segment=1630) in 0.02 seconds
+0002.380 (0) Table wp_terms: finishing file(s) (2, 0.8 KB)
+0002.398 (0) Table wp_aioseo_cache: Total expected rows (via COUNT): 12
+0002.399 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0002.417 (0) Table wp_aioseo_cache: Rows added in this batch (next record: 514): 12 (uncompressed bytes in this segment=46313) in 0.03 seconds
+0002.440 (0) Table wp_aioseo_cache: finishing file(s) (2, 6.4 KB)
+0002.464 (0) Table wp_aioseo_notifications: Total expected rows (via COUNT): 18
+0002.467 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0002.486 (0) Table wp_aioseo_notifications: Rows added in this batch (next record: 18): 18 (uncompressed bytes in this segment=48170) in 0.04 seconds
+0002.499 (0) Table wp_aioseo_notifications: finishing file(s) (2, 27.8 KB)
