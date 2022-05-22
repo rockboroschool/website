@@ -198,3 +198,6 @@
 0009.871 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
 0009.879 (0) An email has been scheduled for this job, because we are in debug mode
 0009.882 (0) Fetching RSS news feed
+0010.198 (0) Fetched RSS news feed; result is a: SimplePie
+0010.240 (0) Sending email ('Files and database (Full backup)') report (attachments: 1, size: 22.3 KB) to: user@...
+0010.455 (0) The backup apparently succeeded and is now complete
