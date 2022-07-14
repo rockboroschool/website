@@ -2,8 +2,8 @@
 Contributors: Backup with UpdraftPlus, DavidAnderson, DNutbourne, aporter, snightingale, bcrodua
 Tags: backup, restore, database backup, wordpress backup, cloud backup, s3, dropbox, google drive, onedrive, ftp, backups
 Requires at least: 3.2
-Tested up to: 5.9
-Stable tag: 1.22.12
+Tested up to: 6.0
+Stable tag: 1.22.14
 Author URI: https://updraftplus.com
 Donate link: https://david.dw-perspective.org.uk/donate
 License: GPLv3 or later
@@ -169,6 +169,35 @@ The <a href="https://updraftplus.com/news/">UpdraftPlus backup blog</a> is the b
 N.B. Paid versions of UpdraftPlus Backup / Restore have a version number which is 1 higher in the first digit, and has an extra component on the end, but the changelog below still applies. i.e. changes listed for 1.16.32.x of the free version correspond to changes made in 2.16.32.x of the paid version.
 
 
+
+= 1.22.14 - 07/Jul/2022 =
+
+* FIX: Selective table restore
+* FIX: Fix restore button JS issue when importing single site to multisite
+* TWEAK: Allow charset to be set during a WP_CLI restore
+* TWEAK: Use similar charset if one is not set and not supported during a WL_CLI restore
+* TWEAK: Add bulk process handler for UpdraftCentral's plugin and theme modules
+* TWEAK: Return previous plugin and theme states before installation or activation
+* TWEAK: Improve the Handlebars template of the Backblaze remote storage by taking PHP code out of it (Premium)
+* TWEAK: Improve the Handlebars template of the WebDAV remote storage by taking PHP code out of it (Premium)
+* TWEAK: Improve the Handlebars template of the SFTP/SCP remote storage by taking PHP code out of it (Premium)
+* TWEAK: Avoid using 'phpmailer_init' action when setting up sender name and sender email address, as some SMTP plugins override the 'wp_mail()' function and they don't bother to call the 'phpmailer_init' action
+* TWEAK: Prevent increments being added to backups from other sites
+
+= 1.22.13 - 25/May/2022 =
+
+* FEATURE: Added the ability to create a clone from WP-CLI (Premium)
+* TWEAK: Free version – Improve the Handlebars template of Azzure, OneDrive, WebDAV, SFTP/SCP, Blackblaze, and Google Cloud remote storage by taking PHP code out of them
+* TWEAK: Update notice class
+* TWEAK: Escape URL used in remote storage connection modal
+* TWEAK: A Label being incorrectly displayed when creating a clone
+* TWEAK: Update class-udrpc
+* TWEAK: Don't show database selective restore UI if no tables are found in the database scan
+* TWEAK: Allow drag-dropping of backup anywhere, not just on target area
+* TWEAK: Add "echo" to display the premium link properly in some templates
+* TWEAK: Update the posts class to support theme.json config file for theme styles and block settings
+* TWEAK: Extract from plugin's data rather than relying on its key when retrieving the plugin slug
+* TWEAK: Increase likelihood of using experimental upload-sooner feature from 1% to 5%
 
 = 1.22.12 - 29/Apr/2022 =
 
@@ -1522,4 +1551,4 @@ Reliance upon any non-English translation is at your own risk; UpdraftPlus can g
 We recognise and thank those mentioned at https://updraftplus.com/acknowledgements/ for code and/or libraries used and/or modified under the terms of their open source licences.
 
 == Upgrade Notice ==
-* 1.22.12: Various tweaks and fixes, the ability to select individual themes/plugins to restore. See changelog for full details. A recommended update for all.
+* 1.22.14: Various tweaks and fixes, the ability to select a charset when restoring via WP-CLI. See changelog for full details. A recommended update for all.

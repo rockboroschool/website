@@ -1100,6 +1100,7 @@ class UpdraftPlus_Commands {
 		if (!isset($response['status']) && 'success' != $response['status']) return $response;
 
 		$content = '';
+		$url = '';
 		
 		if (isset($response['data'])) {
 			$tokens = isset($response['data']['tokens']) ? $response['data']['tokens'] : 0;

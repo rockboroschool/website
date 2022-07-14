@@ -563,6 +563,18 @@ class UpdraftPlus_Admin {
 			add_action('admin_print_footer_scripts', array($this, 'admin_index_print_footer_scripts'));
 		}
 		
+		$udp_saved_version = UpdraftPlus_Options::get_updraft_option('updraftplus_version');
+		if (!$udp_saved_version || $udp_saved_version != $updraftplus->version) {
+			if (!$udp_saved_version) {
+				// udp was newly installed, or upgraded from an older version
+				do_action('updraftplus_newly_installed', $updraftplus->version);
+			} else {
+				// udp was updated or downgraded
+				do_action('updraftplus_version_changed', $udp_saved_version, $updraftplus->version);
+			}
+			UpdraftPlus_Options::update_updraft_option('updraftplus_version', $updraftplus->version);
+		}
+		
 		// Next, the actions that only come on the UpdraftPlus page
 		if (UpdraftPlus_Options::admin_page() != $pagenow || empty($_REQUEST['page']) || 'updraftplus' != $_REQUEST['page']) return;
 		$this->setup_all_admin_notices_udonly($service);
@@ -591,18 +603,6 @@ class UpdraftPlus_Admin {
 		}
 
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 99999);
-
-		$udp_saved_version = UpdraftPlus_Options::get_updraft_option('updraftplus_version');
-		if (!$udp_saved_version || $udp_saved_version != $updraftplus->version) {
-			if (!$udp_saved_version) {
-				// udp was newly installed, or upgraded from an older version
-				do_action('updraftplus_newly_installed', $updraftplus->version);
-			} else {
-				// udp was updated or downgraded
-				do_action('updraftplus_version_changed', UpdraftPlus_Options::get_updraft_option('updraftplus_version'), $updraftplus->version);
-			}
-			UpdraftPlus_Options::update_updraft_option('updraftplus_version', $updraftplus->version);
-		}
 
 		if (isset($_POST['action']) && 'updraft_wipesettings' == $_POST['action'] && isset($_POST['nonce']) && UpdraftPlus_Options::user_can_manage()) {
 			if (wp_verify_nonce($_POST['nonce'], 'updraftplus-wipe-setting-nonce')) $this->wipe_settings();
@@ -809,7 +809,7 @@ class UpdraftPlus_Admin {
 
 		$this->ensure_sufficient_jquery_and_enqueue();
 		$jquery_blockui_enqueue_version = $updraftplus->use_unminified_scripts() ? '2.71.0'.'.'.time() : '2.71.0';
-		wp_enqueue_script('jquery-blockui', UPDRAFTPLUS_URL.'/includes/blockui/jquery.blockUI'.$updraft_min_or_not.'.js', array('jquery'), $jquery_blockui_enqueue_version);
+		wp_enqueue_script('jquery-blockui', UPDRAFTPLUS_URL.'/includes/blockui/jquery.blockUI'.$min_or_not.'.js', array('jquery'), $jquery_blockui_enqueue_version);
 	
 		wp_enqueue_script('jquery-labelauty', UPDRAFTPLUS_URL.'/includes/labelauty/jquery-labelauty'.$updraft_min_or_not.'.js', array('jquery'), $enqueue_version);
 		wp_enqueue_style('jquery-labelauty', UPDRAFTPLUS_URL.'/includes/labelauty/jquery-labelauty'.$updraft_min_or_not.'.css', array(), $enqueue_version);
@@ -1012,7 +1012,7 @@ class UpdraftPlus_Admin {
 			'clone_version_warning' => __('Warning: you have selected a lower version than your currently installed version. This may fail if you have components that are incompatible with earlier versions.', 'updraftplus'),
 			'clone_backup_complete' => __('The clone has been provisioned, and its data has been sent to it. Once the clone has finished deploying it, you will receive an email.', 'updraftplus'),
 			'clone_backup_aborted' => __('The preparation of the clone data has been aborted.', 'updraftplus'),
-			'current_clean_url' => UpdraftPlus::get_current_clean_url(),
+			'current_clean_url' => esc_url(UpdraftPlus::get_current_clean_url()),
 			'exclude_rule_remove_conformation_msg' => __('Are you sure you want to remove this exclusion rule?', 'updraftplus'),
 			'exclude_select_file_or_folder_msg' => __('Please select a file/folder which you would like to exclude', 'updraftplus'),
 			'exclude_select_folder_wildcards_msg' => __('Please select a folder in which the files/directories you would like to exclude are located'),
@@ -1148,7 +1148,7 @@ class UpdraftPlus_Admin {
 			'runtimes' => 'html5,flash,silverlight,html4',
 			'browse_button' => 'plupload-browse-button',
 			'container' => 'plupload-upload-ui',
-			'drop_element' => 'drag-drop-area',
+			'drop_element' => 'updraft-navtab-backups-content',
 			'file_data_name' => 'async-upload',
 			'multiple_queues' => true,
 			'max_file_size' => '100Gb',
@@ -6056,7 +6056,7 @@ ENDHERE;
 		foreach ($data as $value) {
 			$output .= "<option value=\"$value\" ";
 			if ($value == $name_version) $output .= 'selected="selected"';
-			$output .= ">".htmlspecialchars($value) . ($value == $name_version ? ' ' . __('(current version)', 'updraftplus') : '')."</option>\n";
+			$output .= ">".htmlspecialchars($value) . ($value == $name_version && 'region' != $name ? ' ' . __('(current version)', 'updraftplus') : '')."</option>\n";
 		}
 			
 		$output .= '</select>';

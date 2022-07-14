@@ -360,8 +360,9 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 
 		do_action('enqueue_block_editor_assets');
 		do_action('enqueue_block_assets');
+		do_action('wp_enqueue_scripts');
 
-		// Checking for editor styles support since styles make vary from theme to theme
+		// Checking for editor styles support since styles may vary from theme to theme
 		if ($editor_styles) {
 			foreach ($editor_styles as $style) {
 				if (false !== array_search($style, $loaded)) continue;
@@ -383,6 +384,24 @@ class UpdraftCentral_Posts_Commands extends UpdraftCentral_Commands {
 				);
 				$loaded[] = $style;
 			}
+		}
+
+		// Introduced in 5.9.0
+		if (function_exists('wp_get_global_stylesheet')) {
+			$editing_styles[] = array('css' => wp_get_global_stylesheet(), 'inline' => '');
+		}
+
+		// Introduced in 5.8.0
+		if (function_exists('get_block_editor_settings')) {
+			$block_editor_context = new WP_Block_Editor_Context();
+			$settings = get_block_editor_settings(array(), $block_editor_context);
+			
+			// Don't render but instead attached to the editor before load.
+			// We let the editor render these kind of styles as they need to be prefixed
+			// by the editor based on the current context.
+			//
+			// N.B. Leave the 'css' property empty. It is used for downward compatibility.
+			$editing_styles[] = array('editor_css' => $settings['styles'], 'inline' => '', 'css' => '');
 		}
 
 		$editing_styles[] = array('css' => $this->extract_css_content('/style.css', $timeout), 'inline' => '');

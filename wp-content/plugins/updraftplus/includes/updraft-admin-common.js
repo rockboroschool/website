@@ -3653,12 +3653,14 @@ jQuery(function($) {
 						var sitename = $(this).val();
 						if (sitename == '') {
 							alert(updraftlion.pleasefillinrequired);
+							jQuery('.updraft-restore--next-step, .updraft-restore--cancel').prop('disabled', false);
 							continue_restore = 0;
 						} else if ($(this).attr('pattern') != '') {
 							var pattern = $(this).attr('pattern');
 							var re = new RegExp(pattern, "g");
 							if (!re.test(sitename)) {
 								alert($(this).data('invalidpattern'));
+								jQuery('.updraft-restore--next-step, .updraft-restore--cancel').prop('disabled', false);
 								continue_restore = 0;
 							}
 						}
@@ -3668,7 +3670,7 @@ jQuery(function($) {
 						
 						anyselected = 0;
 					
-						jQuery('input[name="updraft_restore_table_options[]"').each(function (x, y) {
+						jQuery('input[name="updraft_restore_tables_options[]"').each(function (x, y) {
 							if (jQuery(y).is(':checked') && !jQuery(y).is(':disabled')) anyselected = 1;
 						});
 						
@@ -4321,6 +4323,9 @@ jQuery(function($) {
 
 		// a file was added in the queue
 		uploader.bind('FilesAdded', function(up, files) {
+			if ($('#updraft-plupload-modal').is(':hidden')) {
+				$('#updraft-plupload-modal').slideToggle();
+			}
 		// var hundredmb = 100 * 1024 * 1024, max = parseInt(up.settings.max_file_size, 10);
 		
 		plupload.each(files, function(file) {

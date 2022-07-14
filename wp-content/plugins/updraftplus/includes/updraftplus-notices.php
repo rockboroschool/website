@@ -2,9 +2,9 @@
 
 if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed');
 
-if (!class_exists('Updraft_Notices')) require_once(UPDRAFTPLUS_DIR.'/includes/updraft-notices.php');
+if (!class_exists('Updraft_Notices_1_2')) require_once(UPDRAFTPLUS_DIR.'/vendor/team-updraft/common-libs/src/updraft-notices/updraft-notices.php');
 
-class UpdraftPlus_Notices extends Updraft_Notices {
+class UpdraftPlus_Notices extends Updraft_Notices_1_2 {
 
 	protected static $_instance = null;
 

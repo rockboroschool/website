@@ -411,8 +411,8 @@ class UpdraftPlus_Backup {
 
 		global $updraftplus;
 
-		// Return unless this feature is turned on or a 1% chance to try it
-		if ((defined('UPDRAFTPLUS_UPLOAD_AFTER_CREATE') && UPDRAFTPLUS_UPLOAD_AFTER_CREATE) || 0 == rand(0, 99)) {
+		// Return unless this feature is turned on or a 5% chance to try it
+		if ((defined('UPDRAFTPLUS_UPLOAD_AFTER_CREATE') && UPDRAFTPLUS_UPLOAD_AFTER_CREATE) || rand(0, 99) < 5) {
 
 			if ($updraftplus->is_uploaded($file) || !is_file($this->updraft_dir.'/'.$file)) return;
 
