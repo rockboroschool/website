@@ -90,13 +90,16 @@ var MonsterInsights = function () {
 
 		var fields = cloneFields( fieldsArray, null, fieldsToRemove );
 		fields.action = action;
+		fields.send_to = monsterinsights_frontend.v4_id;
 
-		var eventMap = {
-			'outbound-link': 'click',
-			'download': 'file_download',
-		};
+		let hitType = eventCategory.replace( '-', '_' );
+		if (eventCategory.indexOf('outbound-link') !== -1) {
+			hitType = 'click'
+		} else if (eventCategory === 'download') {
+			hitType = 'file_download'
+		}
 
-		__gtagTracker( type, eventMap[ eventCategory ] || eventCategory.replace( '-', '_' ), fields );
+		__gtagTracker( type, hitType, fields );
 	}
 
 	function __gtagMaybeTrackerUA( type, action, fieldsArray ) {
@@ -111,7 +114,7 @@ var MonsterInsights = function () {
 		];
 
 		var uaFields = cloneFields(fieldsArray, allowedFields);
-		uaFields.send_to = monsterinsights_frontend.ua
+		uaFields.send_to = monsterinsights_frontend.ua;
 
 		__gtagTracker( type, action, uaFields );
 	}

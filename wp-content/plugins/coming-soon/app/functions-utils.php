@@ -1001,7 +1001,6 @@ function seedprod_lite_block_options() {
 	return $block_options;
 }
 
-
 /**
 * Get times
 */
@@ -1580,10 +1579,10 @@ function seedprod_lite_wp_post_revision_fields( $fields, $post ) {
 	} elseif ( ( ! empty( $post['post_content_filtered'] ) && strpos( $post['post_content'], 'sp-theme-template' ) !== false ) || strpos( $post['post_title'], 'Global CSS' ) !== false ) {
 		$fields['post_content_filtered'] = 'Content Filtered';
 		return $fields;
-	} elseif ( ! empty( $post['post_content_filtered'] ) && $post['post_type'] == 'seedprod' ) {
+	} elseif ( ! empty( $post['post_content_filtered'] ) && 'seedprod' == $post['post_type'] ) {
 		$fields['post_content_filtered'] = 'Content Filtered';
 		return $fields;
-	}else {
+	} else {
 		return $fields;
 	}
 }

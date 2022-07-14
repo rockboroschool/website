@@ -4,81 +4,85 @@ return array(
   'domain' => 'jetpack',
   'type' => 'plugins',
   'packages' => array(
-    'jetpack-assets' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-assets',
-      'ver' => '1.17.8',
-    ),
-    'jetpack-tracking' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-tracking',
-      'ver' => '1.14.5',
-    ),
-    'jetpack-heartbeat' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-heartbeat',
-      'ver' => '1.4.0',
+    'jetpack-password-checker' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-password-checker',
+      'ver' => '0.2.5',
     ),
     'jetpack-admin-ui' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-admin-ui',
-      'ver' => '0.2.5',
-    ),
-    'jetpack-password-checker' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-password-checker',
-      'ver' => '0.2.3',
-    ),
-    'jetpack-idc' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-identity-crisis',
-      'ver' => '0.8.4',
-    ),
-    'jetpack-backup-pkg' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-backup',
-      'ver' => '1.2.5',
-    ),
-    'jetpack-compat' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-compat',
-      'ver' => '1.7.0',
+      'ver' => '0.2.9',
     ),
     'jetpack-connection' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-connection',
-      'ver' => '1.37.3',
+      'ver' => '1.41.3',
+    ),
+    'jetpack-assets' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-assets',
+      'ver' => '1.17.17',
+    ),
+    'jetpack-idc' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-identity-crisis',
+      'ver' => '0.8.15',
     ),
     'jetpack-sync' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-sync',
-      'ver' => '1.30.5',
-    ),
-    'jetpack-connection-ui' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-connection-ui',
-      'ver' => '2.3.12',
-    ),
-    'jetpack-google-fonts-provider' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-google-fonts-provider',
-      'ver' => '0.2.1',
-    ),
-    'jetpack-jitm' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-jitm',
-      'ver' => '2.2.10',
-    ),
-    'jetpack-lazy-images' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-lazy-images',
-      'ver' => '2.1.9',
-    ),
-    'jetpack-licensing' => array(
-      'path' => 'jetpack_vendor/automattic/jetpack-licensing',
-      'ver' => '1.6.3',
+      'ver' => '1.36.0',
     ),
     'jetpack-plugins-installer' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-plugins-installer',
-      'ver' => '0.1.1',
+      'ver' => '0.1.3',
+    ),
+    'jetpack-licensing' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-licensing',
+      'ver' => '1.7.4',
     ),
     'jetpack-my-jetpack' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-my-jetpack',
-      'ver' => '0.6.13',
+      'ver' => '1.7.1',
+    ),
+    'jetpack-connection-ui' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-connection-ui',
+      'ver' => '2.4.8',
     ),
     'jetpack-config' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-config',
-      'ver' => '1.7.0',
+      'ver' => '1.9.1',
+    ),
+    'jetpack-backup-pkg' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-backup',
+      'ver' => '1.4.1',
+    ),
+    'jetpack-compat' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-compat',
+      'ver' => '1.7.3',
+    ),
+    'jetpack-google-fonts-provider' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-google-fonts-provider',
+      'ver' => '0.3.2',
+    ),
+    'jetpack-jitm' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-jitm',
+      'ver' => '2.2.20',
+    ),
+    'jetpack-lazy-images' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-lazy-images',
+      'ver' => '2.1.19',
+    ),
+    'jetpack-publicize-pkg' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-publicize',
+      'ver' => '0.7.0',
     ),
     'jetpack-search-pkg' => array(
       'path' => 'jetpack_vendor/automattic/jetpack-search',
-      'ver' => '0.12.1',
+      'ver' => '0.15.3',
+    ),
+    'jetpack-waf' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-waf',
+      'ver' => '0.6.3',
+    ),
+    'jetpack-wordads' => array(
+      'path' => 'jetpack_vendor/automattic/jetpack-wordads',
+      'ver' => '0.2.7',
     ),
   ),
 );

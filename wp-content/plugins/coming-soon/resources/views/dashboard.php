@@ -34,6 +34,18 @@ if ( empty( $page_count ) ) {
 	$page_count = 0;
 }
 
+$landing_pages_created = 0;
+$lpresults = $wpdb->get_var(
+	"SELECT COUNT(`ID`) `hits`
+	FROM {$wpdb->posts} `p`
+	LEFT JOIN {$wpdb->postmeta} `pm` ON(`p`.`ID` = `pm`.`post_id`)
+	WHERE `p`.`post_type` = 'page'
+		AND `pm`.`meta_key` = '_seedprod_page';"
+);
+if(!empty($lpresults)){
+	$landing_pages_created = $lpresults;
+}
+
 
 $subscriber_count = get_option( 'seedprod_subscriber_count' );
 if ( empty( $subscriber_count ) ) {
@@ -69,6 +81,12 @@ if ( false === $seedprod_api_key ) {
 $seedprod_app_settings = get_option( 'seedprod_app_settings' );
 if ( ! empty( $seedprod_app_settings ) ) {
 	$seedprod_app_settings = json_decode( stripslashes( $seedprod_app_settings ) );
+	$enable_usage_tracking = get_option('seedprod_allow_usage_tracking');
+	if(empty($enable_usage_tracking)){
+		$seedprod_app_settings->enable_usage_tracking = false;
+	}else{
+		$seedprod_app_settings->enable_usage_tracking = true;
+	}
 } else {
 	// fail safe incase settings go missing
 	require_once SEEDPROD_PLUGIN_PATH . 'resources/data-templates/default-settings.php';
@@ -93,6 +111,7 @@ $csp_id    = get_option( 'seedprod_coming_soon_page_id' );
 $mmp_id    = get_option( 'seedprod_maintenance_mode_page_id' );
 $p404_id   = get_option( 'seedprod_404_page_id' );
 $loginp_id = get_option( 'seedprod_login_page_id' );
+$seedprod_theme_id = get_option( 'seedprod_theme_id' );
 
 $csp_uuid                = get_post_meta( $csp_id, '_seedprod_page_uuid', true );
 $mmp_uuid                = get_post_meta( $mmp_id, '_seedprod_page_uuid', true );
@@ -103,6 +122,10 @@ $seedprod_csp4_imported  = get_option( 'seedprod_csp4_imported' );
 $seedprod_cspv5_migrated = get_option( 'seedprod_cspv5_migrated' );
 $seedprod_cspv5_imported = get_option( 'seedprod_cspv5_imported' );
 $seedprod_site_token     = get_option( 'seedprod_token' );
+if(empty($seedprod_site_token)){
+	$seedprod_site_token = wp_generate_uuid4();
+	update_option( 'seedprod_token', $seedprod_site_token );
+}
 
 // one time flush permalinks
 if ( empty( get_option( 'seedprod_onetime_flush_rewrite' ) ) ) {
@@ -212,6 +235,9 @@ var seedprod_update_theme_template_preview_mode_url = <?php echo wp_json_encode(
 <?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_update_seedprod_theme_enabled', 'seedprod_lite_update_seedprod_theme_enabled' ) ); ?>
 var seedprod_update_seedprod_theme_enabled_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
 
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_install_addon_setup', 'seedprod_lite_install_addon_setup' ) ); ?>
+var seedprod_get_install_addon_setup_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
 <?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_get_plugins_list', 'seedprod_lite_get_plugins_list' ) ); ?>
 var seedprod_get_plugins_list_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
 
@@ -254,6 +280,56 @@ var seedprod_save_app_settings_ajax_url = <?php echo wp_json_encode( esc_url_raw
 <?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_create_blog_and_home_for_theme', 'seedprod_lite_create_blog_and_home_for_theme' ) ); ?>
 var seedprod_create_blog_and_home_for_theme_ajax_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
 
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_export_theme_files', 'seedprod_lite_export_theme_files' ) ); ?>
+var seedprod_export_themebuilder_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_import_theme_files', 'seedprod_lite_import_theme_files' ) ); ?>
+var seedprod_import_themebuilder_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_import_theme_by_url', 'seedprod_lite_import_theme_by_url' ) ); ?>
+var seedprod_import_theme_by_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_export_landing_pages', 'seedprod_lite_export_landing_pages' ) ); ?>
+var seedprod_export_landingpages_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_import_landing_pages', 'seedprod_lite_import_landing_pages' ) ); ?>
+var seedprod_import_landingpages_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+<?php $ajax_url = html_entity_decode( wp_nonce_url( 'admin-ajax.php?action=seedprod_lite_complete_setup_wizard', 'seedprod_lite_complete_setup_wizard' ) ); ?>
+var seedprod_complete_setup_wizard_url = <?php echo wp_json_encode( esc_url_raw( $ajax_url ) ); ?>;
+
+<?php
+// get onboarding url if lite
+$seedprod_onboarding_upgrade_url = '';
+if(SEEDPROD_BUILD == 'lite'){
+	$oth = hash( 'sha512', wp_rand() );
+	update_option( 'seedprod_one_click_upgrade', $oth );
+	$version  = SEEDPROD_VERSION;
+	$file     = 'REPLACE_DOWNLOAD_LINK';
+	$siteurl  = admin_url();
+	$endpoint = admin_url( 'admin-ajax.php' );
+	$redirect = admin_url( 'admin.php?page=seedprod_lite#/settings' );
+
+	$seedprod_onboarding_upgrade_url = add_query_arg(
+		array(
+			'api_token'   => 'REPLACE_API_TOKEN',
+			'license_key' => 'REPLACE_LICENSE_KEY',
+			'oth'         => $oth,
+			'endpoint'    => $endpoint,
+			'version'     => $version,
+			'siteurl'     => $siteurl,
+			'redirect'    => rawurldecode( base64_encode( $redirect ) ),
+			'file'        => rawurldecode( base64_encode( $file ) ),
+		),
+		SEEDPROD_WEB_API_URL . 'upgrade-free-to-pro'
+	);
+}
+?>
+var seedprod_onboarding_upgrade_url = <?php echo wp_json_encode( esc_url_raw( $seedprod_onboarding_upgrade_url ) ); ?>;
+
 <?php
 $seedprod_unsupported_feature = get_option( 'seedprod_unsupported_feature' );
 if ( ! empty( $seedprod_unsupported_feature ) ) {
@@ -270,6 +346,8 @@ var seedprod_data_admin =
 	<?php
 	echo wp_json_encode(
 		array(
+			'admin_url' => rawurldecode( base64_encode(admin_url())),
+			'plugin_version'               => SEEDPROD_VERSION,
 			'show_on_front'                => $show_on_front,
 			'page_for_posts'               => $page_for_posts,
 			'page_on_front'                => $page_on_front,
@@ -286,8 +364,10 @@ var seedprod_data_admin =
 			'seedprod_cspv5_migrated'      => $seedprod_cspv5_migrated,
 			'seedprod_cspv5_imported'      => $seedprod_cspv5_imported,
 			'page_count'                   => $page_count,
+			'landing_page_count'           => $landing_pages_created,
 			'subscriber_count'             => $subscriber_count,
 			'notifications'                => $notifications,
+			'seedprod_theme_id'            => $seedprod_theme_id,
 			'csp_id'                       => $csp_id,
 			'csp_uuid'                     => $csp_uuid,
 			'csp_preview_url'              => $csp_preview_url,

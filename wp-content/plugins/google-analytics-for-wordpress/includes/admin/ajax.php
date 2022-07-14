@@ -143,6 +143,8 @@ function monsterinsights_ajax_activate_addon() {
             echo json_encode( array( 'error' => $activate->get_error_message() ) );
             wp_die();
         }
+
+        do_action( 'monsterinsights_after_ajax_activate_addon', sanitize_text_field( $_POST['plugin'] ) );
     }
 
     echo json_encode( true );

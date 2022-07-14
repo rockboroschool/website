@@ -1,10 +1,10 @@
 === Jetpack - WP Security, Backup, Speed, & Growth ===
 Contributors: automattic, adamkheckler, adrianmoldovanwp, aduth, akirk, allendav, alternatekev, andy, annamcphee, annezazu, apeatling, arcangelini, azaozz, batmoo, barry, beaulebens, biskobe, blobaugh, bjorsch, brbrr, cainm, cena, cfinke, chaselivingston, chellycat, clickysteve, csonnek, danielbachhuber, davoraltman, daniloercoli, delawski, designsimply, dllh, drawmyface, dsmart, dzver, ebinnion, egregor, eliorivero, enej, eoigal, erania-pinnera, ethitter, fgiannar, gcorne, georgestephanis, gibrown, goldsounds, hew, hugobaeta, hypertextranch, iammattthomas, iandunn, jblz, jasmussen, jeffgolenski, jeherve, jenhooks, jenia, jessefriedman, jgs, jkudish, jmdodd, joanrho, johnjamesjacoby, jshreve, kbrownkd, keoshi, koke, kraftbj, lancewillett, leogermani, lschuyler, macmanx, martinremy, matt, matveb, mattwiebe, maverick3x6, mcsf, mdawaffe, mdbitz, MichaelArestad, migueluy, mikeyarce, mkaz, nancythanki, nickmomrik, obenland, oskosk, pento, professor44, rachelsquirrel, rdcoll, ryancowles, richardmuscat, richardmtl, robertbpugh, roccotripaldi, samhotchkiss, samiff, scarstocea, scottsweb, sdixon194, sdquirk, sermitr, simison, stephdau, tmoorewp, tyxla, Viper007Bond, westi, yoavf, zinigor
 Tags: Security, backup, Woo, malware, scan, spam, CDN, search, social
-Stable tag: 10.8
-Requires at least: 5.8
+Stable tag: 11.1.1
+Requires at least: 5.9
 Requires PHP: 5.6
-Tested up to: 5.9
+Tested up to: 6.0
 
 Improve your WP security with powerful one-click tools like backup and malware scan. Get essential free tools including stats, CDN and social sharing.
 
@@ -242,46 +242,44 @@ Jetpack Backup can do a full website migration to a new host, migrate theme file
 4. Promote your newest posts, pages, and products across your social media channels.
 
 == Changelog ==
-### 10.8 - 2022-04-05
-#### Major Enhancements
-- QR Post: add new feature which automatically generates QR codes for published posts. When scanned, the QR code will link visitors to the post. If a site has a custom logo set, it will be shown in the generated QR code image.
+### 11.1.1 - 2022-07-11
+#### Bug fixes
+- Dashboard: avoid JavaScript errors and layout problems on sites experiencing URL-related connection issues with WordPress.com.
 
+### 11.1 - 2022-07-05
 #### Enhancements
-- Blocks: make settings discoverable and toggleable, and add a card to highlight the blocks available from Jetpack on the dashboard.
-- Dashboard: show Search benefits on the Jetpack disconnection screen.
-- External Media: add Openverse as an external Media provider.
-- Form Block: offer option to install/activate the Jetpack CRM plugin from the Form block settings panel.
-- Payment Block: clicking on payment links from email or WordPress.com Notifications/Reader will correctly open the corresponding payment form. Also add a unified Payment Block selector and introduce a post-publish panel for Payment Blocks.
-- Subscribe Block: block setting updates including name change, display of current subscribers, and a new style option. Also add pre/post-publish notices.
-- Tiled Gallery: add background color block setting.
-- Various Blocks: update Contact Info, Markdown, and Tiled Gallery blocks to include margin design tools.
-- VideoPress: added support for the `muted`, `controls` and `playsinline` properties on the 'wpvideo' and VideoPress shortcodes.
+- Dashboard: add "Getting started with Jetpack Backup" video to Assistant and "At a glance" dashboard.
+- Recipe Block (beta): introduce a new Recipe block to display an easy to read recipe anywhere on your site. Currently a JETPACK_BETA_BLOCKS feature.
+- VideoPress: enable blocks with VideoPress markdown to be previewed within the mobile app.
+- VideoPress Block (beta): introduce VideoPress block currently in beta status.
 
 #### Improved compatibility
-- Sharing: avoid warnings when the feature is not active on a site that uses the AMP plugin.
-- Shortcodes: adds the Jetpack namespace to slideshow shortcode CSS class names.
-- Various Blocks: remove deprecated attributes from Button components.
+- Blocks: add Jetpack block elements to WPML configuration so they can be translated.
+- Connection: update connection banner to use updated Emerald styling.
+- Publicize: configure Publicize only when the module is active.
+- VideoPress: update non-iframe player to latest version for sites using the `jetpack_videopress_player_use_iframe` filter.
 
 #### Bug fixes
-- Calendly Block: ensure it can be displayed inline when using a block enabled theme.
-- Carousel: fix nonce check issue with Carousel comments
-- CLI Tools: ensure WP CLI is present before extending the class.
-- Form Block: do not display the CRM integration option to non-admins.
-- Google Analytics: fix showing an upgrade button with the latest Jetpack security plans.
-- Jetpack: fix missing "Connect User" button after restoring a connection.
-- Jetpack: remove the duplicated `jetpack_relatedposts_returned_results filter`.
-- Payment Blocks: fixes an issue with the upgrade banner being obscured from all payment blocks.
-- Pay with Paypal Block: fix inconsistent currency formatting.
-- Pay with PayPal widget: enable widget to work in block-based widget editor and full site editor.
-- Publicize: prevent newlines from being stripped from a custom Publicize message in the classic editor.
-- QR Post: improve the inner logo sizing.
-- SEO Tools: ensure Twitter cards get correct description when a site has a blank tagline.
-- Shortlinks: display the shortlinks interface in the block editor for all post types that support shortlinks.
-- Subscribe Block: ensure subscription panels are not shown in the page editor, or when the site is private.
-- Top Posts Widget: display a fallback list of posts to admins when there are no popular posts to display.
-- WooCommerce: fix an issue preventing upgrading to version 6.3.0.
-- WordAds: fix defaulting to "house ad" mode for new activations.
+- CLI: avoid PHP notice when running connection tests.
+- Connection: move the connection_url_redirect action handling to the connection package.
+- Contact Form: support saving array of data, such as multiple checkboxes.
+- Contact Form Block: display expected success message when used in FSE header or footer.
+- Contact Form Block: radio, select, and multiple checkbox fields can now have option with a value of '0'.
+- Dashboard: fix the link to Anti-spam stats.
+- Dashboard: format anti-spam stats properly, including in languages using a space as thousands separator.
+- Mailchimp Block: center spinner during loading block content.
+- Payment Block: fix issue preventing images in payment buttons.
+- Payments Block: only add PayPal email meta to Payment posts.
+- Payments Block: remove hardcoded recurring-payments button color.
+- Photon: do not return Photonized URLs to the block editor in WordPress 6.0.
+- Search: avoid broken images in search results by preferring the _jetpack_featured_media_url postmeta over the GUID.
+- SEO Tools: allow WooCommerce to use custom SEO description for the shop page.
+- Sharing: avoid fatal errors when email sharing process is called  without clicking on the button.
+- Subscribe Block: fix double-quote breaking the Subscribe block button.
+- VideoPress: fix average color parameter for seekbar.
+- VideoPress: fix embeds in classic editor when theme has no $content_width set.
+- VideoPress Block: fix Cancel button on block and provide better error message when video format is not supported.
 
 --------
 
-[See the previous changelogs here](https://github.com/Automattic/jetpack/blob/master/projects/plugins/jetpack/CHANGELOG.md#changelog)
+[See the previous changelogs here](https://github.com/Automattic/jetpack/blob/trunk/projects/plugins/jetpack/CHANGELOG.md#changelog)
