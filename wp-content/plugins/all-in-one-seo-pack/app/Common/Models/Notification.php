@@ -199,13 +199,14 @@ class Notification extends Model {
 					}
 
 					$activated = aioseo()->internalOptions->internal->firstActivated( time() );
-					if ( $activated > strtotime( '-30 days' ) ) {
+					if ( $activated > strtotime( '-20 days' ) ) {
 						break;
 					}
 
+					$isV3                  = get_option( 'aioseop_options' ) || get_option( 'aioseo_options_v3' );
 					$staticNotifications[] = [
 						'slug'      => 'notification-' . $notification,
-						'component' => 'notifications-' . $notification
+						'component' => 'notifications-' . $notification . ( $isV3 ? '' : '2' )
 					];
 					break;
 				case 'unlicensed-addons':

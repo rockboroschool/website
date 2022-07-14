@@ -35,7 +35,7 @@ class Organization extends Graph {
 			$data['image'] = [ '@id' => $homeUrl . '#organizationLogo' ];
 		}
 
-		$socialUrls = $this->socialUrls();
+		$socialUrls = $this->getOrganizationProfiles();
 		if ( $socialUrls ) {
 			$data['sameAs'] = $socialUrls;
 		}

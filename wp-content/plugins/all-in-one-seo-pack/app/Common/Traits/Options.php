@@ -1050,11 +1050,16 @@ trait Options {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return Options The cloned Options object.
+	 * @param  bool    $reInitialize Whether or not to reinitialize on the clone.
+	 * @return Options               The cloned Options object.
 	 */
-	public function noConflict() {
+	public function noConflict( $reInitialize = false ) {
 		$class          = clone $this;
 		$class->isClone = true;
+
+		if ( $reInitialize ) {
+			$class->init();
+		}
 
 		return $class;
 	}

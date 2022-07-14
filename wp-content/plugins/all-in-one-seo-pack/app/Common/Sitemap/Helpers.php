@@ -425,9 +425,9 @@ class Helpers {
 			return $urls;
 		}
 
-		foreach ( aioseo()->sitemap->addons as $classes ) {
-			if ( ! empty( $classes['helpers'] ) ) {
-				$urls = array_merge( $urls, $classes['helpers']->getSitemapUrls() );
+		foreach ( aioseo()->addons->getLoadedAddons() as $loadedAddon ) {
+			if ( ! empty( $loadedAddon->helpers ) && method_exists( $loadedAddon->helpers, 'getSitemapUrls' ) ) {
+				$urls = array_merge( $urls, $loadedAddon->helpers->getSitemapUrls() );
 			}
 		}
 
@@ -472,5 +472,18 @@ class Helpers {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Returns if images should be excluded from the sitemap.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @return bool
+	 */
+	public function excludeImages() {
+		$shouldExclude = aioseo()->options->sitemap->general->advancedSettings->enable && aioseo()->options->sitemap->general->advancedSettings->excludeImages;
+
+		return apply_filters( 'aioseo_sitemap_exclude_images', $shouldExclude );
 	}
 }

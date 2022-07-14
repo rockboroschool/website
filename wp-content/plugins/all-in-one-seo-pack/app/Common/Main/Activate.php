@@ -90,7 +90,6 @@ class Activate {
 	 */
 	public function deactivate() {
 		aioseo()->access->removeCapabilities();
-		\AIOSEO\Plugin\Common\Sitemap\Rewrite::removeRewriteRules( [], true );
 	}
 
 	/**

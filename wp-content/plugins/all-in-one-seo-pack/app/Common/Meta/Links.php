@@ -24,7 +24,8 @@ class Links {
 			'prev' => '',
 			'next' => '',
 		];
-		if ( is_home() || is_archive() || is_paged() || is_search() ) {
+
+		if ( is_home() || is_archive() || is_paged() ) {
 			$links = $this->getHomeLinks();
 		}
 

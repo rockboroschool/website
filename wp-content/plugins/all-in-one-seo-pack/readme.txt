@@ -2,8 +2,8 @@
 Contributors: aioseo, smub, benjaminprojas
 Tags: SEO, Google Search Console, XML Sitemap, meta description, schema, meta title, rich snippets, woocommerce seo, local seo, open graph, google news sitemap, video sitemap, robots.txt, seo audit, content analysis, seo plugin, redirection
 Requires at least: 4.9
-Tested up to: 5.9.3
-Stable tag: 4.2.0
+Tested up to: 6.0
+Stable tag: 4.2.2
 License: GPLv2 or later
 Requires PHP: 5.4
 
@@ -140,6 +140,7 @@ Since redirect speed is important for SEO, we built in both Apache / NGINX serve
 * IndexNow Integration - Instantly notify Bing and Yandex of SEO changes made to your sites content.
 * Microsoft Clarity Integration - Better understand how users interact with your website through heatmaps and session recordings.
 * WordPress REST API Integration - Manage your post and term SEO meta via the WordPress REST API for seamless integration with headless WordPress installations.
+* Crawl Quota Management - Use our Crawl Cleanup feature to manage your search engine crawl quota and index your important content faster.
 
 = WordPress SEO Integrations =
 
@@ -169,6 +170,7 @@ Since redirect speed is important for SEO, we built in both Apache / NGINX serve
 * Simple 301 Redirects Importer - import your SEO redirects from Simple 301 redirets with our SEO migration wizard.
 * Safe Redirection Manager - easily import SEO redirects from safe redirect manager with our SEO migration wizard.
 * 301 Redirects - easily import SEO redirects from 301 Redirects with our SEO migration wizard.
+* CSV Sitemap Import - import additional pages to your xml sitemaps using CSV.
 
 After reading this feature list, you can probably imagine why AIOSEO is the best WordPress SEO plugin in the market.
 
@@ -208,6 +210,71 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 
 == Changelog ==
+
+**New in Version 4.2.2**
+
+* New: Individual User Profile Social Tab will allow users to set their social urls. Support was also added for additional social network accounts with a filter.
+* New: Translation API: New filters to allow third party translation plugins to change AIOSEO's data.
+* New: Sitemap now supports images in ACF fields.
+* New: Pre-publish panel now warns about post's social data ( facebook/twitter ).
+* Updated: Switched to Web Workers for TruSEO in order to increase performance.
+* Updated: AIOSEO's post editor sidebar has been redesigned and is now easier to use.
+* Updated: Backwards compatibility with WordPress 5.0.
+* Updated: Removed deprecated ping endpoint for Bing.
+* Updated: Sitemap's 'Exclude Images' option now excludes images regardless of third party code using the sitemap filters.
+* Updated: Search Appearance Media now have a new smart tag for the media's description.
+* Updated: Redirect's excluded paths now account for the home page.
+* Updated: When adding a redirect the source and target URLs are normalized to prevent errors when redirecting.
+* Fixed: Access control for the post's metabox now shows the correct tab for each capability.
+* Fixed: AIOSEO's strings now are completely translatable on available languages.
+* Fixed: SEO Analyzer image alt attribute tags are now parsed correctly.
+* Fixed: Title and description for custom home pages now work as expected.
+* Fixed: Prevent sitemap ping when a post has 'Limit Modified Date'.
+* Fixed: Title and description for custom post type archives now work as expected.
+* Fixed: Elementor error when editing the content of a post.
+* Fixed: Sitemap error when using static sitemaps.
+* Fixed: Removed check for a physical robots.txt on ajax/cron calls.
+* Fixed: SEO Metabox and Sidebar Snippet title and description sync.
+* Fixed: Private terms no longer get added to the `articleSection` in the schema markup.
+
+**New in Version 4.2.1.1**
+
+* Updated: Added support for legacy query arg sitemap generation.
+* Fixed: Issue with some AIOSEO addons not showing updates.
+* Fixed: Dynamically generated sitemap showing incorrect generated message.
+
+**New in Version 4.2.1**
+
+* New: The Crawl Cleanup section lets you strip query args from your URLs and control which RSS feeds are enabled in order to optimize your crawl quota. (Note: this feature is aimed at advanced users who fully understand the impact these settings have!)
+* New: You can now bulk-import additional sitemap pages by uploading a CSV file.
+* Updated: Compatibility with WordPress 6.0.
+* Updated: Removed sitemap rewrite rules in favor of parsing the URI in order to prevent plugin/theme conflicts.
+* Updated: Various multilingual sitemap improvements in accordance to Google’s specifications.
+* Updated: Improved multilingual sitemap support for WPML.
+* Updated: Added support for the new Full Site Editor to all AIOSEO blocks.
+* Updated: Removed unnecessary canonical URL and prev/next links for search results pages.
+* Updated: Added support for multiple additional sitemap pages indexes.
+* Updated: Added support for reusable blocks to the TruSEO content analysis.
+* Updated: Added support for Elementor Pro Video Playlists to the Video Sitemap.
+* Updated: Added localization support for the visual breadcrumb trail prefix.
+* Updated: Updated notification bubble color to match the user profile color scheme.
+* Updated: scheduled AIOSEO Action Scheduler tasks are now removed when AIOSEO is uninstalled.
+* Updated: Added additional filter hooks to provide developers with more granular control over the HTML Sitemap.
+* Updated: Changed RSS sitemap datetime format to RFC-822.
+* Fixed: Conflict with WooCommerce Polylang Integration where the sitemap failed to load.
+* Fixed: Changes to the default title/description format sometimes not propagating correctly to individual custom posts that are using the default format.
+* Fixed: Autogenerated meta descriptions cannot be based on the post content if the post is password protected.
+* Fixed: Multisite subsites sometimes using the home URL of the network admin for the base of their canonical URL.
+* Fixed: RSS sitemap not taking the maximum amount of URLs into account.
+* Fixed: News sitemap no longer sometimes includes posts older than 48 hours.
+* Fixed: The first sitemap index of an object type can no longer be duplicated and served at multiple URLs.
+* Fixed: Console error when adding an additional keyphrase when no Focus Keyphrase has been added yet.
+* Fixed: Local SEO map block sometimes does not load correctly in WordPress 5.9 and above.
+* Fixed: Video Sitemap video modal now displays thumbnails in a normal size.
+* Fixed: TruSEO content analysis now considers the separator smart tag as a word boundary.
+* Fixed: TruSEO content analysis is now able to properly detect when no content has been added yet in page builders.
+* Fixed: TruSEO content analysis now validates custom field names before using them, preventing console errors if the field that the user specified doesn’t actually exist.
+* Fixed: Conflict with Elementor Pro where visual editor does not load due to non-normalized CPT name.
 
 **New in Version 4.2.0**
 
@@ -378,7 +445,7 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 * Fixed: Conflict with Jetpack Boost plugin which rendered AIOSEO sitemaps inaccessible.
 * Fixed: PHP error in WordPress 4.9 due to undefined do_blocks() function call.
 * Fixed: PHP notice when importing SEO settings from other plugins if static homepage option is selected under Reading but no static homepage is set.
-* Fixed: PHP notice when visiting a non-existing rss feed page.
+* Fixed: PHP notice when visiting a non-existing RSS feed page.
 * Fixed: Conflict with User Role Editor plugin where capabilities couldn't be saved.
 * Fixed: Sitemap links per index can no longer be set to a negative number.
 * Fixed: Recipe schema now allows cooking time of 0 minutes.
@@ -894,6 +961,6 @@ AIOSEO is the original WordPress SEO plugin, and it's trusted by over 3 million 
 
 == Upgrade Notice ==
 
-= 4.2.0 =
+= 4.2.2 =
 
 This update adds major improvements and bugfixes.

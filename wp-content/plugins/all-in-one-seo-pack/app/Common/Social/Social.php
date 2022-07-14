@@ -59,35 +59,8 @@ class Social {
 			return;
 		}
 
-		// Adds special filters.
-		add_filter( 'user_contactmethods', [ $this, 'addContactMethods' ] );
-
 		// Forces a refresh of the Facebook cache.
 		add_action( 'post_updated', [ $this, 'scheduleBustOgCachePost' ], 10, 2 );
-	}
-
-	/**
-	 * Returns the social media contact methods.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  array $contactMethods The contact methods.
-	 * @return array $contactMethods The filtered contact methods.
-	 */
-	public function addContactMethods( $contactMethods ) {
-		if ( aioseo()->options->social->twitter->general->enable && aioseo()->options->social->twitter->general->showAuthor ) {
-			$contactMethods['aioseo_contact_methods_header'] = AIOSEO_PLUGIN_NAME;
-			$contactMethods['aioseo_twitter']                = 'Twitter'; // @TODO: Will need to migrate these from old installs. `twitter` becomes `aioseo_twitter`
-		}
-
-		if ( aioseo()->options->social->facebook->general->enable && aioseo()->options->social->facebook->general->showAuthor ) {
-			if ( ! isset( $contactMethods['aioseo_contact_methods_header'] ) ) {
-				$contactMethods['aioseo_contact_methods_header'] = AIOSEO_PLUGIN_NAME;
-			}
-			$contactMethods['aioseo_facebook'] = 'Facebook'; // @TODO: Will need to migrate these from old installs. `facebook` becomes `aioseo_facebook`
-		}
-
-		return $contactMethods;
 	}
 
 	/**

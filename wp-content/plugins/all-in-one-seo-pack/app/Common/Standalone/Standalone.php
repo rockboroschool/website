@@ -18,6 +18,7 @@ class Standalone {
 		$this->detailsColumn     = aioseo()->pro ? new ProStandalone\DetailsColumn : new DetailsColumn;
 		$this->headlineAnalyzer  = new HeadlineAnalyzer;
 		$this->flyoutMenu        = new FlyoutMenu;
+		$this->userProfileTab    = new UserProfileTab;
 		$this->setupWizard       = new SetupWizard;
 
 		new PublishPanel;

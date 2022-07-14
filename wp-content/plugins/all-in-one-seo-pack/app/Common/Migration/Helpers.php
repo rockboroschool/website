@@ -108,7 +108,7 @@ class Helpers {
 			'%date%'                   => '#archive_date',
 			'%day%'                    => '#post_day',
 			'%month%'                  => '#post_month',
-			'%monthnum%'               => '#monthnum',
+			'%monthnum%'               => '#post_month',
 			'%year%'                   => '#post_year',
 			'%current_date%'           => '#current_date',
 			'%current_day%'            => '#current_day',

@@ -13,15 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Content {
 	/**
-	 * This is cached so we don't do the lookup each query.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @var boolean
-	 */
-	private static $wpml = null;
-
-	/**
 	 * Returns the entries for the requested sitemap.
 	 *
 	 * @since 4.0.0
@@ -33,36 +24,46 @@ class Content {
 			return [];
 		}
 
-		switch ( aioseo()->sitemap->indexName ) {
-			case 'rss':
-				return $this->rss();
-			case 'root':
-				if ( 'root' === aioseo()->sitemap->indexName && aioseo()->options->sitemap->general->indexes ) {
-					return aioseo()->sitemap->root->indexes();
-				}
+		if ( 'rss' === aioseo()->sitemap->type ) {
+			return $this->rss();
+		}
+
+		if ( 'general' !== aioseo()->sitemap->type ) {
+			return [];
+		}
+
+		$indexesEnabled = aioseo()->options->sitemap->general->indexes;
+		if ( ! $indexesEnabled ) {
+			if ( 'root' === aioseo()->sitemap->indexName ) {
 				// If indexes are disabled, throw all entries together into one big file.
 				return $this->nonIndexed();
-			default:
-				// Check if requested index has a dedicated method.
-				$methodName = aioseo()->helpers->dashesToCamelCase( aioseo()->sitemap->indexName );
-				if ( method_exists( $this, $methodName ) ) {
-					return $this->$methodName();
-				}
+			}
 
-				// Check if requested index is a registered post type.
-				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
-					return $this->posts( aioseo()->sitemap->indexName );
-				}
+			return [];
+		}
 
-				// Check if requested index is a registered taxonomy.
-				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
-					return $this->terms( aioseo()->sitemap->indexName );
-				}
+		if ( 'root' === aioseo()->sitemap->indexName ) {
+			return aioseo()->sitemap->root->indexes();
+		}
 
-				return [];
+		// Check if requested index has a dedicated method.
+		$methodName = aioseo()->helpers->dashesToCamelCase( aioseo()->sitemap->indexName );
+		if ( method_exists( $this, $methodName ) ) {
+			return $this->$methodName();
+		}
+
+		// Check if requested index is a registered post type.
+		if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
+			return $this->posts( aioseo()->sitemap->indexName );
+		}
+
+		// Check if requested index is a registered taxonomy.
+		if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
+			return $this->terms( aioseo()->sitemap->indexName );
 		}
 
 		return [];
+
 	}
 
 	/**
@@ -77,31 +78,42 @@ class Content {
 			return 0;
 		}
 
-		switch ( aioseo()->sitemap->indexName ) {
-			case 'rss':
-				return count( $this->rss() );
-			case 'root':
-				if ( 'root' === aioseo()->sitemap->indexName && aioseo()->options->sitemap->general->indexes ) {
-					return count( aioseo()->sitemap->root->indexes() );
-				}
+		if ( 'rss' === aioseo()->sitemap->type ) {
+			return count( $this->rss() );
+		}
 
+		if ( 'general' !== aioseo()->sitemap->type ) {
+			return 0;
+		}
+
+		$indexesEnabled = aioseo()->options->sitemap->general->indexes;
+		if ( ! $indexesEnabled ) {
+			if ( 'root' === aioseo()->sitemap->indexName ) {
+				// If indexes are disabled, throw all entries together into one big file.
 				return count( $this->nonIndexed() );
-			default:
-				// Check if requested index has a dedicated method.
-				$methodName = aioseo()->helpers->dashesToCamelCase( aioseo()->sitemap->indexName );
-				if ( method_exists( $this, $methodName ) ) {
-					return count( $this->$methodName() );
-				}
+			}
 
-				// Check if requested index is a registered post type.
-				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
-					return aioseo()->sitemap->query->posts( aioseo()->sitemap->indexName, [ 'count' => true ] );
-				}
+			return 0;
+		}
 
-				// Check if requested index is a registered taxonomy.
-				if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
-					return aioseo()->sitemap->query->terms( aioseo()->sitemap->indexName, [ 'count' => true ] );
-				}
+		if ( 'root' === aioseo()->sitemap->indexName ) {
+			return count( aioseo()->sitemap->root->indexes() );
+		}
+
+		// Check if requested index has a dedicated method.
+		$methodName = aioseo()->helpers->dashesToCamelCase( aioseo()->sitemap->indexName );
+		if ( method_exists( $this, $methodName ) ) {
+			return count( $this->$methodName() );
+		}
+
+		// Check if requested index is a registered post type.
+		if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
+			return aioseo()->sitemap->query->posts( aioseo()->sitemap->indexName, [ 'count' => true ] );
+		}
+
+		// Check if requested index is a registered taxonomy.
+		if ( in_array( aioseo()->sitemap->indexName, aioseo()->sitemap->helpers->includedTaxonomies(), true ) ) {
+			return aioseo()->sitemap->query->terms( aioseo()->sitemap->indexName, [ 'count' => true ] );
 		}
 
 		return 0;
@@ -117,18 +129,6 @@ class Content {
 	public function isEnabled() {
 		$options = aioseo()->options->noConflict();
 		if ( ! $options->sitemap->{aioseo()->sitemap->type}->enable ) {
-			return false;
-		}
-
-		if ( 'general' === aioseo()->sitemap->type ) {
-			return true;
-		}
-
-		if (
-			$options->sitemap->{aioseo()->sitemap->type}->has( 'indexes' ) &&
-			! $options->sitemap->{aioseo()->sitemap->type}->indexes &&
-			'root' !== aioseo()->sitemap->indexName
-		) {
 			return false;
 		}
 
@@ -225,7 +225,7 @@ class Content {
 		$entries          = [];
 		$isStaticHomepage = 'page' === get_option( 'show_on_front' );
 		$homePageId       = (int) get_option( 'page_on_front' );
-		$excludeImages    = aioseo()->options->sitemap->general->advancedSettings->enable && aioseo()->options->sitemap->general->advancedSettings->excludeImages;
+		$excludeImages    = aioseo()->sitemap->helpers->excludeImages();
 		foreach ( $posts as $post ) {
 			$entry = [
 				'loc'        => get_permalink( $post->ID ),
@@ -240,99 +240,17 @@ class Content {
 			}
 
 			// Override priority/frequency for static homepage.
-			if ( $isStaticHomepage && $homePageId === $post->ID ) {
-				$entry['loc']        = aioseo()->helpers->maybeRemoveTrailingSlash( $entry['loc'] );
+			if ( $isStaticHomepage && ( $homePageId === $post->ID || aioseo()->helpers->wpmlIsHomePage( $post->ID ) ) ) {
+				$entry['loc']        = aioseo()->helpers->maybeRemoveTrailingSlash( aioseo()->helpers->wpmlHomeUrl( $post->ID ) ?: $entry['loc'] );
 				$entry['changefreq'] = aioseo()->sitemap->priority->frequency( 'homePage' );
 				$entry['priority']   = aioseo()->sitemap->priority->priority( 'homePage' );
 			}
 
-			$entry = $this->localizeEntries( $entry, $post, $postType );
-			if ( $entry ) {
-				$entries[] = $entry;
-			}
+			$entries[] = apply_filters( 'aioseo_sitemap_post', $entry, $post->ID, $postType );
 		}
 
+		// We can't remove the post type here because other plugins rely on it.
 		return apply_filters( 'aioseo_sitemap_posts', $entries, $postType );
-	}
-
-	/**
-	 * Localize the entries if WPML (or others in the future) are active.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  array   $entry    The entry.
-	 * @param  WP_Post $post     The post object.
-	 * @param  string  $postType The post type.
-	 * @param  boolean $rss      Whether or not we are localizing for the RSS sitemap.
-	 * @return array             The entry.
-	 */
-	private function localizeEntries( $entry, $post, $postType, $rss = false ) {
-		if ( null === self::$wpml ) {
-			self::$wpml = false;
-			if ( aioseo()->helpers->isWpmlActive() ) {
-				self::$wpml = apply_filters( 'wpml_default_language', null );
-			}
-		}
-
-		if ( ! self::$wpml ) {
-			return $entry;
-		}
-
-		static $activeLanguages = null;
-		if ( null === $activeLanguages ) {
-			$activeLanguages = apply_filters( 'wpml_active_languages', null );
-		}
-
-		$parentId = apply_filters( 'wpml_object_id', $post->ID, $postType, false, self::$wpml );
-		if ( ! empty( $parentId ) && $parentId !== $post->ID && ! $rss ) {
-			// Skip adding a translation to the entries.
-			return null;
-		}
-
-		$translationGroupId = apply_filters( 'wpml_element_trid', null, $post->ID );
-		$translations       = apply_filters( 'wpml_get_element_translations', null, $translationGroupId, $postType );
-		if ( empty( $translations ) ) {
-			return $entry;
-		}
-
-		$entry['languages'] = [];
-		foreach ( $translations as $translation ) {
-			if ( empty( $translation->element_id ) ) {
-				continue;
-			}
-
-			$permalink = ! empty( $entry['loc'] ) ? $entry['loc'] : (
-				! empty( $entry['guid'] ) ? $entry['guid'] : ''
-			);
-
-			$location = is_home()
-				? apply_filters( 'wpml_home_url', get_option( 'home' ) )
-				: apply_filters( 'wpml_permalink', $entry['loc'], $translation->language_code, true );
-
-			if ( $rss ) {
-				$entry['guid'] = $location;
-				continue;
-			}
-
-			$currentLanguage = ! empty( $activeLanguages[ $translation->language_code ] ) ? $activeLanguages[ $translation->language_code ] : null;
-			$languageCode    = ! empty( $currentLanguage['tag'] ) ? $currentLanguage['tag'] : $translation->language_code;
-
-			if ( $location === $permalink ) {
-				$entry['language'] = $languageCode;
-				continue;
-			}
-
-			$entry['languages'][] = [
-				'language' => $languageCode,
-				'location' => $location
-			];
-		}
-
-		if ( empty( $entry['languages'] ) ) {
-			unset( $entry['languages'] );
-		}
-
-		return $entry;
 	}
 
 	/**
@@ -413,16 +331,18 @@ class Content {
 
 		$entries = [];
 		foreach ( $terms as $term ) {
-			$entries[] = [
+			$entry = [
 				'loc'        => get_term_link( $term->term_id ),
 				'lastmod'    => $this->getTermLastModified( $term->term_id ),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'taxonomies', $term, $taxonomy ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'taxonomies', $term, $taxonomy ),
 				'images'     => aioseo()->sitemap->image->term( $term )
 			];
+
+			$entries[] = apply_filters( 'aioseo_sitemap_term', $entry, $term->term_id, $term->taxonomy );
 		}
 
-		return apply_filters( 'aioseo_sitemap_terms', $entries, $taxonomy );
+		return apply_filters( 'aioseo_sitemap_terms', $entries );
 	}
 
 	/**
@@ -461,50 +381,71 @@ class Content {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array The sitemap entries.
+	 * @param  bool  $shouldChunk Whether the entries should be chuncked. Is set to false when the static sitemap is generated.
+	 * @return array              The sitemap entries.
 	 */
-	public function addl() {
-		$entries = [];
+	public function addl( $shouldChunk = true ) {
+		$additionalPages = [];
+		if ( aioseo()->options->sitemap->general->additionalPages->enable ) {
+			$additionalPages = apply_filters( 'aioseo_sitemap_additional_pages', aioseo()->options->sitemap->general->additionalPages->pages );
+		}
+
 		if ( 'posts' === get_option( 'show_on_front' ) || ! in_array( 'page', aioseo()->sitemap->helpers->includedPostTypes(), true ) ) {
 			$frontPageId  = (int) get_option( 'page_on_front' );
 			$frontPageUrl = aioseo()->helpers->localizedUrl( '/' );
 			$post         = aioseo()->helpers->getPost( $frontPageId );
-			$entries[] = [
+
+			$homepageEntry = [
 				'loc'        => aioseo()->helpers->maybeRemoveTrailingSlash( $frontPageUrl ),
 				'lastmod'    => $post ? aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt ) : aioseo()->sitemap->helpers->lastModifiedPostTime(),
 				'changefreq' => aioseo()->sitemap->priority->frequency( 'homePage' ),
 				'priority'   => aioseo()->sitemap->priority->priority( 'homePage' ),
 			];
-		}
 
-		if ( aioseo()->options->sitemap->general->additionalPages->enable ) {
-			$additionalPages = aioseo()->options->sitemap->general->additionalPages->pages;
-			$pages           = [];
-			foreach ( $additionalPages as $page ) {
-				$additionalPage = json_decode( $page );
-				if ( empty( $additionalPage->url ) ) {
-					continue;
+			$translatedHomepages = aioseo()->helpers->wpmlHomePages();
+			foreach ( $translatedHomepages as $languageCode => $translatedHomepage ) {
+				if ( untrailingslashit( $translatedHomepage['url'] ) !== untrailingslashit( $homepageEntry['loc'] ) ) {
+					$homepageEntry['languages'][] = [
+						'language' => $languageCode,
+						'location' => $translatedHomepage['url']
+					];
 				}
-
-				$pages[] = $additionalPage;
 			}
 
-			if ( ! count( $pages ) ) {
-				return apply_filters( 'aioseo_sitemap_additional_pages', $entries );
-			}
-
-			foreach ( $pages as $page ) {
-				$entries[] = [
-					'loc'        => $page->url,
-					'lastmod'    => aioseo()->sitemap->helpers->lastModifiedAdditionalPage( $page ),
-					'isTimezone' => true,
-					'changefreq' => $page->frequency->value,
-					'priority'   => $page->priority->value
-				];
-			}
+			array_unshift( $additionalPages, $homepageEntry );
 		}
 
-		return apply_filters( 'aioseo_sitemap_additional_pages', $entries );
+		if ( ! $additionalPages ) {
+			return [];
+		}
+
+		if ( aioseo()->options->sitemap->general->indexes && $shouldChunk ) {
+			$additionalPages = aioseo()->sitemap->helpers->chunkEntries( $additionalPages );
+			$additionalPages = $additionalPages[ aioseo()->sitemap->pageNumber ];
+		}
+
+		$entries = [];
+		foreach ( $additionalPages as $page ) {
+			if ( is_array( $page ) ) {
+				$entries[] = $page;
+				continue;
+			}
+
+			$additionalPage = json_decode( $page );
+			if ( empty( $additionalPage->url ) ) {
+				continue;
+			}
+
+			$entries[] = [
+				'loc'        => $additionalPage->url,
+				'lastmod'    => aioseo()->sitemap->helpers->lastModifiedAdditionalPage( $additionalPage ),
+				'isTimezone' => true,
+				'changefreq' => $additionalPage->frequency->value,
+				'priority'   => $additionalPage->priority->value
+			];
+		}
+
+		return $entries;
 	}
 
 	/**
@@ -648,10 +589,10 @@ class Content {
 				'guid'        => get_permalink( $post->ID ),
 				'title'       => get_the_title( $post ),
 				'description' => get_post_field( 'post_excerpt', $post->ID ),
-				'pubDate'     => aioseo()->helpers->dateTimeToIso8601( $post->post_modified_gmt )
+				'pubDate'     => aioseo()->helpers->dateTimeToRfc822( $post->post_modified_gmt )
 			];
 
-			$entries[] = $this->localizeEntries( $entry, $post, $post->post_type, true );
+			$entries[] = apply_filters( 'aioseo_sitemap_post_rss', $entry, $post->ID, $post->post_type );
 		}
 
 		usort( $entries, function( $a, $b ) {

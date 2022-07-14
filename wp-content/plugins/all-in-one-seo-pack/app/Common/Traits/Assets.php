@@ -129,7 +129,7 @@ trait Assets {
 	 * @param  string $asset The script to load CSS for.
 	 * @return void
 	 */
-	private function loadCss( $asset ) {
+	public function loadCss( $asset ) {
 		if ( $this->shouldLoadDev() ) {
 			return;
 		}
@@ -345,6 +345,14 @@ trait Assets {
 			return $file;
 		}
 
+		// Required for local business 1.2.5.
+		if ( preg_match( '/\.json$/', $this->manifestFile ) ) {
+			$content = $this->core->fs->getContents( $this->manifestFile );
+			$file    = json_decode( $content, true );
+
+			return $file;
+		}
+
 		require( $this->manifestFile );
 		$file = json_decode( $manifestJson, true ); // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 
@@ -361,6 +369,14 @@ trait Assets {
 	private function getAssetManifest() {
 		static $file = null;
 		if ( $file ) {
+			return $file;
+		}
+
+		// Required for local business 1.2.5.
+		if ( preg_match( '/\.json$/', $this->assetManifestFile ) ) {
+			$content = $this->core->fs->getContents( $this->assetManifestFile );
+			$file    = json_decode( $content, true );
+
 			return $file;
 		}
 

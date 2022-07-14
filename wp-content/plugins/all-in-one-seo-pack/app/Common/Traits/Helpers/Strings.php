@@ -447,4 +447,27 @@ trait Strings {
 	public function implodePlaceholders( $array, $placeholder = '%s' ) {
 		return implode( ', ', array_fill( 0, count( $array ), $placeholder ) );
 	}
+
+	/**
+	 * Verifies that a string is indeed a valid regular expression.
+	 *
+	 * @since 4.2.1
+	 *
+	 * @return boolean True if the string is a valid regular expression.
+	 */
+	public function isValidRegex( $pattern ) {
+		// Set a custom error handler to prevent throwing errors on a bad Regular Expression.
+		set_error_handler( function() {}, E_WARNING );
+
+		$isValid = true;
+
+		if ( false === preg_match( $pattern, null ) ) {
+			$isValid = false;
+		}
+
+		// Restore the error handler.
+		restore_error_handler();
+
+		return $isValid;
+	}
 }

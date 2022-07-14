@@ -11,7 +11,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 4.1.3
  */
-class Block extends \AIOSEO\Plugin\Common\Utils\Blocks {
+class Block {
+	/**
+	 * Class constructor.
+	 *
+	 * @since 4.1.1
+	 */
+	public function __construct() {
+		$this->register();
+	}
 	/**
 	 * Registers the block.
 	 *
@@ -20,7 +28,7 @@ class Block extends \AIOSEO\Plugin\Common\Utils\Blocks {
 	 * @return void
 	 */
 	public function register() {
-		register_block_type(
+		aioseo()->blocks->registerBlock(
 			'aioseo/html-sitemap', [
 				'attributes'      => [
 					'default'          => [

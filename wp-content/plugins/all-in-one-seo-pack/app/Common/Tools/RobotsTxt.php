@@ -17,7 +17,7 @@ class RobotsTxt {
 	public function __construct() {
 		add_filter( 'robots_txt', [ $this, 'buildRules' ], 10000, 2 );
 
-		if ( ! is_admin() ) {
+		if ( ! is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
 			return;
 		}
 

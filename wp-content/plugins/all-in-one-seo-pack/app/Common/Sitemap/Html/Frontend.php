@@ -106,7 +106,7 @@ class Frontend {
 		foreach ( $posts as $post ) {
 			$entry = [
 				'id'     => $post->ID,
-				'title'  => $post->post_title,
+				'title'  => get_the_title( $post ),
 				'loc'    => get_permalink( $post->ID ),
 				'date'   => $this->formatDate( $post->post_date_gmt ),
 				'parent' => ! empty( $post->post_parent ) ? $post->post_parent : null
@@ -115,7 +115,7 @@ class Frontend {
 			$entries[] = $entry;
 		}
 
-		return $entries;
+		return apply_filters( 'aioseo_html_sitemap_posts', $entries, $postType );
 	}
 
 	/**
@@ -143,7 +143,7 @@ class Frontend {
 			];
 		}
 
-		return $entries;
+		return apply_filters( 'aioseo_html_sitemap_terms', $entries, $taxonomy );
 	}
 
 	/**

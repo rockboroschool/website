@@ -10,15 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
- // phpcs:disable
+// phpcs:disable
 ?>
 
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel><?php
-	if( ! $isYandexBot ) {
+	if ( ! $isYandexBot ) {
 		?>
 
-		<title><?php aioseo()->sitemap->output->escapeAndEcho( $title, false ) ?></title>
+		<title><?php aioseo()->sitemap->output->escapeAndEcho( $title, false ); ?></title>
 		<link><?php aioseo()->sitemap->output->escapeAndEcho( $link ); ?></link>
 		<?php if ( $description ) {
 		?><description><?php aioseo()->sitemap->output->escapeAndEcho( $description ); ?></description>
@@ -27,7 +27,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?><lastBuildDate><?php aioseo()->sitemap->output->escapeAndEcho( $entries[0]['pubDate'] ); ?></lastBuildDate>
 		<?php }
 		?><docs>https://validator.w3.org/feed/docs/rss2.html</docs>
-		<ttl>0</ttl>
+		<atom:link href="<?php echo aioseo()->sitemap->helpers->getUrl( 'rss' ); ?>" rel="self" type="application/rss+xml" />
+		<ttl><?php aioseo()->sitemap->output->escapeAndEcho( $ttl ); ?></ttl>
 
 <?php }
 foreach ( $entries as $entry ) {

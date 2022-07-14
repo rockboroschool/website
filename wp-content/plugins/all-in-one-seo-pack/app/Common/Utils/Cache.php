@@ -171,7 +171,6 @@ class Cache {
 
 		if ( aioseo()->helpers->isDev() && 80 < mb_strlen( $key, 'UTF-8' ) ) {
 			throw new \Exception( 'You are using a cache key that is too large, shorten your key and try again: [' . $key . ']' );
-			die;
 		}
 
 		return $key;

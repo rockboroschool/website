@@ -22,9 +22,9 @@ class Root {
 	public function indexes() {
 		$indexes = [];
 		if ( 'general' !== aioseo()->sitemap->type ) {
-			foreach ( aioseo()->sitemap->addons as $classes ) {
-				if ( ! empty( $classes['root'] ) ) {
-					$indexes = $classes['root']->indexes();
+			foreach ( aioseo()->addons->getLoadedAddons() as $loadedAddon ) {
+				if ( ! empty( $loadedAddon->root ) && method_exists( $loadedAddon->root, 'indexes' ) ) {
+					$indexes = $loadedAddon->root->indexes();
 					if ( $indexes ) {
 						return $indexes;
 					}
@@ -38,29 +38,7 @@ class Root {
 		$postTypes  = aioseo()->sitemap->helpers->includedPostTypes();
 		$taxonomies = aioseo()->sitemap->helpers->includedTaxonomies();
 
-		$pages = [];
-		foreach ( aioseo()->options->sitemap->general->additionalPages->pages as $page ) {
-			$additionalPage = json_decode( $page );
-			if ( empty( $additionalPage->url ) ) {
-				continue;
-			}
-
-			$pages[] = $additionalPage;
-		}
-
-		$additionalPagesEnabled = aioseo()->options->sitemap->general->additionalPages->enable;
-		$additionalPages        = apply_filters( 'aioseo_sitemap_additional_pages', $pages );
-		if (
-			'posts' === get_option( 'show_on_front' ) ||
-			( $additionalPagesEnabled && count( $additionalPages ) ) ||
-			! in_array( 'page', $postTypes, true )
-		) {
-			$additionalPagesCount = $additionalPagesEnabled ? count( $additionalPages ) : 0;
-			// We need to increment by 1 if the home page is not included in page index.
-			$addOneAdditionalPage = 'posts' === get_option( 'show_on_front' ) || ! in_array( 'page', $postTypes, true );
-			$amountOfUrls         = $addOneAdditionalPage ? $additionalPagesCount + 1 : $additionalPagesCount;
-			$indexes[]            = $this->buildAdditionalIndexes( $amountOfUrls );
-		}
+		$indexes = array_merge( $indexes, $this->getAdditionalIndexes() );
 
 		if ( $postTypes ) {
 			$postArchives = [];
@@ -155,6 +133,40 @@ class Root {
 	}
 
 	/**
+	 * Returns the additional page indexes.
+	 *
+	 * @since 4.2.1
+	 *
+	 * @return array
+	 */
+	private function getAdditionalIndexes() {
+		$additionalPages = [];
+		if ( aioseo()->options->sitemap->general->additionalPages->enable ) {
+			foreach ( aioseo()->options->sitemap->general->additionalPages->pages as $additionalPage ) {
+				$additionalPage = json_decode( $additionalPage );
+				if ( empty( $additionalPage->url ) ) {
+					continue;
+				}
+
+				$additionalPages[] = $additionalPage;
+			}
+		}
+
+		$indexes         = [];
+		$postTypes       = aioseo()->sitemap->helpers->includedPostTypes();
+		$additionalPages = apply_filters( 'aioseo_sitemap_additional_pages', $additionalPages );
+		if (
+			'posts' === get_option( 'show_on_front' ) ||
+			count( $additionalPages ) ||
+			! in_array( 'page', $postTypes, true )
+		) {
+			$indexes = $this->buildAdditionalIndexes( $additionalPages );
+		}
+
+		return $indexes;
+	}
+
+	/**
 	 * Builds a given index.
 	 *
 	 * @since 4.0.0
@@ -181,14 +193,39 @@ class Root {
 	 * @param  integer $amountOfurls The amount of additional pages.
 	 * @return array                 The index.
 	 */
-	public function buildAdditionalIndexes( $amountOfUrls ) {
-		$filename = aioseo()->sitemap->filename;
+	public function buildAdditionalIndexes( $entries ) {
+		$postTypes             = aioseo()->sitemap->helpers->includedPostTypes();
+		$shouldIncludeHomepage = 'posts' === get_option( 'show_on_front' ) || ! in_array( 'page', $postTypes, true );
 
-		return [
-			'loc'     => aioseo()->helpers->localizedUrl( "/addl-$filename.xml" ),
-			'lastmod' => aioseo()->sitemap->helpers->lastModifiedAdditionalPagesTime(),
-			'count'   => $amountOfUrls
-		];
+		if ( $shouldIncludeHomepage ) {
+			$homePageEntry               = new \stdClass;
+			$homePageEntry->lastModified = aioseo()->sitemap->helpers->lastModifiedPostTime();
+			array_unshift( $entries, $homePageEntry );
+		}
+
+		if ( ! $entries ) {
+			return [];
+		}
+
+		$filename       = aioseo()->sitemap->filename;
+		$chunks         = aioseo()->sitemap->helpers->chunkEntries( $entries );
+
+		$indexes = [];
+		for ( $i = 0; $i < count( $chunks ); $i++ ) {
+			$chunk       = array_values( $chunks[ $i ] );
+			$indexNumber = 1 < count( $chunks ) ? $i + 1 : '';
+
+			$index = [
+				'loc'     => aioseo()->helpers->localizedUrl( "/addl-$filename$indexNumber.xml" ),
+				'lastmod' => $chunk[0]->lastModified ? aioseo()->helpers->dateTimeToIso8601( $chunk[0]->lastModified ) : '',
+				'count'   => count( $chunks[ $i ] )
+			];
+
+			$indexes[] = $index;
+			continue;
+		}
+
+		return $indexes;
 	}
 
 	/**
@@ -203,9 +240,9 @@ class Root {
 		$posts = aioseo()->sitemap->content->posts( $postType, [ 'root' => true ] );
 
 		if ( ! $posts ) {
-			foreach ( aioseo()->sitemap->addons as $classes ) {
-				if ( ! empty( $classes['root'] ) ) {
-					$posts = $classes['root']->buildIndexesPostType( $postType );
+			foreach ( aioseo()->addons->getLoadedAddons() as $instance ) {
+				if ( ! empty( $instance->root ) && method_exists( $instance->root, 'buildIndexesPostType' ) ) {
+					$posts = $instance->root->buildIndexesPostType( $postType );
 					if ( $posts ) {
 						return $this->buildIndexes( $postType, $posts );
 					}
@@ -232,9 +269,9 @@ class Root {
 		$terms = aioseo()->sitemap->content->terms( $taxonomy, [ 'root' => true ] );
 
 		if ( ! $terms ) {
-			foreach ( aioseo()->sitemap->addons as $classes ) {
-				if ( ! empty( $classes['root'] ) ) {
-					$terms = $classes['root']->buildIndexesTaxonomy( $taxonomy );
+			foreach ( aioseo()->addons->getLoadedAddons() as $instance ) {
+				if ( ! empty( $instance->root ) && method_exists( $instance->root, 'buildIndexesTaxonomy' ) ) {
+					$terms = $instance->root->buildIndexesTaxonomy( $taxonomy );
 					if ( $terms ) {
 						return $this->buildIndexes( $taxonomy, $terms );
 					}
@@ -266,8 +303,9 @@ class Root {
 		$indexes  = [];
 		for ( $i = 0; $i < count( $chunks ); $i++ ) {
 			$chunk       = array_values( $chunks[ $i ] );
-			$indexNumber = 1 < count( $chunks ) ? $i + 1 : '';
-			$index       = [
+			$indexNumber = 0 !== $i && 1 < count( $chunks ) ? $i + 1 : '';
+
+			$index = [
 				'loc'   => aioseo()->helpers->localizedUrl( "/$name-$filename$indexNumber.xml" ),
 				'count' => count( $chunks[ $i ] )
 			];

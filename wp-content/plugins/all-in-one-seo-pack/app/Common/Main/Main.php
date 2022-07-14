@@ -20,7 +20,8 @@ class Main {
 	 * @since 4.0.0
 	 */
 	public function __construct() {
-		$this->media = new Media();
+		$this->media     = new Media();
+		$this->queryArgs = new QueryArgs();
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueueTranslations' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontEndAssets' ] );

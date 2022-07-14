@@ -20,6 +20,7 @@ class Helpers {
 	use TraitHelpers\Deprecated;
 	use TraitHelpers\DateTime;
 	use TraitHelpers\Language;
+	use TraitHelpers\Request;
 	use TraitHelpers\Shortcodes;
 	use TraitHelpers\Strings;
 	use TraitHelpers\Svg;

@@ -49,7 +49,7 @@ class Wizard {
 				if ( ! $notification->exists() ) {
 					Models\Notification::addNotification( [
 						'slug'              => uniqid(),
-						'notification_name' => 'install-mi',
+						'notification_name' => 'import-failed',
 						'title'             => __( 'SEO Plugin Import Failed', 'all-in-one-seo-pack' ),
 						'content'           => __( 'Unfortunately, there was an error importing your SEO plugin settings. This could be due to an incompatibility in the version installed. Make sure you are on the latest version of the plugin and try again.', 'all-in-one-seo-pack' ), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
 						'type'              => 'error',
@@ -272,6 +272,40 @@ class Wizard {
 							'button2_action'    => 'http://action#notification/install-mi-reminder',
 							'start'             => gmdate( 'Y-m-d H:i:s' )
 						] );
+					}
+				}
+			}
+
+			// Install OM.
+			if ( in_array( 'conversion-tools', $features, true ) ) {
+				if ( ! $pluginData['optinMonster']['activated'] ) {
+					if ( aioseo()->addons->canInstall() ) {
+						// Install and/or activate.
+						aioseo()->addons->installAddon( 'optinMonster' );
+
+						// Stop the redirect from happening.
+						delete_transient( 'optin_monster_api_activation_redirect' );
+					} else {
+						$notification = Models\Notification::getNotificationByName( 'install-om' );
+						if ( ! $notification->exists() ) {
+							Models\Notification::addNotification( [
+								'slug'              => uniqid(),
+								'notification_name' => 'install-om',
+								'title'             => __( 'Install OptinMonster', 'all-in-one-seo-pack' ),
+								'content'           => sprintf(
+									// Translators: 1 - The plugin short name ("AIOSEO").
+									__( 'You selected to install the free OptinMonster Conversion Tools plugin during the setup of %1$s, but there was an issue during installation. Click below to manually install.', 'all-in-one-seo-pack' ), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
+									AIOSEO_PLUGIN_SHORT_NAME
+								),
+								'type'              => 'info',
+								'level'             => [ 'all' ],
+								'button1_label'     => __( 'Install OptinMonster', 'all-in-one-seo-pack' ),
+								'button1_action'    => $pluginData['optinMonster']['wpLink'],
+								'button2_label'     => __( 'Remind Me Later', 'all-in-one-seo-pack' ),
+								'button2_action'    => 'http://action#notification/install-om-reminder',
+								'start'             => gmdate( 'Y-m-d H:i:s' )
+							] );
+						}
 					}
 				}
 			}

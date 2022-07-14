@@ -53,6 +53,18 @@ class Notifications {
 	/**
 	 * Extend the start date of a notice.
 	 *
+	 * @since 4.2.1
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response The response.
+	 */
+	public static function installOmReminder() {
+		return self::reminder( 'install-om' );
+	}
+
+	/**
+	 * Extend the start date of a notice.
+	 *
 	 * @since 4.0.0
 	 *
 	 * @param  \WP_REST_Request  $request The REST Request
@@ -120,18 +132,6 @@ class Notifications {
 	 */
 	public static function conflictingPluginsReminder() {
 		return self::reminder( 'conflicting-plugins' );
-	}
-
-	/**
-	 * Extend the start date of a notice.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  \WP_REST_Request  $request The REST Request
-	 * @return \WP_REST_Response The response.
-	 */
-	public static function deprecatedFiltersReminder() {
-		return self::reminder( 'deprecated-filters-v2' );
 	}
 
 	/**

@@ -50,7 +50,7 @@ class Description {
 	 * @return string           The page description.
 	 */
 	public function getDescription( $post = null, $default = false ) {
-		if ( is_home() && 'posts' === get_option( 'show_on_front' ) ) {
+		if ( is_home() ) {
 			return $this->getHomePageDescription();
 		}
 
@@ -93,11 +93,13 @@ class Description {
 			return $this->helpers->prepare( aioseo()->options->searchAppearance->archives->search->metaDescription );
 		}
 
-		if ( is_archive() ) {
-			$postType       = get_queried_object();
-			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
-			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
-				return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->metaDescription );
+		if ( is_post_type_archive() ) {
+			$postType = get_queried_object();
+			if ( is_a( $postType, 'WP_Post_Type' ) ) {
+				$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+				if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+					return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->metaDescription );
+				}
 			}
 		}
 

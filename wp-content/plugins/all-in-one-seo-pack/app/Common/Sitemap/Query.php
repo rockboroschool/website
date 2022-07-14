@@ -142,9 +142,12 @@ class Query {
 		}
 
 		if (
-			aioseo()->sitemap->indexes &&
-			empty( $additionalArgs['root'] ) &&
-			( empty( $additionalArgs['count'] ) || ! $additionalArgs['count'] )
+			'rss' === aioseo()->sitemap->type ||
+			(
+				aioseo()->sitemap->indexes &&
+				empty( $additionalArgs['root'] ) &&
+				( empty( $additionalArgs['count'] ) || ! $additionalArgs['count'] )
+			)
 		) {
 			$query->limit( aioseo()->sitemap->linksPerIndex, aioseo()->sitemap->offset );
 		}

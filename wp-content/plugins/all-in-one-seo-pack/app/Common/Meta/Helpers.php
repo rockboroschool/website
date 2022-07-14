@@ -80,7 +80,11 @@ class Helpers {
 	 * @return string                The sanitized value.
 	 */
 	public function prepare( $value, $objectId = false, $replaceTags = false ) {
-		if ( ! empty( $value ) && ! is_admin() && 1 < aioseo()->helpers->getPageNumber() ) {
+		if (
+			! empty( $value ) &&
+			! is_admin() &&
+			1 < aioseo()->helpers->getPageNumber()
+		) {
 			$value .= '&nbsp;' . trim( aioseo()->options->searchAppearance->advanced->pagedFormat );
 		}
 

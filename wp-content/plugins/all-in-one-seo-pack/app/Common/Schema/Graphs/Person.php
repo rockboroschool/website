@@ -47,7 +47,7 @@ class Person extends Graph {
 			$data['image'] = $avatar;
 		}
 
-		$socialUrls = $this->socialUrls( $person );
+		$socialUrls = $this->getUserProfiles( $person );
 		if ( $socialUrls ) {
 			$data['sameAs'] = $socialUrls;
 		}
@@ -74,7 +74,7 @@ class Person extends Graph {
 			$data['image'] = $logo;
 		}
 
-		$socialUrls = $this->socialUrls();
+		$socialUrls = $this->getOrganizationProfiles();
 		if ( $socialUrls ) {
 			$data['sameAs'] = $socialUrls;
 		}

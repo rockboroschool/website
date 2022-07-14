@@ -155,7 +155,7 @@ class Robots {
 	 */
 	public function metaHelper( $array = false ) {
 		$pageNumber = aioseo()->helpers->getPageNumber();
-		if ( 1 < $pageNumber || 0 < (int) get_query_var( 'cpage', 0 ) ) {
+		if ( 1 < $pageNumber || aioseo()->helpers->getCommentPageNumber() ) {
 			if (
 				aioseo()->options->searchAppearance->advanced->globalRobotsMeta->default ||
 				aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindexPaginated
@@ -260,11 +260,14 @@ class Robots {
 	protected function globalValues( $optionOrder = [], $isDynamicOption = false ) {
 		$robotsMeta = [];
 		if ( count( $optionOrder ) ) {
-			$options = $isDynamicOption ? aioseo()->dynamicOptions->noConflict()->searchAppearance : aioseo()->options->noConflict()->searchAppearance;
+			$options = $isDynamicOption
+				? aioseo()->dynamicOptions->noConflict( true )->searchAppearance
+				: aioseo()->options->noConflict()->searchAppearance;
+
 			foreach ( $optionOrder as $option ) {
 				if ( ! $options->has( $option, false ) ) {
 					return;
-				};
+				}
 				$options = $options->$option;
 			}
 

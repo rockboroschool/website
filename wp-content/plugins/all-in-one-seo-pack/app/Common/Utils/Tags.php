@@ -290,6 +290,11 @@ class Tags {
 				'description' => __( 'Caption for the current media file.', 'all-in-one-seo-pack' )
 			],
 			[
+				'id'          => 'attachment_description',
+				'name'        => __( 'Media Description', 'all-in-one-seo-pack' ),
+				'description' => __( 'Description for the current media file.', 'all-in-one-seo-pack' )
+			],
+			[
 				'id'          => 'author_link',
 				'name'        => __( 'Author Link', 'all-in-one-seo-pack' ),
 				'description' => __( 'Author archive link (name as text).', 'all-in-one-seo-pack' )
@@ -690,8 +695,8 @@ class Tags {
 					unset( $context['attachmentDescription'][ $phpDescriptionKey ] );
 				}
 
-				$context['attachmentTitle'][]       = 'attachment_caption';
-				$context['attachmentDescription'][] = 'attachment_caption';
+				$context['attachmentTitle']       = array_merge( $context['attachmentTitle'], [ 'attachment_caption', 'attachment_description' ] );
+				$context['attachmentDescription'] = array_merge( $context['attachmentDescription'], [ 'attachment_caption', 'attachment_description' ] );
 
 				asort( $context['attachmentTitle'] );
 				$context['attachmentTitle'] = array_values( $context['attachmentTitle'] );
@@ -802,6 +807,10 @@ class Tags {
 				$caption = wp_get_attachment_caption( $postId );
 
 				return empty( $caption ) && $sampleData ? __( 'Sample caption for media.', 'all-in-one-seo-pack' ) : $caption;
+			case 'attachment_description':
+				$description = ! empty( $post->post_content ) ? $post->post_content : '';
+
+				return empty( $description ) && $sampleData ? __( 'Sample description for media.', 'all-in-one-seo-pack' ) : $description;
 			case 'site_link_alt':
 				return '<a href="' . esc_url( get_bloginfo( 'url' ) ) . '">' . esc_url( get_bloginfo( 'url' ) ) . '</a>';
 			case 'site_link':
@@ -910,9 +919,6 @@ class Tags {
 				return '<a href="' . esc_url( get_category_link( $category ) ) . '">' . esc_url( get_category_link( $category ) ) . '</a>';
 			case 'tag':
 				return single_term_title( '', false );
-			case 'tag_description':
-			case 'taxonomy_description':
-				return term_description( '' );
 			case 'site_title':
 			case 'blog_title':
 				return aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
@@ -946,28 +952,6 @@ class Tags {
 				return empty( $name ) && $sampleData ? wp_get_current_user()->last_name : $author->last_name;
 			case 'separator_sa':
 				return aioseo()->helpers->decodeHtmlEntities( aioseo()->options->searchAppearance->global->separator );
-			case 'current_year':
-				return gmdate( 'Y' );
-			case 'current_month':
-				return gmdate( 'M' );
-			case 'current_month_i18n':
-				return date_i18n( 'M' );
-			case 'year':
-				return get_query_var( 'year' );
-			case 'month':
-				$monthnum = get_query_var( 'monthnum' );
-				$monthnum = ( empty( $monthnum ) || is_year() ) ? 0 : $monthnum;
-				$year     = get_query_var( 'year' );
-
-				return gmdate( 'F', mktime( 0, 0, 0, (int) $monthnum, 1, (int) $year ) );
-			case 'monthnum':
-				$monthnum = get_query_var( 'monthnum' );
-
-				return ( empty( $monthnum ) || is_year() ) ? 0 : $monthnum;
-			case 'day':
-				$day = get_query_var( 'day' );
-
-				return false !== $day ? $day : '';
 			case 'search_term':
 				global $s;
 

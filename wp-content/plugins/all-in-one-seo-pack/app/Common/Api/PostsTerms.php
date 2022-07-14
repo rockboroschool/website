@@ -379,4 +379,60 @@ class PostsTerms {
 			'post'    => $postId
 		], 200 );
 	}
+
+	/**
+	 * Disable the link format education.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function disableLinkFormatEducation( $request ) {
+		$args = $request->get_params();
+
+		if ( empty( $args['postId'] ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => __( 'No post ID was provided.', 'all-in-one-seo-pack' )
+			], 400 );
+		}
+
+		$thePost = Models\Post::getPost( $args['postId'] );
+		$thePost->options->linkFormat->linkAssistantDismissed = true;
+		$thePost->save();
+
+		return new \WP_REST_Response( [
+			'success' => true
+		], 200 );
+	}
+
+	/**
+	 * Increment the internal link count.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function updateInternalLinkCount( $request ) {
+		$args  = $request->get_params();
+		$body  = $request->get_json_params();
+		$count = ! empty( $body['count'] ) ? intval( $body['count'] ) : null;
+
+		if ( empty( $args['postId'] ) || null === $count ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => __( 'No post ID or count was provided.', 'all-in-one-seo-pack' )
+			], 400 );
+		}
+
+		$thePost = Models\Post::getPost( $args['postId'] );
+		$thePost->options->linkFormat->internalLinkCount = $count;
+		$thePost->save();
+
+		return new \WP_REST_Response( [
+			'success' => true
+		], 200 );
+	}
 }

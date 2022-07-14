@@ -236,7 +236,8 @@ class Addons {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return boolean Whether or not the installation was succesful.
+	 * @param  string $name The addon name/sku.
+	 * @return bool         Whether or not the installation was succesful.
 	 */
 	public function installAddon( $name ) {
 		if ( ! $this->canInstall() ) {
@@ -345,9 +346,9 @@ class Addons {
 	}
 
 	/**
-	 * Determine if addons/plugins can be updates.
+	 * Determine if addons/plugins can be updated.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.6
 	 *
 	 * @return bool True if yes, false if not.
 	 */

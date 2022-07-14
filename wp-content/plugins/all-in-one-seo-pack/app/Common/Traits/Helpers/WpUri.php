@@ -64,17 +64,13 @@ trait WpUri {
 			return $url;
 		}
 
-		// NOTE: network_home_url() will fall back to home_url() if the site isn't a multisite.
-		global $wp;
-		if ( $wp->did_permalink ) {
-			$url = user_trailingslashit( network_home_url( $wp->request ) );
-		} else {
-			$url = user_trailingslashit( network_home_url( $_SERVER['REQUEST_URI'] ) );
-		}
+		global $wp, $wp_rewrite;
+		// Permalink url without the query string.
+		$url = user_trailingslashit( home_url( $wp->request ) );
 
-		$permalinkStructure = get_option( 'permalink_structure' );
-		if ( $canonical && $permalinkStructure ) {
-			$url = explode( '?', $url )[0];
+		// If permalinks are not being used we need to append the query string to the home url.
+		if ( ! $wp_rewrite->using_permalinks() ) {
+			$url = home_url( ! empty( $wp->query_string ) ? '?' . $wp->query_string : '' );
 		}
 
 		return $url;
@@ -93,7 +89,7 @@ trait WpUri {
 			return $canonicalUrl;
 		}
 
-		if ( is_404() ) {
+		if ( is_404() || is_search() ) {
 			return apply_filters( 'aioseo_canonical_url', '' );
 		}
 
@@ -129,11 +125,6 @@ trait WpUri {
 		if ( ! apply_filters( 'aioseo_disable_canonical_url_amp', false ) ) {
 			$url = preg_replace( '/\/amp$/', '', $url );
 			$url = preg_replace( '/\/amp\/$/', '/', $url );
-		}
-
-		$searchTerm = get_query_var( 's' );
-		if ( is_search() && ! empty( $searchTerm ) ) {
-			$url = add_query_arg( 's', $searchTerm, $url );
 		}
 
 		return apply_filters( 'aioseo_canonical_url', $url );
@@ -215,7 +206,7 @@ trait WpUri {
 	 * @return string      The formatted image URL.
 	 */
 	public function removeImageDimensions( $url ) {
-		return $this->isValidAttachment( $url ) ? preg_replace( '#(-[0-9]*x[0-9]*)#', '', $url ) : $url;
+		return $this->isValidAttachment( $url ) ? preg_replace( '#(-[0-9]*x[0-9]*|-scaled)#', '', $url ) : $url;
 	}
 
 	/**

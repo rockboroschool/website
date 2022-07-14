@@ -163,7 +163,7 @@ class Model implements \JsonSerializable {
 		}
 
 		foreach ( (array) $array as $key => $value ) {
-			trim( $key );
+			$key = trim( $key );
 			$this->$key = $value;
 
 			if ( null === $value && in_array( $key, $this->nullFields, true ) ) {
@@ -447,33 +447,6 @@ class Model implements \JsonSerializable {
 		}
 
 		return self::$columns[ get_called_class() ];
-	}
-
-	/**
-	 * Returns a JSON object with default tabs options.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  string $existingOptions The existing options in JSON.
-	 * @return string                  The existing options with defaults added in JSON.
-	 */
-	public static function getDefaultTabsOptions( $existingOptions = '' ) {
-		$defaults = [
-			'tab'              => 'general',
-			'tab_social'       => 'facebook',
-			'tab_sidebar'      => 'general',
-			'tab_modal'        => 'general',
-			'tab_modal_social' => 'facebook'
-		];
-
-		if ( empty( $existingOptions ) ) {
-			return wp_json_encode( $defaults );
-		}
-
-		$existingOptions = json_decode( $existingOptions, true );
-		$existingOptions = array_replace_recursive( $defaults, $existingOptions );
-
-		return wp_json_encode( $existingOptions );
 	}
 
 	/**

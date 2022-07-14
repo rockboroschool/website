@@ -157,56 +157,72 @@ trait Wp {
 	 */
 	public function getPublicPostTypes( $namesOnly = false, $hasArchivesOnly = false, $rewriteType = false ) {
 		$postTypes   = [];
-		$postObjects = get_post_types( [ 'public' => true ], 'objects' );
-		$woocommerce = class_exists( 'woocommerce' );
-		foreach ( $postObjects as $postObject ) {
-			if ( empty( $postObject->label ) ) {
-				continue;
+		$postTypeObjects = get_post_types( [ 'public' => true ], 'objects' );
+		foreach ( $postTypeObjects as $postTypeObject ) {
+			$postTypeArray = $this->getPostType( $postTypeObject, $namesOnly, $hasArchivesOnly, $rewriteType );
+			if ( ! empty( $postTypeArray ) ) {
+				$postTypes[] = $postTypeArray;
 			}
-
-			// We don't want to include archives for the WooCommerce shop page.
-			if (
-				$hasArchivesOnly &&
-				(
-					! $postObject->has_archive ||
-					( 'product' === $postObject->name && $woocommerce )
-				)
-			) {
-				continue;
-			}
-
-			if ( $namesOnly ) {
-				$postTypes[] = $postObject->name;
-				continue;
-			}
-
-			if ( 'attachment' === $postObject->name ) {
-				$postObject->label = __( 'Attachments', 'all-in-one-seo-pack' );
-			}
-
-			if ( 'product' === $postObject->name && $woocommerce ) {
-				$postObject->menu_icon = 'dashicons-products';
-			}
-
-			$name = $postObject->name;
-			if ( 'type' === $postObject->name && $rewriteType ) {
-				$name = '_aioseo_type';
-			}
-
-			$postTypes[] = [
-				'name'         => $name,
-				'label'        => ucwords( $postObject->label ),
-				'singular'     => ucwords( $postObject->labels->singular_name ),
-				'icon'         => $postObject->menu_icon,
-				'hasExcerpt'   => post_type_supports( $postObject->name, 'excerpt' ),
-				'hasArchive'   => $postObject->has_archive,
-				'hierarchical' => $postObject->hierarchical,
-				'taxonomies'   => get_object_taxonomies( $name ),
-				'slug'         => isset( $postObject->rewrite['slug'] ) ? $postObject->rewrite['slug'] : $name
-			];
 		}
 
 		return apply_filters( 'aioseo_public_post_types', $postTypes, $namesOnly, $hasArchivesOnly );
+	}
+
+	/**
+	 * Get the data for the post type.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  \WP_Post_Type $postTypeObject  The post type object.
+	 * @param  boolean       $namesOnly       Whether only the names should be returned.
+	 * @param  boolean       $hasArchivesOnly Whether or not to only include post types which have archives.
+	 * @param  boolean       $rewriteType     Whether or not to rewrite the type slugs.
+	 * @return mixed                          Data for the post type.
+	 */
+	public function getPostType( $postTypeObject, $namesOnly = false, $hasArchivesOnly = false, $rewriteType = false ) {
+		if ( empty( $postTypeObject->label ) ) {
+			return $namesOnly ? null : [];
+		}
+
+		// We don't want to include archives for the WooCommerce shop page.
+		if (
+			$hasArchivesOnly &&
+			(
+				! $postTypeObject->has_archive ||
+				( 'product' === $postTypeObject->name && $this->isWooCommerceActive() )
+			)
+		) {
+			return $namesOnly ? null : [];
+		}
+
+		if ( $namesOnly ) {
+			return $postTypeObject->name;
+		}
+
+		if ( 'attachment' === $postTypeObject->name ) {
+			$postTypeObject->label = __( 'Attachments', 'all-in-one-seo-pack' );
+		}
+
+		if ( 'product' === $postTypeObject->name && $this->isWooCommerceActive() ) {
+			$postTypeObject->menu_icon = 'dashicons-products';
+		}
+
+		$name = $postTypeObject->name;
+		if ( 'type' === $postTypeObject->name && $rewriteType ) {
+			$name = '_aioseo_type';
+		}
+
+		return [
+			'name'         => $name,
+			'label'        => ucwords( $postTypeObject->label ),
+			'singular'     => ucwords( $postTypeObject->labels->singular_name ),
+			'icon'         => $postTypeObject->menu_icon,
+			'hasExcerpt'   => post_type_supports( $postTypeObject->name, 'excerpt' ),
+			'hasArchive'   => $postTypeObject->has_archive,
+			'hierarchical' => $postTypeObject->hierarchical,
+			'taxonomies'   => get_object_taxonomies( $name ),
+			'slug'         => isset( $postTypeObject->rewrite['slug'] ) ? $postTypeObject->rewrite['slug'] : $name
+		];
 	}
 
 	/**
@@ -408,6 +424,20 @@ trait Wp {
 	}
 
 	/**
+	 * Checks whether a given post type is public.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  string  $postType The post type.
+	 * @return bool              Whether the post type is public.
+	 */
+	public function isPostTypePublic( $postType ) {
+		$publicPostTypes = $this->getPublicPostTypes( true );
+
+		return in_array( $postType, $publicPostTypes, true );
+	}
+
+	/**
 	 * Returns noindexed taxonomies.
 	 *
 	 * @since 4.0.0
@@ -430,6 +460,20 @@ trait Wp {
 		$noindexedTaxonomies = $this->getNoindexedTaxonomies();
 
 		return in_array( $taxonomy, $noindexedTaxonomies, true );
+	}
+
+	/**
+	 * Checks whether a given taxonomy is public.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  string  $taxonomy The taxonomy.
+	 * @return bool              Whether the taxonomy is public.
+	 */
+	public function isTaxonomyPublic( $taxonomy ) {
+		$publicTaxonomies = $this->getPublicTaxonomies( true );
+
+		return in_array( $taxonomy, $publicTaxonomies, true );
 	}
 
 	/**

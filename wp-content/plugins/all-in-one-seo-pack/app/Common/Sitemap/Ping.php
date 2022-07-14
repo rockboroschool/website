@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use AIOSEO\Plugin\Common\Models;
+
 /**
  * Handles our sitemap search engine ping feature.
  *
@@ -47,6 +49,12 @@ class Ping {
 			return;
 		}
 
+		// If Limit Modified Date is enabled, let's return early.
+		$aioseoPost = Models\Post::getPost( $postId );
+		if ( $aioseoPost->limit_modified_date ) {
+			return;
+		}
+
 		// First, unschedule any ping actions that might already be enqueued.
 		aioseo()->helpers->unscheduleAction( 'aioseo_sitemap_ping' );
 		// Then, schedule the new ping.
@@ -82,8 +90,7 @@ class Ping {
 	 */
 	public function ping( $sitemapUrls = [] ) {
 		$endpoints = apply_filters( 'aioseo_sitemap_ping_urls', [
-			'https://www.google.com/ping?sitemap=',
-			'https://www.bing.com/ping?sitemap='
+			'https://www.google.com/ping?sitemap='
 		] );
 
 		if ( aioseo()->options->sitemap->general->enable ) {
@@ -93,9 +100,9 @@ class Ping {
 			$sitemapUrls[] = aioseo()->sitemap->helpers->getUrl( 'rss' );
 		}
 
-		foreach ( aioseo()->sitemap->addons as $classes ) {
-			if ( ! empty( $classes['ping'] ) ) {
-				$sitemapUrls = $sitemapUrls + $classes['ping']->getPingUrls();
+		foreach ( aioseo()->addons->getLoadedAddons() as $loadedAddon ) {
+			if ( ! empty( $loadedAddon->ping ) && method_exists( $loadedAddon->ping, 'getPingUrls' ) ) {
+				$sitemapUrls = $sitemapUrls + $loadedAddon->ping->getPingUrls();
 			}
 		}
 

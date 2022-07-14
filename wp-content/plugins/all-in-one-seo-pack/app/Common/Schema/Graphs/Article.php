@@ -28,7 +28,7 @@ class Article extends Graph {
 		$post           = aioseo()->schema->context['object'];
 		$postTaxonomies = get_post_taxonomies( $post );
 		$postTerms      = [];
-		foreach ( $postTaxonomies as $taxonomy ) {
+		foreach ( array_intersect( aioseo()->helpers->getPublicTaxonomies( true ), $postTaxonomies ) as $taxonomy ) {
 			$terms = get_the_terms( $post, $taxonomy );
 			if ( $terms ) {
 				$postTerms = array_merge( $postTerms, wp_list_pluck( $terms, 'name' ) );

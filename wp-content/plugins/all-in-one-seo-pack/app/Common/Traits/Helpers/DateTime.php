@@ -37,6 +37,18 @@ trait DateTime {
 	}
 
 	/**
+	 * Formats a date & time in RFC-822 format.
+	 *
+	 * @since 4.2.1
+	 *
+	 * @param  string $dateTime The date.
+	 * @return string           The date formatted in RFC-822 format.
+	 */
+	public function dateTimeToRfc822( $dateTime ) {
+		return gmdate( 'D, d M Y H:i:s O', strtotime( $dateTime ) );
+	}
+
+	/**
 	 * Returns the timezone offset.
 	 * We use the code from wp_timezone_string() which became available in WP 5.3+
 	 *
