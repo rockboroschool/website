@@ -677,4 +677,23 @@ trait Wp {
 
 		return $capabilities[ $taxonomy ];
 	}
+
+	/**
+	 * Returns the charset for the site.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return string The name of the charset.
+	 */
+	public function getCharset() {
+		static $charset = null;
+		if ( null !== $charset ) {
+			return $charset;
+		}
+
+		$charset = get_option( 'blog_charset' );
+		$charset = $charset ? $charset : 'UTF-8';
+
+		return $charset;
+	}
 }

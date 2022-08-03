@@ -43,7 +43,7 @@ class Notices {
 		$this->import              = new Import();
 		$this->deprecatedWordPress = new DeprecatedWordPress();
 
-		add_action( 'admin_notices', [ $this, 'notice' ] );
+		add_action( 'admin_notices', [ $this, 'notices' ] );
 	}
 
 	/**
@@ -322,7 +322,7 @@ class Notices {
 	 *
 	 * @return void
 	 */
-	public function notice() {
+	public function notices() {
 		$this->review->maybeShowNotice();
 		$this->migration->maybeShowNotice();
 		$this->import->maybeShowNotice();

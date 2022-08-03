@@ -400,6 +400,7 @@ namespace AIOSEO\Plugin {
 			$this->htaccess           = new Common\Tools\Htaccess();
 			$this->term               = $this->pro ? new Pro\Admin\Term() : null;
 			$this->notices            = $this->pro ? new Pro\Admin\Notices\Notices() : new Lite\Admin\Notices\Notices();
+			$this->wpNotices          = new Common\Admin\Notices\WpNotices();
 			$this->admin              = $this->pro ? new Pro\Admin\Admin() : new Lite\Admin\Admin();
 			$this->activate           = $this->pro ? new Pro\Main\Activate() : new Common\Main\Activate();
 			$this->conflictingPlugins = $this->pro ? new Pro\Admin\ConflictingPlugins() : new Common\Admin\ConflictingPlugins();
@@ -410,7 +411,8 @@ namespace AIOSEO\Plugin {
 			$this->templates          = new Common\Utils\Templates();
 			$this->categoryBase       = $this->pro ? new Pro\Main\CategoryBase() : null;
 			$this->postSettings       = $this->pro ? new Pro\Admin\PostSettings() : new Lite\Admin\PostSettings();
-			$this->standalone         = new Common\Standalone\Standalone;
+			$this->standalone         = new Common\Standalone\Standalone();
+			$this->slugMonitor        = new Common\Admin\SlugMonitor();
 
 			if ( ! wp_doing_ajax() && ! wp_doing_cron() ) {
 				$this->rss       = new Common\Rss();

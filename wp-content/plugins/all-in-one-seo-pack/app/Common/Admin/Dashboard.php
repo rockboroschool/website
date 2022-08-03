@@ -46,7 +46,11 @@ class Dashboard {
 				[
 					$this,
 					'outputSeoSetup',
-				]
+				],
+				null,
+				null,
+				'normal',
+				'high'
 			);
 		}
 

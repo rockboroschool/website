@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Help {
 	/**
-	 * Source of notifications content.
+	 * Source of the documentation content.
 	 *
 	 * @since 4.0.0
 	 *

@@ -237,7 +237,8 @@ class Tags {
 			'permalink',
 			'separator_sa',
 			'site_title',
-			'tagline'
+			'tagline',
+			'tax_parent_name'
 		],
 		'taxonomyDescription' => [
 			'taxonomy_description',
@@ -520,6 +521,11 @@ class Tags {
 				'name'        => __( 'Taxonomy Name', 'all-in-one-seo-pack' ),
 				'description' => __( 'The name of the first term of a given taxonomy that is assigned to the current page/post.', 'all-in-one-seo-pack' ),
 				'custom'      => true
+			],
+			[
+				'id'          => 'tax_parent_name',
+				'name'        => __( 'Parent Term', 'all-in-one-seo-pack' ),
+				'description' => __( 'The name of the parent term of the current term.', 'all-in-one-seo-pack' ),
 			],
 			[
 				'id'          => 'description',
@@ -893,6 +899,12 @@ class Tags {
 				$title = $this->getTaxonomyTitle( $postId );
 
 				return $sampleData ? __( 'Sample Taxonomy Title', 'all-in-one-seo-pack' ) : $title;
+			case 'tax_parent_name':
+				$termObject       = get_term( $id );
+				$parentTermObject = ! empty( $termObject->parent ) ? get_term( $termObject->parent ) : '';
+				$name             = is_a( $parentTermObject, 'WP_Term' ) && ! empty( $parentTermObject->name ) ? $parentTermObject->name : '';
+
+				return $sampleData ? __( 'Sample Parent Term Name', 'all-in-one-seo-pack' ) : $name;
 			case 'categories':
 				if ( ! is_object( $post ) || 'post' !== $post->post_type ) {
 					return ! is_object( $post ) && $sampleData ? __( 'Sample Category 1, Sample Category 2', 'all-in-one-seo-pack' ) : '';

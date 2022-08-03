@@ -224,7 +224,7 @@ class SetupWizard {
 	 * @return boolean Whether or not the Setup Wizard is completed.
 	 */
 	public function isCompleted() {
-		$wizard = aioseo()->internalOptions->internal->wizard;
+		$wizard = (string) aioseo()->internalOptions->internal->wizard;
 		$wizard = json_decode( $wizard );
 		if ( ! $wizard ) {
 			return false;

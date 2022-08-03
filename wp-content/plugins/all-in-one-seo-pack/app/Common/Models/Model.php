@@ -82,7 +82,7 @@ class Model implements \JsonSerializable {
 	 *
 	 * @var array
 	 */
-	private static $columns;
+	private static $columns = [];
 
 	/**
 	 * Class constructor.
@@ -171,7 +171,9 @@ class Model implements \JsonSerializable {
 			}
 
 			if ( in_array( $key, $this->jsonFields, true ) ) {
-				$this->$key = json_decode( $value );
+				if ( $value ) {
+					$this->$key = is_string( $value ) ? json_decode( $value ) : $value;
+				}
 				continue;
 			}
 
@@ -406,6 +408,10 @@ class Model implements \JsonSerializable {
 	 *
 	 * @return array An array of data that we are okay with serializing.
 	 */
+	#[\ReturnTypeWillChange]
+	// The attribute above omits a deprecation notice from PHP 8.1 that is thrown because the return type of jsonSerialize() isn't "mixed".
+	// Once PHP 5.6 is our minimum supported version, this can be removed in favour of overriding the return type in the method signature like this -
+	// public function jsonSerialize() : array
 	public function jsonSerialize() {
 		$array = [];
 

@@ -359,8 +359,8 @@ class PostSettings {
 				break;
 		}
 
-		$prefix            = aioseo()->db->prefix;
-		$postsTable        = aioseo()->db->db->posts;
+		$prefix            = aioseo()->core->db->prefix;
+		$postsTable        = aioseo()->core->db->db->posts;
 		$clauses['join']  .= " LEFT JOIN {$prefix}aioseo_posts AS aioseo_p ON ({$postsTable}.ID = aioseo_p.post_id) ";
 		$clauses['where'] .= $whereClause;
 

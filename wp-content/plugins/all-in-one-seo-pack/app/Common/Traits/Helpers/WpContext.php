@@ -111,6 +111,17 @@ trait WpContext {
 	}
 
 	/**
+	 * Checks whether the current page is the dynamic homepage.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return bool Whether the current page is the dynamic homepage.
+	 */
+	public function isDynamicHomePage() {
+		return is_front_page() && is_home();
+	}
+
+	/**
 	 * Checks whether the current page is the static posts page.
 	 *
 	 * @since 4.0.0

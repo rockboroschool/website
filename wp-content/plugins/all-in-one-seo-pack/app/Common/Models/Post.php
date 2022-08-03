@@ -104,16 +104,24 @@ class Post extends Model {
 	 * @return Post         The modified Post object.
 	 */
 	private static function setDynamicDefaults( $post, $postId ) {
-		if (
-			'page' === get_post_type( $postId ) && // This check cannot be deleted and is required to prevent errors after WordPress cleans up the attachment it creates when a plugin is updated.
-			(
-				aioseo()->helpers->isWooCommerceCheckoutPage( $postId ) ||
+		if ( 'page' === get_post_type( $postId ) ) { // This check cannot be deleted and is required to prevent errors after WordPress cleans up the attachment it creates when a plugin is updated.
+			$isWooCommerceCheckoutPage = aioseo()->helpers->isWooCommerceCheckoutPage( $postId );
+			if (
+				$isWooCommerceCheckoutPage ||
 				aioseo()->helpers->isWooCommerceCartPage( $postId ) ||
 				aioseo()->helpers->isWooCommerceAccountPage( $postId )
-			)
-		) {
-			$post->robots_default = false;
-			$post->robots_noindex = true;
+			) {
+				$post->robots_default = false;
+				$post->robots_noindex = true;
+			}
+
+			if ( $isWooCommerceCheckoutPage ) {
+				$schemaTypeOptions                       = json_decode( self::getDefaultSchemaOptions() );
+				$schemaTypeOptions->webPage->webPageType = 'CheckoutPage';
+
+				$post->schema_type = 'WebPage';
+				$post->schema_type_options = wp_json_encode( $schemaTypeOptions );
+			}
 		}
 
 		if ( aioseo()->helpers->isStaticHomePage( $postId ) ) {
@@ -303,8 +311,8 @@ class Post extends Model {
 		// Schema
 		$thePost->schema_type                 = ! empty( $data['schema_type'] ) ? sanitize_text_field( $data['schema_type'] ) : 'default';
 		$thePost->schema_type_options         = ! empty( $data['schema_type_options'] )
-			? parent::getDefaultSchemaOptions( wp_json_encode( $data['schema_type_options'] ) )
-			: parent::getDefaultSchemaOptions();
+			? self::getDefaultSchemaOptions( wp_json_encode( $data['schema_type_options'] ) )
+			: self::getDefaultSchemaOptions();
 		// Miscellaneous
 		$thePost->local_seo                   = ! empty( $data['local_seo'] ) ? wp_json_encode( $data['local_seo'] ) : null;
 		$thePost->limit_modified_date         = isset( $data['limit_modified_date'] ) ? rest_sanitize_boolean( $data['limit_modified_date'] ) : 0;
@@ -446,6 +454,57 @@ class Post extends Model {
 		];
 
 		return json_decode( wp_json_encode( $defaults ) );
+	}
+
+	/**
+	 * Returns a JSON object with default schema options.
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  string $existingOptions The existing options in JSON.
+	 * @return string                  The existing options with defaults added in JSON.
+	 */
+	public static function getDefaultSchemaOptions( $existingOptions = '' ) {
+		// If the root level value for a graph needs to be an object, we need to set at least one property inside of it so that PHP doesn't convert it to an empty array.
+
+		$defaults = [
+			'article'     => [
+				'articleType' => 'BlogPosting'
+			],
+			'course'      => [
+				'name'        => '',
+				'description' => '',
+				'provider'    => ''
+			],
+			'faq'         => [
+				'pages' => []
+			],
+			'product'     => [
+				'reviews' => []
+			],
+			'recipe'      => [
+				'ingredients'  => [],
+				'instructions' => [],
+				'keywords'     => []
+			],
+			'software'    => [
+				'reviews'          => [],
+				'operatingSystems' => []
+			],
+			'webPage'     => [
+				'webPageType' => 'WebPage'
+			],
+			'blockGraphs' => []
+		];
+
+		if ( empty( $existingOptions ) ) {
+			return wp_json_encode( $defaults );
+		}
+
+		$existingOptions = json_decode( $existingOptions, true );
+		$existingOptions = array_replace_recursive( $defaults, $existingOptions );
+
+		return wp_json_encode( $existingOptions );
 	}
 
 	/**

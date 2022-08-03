@@ -78,12 +78,15 @@ class Localization {
 			$currentLanguage = ! empty( self::$wpml['activeLanguages'][ $translation->language_code ] ) ? self::$wpml['activeLanguages'][ $translation->language_code ] : null;
 			$languageCode    = ! empty( $currentLanguage['tag'] ) ? $currentLanguage['tag'] : $translation->language_code;
 
-			$entry['languages'][] = [
-				'language' => $languageCode,
-				'location' => $location
-			];
+			if ( $languageCode && $location ) {
+				$entry['languages'][] = [
+					'language' => $languageCode,
+					'location' => $location
+				];
+			}
 		}
 
+		// Also include the main page as a translated variant, per Google's specifications, but only if we found at least one other language.
 		if ( empty( $entry['languages'] ) ) {
 			unset( $entry['languages'] );
 		} else {
@@ -91,6 +94,30 @@ class Localization {
 				'language' => $entry['language'],
 				'location' => $entry['loc']
 			];
+		}
+
+		$entry = $this->validateSubentries( $entry );
+
+		return $entry;
+	}
+
+	/**
+	 * Validates the subentries with translated variants to ensure all required values are set.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @param  array $entry The entry.
+	 * @return array        The validated entry.
+	 */
+	private function validateSubentries( $entry ) {
+		if ( ! isset( $entry['languages'] ) ) {
+			return $entry;
+		}
+
+		foreach ( $entry['languages'] as $index => $subentry ) {
+			if ( empty( $subentry['language'] ) || empty( $subentry['location'] ) ) {
+				unset( $entry['languages'][ $index ] );
+			}
 		}
 
 		return $entry;

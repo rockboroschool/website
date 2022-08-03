@@ -30,5 +30,10 @@ class Standalone {
 			'divi'      => new PageBuilders\Divi,
 			'seedprod'  => new PageBuilders\SeedProd
 		];
+
+		$this->standaloneBlocks = [
+			'tocBlock' => new Blocks\TableOfContents(),
+			'faqBlock' => new Blocks\FaqPage()
+		];
 	}
 }

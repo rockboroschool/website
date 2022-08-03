@@ -45,11 +45,6 @@ class Updates {
 		aioseo()->access->addCapabilities();
 
 		$oldOptions = get_option( 'aioseop_options' );
-		if ( empty( $oldOptions ) && ! is_network_admin() && ! isset( $_GET['activate-multi'] ) ) {
-			// Sets 30 second transient for welcome screen redirect on activation.
-			aioseo()->core->cache->update( 'activation_redirect', true, 30 );
-		}
-
 		if ( ! empty( $oldOptions['last_active_version'] ) ) {
 			aioseo()->internalOptions->internal->lastActiveVersion = $oldOptions['last_active_version'];
 		}
@@ -796,9 +791,9 @@ class Updates {
 	 * @return void
 	 */
 	private function removeRevisionRecords() {
-		$postsTableName       = aioseo()->db->prefix . 'posts';
-		$aioseoPostsTableName = aioseo()->db->prefix . 'aioseo_posts';
-		aioseo()->db->execute(
+		$postsTableName       = aioseo()->core->db->prefix . 'posts';
+		$aioseoPostsTableName = aioseo()->core->db->prefix . 'aioseo_posts';
+		aioseo()->core->db->execute(
 			"DELETE FROM `$aioseoPostsTableName`
 			WHERE `post_id` IN (
 				SELECT `ID`
@@ -873,15 +868,15 @@ class Updates {
 	 * @return void
 	 */
 	private function migrateUserContactMethods() {
-		$userMetaTableName = aioseo()->db->prefix . 'usermeta';
+		$userMetaTableName = aioseo()->core->db->prefix . 'usermeta';
 
-		aioseo()->db->execute(
+		aioseo()->core->db->execute(
 			"UPDATE `$userMetaTableName`
 			SET `meta_key` = 'aioseo_facebook_page_url'
 			WHERE `meta_key` = 'aioseo_facebook'"
 		);
 
-		aioseo()->db->execute(
+		aioseo()->core->db->execute(
 			"UPDATE `$userMetaTableName`
 			SET `meta_key` = 'aioseo_twitter_url'
 			WHERE `meta_key` = 'aioseo_twitter'"

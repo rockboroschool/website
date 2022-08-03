@@ -493,4 +493,46 @@ trait ThirdParty {
 
 		return $isActive;
 	}
+
+	/**
+	 * Checks if the current page is an AMP page.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return bool Whether the page is an AMP page (optional).
+	 */
+	public function isAmpPage( $pluginName = '' ) {
+		// AMP
+		if (
+			( ! $pluginName || 'amp' === $pluginName ) &&
+			defined( 'AMP__VERSION' )
+		) {
+			if ( isset( $_GET['amp'] ) ) {
+				return true;
+			}
+
+			$options = get_option( 'amp-options' );
+			if ( ! empty( $options['theme_support'] ) && 'standard' === strtolower( $options['theme_support'] ) ) {
+				return true;
+			}
+		}
+
+		// AMP for WP
+		if (
+			( ! $pluginName || 'amp-for-wp' === $pluginName ) &&
+			defined( 'AMPFORWP_VERSION' )
+		) {
+			// This URL param is set when using plain permalinks.
+			if ( isset( $_GET['amp'] ) ) {
+				return true;
+			}
+
+			global $wp;
+			if ( preg_match( '/amp$/', untrailingslashit( $wp->request ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

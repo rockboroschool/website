@@ -27,10 +27,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<url>
 		<loc><?php aioseo()->sitemap->output->escapeAndEcho( $entry['loc'] ); ?></loc><?php
 	if ( array_key_exists( 'languages', $entry ) && count( $entry['languages'] ) ) {
-			foreach ( $entry['languages'] as $language ) {
+			foreach ( $entry['languages'] as $subentry ) {
+				if ( empty( $subentry['language'] ) || empty( $subentry['location'] ) ) {
+					continue;
+				}
 			?>
 
-		<xhtml:link rel="alternate" hreflang="<?php echo esc_attr( $language['language'] ); ?>" href="<?php echo esc_url( $language['location'] ); ?>" /><?php
+		<xhtml:link rel="alternate" hreflang="<?php echo esc_attr( $subentry['language'] ); ?>" href="<?php echo esc_url( $subentry['location'] ); ?>" /><?php
 		}
 	}
 	if ( array_key_exists( 'lastmod', $entry ) && $entry['lastmod'] ) {

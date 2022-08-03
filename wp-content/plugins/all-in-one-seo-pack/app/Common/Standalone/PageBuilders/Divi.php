@@ -22,6 +22,17 @@ class Divi extends Base {
 	public $themes = [ 'Divi' ];
 
 	/**
+	 * The plugin files.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @var array
+	 */
+	public $plugins = [
+		'divi-builder/divi-builder.php'
+	];
+
+	/**
 	 * The integration slug.
 	 *
 	 * @since 4.1.7

@@ -135,16 +135,17 @@ trait Vue {
 				'staticBlogPageTitle' => get_the_title( $this->getBlogPageId() ),
 				'isDev'               => $this->isDev(),
 				'isSsl'               => is_ssl(),
-				'hasUrlTrailingSlash' => '/' === user_trailingslashit( '' )
+				'hasUrlTrailingSlash' => '/' === user_trailingslashit( '' ),
+				'permalinkStructure'  => get_option( 'permalink_structure' )
 			],
 			'user'             => [
-				'email'          => wp_get_current_user()->user_email,
-				'roles'          => $this->getUserRoles(),
-				'customRoles'    => $this->getCustomRoles(),
 				'canManage'      => aioseo()->access->canManage(),
 				'capabilities'   => aioseo()->access->getAllCapabilities(),
-				'unfilteredHtml' => current_user_can( 'unfiltered_html' ),
-				'locale'         => function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale()
+				'customRoles'    => $this->getCustomRoles(),
+				'data'           => wp_get_current_user(),
+				'locale'         => function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale(),
+				'roles'          => $this->getUserRoles(),
+				'unfilteredHtml' => current_user_can( 'unfiltered_html' )
 			],
 			'plugins'          => $this->getPluginData(),
 			'postData'         => [

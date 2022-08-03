@@ -119,7 +119,8 @@ class VueSettings {
 			'locationsShowOnWebsite'        => 'widget',
 			'breadcrumbsShowOnWebsite'      => 'shortcode',
 			'breadcrumbsShowMoreSeparators' => false,
-			'searchShowMoreSeparators'      => false
+			'searchShowMoreSeparators'      => false,
+			'overviewPostType'              => 'post',
 		],
 		'internalTabs'    => [
 			'authorArchives'    => 'title-description',

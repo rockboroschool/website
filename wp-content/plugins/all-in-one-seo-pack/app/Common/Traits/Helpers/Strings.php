@@ -142,6 +142,10 @@ trait Strings {
 	 * @return string              The subject with matches replaced.
 	 */
 	public function pregReplace( $pattern, $replacement, $subject ) {
+		if ( ! $subject ) {
+			return $subject;
+		}
+
 		$key = $pattern . $replacement . $subject;
 
 		static $pregReplace = [];
@@ -173,7 +177,7 @@ trait Strings {
 		if ( isset( $lowerCased[ $string ] ) ) {
 			return $lowerCased[ $string ];
 		}
-		$lowerCased[ $string ] = function_exists( 'mb_strtolower' ) ? mb_strtolower( $string, get_option( 'blog_charset' ) ) : strtolower( $string );
+		$lowerCased[ $string ] = function_exists( 'mb_strtolower' ) ? mb_strtolower( $string, $this->getCharset() ) : strtolower( $string );
 
 		return $lowerCased[ $string ];
 	}
@@ -196,7 +200,7 @@ trait Strings {
 			return $stringIndex[ $key ];
 		}
 
-		$stringIndex[ $key ] = function_exists( 'mb_strpos' ) ? mb_strpos( $stack, $needle, $offset, get_option( 'blog_charset' ) ) : strpos( $stack, $needle, $offset );
+		$stringIndex[ $key ] = function_exists( 'mb_strpos' ) ? mb_strpos( $stack, $needle, $offset, $this->getCharset() ) : strpos( $stack, $needle, $offset );
 
 		return $stringIndex[ $key ];
 	}
@@ -266,7 +270,7 @@ trait Strings {
 	 * @return string         The encoded string.
 	 */
 	public function encodeOutputHtml( $string ) {
-		return htmlspecialchars( $string, ENT_COMPAT | ENT_HTML401, get_option( 'blog_charset' ), false );
+		return htmlspecialchars( $string, ENT_COMPAT | ENT_HTML401, $this->getCharset(), false );
 	}
 
 	/**
@@ -365,7 +369,7 @@ trait Strings {
 			return $stringLength[ $string ];
 		}
 
-		$stringLength[ $string ] = function_exists( 'mb_strlen' ) ? mb_strlen( $string, get_option( 'blog_charset' ) ) : strlen( $string );
+		$stringLength[ $string ] = function_exists( 'mb_strlen' ) ? mb_strlen( $string, $this->getCharset() ) : strlen( $string );
 
 		return $stringLength[ $string ];
 	}
@@ -469,5 +473,17 @@ trait Strings {
 		restore_error_handler();
 
 		return $isValid;
+	}
+
+	/**
+	 * Removes the leading slash(es) from a string.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @param  string $string The string.
+	 * @return string         The modified string.
+	 */
+	public function unleadingSlashIt( $string ) {
+		return ltrim( $string, '/' );
 	}
 }

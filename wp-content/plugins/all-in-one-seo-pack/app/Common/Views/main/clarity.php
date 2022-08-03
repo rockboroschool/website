@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $projectId = aioseo()->options->webmasterTools->microsoftClarityProjectId;
 
-if ( empty( $projectId ) ) {
+if ( empty( $projectId ) || aioseo()->helpers->isAmpPage() ) {
 	return;
 }
 ?>

@@ -381,6 +381,39 @@ trait WpUri {
 	 * @return string            The path without the home_url().
 	 */
 	public function getPermalinkPath( $permalink ) {
-		return  str_replace( get_home_url(), '', $permalink );
+		return $this->leadingSlashIt( str_replace( get_home_url(), '', $permalink ) );
+	}
+
+	/**
+	 * Changed if permalinks are different and the before wasn't
+	 * the site url (we don't want to redirect the site URL).
+	 *
+	 * @since 4.2.3
+	 *
+	 * @param  string  $before The URL before the change.
+	 * @param  string  $after  The URL after the change.
+	 * @return boolean         True if the permalink has changed.
+	 */
+	public function hasPermalinkChanged( $before, $after ) {
+		// Check it's not redirecting from the root.
+		if ( $this->getHomePath() === $before || '/' === $before ) {
+			return false;
+		}
+
+		// Are the URLs the same?
+		return ( $before !== $after );
+	}
+
+	/**
+	 * Retrieve the home path.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return string The home path.
+	 */
+	private function getHomePath() {
+		$path = wp_parse_url( get_home_url(), PHP_URL_PATH );
+
+		return $path ? trailingslashit( $path ) : '/';
 	}
 }

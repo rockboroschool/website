@@ -376,9 +376,12 @@ class Admin {
 			return;
 		}
 
+		$classes    = is_admin()
+			? 'wp-core-ui wp-ui-notification aioseo-menu-notification-counter'
+			: 'aioseo-menu-notification-counter aioseo-menu-notification-counter-frontend';
 		$count      = count( Models\Notification::getAllActiveNotifications() );
 		$htmlCount  = 10 > $count ? $count : '!';
-		$htmlCount  = $htmlCount ? '<div class="wp-core-ui wp-ui-notification aioseo-menu-notification-counter">' . $htmlCount . '</div>' : '';
+		$htmlCount  = $htmlCount ? "<div class=\"{$classes}\">" . $htmlCount . '</div>' : '';
 		$htmlCount .= '<div id="aioseo-menu-new-notifications"></div>';
 
 		$this->adminBarMenuItems[] = [
@@ -407,8 +410,10 @@ class Admin {
 		}
 
 		$this->addSettingsMenuItems();
+		$this->addEditSeoMenuItem();
+
+		// Actually add in the menu bar items.
 		$this->addAdminBarMenuItems();
-		$this->addPostMenuItems();
 	}
 
 	/**
@@ -516,25 +521,27 @@ class Admin {
 	/**
 	 * Adds the current post menu items to the admin bar.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.3
 	 *
 	 * @return void
 	 */
-	protected function addPostMenuItems() {
-		$blogPage = aioseo()->helpers->getBlogPage();
-		if ( ! $blogPage ) {
+	protected function addEditSeoMenuItem() {
+		// Don't show if we're on the home page and the home page is the latest posts or if we're not in a singular context.
+		if ( aioseo()->helpers->isDynamicHomePage() || ! is_singular() ) {
 			return;
 		}
 
-		$addMenu = $this->getAdminBarMenuData( $blogPage );
-		if ( ! empty( $addMenu ) ) {
-			$this->adminBarMenuItems[] = [
-				'id'     => 'aioseo-edit-' . $addMenu['id'],
-				'parent' => 'aioseo-main',
-				'title'  => esc_html__( 'Edit SEO', 'all-in-one-seo-pack' ),
-				'href'   => $addMenu['link'],
-			];
+		$post = aioseo()->helpers->getPost();
+		if ( empty( $post ) ) {
+			return;
 		}
+
+		$this->adminBarMenuItems[] = [
+			'id'     => 'aioseo-edit-' . $post->ID,
+			'parent' => 'aioseo-main',
+			'title'  => esc_html__( 'Edit SEO', 'all-in-one-seo-pack' ),
+			'href'   => get_edit_post_link( $post->ID ) . '#aioseo-settings',
+		];
 	}
 
 	/**
@@ -572,42 +579,6 @@ class Admin {
 				'href'   => esc_url( admin_url( 'admin.php?page=' . $id ) )
 			];
 		}
-	}
-
-	/**
-	 * Retreive data to build the admin bar.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param  WP_Post $post The post object.
-	 * @return array         An array of data to build a menu link.
-	 */
-	protected function getAdminBarMenuData( $post ) {
-		// Don't show if we're on the home page and the home page is the latest posts.
-		if ( ! is_home() || ( ! is_front_page() && ! is_home() ) ) {
-			global $wp_the_query;
-			$currentObject = $wp_the_query->get_queried_object();
-
-			if ( is_singular() ) {
-				if ( ! empty( $currentObject ) && ! empty( $currentObject->post_type ) ) {
-					// Try the main query.
-					$editPostLink = get_edit_post_link( $currentObject->ID );
-
-					return [
-						'id'   => $currentObject->ID,
-						'link' => $editPostLink . '#aioseo'
-					];
-				} else {
-					// Try the post object.
-					return [
-						'id'   => $post->ID,
-						'link' => get_edit_post_link( $post->ID ) . '#aioseo'
-					];
-				}
-			}
-		}
-
-		return [];
 	}
 
 	/**
@@ -812,6 +783,7 @@ class Admin {
 
 			if ( 'tools' === $page ) {
 				$this->checkAdminQueryArgs();
+				$this->checkForRedirects();
 			}
 
 			// Redirect our Analytics page to the appropriate plugin page.
@@ -954,8 +926,7 @@ class Admin {
 		$postType               = get_post_type_object( $post->post_type );
 		if (
 			empty( $pageAnalysisCapability ) ||
-			empty( $postType->public ) ||
-			( aioseo()->helpers->isWooCommerceActive() && 'product' === $post->post_type )
+			empty( $postType->public )
 		) {
 			return;
 		}
@@ -1019,11 +990,6 @@ class Admin {
 			Migration\Helpers::redoMigration();
 		}
 
-		// Remove all AIOSEO cache.
-		if ( isset( $_GET['aioseo-clear-cache'] ) ) {
-			aioseo()->core->cache->clear();
-		}
-
 		if ( isset( $_GET['aioseo-remove-duplicates'] ) ) {
 			aioseo()->updates->removeDuplicateRecords();
 		}
@@ -1036,8 +1002,21 @@ class Admin {
 			aioseo()->sitemap->query->resetImages();
 		}
 
+		if ( isset( $_GET['aioseo-clear-cache'] ) ) {
+			aioseo()->core->cache->clear();
+		}
+
 		$this->updateDeprecatedOptions();
 	}
+
+	/**
+	 * Check the query args to see if we need to redirect to an external URL.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return void
+	 */
+	protected function checkForRedirects() {}
 
 	/**
 	 * Starts the cleaning procedure to fix escaped, corrupted data.
@@ -1227,8 +1206,9 @@ class Admin {
 
 			if ( ! empty( $post ) ) {
 				$posts[] = [
-					'id'  => $id,
-					'url' => urlencode( str_replace( aioseo()->helpers->getSiteUrl(), '', str_replace( '__trashed', '', get_permalink( $post ) ) ) )
+					'url'    => str_replace( aioseo()->helpers->getSiteUrl(), '', str_replace( '__trashed', '', get_permalink( $post ) ) ),
+					'target' => '/',
+					'type'   => 301
 				];
 			}
 		}
@@ -1237,7 +1217,7 @@ class Admin {
 			return $messages;
 		}
 
-		$url         = add_query_arg( 'aioseo-add-urls', base64_encode( wp_json_encode( $posts ) ), admin_url( 'admin.php?page=aioseo-redirects' ) );
+		$url         = aioseo()->slugMonitor->manualRedirectUrl( $posts );
 		$addRedirect = _n( 'Add Redirect to improve SEO', 'Add Redirects to improve SEO', count( $posts ), 'all-in-one-seo-pack' );
 
 		$messages['post']['trashed'] = $messages['post']['trashed'] . '&nbsp;<a href="' . $url . '">' . $addRedirect . '</a> |';

@@ -63,6 +63,21 @@ class Schema {
 		'price' // Needs to be 0 if free for Software Application.
 	];
 
+
+	/**
+	 * List of mapped parents with properties that are allowed to contain a restricted set of HTML tags.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @var array
+	 */
+	private $htmlAllowedFields = [
+		// FAQPage
+		'acceptedAnswer' => [
+			'text'
+		]
+	];
+
 	/**
 	 * Returns the JSON schema for the requested page.
 	 *
@@ -248,15 +263,26 @@ class Schema {
 	 *
 	 * @since 4.0.13
 	 *
-	 * @param  array $data The graph data.
-	 * @return array       The cleaned graph data.
+	 * @param  array  $data      The graph data.
+	 * @param  string $parentKey The key of the group parent (optional).
+	 * @return array             The cleaned graph data.
 	 */
-	protected function cleanData( $data ) {
+	protected function cleanData( $data, $parentKey = '' ) {
 		foreach ( $data as $k => &$v ) {
 			if ( is_array( $v ) ) {
-				$v = $this->cleanData( $v );
+				$v = $this->cleanData( $v, $k );
+			} elseif ( is_numeric( $v ) ) {
+				// Do nothing.
 			} else {
-				$v = is_int( $v ) ? $v : trim( wp_strip_all_tags( $v ) );
+				// Check if the prop can contain some HTML tags.
+				if (
+					isset( $this->htmlAllowedFields[ $parentKey ] ) &&
+					in_array( $k, $this->htmlAllowedFields[ $parentKey ], true )
+				) {
+					$v = trim( wp_kses_post( $v ) );
+				} else {
+					$v = trim( wp_strip_all_tags( $v ) );
+				}
 			}
 
 			if ( empty( $v ) && ! in_array( $k, $this->nullableFields, true ) ) {

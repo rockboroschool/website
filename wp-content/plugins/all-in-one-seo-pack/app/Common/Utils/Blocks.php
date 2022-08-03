@@ -66,7 +66,7 @@ class Blocks {
 		$defaults = [
 			'render_callback' => '',
 			'editor_script'   => aioseo()->core->assets->jsHandle( 'src/vue/standalone/blocks/main.js' ),
-			'editor_style'    => '',
+			'editor_style'    => aioseo()->core->assets->cssHandle( 'blocks-editor.css' ),
 			'style'           => '',
 			'attributes'      => null,
 			'supports'        => '',
@@ -104,6 +104,7 @@ class Blocks {
 		}
 
 		aioseo()->core->assets->registerJs( 'src/vue/standalone/blocks/main.js', $dependencies );
+		aioseo()->core->assets->registerCss( 'blocks-editor.css', [], 'src/vue/assets/scss/blocks-editor.scss' );
 	}
 
 	/**

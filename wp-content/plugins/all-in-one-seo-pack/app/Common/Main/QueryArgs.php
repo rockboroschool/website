@@ -482,7 +482,9 @@ class QueryArgs {
 			'add_coupon',
 			'item',
 			'_wcsnonce',
-			'post_type'
+			'post_type',
+			'product',
+			'product_cat',
 		];
 	}
 }

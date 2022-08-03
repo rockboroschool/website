@@ -22,6 +22,15 @@ class RequestParser {
 	public $slug;
 
 	/**
+	 * Whether we've checked if the page needs to be redirected.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @var bool
+	 */
+	protected $checkedForRedirects = false;
+
+	/**
 	 * CLass constructor.
 	 *
 	 * @since 4.2.1
@@ -43,9 +52,12 @@ class RequestParser {
 	 * @return void
 	 */
 	public function checkRequest( $wp ) {
-		$this->slug = untrailingslashit( strtolower( $wp->request ) );
+		$this->slug = $wp->request
+			? $this->cleanSlug( $wp->request )
+			// We must fallback to the REQUEST URI in case the site uses plain permalinks.
+			: $this->cleanSlug( $_SERVER['REQUEST_URI'] );
 
-		// Check if we need to remove the trailing slash or redirect another (disabled) sitemap URL like wp-sitemap.xml.
+		// Check if we need to remove the trailing slash or redirect another sitemap URL like "wp-sitemap.xml".
 		$this->maybeRedirect();
 
 		$this->checkForXsl();
@@ -57,6 +69,22 @@ class RequestParser {
 		if ( aioseo()->options->sitemap->rss->enable ) {
 			$this->checkForRssSitemap();
 		}
+	}
+
+	/**
+	 * Cleans the slug of the current request before we use it.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @param  string $slug The slug.
+	 * @return string       The cleaned slug.
+	 */
+	public function cleanSlug( $slug ) {
+		$slug = strtolower( $slug );
+		$slug = aioseo()->helpers->unleadingSlashIt( $slug );
+		$slug = untrailingslashit( $slug );
+
+		return $slug;
 	}
 
 	/**
@@ -123,7 +151,9 @@ class RequestParser {
 	 * @return void
 	 */
 	protected function checkForXsl() {
-		if ( preg_match( '/^default\.xsl$/i', $this->slug ) ) {
+		// Trim off the URL params.
+		$newSlug = preg_replace( '/\?.*$/', '', $this->slug );
+		if ( preg_match( '/^default\.xsl$/i', $newSlug ) ) {
 			aioseo()->sitemap->xsl->generate();
 		}
 	}
@@ -133,11 +163,11 @@ class RequestParser {
 	 *
 	 * @since 4.2.1
 	 *
-	 * @param  string $type       The sitemap type (e.g. "general" or "rss").
-	 * @param  string $fileName   The sitemap filename.
-	 * @param  string $indexName  The index name ("root" or an object name like "post", "page", "post_tag", etc.).
-	 * @param  int    $pageNumber The index number.
-	 * @return void
+	 * @param  string     $type       The sitemap type (e.g. "general" or "rss").
+	 * @param  string     $fileName   The sitemap filename.
+	 * @param  string     $indexName  The index name ("root" or an object name like "post", "page", "post_tag", etc.).
+	 * @param  int        $pageNumber The index number.
+	 * @return void|never
 	 */
 	public function setContext( $type, $fileName = 'sitemap', $indexName = 'root', $pageNumber = 0 ) {
 		$indexesEnabled = aioseo()->options->sitemap->{$type}->indexes;
@@ -161,7 +191,13 @@ class RequestParser {
 	 *
 	 * @since 4.2.1
 	 */
-	public function maybeRedirect() {
+	protected function maybeRedirect() {
+		if ( $this->checkedForRedirects ) {
+			return;
+		}
+
+		$this->checkedForRedirects = true;
+
 		// The request includes our deprecated "aiosp_sitemap_path" URL param.
 		if ( preg_match( '/^\/\?aiosp_sitemap_path=root/i', $_SERVER['REQUEST_URI'] ) ) {
 			wp_safe_redirect( home_url( 'sitemap.xml' ) );

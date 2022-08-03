@@ -37,7 +37,7 @@ if ( ! empty( $keywords ) ) :
 		<meta name="keywords" content="<?php echo esc_attr( $keywords ); ?>" />
 <?php
 endif;
-if ( ! empty( $canonical ) ) :
+if ( ! empty( $canonical ) && ! aioseo()->helpers->isAmpPage( 'amp' ) ) :
 	?>
 		<link rel="canonical" href="<?php echo esc_url( $canonical ); ?>" />
 <?php
@@ -52,6 +52,11 @@ if ( ! empty( $links['next'] ) ) :
 		<link rel="next" href="<?php echo esc_url( $links['next'] ); ?>" />
 <?php
 endif;
+
+// Add our generator output.
+?>
+		<meta name="generator" content="<?php echo sprintf( '%1$s (%2$s) %3$s', esc_html( AIOSEO_PLUGIN_NAME ), esc_html( AIOSEO_PLUGIN_SHORT_NAME ), aioseo()->version ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, Generic.Files.LineLength.MaxExceeded ?> " />
+<?php
 
 // This adds the miscellaneous verification to the head tag inside our comments.
 // @TODO: [V4+] Maybe move this out of meta? Better idea would be to have a global wp_head where meta gets

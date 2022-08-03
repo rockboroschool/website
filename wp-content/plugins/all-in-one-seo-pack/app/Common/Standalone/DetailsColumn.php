@@ -29,6 +29,10 @@ class DetailsColumn {
 	 * @since 4.2.0
 	 */
 	public function __construct() {
+		if ( wp_doing_ajax() ) {
+			add_action( 'init', [ $this, 'addPostColumnsAjax' ], 1 );
+		}
+
 		if ( ! is_admin() || wp_doing_cron() ) {
 			return;
 		}
@@ -73,6 +77,33 @@ class DetailsColumn {
 		add_filter( "manage_edit-{$screen->post_type}_columns", [ $this, 'addColumn' ] );
 		add_action( "manage_{$screen->post_type}_posts_custom_column", [ $this, 'renderColumn' ], 10, 2 );
 
+	}
+
+	/**
+	 * Registers our post columns after a post has been quick-edited.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @return void
+	 */
+	public function addPostColumnsAjax() {
+		if (
+			! isset( $_POST['_inline_edit'], $_POST['post_ID'] ) ||
+			! wp_verify_nonce( $_POST['_inline_edit'], 'inlineeditnonce' )
+		) {
+			return;
+		}
+
+		$postId = (int) $_POST['post_ID'];
+		if ( ! $postId ) {
+			return;
+		}
+
+		$post     = get_post( $postId );
+		$postType = $post->post_type;
+
+		add_filter( "manage_edit-{$postType}_columns", [ $this, 'addColumn' ] );
+		add_action( "manage_{$postType}_posts_custom_column", [ $this, 'renderColumn' ], 10, 2 );
 	}
 
 	/**
@@ -144,7 +175,7 @@ class DetailsColumn {
 		}
 
 		$nonce    = wp_create_nonce( "aioseo_meta_{$columnName}_{$postId}" );
-		$posts    = $data['posts'];
+		$posts    = ! empty( $data['posts'] ) ? $data['posts'] : [];
 		$thePost  = Models\Post::getPost( $postId );
 		$postType = get_post_type( $postId );
 		$postData = [

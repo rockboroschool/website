@@ -22,6 +22,61 @@ class ThirdParty {
 	private $images = [];
 
 	/**
+	 * Divi shortcodes.
+	 *
+	 * @since 4.2.3
+	 *
+	 * @var string[]
+	 */
+	private $shortcodes = [
+		'et_pb_section',
+		'et_pb_column',
+		'et_pb_row',
+		'et_pb_image',
+		'et_pb_gallery',
+		'et_pb_accordion',
+		'et_pb_accordion_item',
+		'et_pb_counters',
+		'et_pb_blurb',
+		'et_pb_cta',
+		'et_pb_code',
+		'et_pb_contact_form',
+		'et_pb_divider',
+		'et_pb_filterable_portfolio',
+		'et_pb_map',
+		'et_pb_number_counter',
+		'et_pb_post_slider',
+		'et_pb_pricing_tables',
+		'et_pb_pricing_table',
+		'et_pb_shop',
+		'et_pb_slider',
+		'et_pb_slide',
+		'et_pb_tabs',
+		'et_pb_tab',
+		'et_pb_text',
+		'et_pb_video',
+		'et_pb_audio',
+		'et_pb_blog',
+		'et_pb_circle_counter',
+		'et_pb_comments',
+		'et_pb_countdown_timer',
+		'et_pb_signup',
+		'et_pb_login',
+		'et_pb_menu',
+		'et_pb_team_member',
+		'et_pb_post_nav',
+		'et_pb_post_title',
+		'et_pb_search',
+		'et_pb_sidebar',
+		'et_pb_social_media_follow',
+		'et_pb_social_media_follow_network',
+		'et_pb_testimonial',
+		'et_pb_toggle',
+		'et_pb_video_slider',
+		'et_pb_video_slider_item',
+	];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @since 4.2.2
@@ -129,12 +184,43 @@ class ThirdParty {
 		}
 
 		$urls  = [];
-		$regex = get_shortcode_regex( [ 'et_pb_image', 'et_pb_gallery' ] );
-		preg_match_all( "/$regex/i", $this->post->post_content, $matches, PREG_SET_ORDER );
+		$regex = implode( '|', array_map( 'preg_quote', $this->shortcodes ) );
+
+		preg_match_all(
+			"/\[($regex)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)/i",
+			$this->post->post_content,
+			$matches,
+			PREG_SET_ORDER
+		);
+
 		foreach ( $matches as $shortcode ) {
-			$attributes = shortcode_parse_atts( $shortcode[3] );
+			$attributes = shortcode_parse_atts( $shortcode[0] );
 			if ( ! empty( $attributes['src'] ) ) {
 				$urls[] = $attributes['src'];
+			}
+
+			if ( ! empty( $attributes['image_src'] ) ) {
+				$urls[] = $attributes['image_src'];
+			}
+
+			if ( ! empty( $attributes['image_url'] ) ) {
+				$urls[] = $attributes['image_url'];
+			}
+
+			if ( ! empty( $attributes['portrait_url'] ) ) {
+				$urls[] = $attributes['portrait_url'];
+			}
+
+			if ( ! empty( $attributes['image'] ) ) {
+				$urls[] = $attributes['image'];
+			}
+
+			if ( ! empty( $attributes['background_image'] ) ) {
+				$urls[] = $attributes['background_image'];
+			}
+
+			if ( ! empty( $attributes['logo'] ) ) {
+				$urls[] = $attributes['logo'];
 			}
 
 			if ( ! empty( $attributes['gallery_ids'] ) ) {

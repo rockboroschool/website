@@ -22,7 +22,7 @@ class Xsl {
 	public function generate() {
 		aioseo()->sitemap->headers();
 
-		$charset     = get_option( 'blog_charset' );
+		$charset     = aioseo()->helpers->getCharset();
 		$sitemapUrl  = wp_get_referer();
 		$sitemapPath = wp_parse_url( $sitemapUrl, PHP_URL_PATH );
 		$sitemapName = strtoupper( pathinfo( $sitemapPath, PATHINFO_EXTENSION ) );
@@ -57,7 +57,7 @@ class Xsl {
 		$advanced      = aioseo()->options->sitemap->general->advancedSettings->enable;
 		$excludeImages = aioseo()->options->sitemap->general->advancedSettings->excludeImages;
 		$sitemapParams = aioseo()->helpers->getParametersFromUrl( $sitemapUrl );
-		$xslParams     = aioseo()->core->cache->get( 'aioseo_sitemap_' . trim( $sitemapPath, '/' ) );
+		$xslParams     = aioseo()->core->cache->get( 'aioseo_sitemap_' . aioseo()->sitemap->requestParser->cleanSlug( $sitemapPath ) );
 		// phpcs:enable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 
 		// Translators: 1 - The sitemap name, 2 - The current page.

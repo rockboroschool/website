@@ -806,7 +806,7 @@ class HeadlineAnalyzer {
 			__( 'marked down', 'all-in-one-seo-pack' ),
 			__( 'panic', 'all-in-one-seo-pack' ),
 			__( 'quadruple', 'all-in-one-seo-pack' ),
-			__( 'secutively', 'all-in-one-seo-pack' ),
+			__( 'seductively', 'all-in-one-seo-pack' ),
 			__( 'massive', 'all-in-one-seo-pack' ),
 			__( 'pay zero', 'all-in-one-seo-pack' ),
 			__( 'seize', 'all-in-one-seo-pack' ),

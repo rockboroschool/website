@@ -414,7 +414,7 @@ class BadBotBlocker {
 	/**
 	 * Quote List for Regex
 	 *
-	 * @since ?
+	 * @since 4.0.0
 	 *
 	 * @param        $list
 	 * @param string $quote

@@ -405,6 +405,12 @@ class Settings {
 			case 'readd-capabilities':
 				aioseo()->access->addCapabilities();
 				break;
+			case 'reset-data':
+				aioseo()->core->uninstallDb( true );
+				aioseo()->internalOptions->database->installedTables = '';
+				aioseo()->internalOptions->internal->lastActiveVersion = '4.0.0';
+				aioseo()->updates->addInitialCustomTablesForV4();
+				break;
 			case 'rerun-migrations':
 				aioseo()->internalOptions->database->installedTables   = '';
 				aioseo()->internalOptions->internal->lastActiveVersion = '4.0.0';

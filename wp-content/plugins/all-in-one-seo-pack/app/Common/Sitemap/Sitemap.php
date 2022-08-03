@@ -250,9 +250,8 @@ class Sitemap {
 			status_header( 404 );
 		}
 
-		global $wp;
 		$this->xsl->saveXslData(
-			$wp->request,
+			aioseo()->sitemap->requestParser->slug,
 			$entries,
 			$total
 		);
@@ -264,7 +263,8 @@ class Sitemap {
 				$loadedAddon->output->output( $entries );
 			}
 		}
-		exit();
+
+		exit;
 	}
 
 	/**
@@ -306,7 +306,7 @@ class Sitemap {
 	 * @return void
 	 */
 	public function headers() {
-		$charset = get_option( 'blog_charset' );
+		$charset = aioseo()->helpers->getCharset();
 		header( "Content-Type: text/xml; charset=$charset", true );
 		header( 'X-Robots-Tag: noindex, follow', true );
 	}
@@ -323,7 +323,7 @@ class Sitemap {
 		$wp_query->set_404();
 		status_header( 404 );
 		include( get_404_template() );
-		exit();
+		exit;
 	}
 
 	/**
