@@ -246,7 +246,7 @@ class Content {
 				$entry['priority']   = aioseo()->sitemap->priority->priority( 'homePage' );
 			}
 
-			$entries[] = apply_filters( 'aioseo_sitemap_post', $entry, $post->ID, $postType );
+			$entries[] = apply_filters( 'aioseo_sitemap_post', $entry, $post->ID, $postType, 'post' );
 		}
 
 		// We can't remove the post type here because other plugins rely on it.
@@ -339,7 +339,7 @@ class Content {
 				'images'     => aioseo()->sitemap->image->term( $term )
 			];
 
-			$entries[] = apply_filters( 'aioseo_sitemap_term', $entry, $term->term_id, $term->taxonomy );
+			$entries[] = apply_filters( 'aioseo_sitemap_term', $entry, $term->term_id, $term->taxonomy, 'term' );
 		}
 
 		return apply_filters( 'aioseo_sitemap_terms', $entries );
@@ -592,7 +592,7 @@ class Content {
 				'pubDate'     => aioseo()->helpers->dateTimeToRfc822( $post->post_modified_gmt )
 			];
 
-			$entries[] = apply_filters( 'aioseo_sitemap_post_rss', $entry, $post->ID, $post->post_type );
+			$entries[] = apply_filters( 'aioseo_sitemap_post_rss', $entry, $post->ID, $post->post_type, 'post' );
 		}
 
 		usort( $entries, function( $a, $b ) {

@@ -74,6 +74,7 @@ class Notification extends Model {
 	protected $columns = [
 		'id',
 		'slug',
+		'addon',
 		'title',
 		'content',
 		'type',
@@ -87,6 +88,7 @@ class Notification extends Model {
 		'button2_label',
 		'button2_action',
 		'dismissed',
+		'new',
 		'created',
 		'updated'
 	];
@@ -343,6 +345,11 @@ class Notification extends Model {
 				! aioseo()->options->advanced->announcements &&
 				'success' === $notification->type
 			) {
+				continue;
+			}
+
+			// If this is an addon notification and the addon is disabled, skip adding it and move on.
+			if ( ! empty( $notification->addon ) && ! aioseo()->addons->getLoadedAddon( $notification->addon ) ) {
 				continue;
 			}
 

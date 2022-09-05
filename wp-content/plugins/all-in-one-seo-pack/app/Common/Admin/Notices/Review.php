@@ -94,12 +94,12 @@ class Review {
 		);
 		$string2  = __( 'Yes I love it', 'all-in-one-seo-pack' );
 		$string3  = __( 'Not Really...', 'all-in-one-seo-pack' );
-		// Translators: The plugin name ("All in One SEO").
+		// Translators: 1 - The plugin name ("All in One SEO").
 		$string4  = sprintf( __( 'We\'re sorry to hear you aren\'t enjoying %1$s. We would love a chance to improve. Could you take a minute and let us know what we can do better?', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_NAME ); // phpcs:ignore Generic.Files.LineLength.MaxExceeded
 		$string5  = __( 'Give feedback', 'all-in-one-seo-pack' );
 		$string6  = __( 'No thanks', 'all-in-one-seo-pack' );
 		$string7  = __( 'That\'s awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress to help us spread the word and boost our motivation?', 'all-in-one-seo-pack' );
-		// Translators: The plugin name ("All in One SEO").
+		// Translators: 1 - The plugin name ("All in One SEO").
 		$string8  = sprintf( __( 'CEO of %1$s', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_NAME );
 		$string9  = __( 'Ok, you deserve it', 'all-in-one-seo-pack' );
 		$string10 = __( 'Nope, maybe later', 'all-in-one-seo-pack' );
@@ -149,12 +149,12 @@ class Review {
 	 */
 	public function showNotice2() {
 		$string1 = sprintf(
-			// Translators: 1 - The plugin short name ("AIOSEO").
+			// Translators: 1 - The plugin name ("All in One SEO").
 			__( 'Hey, I noticed you have been using %1$s for some time - that’s awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress to help us spread the word and boost our motivation?', 'all-in-one-seo-pack' ), // phpcs:ignore Generic.Files.LineLength.MaxExceeded
 			'<strong>' . esc_html( AIOSEO_PLUGIN_NAME ) . '</strong>'
 		);
 
-		// Translators: The plugin name ("All in One SEO").
+		// Translators: 1 - The plugin name ("All in One SEO").
 		$string8  = sprintf( __( 'CEO of %1$s', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_NAME );
 		$string9  = __( 'Ok, you deserve it', 'all-in-one-seo-pack' );
 		$string10 = __( 'Nope, maybe later', 'all-in-one-seo-pack' );

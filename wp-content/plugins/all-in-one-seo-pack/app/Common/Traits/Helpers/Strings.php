@@ -233,8 +233,8 @@ trait Strings {
 	 *
 	 * @since 4.1.2
 	 *
-	 * @param  string $string The string to check.
-	 * @return bool           True if it is JSON or false if not.
+	 * @param  mixed $string The string to check.
+	 * @return bool          True if it is JSON or false if not.
 	 */
 	public function isJsonString( $string ) {
 		if ( ! is_string( $string ) ) {
@@ -252,11 +252,19 @@ trait Strings {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $string The string.
-	 * @return string         The string without punctuation.
+	 * @param  string $string           The string.
+	 * @param  array  $charactersToKeep The characters that can't be stripped (optional).
+	 * @return string                   The string without punctuation.
 	 */
-	public function stripPunctuation( $string ) {
-		$string = preg_replace( '#\p{P}#u', '', $string );
+	public function stripPunctuation( $string, $charactersToKeep = [] ) {
+		$characterRegexPattern = '';
+		if ( ! empty( $charactersToKeep ) ) {
+			$characterString       = implode( '', $charactersToKeep );
+			$characterRegexPattern = "(?![$characterString])";
+		}
+
+		$string = preg_replace( "/{$characterRegexPattern}[\p{P}\d+]/u", '', $string );
+
 		// Trim both internal and external whitespace.
 		return preg_replace( '/\s\s+/u', ' ', trim( $string ) );
 	}
@@ -485,5 +493,97 @@ trait Strings {
 	 */
 	public function unleadingSlashIt( $string ) {
 		return ltrim( $string, '/' );
+	}
+
+	/**
+	 * Convert the case of the given string.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  string $string The string.
+	 * @param  string $type   The casing ("lower", "title", "sentence").
+	 * @return string         The converted string.
+	 */
+	public function convertCase( $string, $type ) {
+		switch ( $type ) {
+			case 'lower':
+				return strtolower( $string );
+			case 'title':
+				return $this->toTitleCase( $string );
+			case 'sentence':
+				return $this->toSentenceCase( $string );
+			default:
+				return $string;
+		}
+	}
+
+	/**
+	 * Converts the given string to title case.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  string $string The string.
+	 * @return string         The converted string.
+	 */
+	public function toTitleCase( $string ) {
+		// List of common English words that aren't typically modified.
+		$exceptions = apply_filters( 'aioseo_title_case_exceptions', [
+			'of',
+			'a',
+			'the',
+			'and',
+			'an',
+			'or',
+			'nor',
+			'but',
+			'is',
+			'if',
+			'then',
+			'else',
+			'when',
+			'at',
+			'from',
+			'by',
+			'on',
+			'off',
+			'for',
+			'in',
+			'out',
+			'over',
+			'to',
+			'into',
+			'with'
+		] );
+
+		$words = explode( ' ', strtolower( $string ) );
+
+		foreach ( $words as $k => $word ) {
+			if ( ! in_array( $word, $exceptions, true ) ) {
+				$words[ $k ] = ucfirst( $word );
+			}
+		}
+
+		$string = implode( ' ', $words );
+
+		return $string;
+	}
+
+	/**
+	 * Converts the given string to sentence case.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  string $string The string.
+	 * @return string         The converted string.
+	 */
+	public function toSentenceCase( $string ) {
+		$phrases = preg_split( '/([.?!]+)/', $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
+
+		$convertedString = '';
+		foreach ( $phrases as $index => $sentence ) {
+			$convertedString .= ( $index & 1 ) === 0 ? ucfirst( strtolower( trim( $sentence ) ) ) : $sentence . ' ';
+		}
+
+		return trim( $convertedString );
 	}
 }

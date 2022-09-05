@@ -98,7 +98,7 @@ class Admin {
 	 * @return string         The possibly modified HTML language attribute.
 	 */
 	public function alwaysAddHtmlDirAttribute( $output ) {
-		if ( is_rtl() ) {
+		if ( is_rtl() || preg_match( '/dir=[\'"](ltr|rtl|auto)[\'"]/i', $output ) ) {
 			return $output;
 		}
 
@@ -782,7 +782,6 @@ class Admin {
 			}
 
 			if ( 'tools' === $page ) {
-				$this->checkAdminQueryArgs();
 				$this->checkForRedirects();
 			}
 
@@ -911,6 +910,20 @@ class Admin {
 			wp_kses_post( $link1 ),
 			wp_kses_post( $link2 )
 		);
+
+		// Stop WP Core from outputting its version number and instead add both theirs & ours.
+		global $wp_version;
+		printf(
+			wp_kses_post( '<p class="alignright">%1$s</p>' ),
+			sprintf(
+				// Translators: 1 - WP Core version number, 2 - AIOSEO version number.
+				esc_html__( 'WordPress %1$s | AIOSEO %2$s', 'all-in-one-seo-pack' ),
+				esc_html( $wp_version ),
+				esc_html( AIOSEO_VERSION )
+			)
+		);
+
+		remove_filter( 'update_footer', 'core_update_footer' );
 	}
 
 	/**
@@ -978,38 +991,6 @@ class Admin {
 	}
 
 	/**
-	 * Checks the admin query args to run appropriate tasks.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return void
-	 */
-	protected function checkAdminQueryArgs() {
-		// Redo the migration from the beginning.
-		if ( isset( $_GET['aioseo-v3-migration'] ) && 'i-want-to-migrate' === wp_unslash( $_GET['aioseo-v3-migration'] ) ) { // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
-			Migration\Helpers::redoMigration();
-		}
-
-		if ( isset( $_GET['aioseo-remove-duplicates'] ) ) {
-			aioseo()->updates->removeDuplicateRecords();
-		}
-
-		if ( isset( $_GET['aioseo-unslash-escaped-data'] ) ) {
-			$this->scheduleUnescapeData();
-		}
-
-		if ( isset( $_GET['aioseo-image-rescan'] ) ) {
-			aioseo()->sitemap->query->resetImages();
-		}
-
-		if ( isset( $_GET['aioseo-clear-cache'] ) ) {
-			aioseo()->core->cache->clear();
-		}
-
-		$this->updateDeprecatedOptions();
-	}
-
-	/**
 	 * Check the query args to see if we need to redirect to an external URL.
 	 *
 	 * @since 4.2.3
@@ -1038,7 +1019,7 @@ class Admin {
 	 * @return void
 	 */
 	public function unslashEscapedDataPosts() {
-		$postsToUnslash = 200;
+		$postsToUnslash = apply_filters( 'aioseo_debug_unslash_escaped_posts', 200 );
 		$timeStarted    = gmdate( 'Y-m-d H:i:s', aioseo()->core->cache->get( 'unslash_escaped_data_posts' ) );
 
 		$posts = aioseo()->core->db->start( 'aioseo_posts' )
@@ -1127,47 +1108,6 @@ class Admin {
 	}
 
 	/**
-	 * Updates deprecated options.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return void
-	 */
-	protected function updateDeprecatedOptions() {
-		// Check if the user is forcefully wanting to add a deprecated option.
-		$allDeprecatedOptions = aioseo()->internalOptions->getAllDeprecatedOptions();
-		$deprecatedOptions    = aioseo()->internalOptions->internal->deprecatedOptions;
-		if ( isset( $_GET['aioseo-enable-option'] ) ) {
-			$changed = false;
-			foreach ( $allDeprecatedOptions as $deprecatedOption ) {
-				if ( $deprecatedOption === $_GET['aioseo-enable-option'] && ! in_array( $deprecatedOption, $deprecatedOptions, true ) ) {
-					$changed = true;
-					array_push( $deprecatedOptions, $deprecatedOption );
-				}
-			}
-
-			if ( $changed ) {
-				aioseo()->internalOptions->internal->deprecatedOptions = array_values( $deprecatedOptions );
-			}
-		}
-
-		if ( isset( $_GET['aioseo-disable-option'] ) ) {
-			$changed = false;
-			foreach ( $allDeprecatedOptions as $deprecatedOption ) {
-				if ( $deprecatedOption === $_GET['aioseo-disable-option'] && in_array( $deprecatedOption, $deprecatedOptions, true ) ) {
-					$changed = true;
-					$key     = array_search( $deprecatedOption, $deprecatedOptions, true );
-					unset( $deprecatedOptions[ $key ] );
-				}
-			}
-
-			if ( $changed ) {
-				aioseo()->internalOptions->internal->deprecatedOptions = array_values( $deprecatedOptions );
-			}
-		}
-	}
-
-	/**
 	 * Appends a message to the default WordPress "trashed" message.
 	 *
 	 * @since 4.1.2
@@ -1220,8 +1160,8 @@ class Admin {
 		$url         = aioseo()->slugMonitor->manualRedirectUrl( $posts );
 		$addRedirect = _n( 'Add Redirect to improve SEO', 'Add Redirects to improve SEO', count( $posts ), 'all-in-one-seo-pack' );
 
-		$messages['post']['trashed'] = $messages['post']['trashed'] . '&nbsp;<a href="' . $url . '">' . $addRedirect . '</a> |';
-		$messages['page']['trashed'] = $messages['page']['trashed'] . '&nbsp;<a href="' . $url . '">' . $addRedirect . '</a> |';
+		$messages['post']['trashed'] = $messages['post']['trashed'] . '&nbsp;<a href="' . $url . '" class="aioseo-redirects-trashed-post">' . $addRedirect . '</a> |';
+		$messages['page']['trashed'] = $messages['page']['trashed'] . '&nbsp;<a href="' . $url . '" class="aioseo-redirects-trashed-post">' . $addRedirect . '</a> |';
 
 		return $messages;
 	}

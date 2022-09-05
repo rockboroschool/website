@@ -107,9 +107,9 @@ class TitleMeta extends ImportExport\SearchAppearance {
 			}
 
 			if ( isset( $this->options[ "disable_${archive}_archives" ] ) ) {
-				aioseo()->options->searchAppearance->archives->$archive->show = 'off' === $this->options[ "disable_${archive}_archives" ];
-				aioseo()->options->searchAppearance->archives->$archive->advanced->robotsMeta->default = 'off' === $this->options[ "disable_${archive}_archives" ];
-				aioseo()->options->searchAppearance->archives->$archive->advanced->robotsMeta->noindex = 'off' === $this->options[ "disable_${archive}_archives" ];
+				aioseo()->options->searchAppearance->archives->$archive->show                          = 'off' === $this->options[ "disable_${archive}_archives" ];
+				aioseo()->options->searchAppearance->archives->$archive->advanced->robotsMeta->default = 'on' === $this->options[ "disable_${archive}_archives" ];
+				aioseo()->options->searchAppearance->archives->$archive->advanced->robotsMeta->noindex = 'on' === $this->options[ "disable_${archive}_archives" ];
 			}
 
 			if ( isset( $this->options[ "${archive}_archive_title" ] ) ) {
@@ -135,7 +135,12 @@ class TitleMeta extends ImportExport\SearchAppearance {
 					if ( 'index' === $robotsName ) {
 						continue;
 					}
-					aioseo()->options->searchAppearance->archives->author->advanced->robotsMeta->$robotsName = true;
+
+					if ( 'noindex' === $robotsName ) {
+						aioseo()->options->searchAppearance->archives->{$archive}->show = false;
+					}
+
+					aioseo()->options->searchAppearance->archives->{$archive}->advanced->robotsMeta->{$robotsName} = true;
 				}
 			}
 
@@ -160,9 +165,9 @@ class TitleMeta extends ImportExport\SearchAppearance {
 		}
 
 		if ( ! empty( $this->options['noindex_search'] ) ) {
-			aioseo()->options->searchAppearance->archives->search->show = 'off' === $this->options['noindex_search'];
-			aioseo()->options->searchAppearance->archives->search->advanced->robotsMeta->default = 'off' === $this->options['noindex_search'];
-			aioseo()->options->searchAppearance->archives->search->advanced->robotsMeta->noindex = 'off' === $this->options['noindex_search'];
+			aioseo()->options->searchAppearance->archives->search->show                          = 'off' === $this->options['noindex_search'];
+			aioseo()->options->searchAppearance->archives->search->advanced->robotsMeta->default = 'on' === $this->options['noindex_search'];
+			aioseo()->options->searchAppearance->archives->search->advanced->robotsMeta->noindex = 'on' === $this->options['noindex_search'];
 		}
 	}
 
@@ -222,6 +227,11 @@ class TitleMeta extends ImportExport\SearchAppearance {
 								if ( 'index' === $robotsName ) {
 									continue;
 								}
+
+								if ( 'noindex' === $robotsName ) {
+									aioseo()->dynamicOptions->searchAppearance->postTypes->{$postType}->show = false;
+								}
+
 								aioseo()->dynamicOptions->searchAppearance->postTypes->$postType->advanced->robotsMeta->$robotsName = true;
 							}
 						}
@@ -344,7 +354,7 @@ class TitleMeta extends ImportExport\SearchAppearance {
 		}
 
 		if ( ! empty( $this->options['noindex_paginated_pages'] ) ) {
-			aioseo()->options->searchAppearance->advanced->globalRobotsMeta->default = false;
+			aioseo()->options->searchAppearance->advanced->globalRobotsMeta->default          = false;
 			aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindexPaginated = 'on' === $this->options['noindex_paginated_pages'];
 		}
 	}

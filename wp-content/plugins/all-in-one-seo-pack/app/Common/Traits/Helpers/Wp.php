@@ -614,15 +614,16 @@ trait Wp {
 			return $capabilities[ $postType ];
 		}
 
-		if ( ! is_array( $postTypeObject->capability_type ) ) {
-			$postTypeObject->capability_type = [
-				$postTypeObject->capability_type,
-				$postTypeObject->capability_type . 's'
+		$capabilityType = $postTypeObject->capability_type;
+		if ( ! is_array( $capabilityType ) ) {
+			$capabilityType = [
+				$capabilityType,
+				$capabilityType . 's'
 			];
 		}
 
 		// Singular base for meta capabilities, plural base for primitive capabilities.
-		list( $singularBase, $pluralBase ) = $postTypeObject->capability_type;
+		list( $singularBase, $pluralBase ) = $capabilityType;
 
 		$capabilities[ $postType ] = [
 			'edit_post'          => 'edit_' . $singularBase,

@@ -538,6 +538,14 @@ class Database {
 
 		$this->query = str_replace( '%%d = %%d', '%d = %d', str_replace( '%', '%%', implode( "\n", $clauses ) ) );
 
+		// Flag queries with double quotes down, but not if the double quotes are contained within a string value (like JSON).
+		if ( aioseo()->isDev && preg_match( '/\{[^}]*\}(*SKIP)(*FAIL)|\[[^]]*\](*SKIP)(*FAIL)|\'[^\']*\'(*SKIP)(*FAIL)|\\"(*SKIP)(*FAIL)|"/i', $this->query ) ) {
+			error_log(
+				"Query with double quotes detected - this may cause isues when ANSI_QUOTES is enabled:\r\n" .
+				$this->query . "\r\n" . wp_debug_backtrace_summary()
+			);
+		}
+
 		return $this->query;
 	}
 

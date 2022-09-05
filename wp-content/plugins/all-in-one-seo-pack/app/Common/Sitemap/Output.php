@@ -119,7 +119,7 @@ class Output {
 			$safeText
 		);
 
-		if ( ! $wrap || isset( $_GET['aioseo-dev'] ) ) {
+		if ( ! $wrap ) {
 			return print( $safeText ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		printf( '<![CDATA[%1$s]]>', $safeText ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

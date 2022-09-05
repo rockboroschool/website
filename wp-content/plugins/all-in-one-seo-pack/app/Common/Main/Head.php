@@ -142,7 +142,7 @@ class Head {
 
 		// Add the new title tag to our own comment block.
 		$pageTitle = aioseo()->helpers->escapeRegexReplacement( $this->getTitle() );
-		$head      = preg_replace( '#(<!--\sAll\sin\sOne\sSEO[a-zA-Z\s0-9.]+\s-->)#', "$1\r\n\t\t<title>$pageTitle</title>", $head, 1 );
+		$head      = preg_replace( '/(<!--\sAll\sin\sOne\sSEO[a-z0-9\s.]+\s-\saioseo\.com\s-->)/i', "$1\r\n\t\t<title>$pageTitle</title>", $head, 1 );
 
 		$content = $head . $body;
 		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -167,7 +167,7 @@ class Head {
 			'%1$s %2$s',
 			esc_html( AIOSEO_PLUGIN_NAME ),
 			aioseo()->version // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		) . " -->\n";
+		) . " - aioseo.com -->\n";
 
 		foreach ( $views as $view ) {
 			require( $view );

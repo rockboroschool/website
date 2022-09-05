@@ -71,7 +71,8 @@ abstract class Filters {
 		add_action( 'profile_update', [ $this, 'clearAuthorsCache' ] );
 		add_action( 'user_register', [ $this, 'clearAuthorsCache' ] );
 
-		add_filter( 'aioseo_public_post_types', [ $this, 'removeFalsePublicPostTypes' ] );
+		add_filter( 'aioseo_public_post_types', [ $this, 'removeInvalidPublicPostTypes' ] );
+		add_filter( 'aioseo_public_taxonomies', [ $this, 'removeInvalidPublicTaxonomies' ] );
 
 		// Disable Jetpack sitemaps module.
 		if ( aioseo()->options->sitemap->general->enable ) {
@@ -282,10 +283,10 @@ abstract class Filters {
 	 *
 	 * @since 4.1.9
 	 *
-	 * @param  array[Object]|array[string] $postTypes The post types
+	 * @param  array[Object]|array[string] $postTypes The post types.
 	 * @return array[Object]|array[string]            The filtered post types.
 	 */
-	public function removeFalsePublicPostTypes( $postTypes ) {
+	public function removeInvalidPublicPostTypes( $postTypes ) {
 		$elementorEnabled = isset( aioseo()->standalone->pageBuilderIntegrations['elementor'] ) &&
 			aioseo()->standalone->pageBuilderIntegrations['elementor']->isPluginActive();
 
@@ -293,18 +294,56 @@ abstract class Filters {
 			return $postTypes;
 		}
 
+		$postTypesToRemove = [
+			'elementor_library'
+		];
+
 		foreach ( $postTypes as $index => $postType ) {
-			if ( is_string( $postType ) && 'elementor_library' === $postType ) {
+			if ( is_string( $postType ) && in_array( $postType, $postTypesToRemove, true ) ) {
 				unset( $postTypes[ $index ] );
 				continue;
 			}
 
-			if ( is_array( $postType ) && 'elementor_library' === $postType['name'] ) {
+			if ( is_array( $postType ) && in_array( $postType['name'], $postTypesToRemove, true ) ) {
 				unset( $postTypes[ $index ] );
 			}
 		}
 
 		return array_values( $postTypes );
+	}
+
+	/**
+	 * Filters out taxonomies that aren't really public when getPublicTaxonomies() is called.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  array[Object]|array[string] $taxonomies The taxonomies.
+	 * @return array[Object]|array[string]             The filtered taxonomies.
+	 */
+	public function removeInvalidPublicTaxonomies( $taxonomies ) {
+		// Check if the Avada Builder plugin is enabled.
+		if ( ! defined( 'FUSION_BUILDER_VERSION' ) ) {
+			return $taxonomies;
+		}
+
+		$taxonomiesToRemove = [
+			'fusion_tb_category',
+			'element_category',
+			'template_category'
+		];
+
+		foreach ( $taxonomies as $index => $taxonomy ) {
+			if ( is_string( $taxonomy ) && in_array( $taxonomy, $taxonomiesToRemove, true ) ) {
+				unset( $taxonomies[ $index ] );
+				continue;
+			}
+
+			if ( is_array( $taxonomy ) && in_array( $taxonomy['name'], $taxonomiesToRemove, true ) ) {
+				unset( $taxonomies[ $index ] );
+			}
+		}
+
+		return array_values( $taxonomies );
 	}
 
 	/**

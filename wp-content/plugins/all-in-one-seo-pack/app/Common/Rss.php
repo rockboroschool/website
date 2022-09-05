@@ -332,6 +332,7 @@ class Rss {
 		$term       = get_queried_object();
 		if (
 			$term &&
+			isset( $term->taxonomy ) &&
 			(
 				aioseo()->options->searchAppearance->advanced->crawlCleanup->feeds->taxonomies->all ||
 				in_array( $term->taxonomy, $taxonomies, true )

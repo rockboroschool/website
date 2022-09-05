@@ -84,4 +84,41 @@ trait Arrays {
 	public function isArrayNumeric( $array ) {
 		return ! $this->isArrayAssociative( $array );
 	}
+
+	/**
+	 * Recursively replaces the values from one array with the ones from another.
+	 * This function should act identical to the built-in array_replace_recursive(), with the exception that it also replaces array values with empty arrays.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  array $targetArray      The target array
+	 * @param  array $replacementArray The array with values to replace in the target array.
+	 * @return array                   The modified array.
+	 */
+	public function arrayReplaceRecursive( $targetArray, $replacementArray ) {
+		// In some cases the target array isn't an array yet (due to e.g. race conditions in InternalOptions), so in that case we can just return the replacement array.
+		if ( ! is_array( $targetArray ) ) {
+			return $replacementArray;
+		}
+
+		foreach ( $replacementArray as $k => $v ) {
+			// If the key does not exist yet on the target array, add it.
+			if ( ! isset( $targetArray[ $k ] ) ) {
+				$targetArray[ $k ] = $replacementArray[ $k ];
+				continue;
+			}
+
+			// If the value is an array, only try to recursively replace it if the value isn't empty.
+			// Otherwise empty arrays will be ignored and won't override the existing value of the target array.
+			if ( is_array( $v ) && ! empty( $v ) ) {
+				$targetArray[ $k ] = $this->arrayReplaceRecursive( $targetArray[ $k ], $v );
+				continue;
+			}
+
+			// Replace with non-array value or empty array.
+			$targetArray[ $k ] = $v;
+		}
+
+		return $targetArray;
+	}
 }

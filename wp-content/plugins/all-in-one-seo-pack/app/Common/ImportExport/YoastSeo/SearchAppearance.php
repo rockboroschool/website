@@ -17,6 +17,15 @@ use AIOSEO\Plugin\Common\ImportExport;
  */
 class SearchAppearance {
 	/**
+	 * Whether the homepage social settings have been imported here.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @var bool
+	 */
+	public $hasImportedHomepageSocialSettings = false;
+
+	/**
 	 * Class constructor.
 	 *
 	 * @since 4.0.0
@@ -37,6 +46,7 @@ class SearchAppearance {
 		$this->migrateKnowledgeGraphSettings();
 		$this->migrateRssContentSettings();
 		$this->migrateStripCategoryBase();
+		$this->migrateHomepageSocialSettings();
 	}
 
 	/**
@@ -77,8 +87,8 @@ class SearchAppearance {
 	 * @return void
 	 */
 	private function migrateTitleFormats() {
-		aioseo()->options->searchAppearance->archives->author->title =
-			aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-home-wpseo'], 'page', 'post' ) );
+		aioseo()->options->searchAppearance->global->siteTitle =
+			aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-home-wpseo'] ) );
 
 		aioseo()->options->searchAppearance->archives->date->title =
 			aioseo()->helpers->sanitizeOption( aioseo()->importExport->yoastSeo->helpers->macrosToSmartTags( $this->options['title-archive-wpseo'], null, 'archive' ) );
@@ -318,5 +328,34 @@ class SearchAppearance {
 	 */
 	private function migrateStripCategoryBase() {
 		aioseo()->options->searchAppearance->advanced->removeCatBase = empty( $this->options['stripcategorybase'] ) ? false : true;
+	}
+
+	/**
+	 * Migrate the social settings for the homepage.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @return void
+	 */
+	private function migrateHomepageSocialSettings() {
+		if (
+			empty( $this->options['open_graph_frontpage_title'] ) &&
+			empty( $this->options['open_graph_frontpage_desc'] ) &&
+			empty( $this->options['open_graph_frontpage_image'] )
+		) {
+			return;
+		}
+
+		$this->hasImportedHomepageSocialSettings = true;
+
+		$settings = [
+			// These settings can also be found in the SocialMeta class, but Yoast recently moved them here.
+			// We'll still keep them in the other class for backwards compatibility.
+			'open_graph_frontpage_title' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'title' ] ],
+			'open_graph_frontpage_desc'  => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'description' ] ],
+			'open_graph_frontpage_image' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'image' ] ]
+		];
+
+		aioseo()->importExport->yoastSeo->helpers->mapOldToNew( $settings, $this->options, true );
 	}
 }

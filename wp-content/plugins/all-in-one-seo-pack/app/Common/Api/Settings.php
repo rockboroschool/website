@@ -397,10 +397,15 @@ class Settings {
 	public static function doTask( $request ) {
 		$body   = $request->get_json_params();
 		$action = ! empty( $body['action'] ) ? $body['action'] : '';
+		$data   = ! empty( $body['data'] ) ? $body['data'] : [];
 
 		switch ( $action ) {
+			// General
 			case 'clear-cache':
 				aioseo()->core->cache->clear();
+				break;
+			case 'clear-plugin-updates-transient':
+				delete_site_transient( 'update_plugins' );
 				break;
 			case 'readd-capabilities':
 				aioseo()->access->addCapabilities();
@@ -411,21 +416,45 @@ class Settings {
 				aioseo()->internalOptions->internal->lastActiveVersion = '4.0.0';
 				aioseo()->updates->addInitialCustomTablesForV4();
 				break;
+			// Sitemap
+			case 'clear-image-data':
+				aioseo()->sitemap->query->resetImages();
+				break;
+			// Migrations
 			case 'rerun-migrations':
 				aioseo()->internalOptions->database->installedTables   = '';
 				aioseo()->internalOptions->internal->lastActiveVersion = '4.0.0';
 				break;
+			case 'restart-v3-migration':
+				Migration\Helpers::redoMigration();
+				break;
+			// Old Issues
 			case 'remove-duplicates':
 				aioseo()->updates->removeDuplicateRecords();
 				break;
 			case 'unescape-data':
 				aioseo()->admin->scheduleUnescapeData();
 				break;
-			case 'clear-image-data':
-				aioseo()->sitemap->query->resetImages();
-				break;
-			case 'restart-v3-migration':
-				Migration\Helpers::redoMigration();
+			// Deprecated Options
+			case 'deprecated-options':
+				// Check if the user is forcefully wanting to add a deprecated option.
+				$allDeprecatedOptions = aioseo()->internalOptions->getAllDeprecatedOptions();
+				$deprecatedOptions    = aioseo()->internalOptions->internal->deprecatedOptions;
+				$enableOptions        = array_keys( array_filter( $data ) );
+
+				foreach ( $enableOptions as $key => $option ) {
+					if ( ! in_array( $option, $allDeprecatedOptions, true ) ) {
+						unset( $enableOptions[ $key ] );
+					}
+				}
+
+				sort( $enableOptions );
+				sort( $deprecatedOptions );
+
+				$hasChanged = $deprecatedOptions !== $enableOptions;
+				if ( $hasChanged ) {
+					aioseo()->internalOptions->internal->deprecatedOptions = $enableOptions;
+				}
 				break;
 			default:
 				return new \WP_REST_Response( [

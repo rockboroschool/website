@@ -217,11 +217,13 @@ class Tools {
 			], 400 );
 		}
 
-		$htaccess = aioseo()->helpers->decodeHtmlEntities( $htaccess );
-		if ( ! aioseo()->htaccess->saveContents( $htaccess ) ) {
+		$htaccess     = aioseo()->helpers->decodeHtmlEntities( $htaccess );
+		$saveHtaccess = (object) aioseo()->htaccess->saveContents( $htaccess );
+		if ( ! $saveHtaccess->success ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'An error occurred while trying to write to the .htaccess file. Please try again later.', 'all-in-one-seo-pack' )
+				'message' => $saveHtaccess->message ? $saveHtaccess->message : __( 'An error occurred while trying to write to the .htaccess file. Please try again later.', 'all-in-one-seo-pack' ),
+				'reason'  => $saveHtaccess->reason
 			], 400 );
 		}
 

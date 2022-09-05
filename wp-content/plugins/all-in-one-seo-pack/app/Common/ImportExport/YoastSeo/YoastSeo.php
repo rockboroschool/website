@@ -79,7 +79,8 @@ class YoastSeo extends ImportExport\Importer {
 	 */
 	protected function importSettings() {
 		new GeneralSettings();
-		new SearchAppearance();
+		$this->searchAppearance = new SearchAppearance();
+		// NOTE: The Social Meta settings need to be imported after the Search Appearance ones because some imports depend on what was imported there.
 		new SocialMeta();
 		$this->userMeta->scheduleImport();
 	}

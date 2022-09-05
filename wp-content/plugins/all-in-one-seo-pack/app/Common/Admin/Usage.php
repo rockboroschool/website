@@ -93,13 +93,12 @@ abstract class Usage {
 		wp_remote_post(
 			$this->getUrl(),
 			[
-				'timeout'     => 5,
-				'redirection' => 5,
-				'httpversion' => '1.1',
-				'blocking'    => true,
-				'headers'     => [ 'Content-Type' => 'application/json; charset=utf-8' ],
-				'body'        => wp_json_encode( $this->getData() ),
-				'user-agent'  => 'AIOSEO/' . AIOSEO_VERSION . '; ' . get_bloginfo( 'url' ),
+				'timeout'    => 10,
+				'headers'    => array_merge( [
+					'Content-Type' => 'application/json; charset=utf-8'
+				], aioseo()->helpers->getApiHeaders() ),
+				'user-agent' => aioseo()->helpers->getApiUserAgent(),
+				'body'       => wp_json_encode( $this->getData() )
 			]
 		);
 	}

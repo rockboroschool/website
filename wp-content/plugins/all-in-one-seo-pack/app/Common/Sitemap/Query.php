@@ -65,19 +65,21 @@ class Query {
 			->where( 'p.post_status', 'attachment' === $includedPostTypes ? 'inherit' : 'publish' )
 			->whereRaw( "p.post_type IN ( '$includedPostTypes' )" );
 
+		$homePageId = (int) get_option( 'page_on_front' );
+
 		if ( ! is_array( $postTypes ) ) {
 			if ( ! aioseo()->helpers->isPostTypeNoindexed( $includedPostTypes ) ) {
-				$query->whereRaw( '( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 )' );
+				$query->whereRaw( "( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 OR post_id = $homePageId )" );
 			} else {
-				$query->whereRaw( '( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 )' );
+				$query->whereRaw( "( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 OR post_id = $homePageId )" );
 			}
 		} else {
 			$robotsMetaSql = [];
 			foreach ( $postTypes as $postType ) {
 				if ( ! aioseo()->helpers->isPostTypeNoindexed( $postType ) ) {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 ) )";
+					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 OR post_id = $homePageId ) )";
 				} else {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 ) )";
+					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 OR post_id = $homePageId ) )";
 				}
 			}
 			$query->whereRaw( '( ' . implode( ' OR ', $robotsMetaSql ) . ' )' );
@@ -88,7 +90,6 @@ class Query {
 		$isStaticHomepage = 'page' === get_option( 'show_on_front' );
 		if ( $isStaticHomepage ) {
 			$excludedPostIds = explode( ',', $excludedPosts );
-			$homePageId      = (int) get_option( 'page_on_front' );
 			$blogPageId      = (int) get_option( 'page_for_posts' );
 
 			if ( in_array( 'page', $postTypesArray, true ) ) {
@@ -120,7 +121,7 @@ class Query {
 		}
 
 		if ( $excludedPosts ) {
-			$query->whereRaw( "( `p`.`ID` NOT IN ( $excludedPosts ) )" );
+			$query->whereRaw( "( `p`.`ID` NOT IN ( $excludedPosts ) OR post_id = $homePageId )" );
 		}
 
 		// Exclude posts assigned to excluded terms.

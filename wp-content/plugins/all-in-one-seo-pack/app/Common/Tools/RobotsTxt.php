@@ -563,11 +563,6 @@ class RobotsTxt {
 	 * @return boolean Whether the rewrite rules are set or not.
 	 */
 	public function rewriteRulesExist() {
-		// We don't want to check if a migration is being restarted.
-		if ( isset( $_GET['aioseo-v3-migration'] ) && 'i-want-to-migrate' === wp_unslash( $_GET['aioseo-v3-migration'] ) ) { // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
-			return true;
-		}
-
 		// If we have a physical file, it's almost impossible to tell if the rewrite rules are set.
 		// The only scenario is if we still get a 404.
 		if ( $this->hasPhysicalRobotsTxt() ) {

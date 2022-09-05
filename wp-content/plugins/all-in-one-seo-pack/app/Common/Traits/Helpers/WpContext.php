@@ -568,6 +568,54 @@ trait WpContext {
 	}
 
 	/**
+	 * Returns if current screen is a post list, optionaly of a post type.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  string $postType Post type slug.
+	 * @return bool             Is a post list.
+	 */
+	public function isScreenPostList( $postType = '' ) {
+		$screen = $this->getCurrentScreen();
+		if (
+			! $this->isScreenBase( 'edit' ) ||
+			empty( $screen->post_type )
+		) {
+			return false;
+		}
+
+		if ( ! empty( $postType ) && $screen->post_type !== $postType ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns if current screen is a post edit screen, optionaly of a post type.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @param  string $postType Post type slug.
+	 * @return bool             Is a post editing screen.
+	 */
+	public function isScreenPostEdit( $postType = '' ) {
+		$screen = $this->getCurrentScreen();
+		if (
+			! $this->isScreenBase( 'post' ) ||
+			empty( $screen->post_type )
+		) {
+			return false;
+		}
+
+		if ( ! empty( $postType ) && $screen->post_type !== $postType ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Gets current admin screen
 	 *
 	 * @since 4.0.17

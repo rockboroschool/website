@@ -185,16 +185,24 @@ class WpNotices {
 				continue;
 			}
 
+			$status = ! empty( $notice['status'] ) ? $notice['status'] : 'warning';
+			$class  = ! empty( $notice['options']['class'] ) ? $notice['options']['class'] : '';
 			?>
-			<div class="notice notice-<?php echo esc_attr( $notice['status'] ) ?>">
+			<div
+				class="notice notice-<?php echo esc_attr( $status ) ?> <?php echo esc_attr( $class ) ?>">
 				<?php echo '<p>' . $notice['message'] . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php
 				if ( ! empty( $notice['options']['actions'] ) ) {
 					foreach ( $notice['options']['actions'] as $action ) {
 						echo '<p>';
 						if ( ! empty( $action['url'] ) ) {
-							$target = $action['target'] ?: '';
-							echo '<a href="' . esc_attr( $action['url'] ) . '" target="' . esc_attr( $target ) . '">';
+							$class  = ! empty( $action['class'] ) ? $action['class'] : '';
+							$target = ! empty( $action['target'] ) ? $action['target'] : '';
+							echo '<a 
+								href="' . esc_attr( $action['url'] ) . '" 
+								class="' . esc_attr( $class ) . '"
+								target="' . esc_attr( $target ) . '"
+							>';
 						}
 						echo $action['label']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						if ( ! empty( $action['url'] ) ) {

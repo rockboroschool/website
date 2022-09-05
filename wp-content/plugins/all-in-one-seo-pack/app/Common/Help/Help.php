@@ -55,10 +55,10 @@ class Help {
 		$aioseoAdminHelpDocs          = aioseo()->core->cache->get( 'admin_help_docs' );
 		$aioseoAdminHelpDocsCacheTime = WEEK_IN_SECONDS;
 		if ( null === $aioseoAdminHelpDocs ) {
-			$request = wp_remote_get( $this->getUrl() );
+			$request = aioseo()->helpers->wpRemoteGet( $this->getUrl() );
 
 			if ( is_wp_error( $request ) ) {
-				return false;
+				return [];
 			}
 
 			$response = $request['response'];
@@ -70,6 +70,6 @@ class Help {
 			aioseo()->core->cache->update( 'admin_help_docs', $aioseoAdminHelpDocs, $aioseoAdminHelpDocsCacheTime );
 		}
 
-		return $aioseoAdminHelpDocs;
+		return $aioseoAdminHelpDocs ? json_decode( $aioseoAdminHelpDocs, true ) : [];
 	}
 }

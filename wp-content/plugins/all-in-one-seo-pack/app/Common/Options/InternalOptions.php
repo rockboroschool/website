@@ -127,10 +127,24 @@ class InternalOptions {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return void
+	 * @param  bool  $includeNamesAndValues Whether or not to include option names.
+	 * @return array                        An array of deprecated options.
 	 */
-	public function getAllDeprecatedOptions() {
-		return $this->allDeprecatedOptions;
+	public function getAllDeprecatedOptions( $includeNamesAndValues = false ) {
+		if ( ! $includeNamesAndValues ) {
+			return $this->allDeprecatedOptions;
+		}
+
+		$options = [];
+		foreach ( $this->allDeprecatedOptions as $deprecatedOption ) {
+			$options[] = [
+				'label'   => ucwords( str_replace( '_', ' ', aioseo()->helpers->toSnakeCase( $deprecatedOption ) ) ),
+				'value'   => $deprecatedOption,
+				'enabled' => in_array( $deprecatedOption, aioseo()->internalOptions->internal->deprecatedOptions, true )
+			];
+		}
+
+		return $options;
 	}
 
 	/**

@@ -266,7 +266,7 @@ namespace AIOSEO\Plugin {
 				return;
 			}
 
-			$dotenv = \Dotenv\Dotenv::create( AIOSEO_DIR, '/build/.env' );
+			$dotenv = \Dotenv\Dotenv::createUnsafeImmutable( AIOSEO_DIR, '/build/.env' );
 			$dotenv->load();
 
 			$version = strtolower( getenv( 'VITE_VERSION' ) );
@@ -319,6 +319,7 @@ namespace AIOSEO\Plugin {
 			$this->backwardsCompatibility();
 
 			// Internal Options.
+			$this->helpers         = $this->pro ? new Pro\Utils\Helpers() : new Lite\Utils\Helpers();
 			$this->internalOptions = $this->pro ? new Pro\Options\InternalOptions() : new Lite\Options\InternalOptions();
 
 			// Run pre-updates.
@@ -378,7 +379,6 @@ namespace AIOSEO\Plugin {
 				$translations->init();
 			}
 
-			$this->helpers            = $this->pro ? new Pro\Utils\Helpers() : new Common\Utils\Helpers();
 			$this->addons             = $this->pro ? new Pro\Utils\Addons() : new Common\Utils\Addons();
 			$this->tags               = $this->pro ? new Pro\Utils\Tags() : new Common\Utils\Tags();
 			$this->blocks             = new Common\Utils\Blocks();
@@ -427,11 +427,28 @@ namespace AIOSEO\Plugin {
 
 			$this->backwardsCompatibilityLoad();
 
-			if ( wp_doing_ajax() || wp_doing_cron() ) {
+			if ( wp_doing_ajax() ) {
+				add_action( 'init', [ $this, 'loadAjaxInit' ], 999 );
+
+				return;
+			}
+
+			if ( wp_doing_cron() ) {
 				return;
 			}
 
 			add_action( 'init', [ $this, 'loadInit' ], 999 );
+		}
+
+		/**
+		 * Things that need to load after init, on AJAX requests.
+		 *
+		 * @since 4.2.4
+		 *
+		 * @return void
+		 */
+		public function loadAjaxInit() {
+			$this->addons->registerUpdateCheck();
 		}
 
 		/**

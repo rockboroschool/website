@@ -2,10 +2,10 @@
 Contributors: aioseo, smub, benjaminprojas
 Tags: SEO, Google Search Console, XML Sitemap, meta description, schema, meta title, rich snippets, woocommerce seo, local seo, open graph, google news sitemap, video sitemap, robots.txt, seo audit, content analysis, seo plugin, redirection
 Requires at least: 4.9
-Tested up to: 6.0.1
-Stable tag: 4.2.3.1
+Tested up to: 6.0.2
+Stable tag: 4.2.4
 License: GPLv2 or later
-Requires PHP: 5.4
+Requires PHP: 5.6
 
 The original WordPress SEO plugin. Improve your WordPress SEO rankings and traffic with our comprehensive SEO tools and smart SEO optimizations.
 
@@ -220,6 +220,38 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 
 == Changelog ==
+
+**New in Version 4.2.4**
+
+* New: Advanced 404 Redirects - Keep track of deleted posts and terms by redirecting to their direct parent or the home url with WooCommerce support.
+* New: Huge Improvements to Image SEO - Choose characters to strip, characters to convert to spaces, and the casing to convert to for the Title, Alt Tag, Caption, Description and Filename of images.
+* New: URL slug and trash monitor now allow adding a redirect without leaving the posts table or page editor.
+* Updated: Minimum required PHP version is now 5.6.
+* Updated: Redirect logs and 404 logs are now searchable and display referrer information.
+* Updated: Validation for .htaccess file changes before saving to avoid Apache server crashes.
+* Updated: Post types, taxonomies and archive titles can now be edited even while set to noindex.
+* Updated: Removed parsed keywords from the SEO analyzer and added a tooltip defining the analysis for the home page.
+* Updated: Alert when importing from a V3 .ini file as the post/term IDs need to be identical.
+* Updated: Removed outdated Knowledge Graph contact types.
+* Updated: Link Assistant phrase editor now shows a tooltip with the URL to the link.
+* Updated: Better compatibility with MonsterInsights and ExactMetrics headline analyzers.
+* Fixed: PHP 8.1 deprecation notices.
+* Fixed: RankMath migration issues when content is set to noindex.
+* Fixed: Link Assistant plugin conflict with the PowerPress plugin.
+* Fixed: AMP plugin throwing duplicate canonical URL error and MS Clarity error.
+* Fixed: Link Assistant suggestions not always being added in Classic Editor.
+* Fixed: Resetting options now correctly resets everything.
+* Fixed: AIOSEO's addon specific notifications no longer show if the addon is not active.
+* Fixed: Classic Editor redirecting to Posts overview page when Link Assistant or Redirects tab was active in the metabox.
+* Fixed: Excluded/noindexed posts removed from the Sitemap's language references.
+* Fixed: Bulk updating addons failing with version up to date error.
+* Fixed: Social settings not always migrated when importing from Yoast SEO.
+* Fixed: Translations not being used if any string contains a line break.
+* Fixed: Image Sitemap now correctly uses the ACF image value.
+* Fixed: Search Appearance taxonomy conflict with Avada Builder.
+* Fixed: Prevent home page from being noindexed in the Sitemap.
+* Fixed: Console errors with jQuery migrate when using the Classic Editor.
+* Fixed: Tabs not being preserved when editing the .htaccess file.
 
 **New in Version 4.2.3.1**
 
@@ -987,6 +1019,18 @@ There are many WordPress SEO plugins out there. Unlike others, AIOSEO WordPress 
 
 AIOSEO is the original WordPress SEO plugin, and it's trusted by over 3 million website owners.
 
+= Do I really need an XML Sitemap? =
+
+Yes! XML Sitemaps help Google and other search engines to find all the pages of your website.
+
+An XML sitemap is a list of all the content on your website. The sitemap helps search engine bots to easily see all the content on your site in one place, The XML sitemap file is hidden from your human visitors, however search engines like Google can see it.
+
+Without an XML sitemap, some of your web pages may never be included in Google search results, and won't get any traffic.
+
+XML Sitemaps also help you tell Google which pages you DON'T want included in search results. This can help your SEO to prevent keyword cannibalization and duplicate content issues.
+
+As part of your SEO strategy, an XML sitemap can help you to improve your domain authority and unlock more traffic from Google, Bing and other search engines.
+
 
 == Screenshots ==
 
@@ -1007,6 +1051,6 @@ AIOSEO is the original WordPress SEO plugin, and it's trusted by over 3 million 
 
 == Upgrade Notice ==
 
-= 4.2.3.1 =
+= 4.2.4 =
 
 This update adds major improvements and bugfixes.

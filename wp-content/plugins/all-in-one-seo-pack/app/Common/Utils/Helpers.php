@@ -15,11 +15,13 @@ use AIOSEO\Plugin\Common\Traits\Helpers as TraitHelpers;
  */
 class Helpers {
 	use TraitHelpers\ActionScheduler;
+	use TraitHelpers\Api;
 	use TraitHelpers\Arrays;
 	use TraitHelpers\Constants;
 	use TraitHelpers\Deprecated;
 	use TraitHelpers\DateTime;
 	use TraitHelpers\Language;
+	use TraitHelpers\PostType;
 	use TraitHelpers\Request;
 	use TraitHelpers\Shortcodes;
 	use TraitHelpers\Strings;
@@ -77,48 +79,6 @@ class Helpers {
 	 */
 	public function isDev() {
 		return aioseo()->isDev || isset( $_REQUEST['aioseo-dev'] ); // phpcs:ignore HM.Security.NonceVerification.Recommended
-	}
-
-	/**
-	 * Request the remote URL via wp_remote_post and return a json decoded response.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param array  $body    The content to retrieve from the remote URL.
-	 * @param array  $headers The headers to send to the remote URL.
-	 *
-	 * @return string|bool Json decoded response on success, false on failure.
-	 */
-	public function sendRequest( $url, $body = [], $headers = [] ) {
-		$body = wp_json_encode( $body );
-
-		// Build the headers of the request.
-		$headers = wp_parse_args(
-			$headers,
-			[
-				'Content-Type' => 'application/json'
-			]
-		);
-
-		// Setup variable for wp_remote_post.
-		$post = [
-			'headers'   => $headers,
-			'body'      => $body,
-			'sslverify' => $this->isDev() ? false : true,
-			'timeout'   => 20
-		];
-
-		// Perform the query and retrieve the response.
-		$response     = wp_remote_post( $url, $post );
-		$responseBody = wp_remote_retrieve_body( $response );
-
-		// Bail out early if there are any errors.
-		if ( is_wp_error( $responseBody ) ) {
-			return false;
-		}
-
-		// Return the json decoded content.
-		return json_decode( $responseBody );
 	}
 
 	/**

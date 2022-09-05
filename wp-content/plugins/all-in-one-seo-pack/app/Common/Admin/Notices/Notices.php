@@ -157,7 +157,7 @@ class Notices {
 	 * @return array An array of notifications.
 	 */
 	private function fetch() {
-		$response = wp_remote_get( $this->getUrl() . '?' . time() );
+		$response = aioseo()->helpers->wpRemoteGet( $this->getUrl() );
 
 		if ( is_wp_error( $response ) ) {
 			return [];

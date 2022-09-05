@@ -23,6 +23,13 @@ class HeadlineAnalyzer {
 		}
 
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue' ] );
+
+		if ( ! aioseo()->options->advanced->headlineAnalyzer ) {
+			return;
+		}
+
+		add_filter( 'monsterinsights_headline_analyzer_enabled', '__return_false' );
+		add_filter( 'exactmetrics_headline_analyzer_enabled', '__return_false' );
 	}
 
 	/**
@@ -42,11 +49,7 @@ class HeadlineAnalyzer {
 			return;
 		}
 
-		if (
-			( defined( 'MONSTERINSIGHTS_VERSION' ) && ! monsterinsights_get_option( 'disable_headline_analyzer' ) ) ||
-			( defined( 'EXACTMETRICS_VERSION' ) && ! exactmetrics_get_option( 'disable_headline_analyzer' ) ) ||
-			! aioseo()->options->advanced->headlineAnalyzer
-		) {
+		if ( ! aioseo()->options->advanced->headlineAnalyzer ) {
 			return;
 		}
 

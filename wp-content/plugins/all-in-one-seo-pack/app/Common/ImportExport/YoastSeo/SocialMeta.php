@@ -87,11 +87,18 @@ class SocialMeta {
 		}
 
 		$settings = [
-			'opengraph'          => [ 'type' => 'boolean', 'newOption' => [ 'social', 'facebook', 'general', 'enable' ] ],
-			'og_frontpage_title' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'title' ] ],
-			'og_frontpage_desc'  => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'description' ] ],
-			'og_frontpage_image' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'image' ] ],
+			'opengraph' => [ 'type' => 'boolean', 'newOption' => [ 'social', 'facebook', 'general', 'enable' ] ],
 		];
+
+		if ( ! aioseo()->importExport->yoastSeo->searchAppearance->hasImportedHomepageSocialSettings ) {
+			// These settings were moved to the Search Appearance tab of Yoast, but we'll leave this here to support older versions.
+			// However, we want to make sure we import them only if the other ones aren't set.
+			$settings = array_merge( $settings, [
+				'og_frontpage_title' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'title' ] ],
+				'og_frontpage_desc'  => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'description' ] ],
+				'og_frontpage_image' => [ 'type' => 'string', 'newOption' => [ 'social', 'facebook', 'homePage', 'image' ] ]
+			] );
+		}
 
 		aioseo()->importExport->yoastSeo->helpers->mapOldToNew( $settings, $this->options, true );
 

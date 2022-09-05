@@ -375,10 +375,12 @@ class Wizard {
 			if ( ! empty( $smartRecommendations['accountInfo'] ) && ! aioseo()->internalOptions->internal->siteAnalysis->connectToken ) {
 				$url      = defined( 'AIOSEO_CONNECT_DIRECT_URL' ) ? AIOSEO_CONNECT_DIRECT_URL : 'https://aioseo.com/wp-json/aioseo-lite-connect/v1/connect/';
 				$response = wp_remote_post( $url, [
-					'headers' => [
+					'timeout'    => 10,
+					'headers'    => array_merge( [
 						'Content-Type' => 'application/json'
-					],
-					'body'    => wp_json_encode( [
+					], aioseo()->helpers->getApiHeaders() ),
+					'user-agent' => aioseo()->helpers->getApiUserAgent(),
+					'body'       => wp_json_encode( [
 						'accountInfo' => $smartRecommendations['accountInfo'],
 						'homeurl'     => home_url()
 					] )

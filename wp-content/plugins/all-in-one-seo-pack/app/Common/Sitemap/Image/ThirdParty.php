@@ -153,7 +153,7 @@ class ThirdParty {
 			}
 
 			// Capture the value if it's an image URL, but not the default thumbnail from ACF.
-			if ( preg_match( aioseo()->sitemap->image->getImageExtensionRegexPattern(), $value ) && ! preg_match( '/media\/default\.png$/i', $value ) ) {
+			if ( is_string( $value ) && preg_match( aioseo()->sitemap->image->getImageExtensionRegexPattern(), $value ) && ! preg_match( '/media\/default\.png$/i', $value ) ) {
 				$images[] = $value;
 				continue;
 			}

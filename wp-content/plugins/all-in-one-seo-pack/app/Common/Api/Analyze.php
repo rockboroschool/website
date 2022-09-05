@@ -36,10 +36,11 @@ class Analyze {
 		) {
 			$token      = aioseo()->internalOptions->internal->siteAnalysis->connectToken;
 			$license    = aioseo()->options->has( 'general' ) && aioseo()->options->general->has( 'licenseKey' )
-				? aioseo()->options->general->licenseKey
-				: '';
+			? aioseo()->options->general->licenseKey
+			: '';
 			$url        = defined( 'AIOSEO_ANALYZE_URL' ) ? AIOSEO_ANALYZE_URL : 'https://analyze.aioseo.com';
-			$response   = wp_remote_post( $url . '/v1/analyze/', [
+			$response   = aioseo()->helpers->wpRemotePost( $url . '/v1/analyze/', [
+				'timeout' => 60,
 				'headers' => [
 					'X-AIOSEO-Key'     => $token,
 					'X-AIOSEO-License' => $license,
@@ -48,7 +49,6 @@ class Analyze {
 				'body'    => wp_json_encode( [
 					'url' => $analyzeOrHomeUrl
 				] ),
-				'timeout' => 60
 			] );
 
 			$responseCode[ $analyzeOrHomeUrl ] = wp_remote_retrieve_response_code( $response );

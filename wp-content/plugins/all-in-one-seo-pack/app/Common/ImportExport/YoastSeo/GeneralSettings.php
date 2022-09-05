@@ -30,7 +30,7 @@ class GeneralSettings {
 			'msverify'           => [ 'type' => 'string', 'newOption' => [ 'webmasterTools', 'bing' ] ],
 			'yandexverify'       => [ 'type' => 'string', 'newOption' => [ 'webmasterTools', 'yandex' ] ],
 			'baiduverify'        => [ 'type' => 'string', 'newOption' => [ 'webmasterTools', 'baidu' ] ],
-			'enable_xml_sitemap' => [ 'type' => 'boolean', 'newOption' => [ 'sitemap', 'general', 'enable' ] ],
+			'enable_xml_sitemap' => [ 'type' => 'boolean', 'newOption' => [ 'sitemap', 'general', 'enable' ] ]
 		];
 
 		aioseo()->importExport->yoastSeo->helpers->mapOldToNew( $settings, $this->options );

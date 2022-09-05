@@ -119,9 +119,6 @@ class Updates {
 		}
 
 		if ( version_compare( $lastActiveVersion, '4.1.6', '<' ) ) {
-			// Clear the cache so addons get reset.
-			aioseo()->core->cache->clear();
-
 			// Remove the recurring scheduled action for notifications.
 			aioseo()->helpers->unscheduleAction( 'aioseo_admin_notifications_update' );
 
@@ -166,7 +163,17 @@ class Updates {
 			aioseo()->helpers->unscheduleAction( 'aioseo_static_sitemap_regeneration' );
 		}
 
+		if ( version_compare( $lastActiveVersion, '4.2.4', '<' ) ) {
+			$this->migrateContactTypes();
+			$this->addNotificationsAddonColumn();
+		}
+
 		do_action( 'aioseo_run_updates', $lastActiveVersion );
+
+		// Always clear the cache if the last active version is different from our current.
+		if ( version_compare( $lastActiveVersion, AIOSEO_VERSION, '<' ) ) {
+			aioseo()->core->cache->clear();
+		}
 	}
 
 	/**
@@ -881,5 +888,61 @@ class Updates {
 			SET `meta_key` = 'aioseo_twitter_url'
 			WHERE `meta_key` = 'aioseo_twitter'"
 		);
+	}
+
+	/**
+	 * Migrates some older values in the Knowledge Panel contact type setting that were removed.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @return void
+	 */
+	public function migrateContactTypes() {
+		$oldValue          = aioseo()->options->searchAppearance->global->schema->contactType;
+		$oldValueLowerCase = strtolower( $oldValue );
+
+		// Return if there is no value set or manual input is being used.
+		if ( ! $oldValue || 'manual' === $oldValueLowerCase ) {
+			return;
+		}
+
+		switch ( $oldValueLowerCase ) {
+			case 'billing support':
+			case 'customer support':
+			case 'reservations':
+			case 'sales':
+			case 'technical support':
+				// If we still support the value, do nothing.
+				return;
+			default:
+				// Otherwise, migrate the existing value to the manual input field.
+				if ( 'bagage tracking' === $oldValueLowerCase ) {
+					// Let's also fix this old typo.
+					$oldValue = 'Baggage Tracking';
+				}
+
+				aioseo()->options->searchAppearance->global->schema->contactType       = 'manual';
+				aioseo()->options->searchAppearance->global->schema->contactTypeManual = $oldValue;
+		}
+	}
+
+	/**
+	 * Add an addon column to the notifications table.
+	 *
+	 * @since 4.2.4
+	 *
+	 * @return void
+	 */
+	private function addNotificationsAddonColumn() {
+		if ( ! aioseo()->core->db->columnExists( 'aioseo_notifications', 'addon' ) ) {
+			$tableName = aioseo()->core->db->db->prefix . 'aioseo_notifications';
+			aioseo()->core->db->execute(
+				"ALTER TABLE {$tableName}
+				ADD `addon` varchar(64) DEFAULT NULL AFTER `slug`"
+			);
+
+			// Reset the cache for the installed tables.
+			aioseo()->internalOptions->database->installedTables = '';
+		}
 	}
 }
