@@ -1,0 +1,390 @@
+/* Branding */
+.branding__container {
+
+    @extend .display-flex;
+    .primary-navbar__wrapper &.col {
+      max-width: 85%;
+      width: auto;
+    }
+
+    .primary-navbar__wrapper.has-horizontal-menu & {
+      max-width: 33%;
+    }
+    .primary-navbar__wrapper.has-branding-aside & {
+      max-width: 60%;
+    }
+
+    .mobile-navbar__wrapper & {
+      position: static;
+    }
+
+    @at-root .branding {
+        //@extend .display-flex;
+        padding-top: 0.425em;
+        padding-bottom: 0.425em;
+        overflow: hidden;
+
+        .col-auto {
+          max-width: 100%;
+          padding-right: 0;
+          padding-left: 0;
+          flex-shrink: 1;
+        }
+
+        .navbar-brand-sitename span{
+          display: block;
+          white-space: normal;
+          //word-break: break-all;
+        }
+
+        .navbar-brand-sitename.czr-underline span{
+          position: relative;
+          padding-bottom: 0.25em;
+          margin-bottom: 5px;
+        }
+        //commented because with flex this element auto adapts
+        //.mobile-navbar__wrapper & {
+        //  max-width: calc( 100% - 100px );// can have the hamburger (50px) + the woocommerce cart next to it (50px)
+        //}
+
+        .navbar-brand {
+            font-size: 2.4em;
+            line-height: 1.5em;
+            margin: 0;
+            vertical-align: middle;
+            display: inline-block;
+            padding-top: .25rem;
+            padding-bottom: .25rem;
+            white-space: nowrap;
+            max-width: 100%;
+            height: auto;
+            color:$black;//added for https://github.com/presscustomizr/customizr/issues/1760
+            @at-root .navbar-brand img {
+              width: auto;
+              max-width: 100%;
+            }
+        }
+        .header-tagline {
+            font-size: 0.9em;
+            line-height: normal;
+            padding: 0;
+            //give some right (left in rtl) margin to the tagline in the branding wrapper
+            //to avoid cut-off https://github.com/presscustomizr/customizr/issues/1128
+            @if ( true == $is_rtl ) {
+              margin: 2px 0 0 .1em;
+            }
+            @else {
+              margin: 2px .1em 0 0;
+            }
+            width: 100%;
+            @at-root .primary-navbar__wrapper & {
+              padding-bottom: .25rem;
+            }
+        }
+
+        .branding-aside {
+            text-align: initial;
+            margin: 0 7px;
+            .navbar-brand {
+              padding: 0;
+              line-height: 1;
+            }
+            .header-tagline {
+              width: auto;
+              padding-bottom: 0;
+            }
+        }
+    }
+
+
+    .branding,
+    .mobile-utils__wrapper {
+        @extend .display-flex;
+        flex-shrink: 1; //ie (10 at least) doesn't consider this as default while it should
+    }
+    @at-root .mobile-utils__wrapper .header-search__container {
+        display: block;
+        border-bottom: none;
+        margin: 2*$base-line-height-fixed auto;
+    }
+}
+
+
+.header-tagline {
+  font-style: italic;
+}
+
+// This styles the utils in desktop and mobiles
+.nav__utils {
+    @extend .display-flex;
+    flex-shrink: 0;
+    padding: 0;
+    //in b4 stable col*auto max-width is set to none, we always want it to be set to 100%
+    max-width: 100%;
+    @include media-breakpoint-down( sm ) {
+      .mobile-navbar__wrapper & .utils {
+        margin-right: -10px;
+        margin-left: -10px;
+      }
+    }
+
+    li {
+        @extend .display-flex;
+    }
+
+    // utils li a centered aligned
+    @at-root .woocart.cart-contents, .search-toggle_btn {
+        @extend .utils_links;
+    }
+
+     @at-root .woocart.cart-contents {
+        @include display-flex();
+        sup {
+            top: 0;
+        }
+    }
+}
+
+// Mobile stuff
+.header-search__container {
+    //width: 100%;
+    margin: 2*$base-line-height-fixed 0 $base-line-height-fixed 0;
+    .czr-form .form-group {
+        margin: 2/3 * $base-line-height-fixed 0 $base-line-height-fixed 0;
+        padding-bottom: $base-line-height;
+    }
+}
+
+.mobile-nav__container {
+  padding: 0;
+}
+
+
+/*
+* HEADER LAYOUTS
+*/
+
+
+.primary-navbar__wrapper {
+  // ensure the navbar elements do not wrap in a new line
+  @include flex-nowrap;
+
+  .branding__container,
+  .primary-nav__utils li,
+  .primary-nav__wrapper,
+  .primary-nav__menu-wrapper {
+    @include display-flex();
+  }
+  .primary-nav__wrapper {
+      margin: 0 -15px;
+  }
+
+  .primary-nav__container {
+    @include display-flex();
+    @include flex-basis_0();
+    @include flex-grow();
+  }
+  .primary-nav__menu-wrapper {
+    width: 100%;
+  }
+  .primary-nav__nav {
+    flex-shrink: 1; //ie (10 at least) doesn't consider this as default while it should
+    @include flex-basis_auto();
+  }
+  .col {
+    //in b4 stable col*auto max-width is set to none, we always want it to be set to 100%
+    max-width: 100%;
+  }
+}
+
+/*
+* LOGO CENTERED:
+*/
+//
+// IS VALID ONLY WHEN THE PRIMARY NAVBAR WRAPPER IS NOT STICKY
+// that's why is handled only with CSS
+//
+.logo_centered .primary-navbar__wrapper:not(.desktop-sticky) .primary-navbar__row,
+.logo_centered:not(.fixed-header-on) .primary-navbar__wrapper.desktop-sticky  .primary-navbar__row{
+    @include flex-column('important');
+    .branding__container {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .branding {
+      .navbar-brand {
+        margin: auto;
+        font-size: 2.25em;
+      }
+       //give some balanced (as it's centered) margin to the tagline in the branding wrapper
+      //to avoid cut-off https://github.com/presscustomizr/customizr/issues/1128
+      .header-tagline {
+        margin-right: .1em;
+        margin-left: .1em;
+      }
+    }
+
+    .primary-nav__container {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 auto;
+            flex: 0 0 auto;
+            //     width: 66.666667%;
+            // max-width: 66.666667%;
+            //flex-basis: auto
+    }
+}
+
+
+
+//
+// Revert header (not topbar) elements order when logo right
+//
+[class*=logo_right] {
+  .mobile-navbar__row,
+  .primary-navbar__row,
+  .branding__container,
+  .branding__container .flex-row,
+  .primary-nav__wrapper,
+  .nav__utils .utils {
+    @include flex-row-reverse('important');
+  }
+  /*
+  .navbar-brand {
+    @include flex-align-self-end('important');
+  }*/
+  .branding__container .branding-row {
+    @include flex-row('important');
+  }
+}
+
+
+/* EXPERIMENTAL */
+.tc-header {
+  position: relative;
+  z-index: 100;
+}
+.mobile-sticky,
+.desktop-sticky {
+  //prefix removed in b4
+  //-webkit-box-shadow: 0 0 5px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: 0 0 5px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.15);
+  //-webkit-transition: -webkit-transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+  //-moz-transition: -moz-transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+  //-o-transition: -o-transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+  //webkit-transition prefix has been removed in b4, but -webkit prefix is still valid for the transform property
+  transition: -webkit-transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+  transition: transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+}
+
+
+.mobile-sticky .mobile-nav__nav {
+  position: absolute;
+  width: 100%;
+  //shadow only when mobile menu is sticky.
+  @include box-shadow( 0px, 6px, 8px, rgba(120, 120, 120, 0.9), false, 0px );
+  .mobile-nav__inner {
+    max-height: 90vh;
+    overflow: auto;
+  }
+}
+
+.fixed-header-on .mobile-sticky,
+.fixed-header-on .desktop-sticky {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  width: 100%;
+
+  //this is the starting breakpoint from which the .container has a defined width
+  //we don't want to stretch the sticky elements to 100%, we just want they wrap
+  //their .container inner elements which have a well defined width.
+  @include media-breakpoint-up(sm) {
+    .czr-boxed-layout & {
+        width: auto;
+      }
+  }
+}
+
+
+// Shrink logo/title: for desktop only
+.sticky-brand-shrink-on .desktop-sticky {
+    //allow transition effect
+    .navbar-brand img,
+    .navbar-brand,
+    .header-tagline {
+        @include transition( all .35s );
+    }
+}
+
+.can-shrink-brand.sticky-brand-shrink-on .desktop-sticky {
+    //title ( and tagline )
+    .navbar-brand {
+        font-size: 1.4em;
+    }
+    .header-tagline {
+        font-size: 0.8em;
+    }
+
+    //logo
+    .navbar-brand img {
+        max-height: 30px!important;
+        width: auto!important;
+    }
+}
+
+
+.admin-bar .fixed-header-on {
+  @media screen and (min-width: 601px) and (max-width: 782px) {
+    .mobile-sticky, .desktop-sticky {
+      top: 46px;
+    }
+  }
+  @media screen and (min-width: 783px) {
+    .mobile-sticky, .desktop-sticky {
+      top: 32px;
+    }
+  }
+}
+
+
+
+//MOBILE HEADER
+.mobile-navbar__wrapper {
+  //LOGO DIMENSIONS ON MOBILE
+  .branding {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    .navbar-brand {
+      font-size: 1.5em;
+    }
+  }
+  .navbar-brand-sitelogo img {
+    max-height: 36px!important;
+    @include transition( all 0.35s ease-in-out );
+  }
+
+  //MORE SPACE AT THE BOTTOM WHEN EXPANDED
+  .mobile-nav__inner {
+     margin-bottom: 20px;
+  }
+
+  //When the site title is underlined, when need to adjust the vertical centering with this hard coded margin
+  .czr-underline span {
+    margin-bottom: 5px;
+  }
+}
+
+//@media screen and (min-width: 768px)
+@include media-breakpoint-up(md) {
+  .mobile-navbar__wrapper  {
+    .branding {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    .navbar-brand-sitelogo img {
+      max-height: 45px!important;
+      max-width: 100%;
+    }
+  }
+}

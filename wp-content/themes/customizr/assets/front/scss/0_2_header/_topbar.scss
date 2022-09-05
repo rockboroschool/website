@@ -1,0 +1,73 @@
+.topbar-navbar__row {
+  @include media-breakpoint-up(lg) {
+    min-height: 40px;
+  }
+  .header-tagline {
+    flex-shrink: 1;
+  }
+  //in b4 stable col*auto max-width is set to none, we always want it to be set to 100%
+  .col-auto {
+    max-width: 100%;
+  }
+}
+/* ie fix */
+.topbar-contact__info,
+.topbar-nav__container,
+.topbar-nav__menu-wrapper {
+  @extend .display-flex;
+  @include flex-grow();
+  flex-shrink: 1; //ie (10 at least) doesn't consider this as default while it should
+  max-width: 100%;
+}
+
+.topbar-contact__info {
+  flex-shrink: 0;
+  .czr-contact-info {
+    @include flex-grow();
+    font-size: 0.9em;
+  }
+}
+.topbar-nav__socials {
+  flex-shrink: 1;
+}
+.topbar-contact__info,
+.topbar-nav__socials {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  //contact info and social blocks one on top of each other
+  @include media-breakpoint-down(xs) {
+    width: 100%;
+    // commented in feb 2020 to fix https://github.com/presscustomizr/customizr/issues/1805
+    // & ul {
+    //   //contact info items one on top of each other x-small devices
+    //   @at-root .topbar-contact__info li {
+    //     width: 100%;
+    //   }
+    // }
+  }
+}
+.topbar-nav__nav,
+.topbar-nav__menu {
+  width: 100%;
+  a,
+  .menu-item a {
+    font-weight    : normal;
+    text-transform : none;
+  }
+  @at-root .topbar-nav__menu.nav__menu {
+    margin: 0 -0.5rem;
+    > .menu-item {
+      margin: 0 0.25rem;
+
+        > a {
+            padding: 0 0.25rem;
+            > span:first-of-type {
+                padding: 12px 0 4px 0;
+                margin-bottom: 8px;
+                //padding: $base-line-height/2 0;
+            }
+        }
+
+    }
+  }
+}

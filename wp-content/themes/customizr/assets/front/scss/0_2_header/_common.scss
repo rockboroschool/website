@@ -1,0 +1,641 @@
+.tc-header:not(.header-transparent) {
+    @include box-shadow(0px, 2px, 2px, rgba(102, 102, 102, .08));
+}
+
+.dropdown-item:not(:last-of-type) {
+  border-bottom: 0.5px solid;
+}
+
+.vertical-nav > li:not(:last-of-type),
+.tc-header,
+.topbar-navbar__wrapper,
+.mobile-nav__container,
+.mobile-nav__nav,
+.header-search__container {
+  border-bottom: 1px solid;
+}
+
+.mobile-nav__nav {
+  border-top: 1px solid;
+  // workaround to fix a weird issue with the Chrome browser on Android devices
+  // basically, for some unknown reason, under particular circumstances (e.g. mobile menu overlapping the slider)
+  // when expanding a collapsible submenu, this very element background became transparent.
+  // The following rule seem to fix the issue.
+  // see https://github.com/presscustomizr/customizr/issues/1635
+  backface-visibility: hidden;
+}
+
+.primary-navbar__wrapper,
+.topbar-navbar__wrapper,
+.mobile-navbar__wrapper,
+.mobile-navbar__row,
+.mobile-nav__container,
+.mobile-nav__nav {
+  background: inherit;
+}
+
+.tc-header.header-transparent {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    &:not(.is-sticky) {
+      background: transparent;
+    }
+    .mobile-sticky .mobile-nav__nav,
+    .mobile-sticky,
+    .desktop-sticky {
+        box-shadow: none;
+    }
+    &.border-top {
+      border-top-color: transparent;
+    }
+    &.no-borders {
+        &,
+        .topbar-navbar__wrapper,
+        .mobile-nav__container {
+            border-color: transparent;
+        }
+    }
+}
+
+.header-transparent:not(.is-sticky),
+.sticky-transparent.is-sticky {
+  .mobile-nav__nav {
+    .dropdown-menu,
+    .dropdown-item:active,
+    .dropdown-item:focus,
+    .dropdown-item:hover {
+      background: none;
+    }
+  }
+}
+// site title/logo outline on focus
+.branding a:focus {
+  outline: thin dotted;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+//site title underline
+.branding .czr-underline span::after {
+  content: "";
+  position: absolute;
+  width: 33%;
+  border-bottom: 3px solid;
+  bottom: 0;
+  @if ( true == $is_rtl ) {
+    right: 0;
+  }
+  @else {
+    left: 0;
+  }
+}
+
+//menu items underline effect on hover
+.czr-link-hover-underline [class*=nav__menu] {
+    .nav__title {
+      @include underlined_nocolor(2px);
+    }
+    .show:not(.dropdown-item) > .nav__link .nav__title,
+    .show:not(.dropdown-item) > .nav__link-wrapper .nav__title {
+      @include underlined_highlight_before_nocolor();
+    }
+
+}
+.czr-highlight-contextual-menu-items [class*=nav__menu] {
+  .nav__title {
+    @include underlined_nocolor_no_hover(2px);
+  }
+  .current-active > .nav__link .nav__title,
+  .current-active > .nav__link-wrapper .nav__title {
+    @include underlined_highlight_before_nocolor();
+  }
+}
+
+.nav__menu {
+  @extend .demi-small;
+  @extend .caps;
+  @extend .bold;
+  @extend .letter-spacing-1;
+
+  .menu-item {
+    margin: 0 $base-line-height-fixed/3;
+    padding: 0;
+
+    .nav__link {
+      overflow: hidden;
+      padding: 0 $base-line-height-fixed/3;
+      cursor: pointer;
+      @include display-flex();
+      @include flex-align-items-center();
+      @include flex-justify-content-between();
+
+      .nav__title {
+        padding: 10px 0 5px 0;
+        margin-bottom: 5px;
+      }
+    }
+  }
+}
+
+
+.nav li:not(.mini_cart_item) a {
+  &:focus,
+  &:hover {
+    background: transparent !important;
+  }
+}
+
+.regular-nav.nav__menu {
+    margin: 0 -1*$base-line-height-fixed/1.5;
+}
+
+
+// Dropdowns
+//menu items with children
+.czr-dropdown {
+    position: relative;
+}
+
+// Dropdown menu ul ( vertical menu like sidenav and mobile menu will override this)
+.czr-dropdown-menu {
+    //from bootstrap
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    min-width: 10rem;
+    list-style: none;
+    display: none;
+    max-width: 50vw;
+    @if ( true == $is_rtl ) {
+      right: 0;
+      text-align: right;
+    }
+    @else {
+      left: 0;
+      text-align: left;
+    }
+    //the sidemenu and mobile menu should NOT break lines
+    @at-root .vertical-nav .dropdown-menu.czr-dropdown-menu .nav__title {
+      word-break: break-word;// was break-all; Fixed in dec-2017 @see https://github.com/presscustomizr/customizr/issues/1339
+      white-space: normal;
+    }
+    .show > & {
+      display: block;
+    }
+}
+
+.dropdown-menu.czr-dropdown-menu {
+    border-radius: 0;
+    border:0;
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    .nav__link {
+        @extend .bold;
+        position: relative;
+        vertical-align: middle;
+        white-space: nowrap;
+        padding: 0 $base-line-height-fixed;
+        margin: 0 -1/2*$base-line-height-fixed;
+    }
+
+    //include box-shadow for the regular nav
+    .regular-nav & {
+      @include box-shadow( 1px, 2px, 2px, rgba(0, 0, 0, 0.15), false, 2px );
+    }
+
+
+    .dropdown-item {
+        margin: 0;
+        @at-root .regular-nav .dropdown-menu .caret__dropdown-toggler i {
+          @if ( true == $is_rtl ) {
+            @include transform( translateZ(0) rotate(90deg));
+            -ms-transform: rotate(90deg);
+          }
+          @else {
+            @include transform( translateZ(0) rotate(-90deg));
+            -ms-transform: rotate(-90deg);
+          }
+          position: relative;
+          display: inline-block;
+          top: -.1em;
+        }
+        @if ( true == $is_rtl ) {
+          @at-root .regular-nav .dropdown-menu .caret__dropdown-toggler.open-right i {
+            @include transform( translateZ(0) rotate(270deg));
+            -ms-transform: rotate(270deg);
+          }
+        }
+        @else {
+          @at-root .regular-nav .dropdown-menu .caret__dropdown-toggler.open-left i {
+            @include transform( translateZ(0) rotate(-270deg));
+            -ms-transform: rotate(-270deg);
+          }
+        }
+        @at-root .regular-nav .dropdown-menu .dropdown-item {
+          padding: 0 $base-line-height;
+        }
+
+        @at-root .mobile-nav__menu .czr-dropdown > .dropdown-menu > .dropdown-item:last-of-type {
+          margin-bottom: $base-line-height/2;
+        }
+
+    }
+
+    .czr-dropdown-menu {
+        text-transform: none;
+        font-size:ms(0);
+
+        @at-root .regular-nav .dropdown-menu .dropdown-menu {
+          top: 0;
+        }
+
+    }
+
+}
+
+
+// dropdown-item (level > 1) hover effect
+.dropdown-item {
+  position: relative;
+}
+.dropdown-item {
+    //from bootstrap
+    display: block;
+    width: 100%;
+    //padding: 3px 1.5rem;
+    clear: both;
+    font-weight: 400;
+    //color: #292b2c;
+    text-align: inherit;
+    white-space: nowrap;
+    background: 0 0;
+    border: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 100%;
+      top: 0;
+      @if ( true == $is_rtl ) {
+        right: 0;
+      }@else {
+        left: 0;
+      }
+      transition-delay: 0s;
+      transition-duration: .6s;
+      transition-timing-function: cubic-bezier(.19, 1, .22, 1);
+      @include transform-origin(0 100%);
+    }
+    .czr-highlight-contextual-menu-items &.current-active,
+    &:hover {
+      &::before {
+        width: 100%;
+      }
+    }
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+}
+
+// Caret
+.caret__dropdown-toggler {
+      display: inline-block;
+      width: 1.5em;
+      vertical-align: middle;
+      z-index: inherit;
+      cursor: pointer;
+      position: relative;
+      i {
+          display: inline-block;
+          @include transition (all 0.3s ease);
+          @include transform-style( preserve-3d );
+          @include backface-visibility( hidden );
+
+          text-align: center;
+          vertical-align: baseline;
+          line-height: 0;
+          &::before {
+            line-height: inherit;
+          }
+
+          .menu-item.show > span > &,
+          .menu-item.show > a > & {
+              @if ( true == $is_rtl ) {
+                @include transform( translateZ(0) rotate(180deg)!important);
+                -ms-transform: rotate(180deg)!important;
+              }
+              @else {
+                @include transform( translateZ(0) rotate(-180deg)!important);
+               -ms-transform: rotate(-180deg)!important;
+              }
+          }
+      }
+}
+
+
+.regular-nav {
+  //
+  // Fade submenu only in desktops and only for horizontal menus
+  // only the header.tc-header has the classes czr-submenu-fade and czr-submenu-move
+  // sidenav is not impacted
+  //
+
+  //lets use a trick to make this not impact on the snake
+  //basically we know that assigning a perspective to an element
+  //plus position:relative creates a new system
+  //where fixed elements behave like absolute elements relative to the parent
+  //this way the actual visual position of the dropdown will not be impacted
+  //though, as fixed element, even if overflowing the tc-page-wrap, will not
+  //make the orizontal scrollbar appear!
+ .czr-submenu-fade & {
+    .menu-item-has-children {
+      @include perspective(1000px);
+      > ul {
+        position: fixed;
+        opacity: 0;
+        visibility: hidden;
+        display: block;
+        @include transition( all 0.25s ease-in-out );
+        @include transform( translate( 0, -20px ) );
+        @supports (-webkit-overflow-scrolling:touch) {
+          & {
+            @include transition( opacity 0.25s ease-in-out);
+          }
+        }
+      }
+      &:not(.show) {
+        //temporary fix for Firefox : https://github.com/presscustomizr/customizr/issues/1083
+        //the perspective thing seems to not work with this browser
+        //need further investigation
+        overflow: hidden;
+
+        //because of the fact the submenu is displayed
+        //it might still grab the the hover while fading out
+        //let's avoid this resetting its pointer-events
+        //when the li parent hasn't the show class
+        ul {
+          pointer-events: none;
+          cursor: $cursor-disabled;
+        }
+      }
+    }
+
+    li.show {
+          @include perspective( none );
+          > ul {
+            position: absolute;
+            visibility: visible;
+            opacity: 1;
+            @include transform( translate( 0, 0) );
+          }
+    }
+  }
+  // end fade effect
+
+  // submenu link move
+  .czr-submenu-move & {
+    .dropdown-menu > li > a {
+      @include transition( all 0.25s ease );
+      @include transform( translate( 0, 0) );
+    }
+    .dropdown-item > a:hover {
+      @if ( true == $is_rtl ) {
+        @include transform( translate( -3px, 0) );
+      }
+      @else {
+        @include transform( translate( 3px, 0) );
+      }
+    }
+  }
+  // end subemnu link move
+}
+
+//
+// Dropdown menu direction [SNAKE]
+// available only in header
+//
+.tc-header {
+    .dropdown-menu {
+        &.open-right {
+            left: 0;
+            right: auto;
+            @at-root .tc-header .open-right .dropdown-menu:not(.open-left),
+                     .tc-header .dropdown-menu .dropdown-menu.open-right {
+
+                left: 100%;
+                right: auto;
+            }
+        }
+
+        &.open-left {
+            left: auto;
+            right: 0;
+            @at-root .tc-header .open-left .dropdown-menu:not(.open-right),
+                     .tc-header .dropdown-menu .dropdown-menu.open-left {
+
+                right: 100%;
+                left: auto;
+            }
+        }
+    }
+}
+
+// end common drodpowns
+
+// Utils nav
+.utils_links {
+  padding: $base-line-height 15px;
+  @include flex-align-self-center();
+
+  display: block;
+  height: auto;
+  position: relative;
+  @include media-breakpoint-down( sm ) {
+    .mobile-navbar__wrapper & {
+      padding: $base-line-height 10px;
+    }
+  }
+  .topbar-navbar__wrapper & {
+    padding-top: 2 * $base-line-height/3;
+    padding-bottom: 2 * $base-line-height/3;
+  }
+}
+
+// Hamburger button
+.ham-toggler-menu {
+    @extend .utils_links;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+.ham__toggler-span-wrapper {
+    height: 12px;
+    position: relative;
+    width: 20px;
+    display: block;
+}
+
+.ham__toggler-span-wrapper .line {
+  display: block;
+  width: 20px;
+  height: 1.4px;
+  position: absolute;
+  -webkit-border-radius: 5px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 5px;
+  -moz-background-clip: padding;
+  border-radius: 5px;
+  background-clip: padding-box;
+  @include transition(all ease 0.35s);
+  @include backface-visibility(hidden);
+}
+
+.ham__toggler-span-wrapper .line.line-1 {top: 0;}
+.ham__toggler-span-wrapper .line.line-2 {top: 50%;}
+.ham__toggler-span-wrapper .line.line-3 {top: 100%;}
+
+
+.ham-toggler-menu:hover .line {
+    @if ( true == $is_rtl ) {
+      @include transform( translate( 3px, 0) );
+    }
+    @else {
+      @include transform( translate( -3px, 0) );
+    }
+    width: 26px;
+}
+
+.ham-toggler-menu:not(.czr-collapsed) .line-1 {
+  @if ( true == $is_rtl ) {
+    @include transform( translate( 3px, 6px ) rotate(-45deg) );
+  }
+  @else {
+    @include transform( translate( -3px, 6px ) rotate(45deg) );
+  }
+  width: 28px;
+}
+.ham-toggler-menu:not(.czr-collapsed) .line-2 {
+  opacity: 0;
+}
+.ham-toggler-menu:not(.czr-collapsed) .line-3 {
+  @if ( true == $is_rtl ) {
+    @include transform( translate( 3px, -6px ) rotate(45deg) );
+  }
+  @else {
+    @include transform( translate( -3px, -6px ) rotate(-45deg) );
+  }
+  width: 28px;
+}
+
+// end ham
+
+.nav__search .czr-dropdown-menu {
+  width: 100%;
+  margin: 0px;
+  max-width: none;
+}
+
+//add menu button
+
+.tc-header .add-menu-button {
+  margin: 10px 0;
+}
+.mobile-nav__menu-wrapper .add-menu-button {
+  margin-top: 30px;
+}
+
+/* ADMIN BAR
+-------------------------------------------------- */
+#wp-admin-bar-tc-customizr-help .ab-item:before, li#wp-admin-bar-tc-customizr-help a:before {
+  font-family: 'Font Awesome\ 5 Free';
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  font-style: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#wp-admin-bar-tc-customizr-help .ab-item:before,
+li#wp-admin-bar-tc-customizr-help a:before {
+  content: "\f1cd";
+  color: #FFF;
+  padding-right: 0px;
+  margin-right: 0;
+  top: 2px;
+  position: relative;
+}
+li#wp-admin-bar-tc-customizr-help a {
+  color: #FFF;
+  text-decoration: none;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8DA65A;
+  background-image: -moz-linear-gradient(to top, #008ec2,#006799);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#008ec2), to(#006799));
+  background-image: -webkit-linear-gradient(to top, #008ec2,#006799);
+  background-image: -o-linear-gradient(to top, #008ec2,#006799);
+  background-image: linear-gradient(to bottom,#008ec2,#006799);
+  background-repeat: repeat-x;
+  border-color: #006799;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+
+/* SEARCH FORM
+May 2020 for https://github.com/presscustomizr/customizr/issues/1807
+*/
+.czr-search-expand {
+  display: none;
+  background: #ffffff;
+  position: absolute;
+  z-index: 100;
+  top: 49px;
+  // search-icon-left and search-icon-right are added dynamically with js
+  // so that the search field is not partially hidden
+  // @see issue : https://github.com/presscustomizr/customizr/issues/1854
+  @at-root .search-icon-left .czr-search-expand {
+    left: 0;
+  }
+  @at-root .search-icon-right .czr-search-expand {
+    right: 0;
+  }
+  // @at-root .rtl .czr-search-expand {
+  //   left: 0;
+  //   right: unset;
+  // }
+  width: 340px;
+  -webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.1);
+  .czr-search-expand-inner {
+      border: 1px solid #eeeeee;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: -webkit-transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+      transition: transform 0.35s ease-in-out, height 0.25s ease-in-out, background-color 0.45s ease-in-out;
+      padding: 15px;
+      .form-group {
+          margin: 0;
+          .czr-search-field {
+            outline: none !important;
+            color: #313131!important;
+            border-color: #313131!important;
+          }
+      }
+   }
+}
+.full-search-opened .czr-search-expand {
+  display: block;
+}
+@media (max-width: 992px) {
+  .czr-search-expand {
+      display: none!important;
+  }
+}
+// .is-scrolled .topbar-transparent .search-expand { background: #121d30; background : rgba(18, 29, 48, 0.90); }
+// .search-expand .themeform input { width: 100%; border: 2px solid #e2e2e2; border-radius: 0; }
+// .search-expand .themeform input:focus {  }
