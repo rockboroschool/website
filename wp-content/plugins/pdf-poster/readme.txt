@@ -1,18 +1,18 @@
-=== PDF Poster - PDF Embedder Plugin for Wordpress ===
+=== PDF Poster - PDF Embedder Plugin for WordPress ===
 Contributors: abuhayat, shehabulislam
 Tags: PDF Embedder, embed pdf, pdf viewer, pdf, pdf plugin, document, google
 Donate link: https://gum.co/wpdonate/
 Requires at least: 5.0
-Tested up to: 5.9.2
-Stable tag: 2.0.10
+Tested up to: 6.0
+Stable tag: 2.0.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very liteweight plugin. Gutenberg PDF Viewer Block Available
+Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very lightweight plugin. Gutenberg PDF Viewer Block Available
 
 == Description ==
 
-Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very liteweight plugin. Gutenberg PDF Viewer Block Available
+Embed PDF files in posts, pages, widget areas, page blocks and theme templates. Very easy to use, user friendly & very lightweight plugin. Gutenberg PDF Viewer Block Available
 
 == Demo==
 [Click Here To see demo ](http://pdfposter.com "See Demo") 
@@ -26,9 +26,9 @@ https://www.youtube.com/watch?v=PcYaAw7gX7w
 = Pro version features = 
 
 - Raw PDF viewer allow you to embed pdf file without the black viewer frame. (Only pdf)
-- Protect your content by preventing copy and downloads.
-- Save your time by preset your viewer preferences. (Settings page )
-- [pdf_embed] shortCode allow you embed pdf without listing. 
+- Protect your content by preventing copies and downloads.
+- Save your time by presetting your viewer preferences. (Settings page )
+- [pdf_embed] shortCode allow you to embed pdf without listing. 
 - Additional Gutenberg blocks (2 blocks)
 - Quick Embed And ShortCode generator In classic editor.
 - Sidebar toggle menu in viewer
@@ -162,11 +162,3 @@ If you find a conflict between our plugin and a third-party plugin, please let u
 
 = 1.0 =
 * Initial Release
-
-
-
-
-
-
-
-

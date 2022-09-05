@@ -62,12 +62,12 @@ class Metabox{
         <div class="gumroad-product-embed" data-gumroad-product-id="zUvK" data-outbound-embed="true"><a href="https://gumroad.com/l/zUvK">Loading...</a></div>';
     }
     public function pdfp_addons_callback(){
-        echo'<a target="_blank" href="http://bit.ly/2GiuI2G"><img style="width:100%" src="'.PDFP_PLUGIN_DIR.'/img/upwork.png" ></a>
+        echo'<a target="_blank" href="https://bplugins.gumroad.com/l/pdfaddons"><img style="width:100%" src="'.PDFP_PLUGIN_DIR.'/img/upwork.png" ></a>
         <p>LightBox Addons enable Pdf poster to open a pdf file in a lightBox. </p>
         <table>
             <tr>
-                <td><a class="button button-primary button-large" href="http://bit.ly/2XlTTIy" target="_blank">See Demo </a></td>
-                <td><a class="button button-primary button-large" href="http://bit.ly/2GiuI2G" target="_blank">Buy Now</a></td>
+                <td><a class="button button-primary button-large" href="https://pdfposter.com/lightbox-addons/" target="_blank">See Demo </a></td>
+                <td><a class="button button-primary button-large" href="https://bplugins.gumroad.com/l/pdfaddons" target="_blank">Buy Now</a></td>
             </tr>
         </table>';
     }

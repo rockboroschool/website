@@ -244,7 +244,7 @@ class MonsterInsights_Onboarding_Wizard {
 
 		if ( ! monsterinsights_can_install_plugins() ) {
 			wp_send_json( array(
-				'message' => esc_html__( 'You are not allowed to install plugins', 'google-analytics-for-wordpress' ),
+				'message' => esc_html__( 'Oops! You are not allowed to install plugins. Please contact your site administrator for assistance.', 'google-analytics-for-wordpress' ),
 			) );
 		}
 
@@ -462,7 +462,7 @@ class MonsterInsights_Onboarding_Wizard {
 			return;
 		}
 
-		if ( false === get_transient( 'wpforms_activation_redirect' ) ){
+		if ( false === get_transient( 'wpforms_activation_redirect' ) ) {
 			return;
 		}
 

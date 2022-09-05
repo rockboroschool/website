@@ -23,6 +23,8 @@ class UpdraftPlus_Backup {
 
 	public $zipfiles_skipped_notaltered;
 
+	private $makezip_recursive_batchedbytes;
+
 	private $zip_split_every = 419430400; // 400MB
 
 	private $zip_last_ratio = 1;
@@ -30,8 +32,6 @@ class UpdraftPlus_Backup {
 	private $whichone;
 
 	private $zip_basename = '';
-
-	private $backup_basename = '';
 
 	private $zipfiles_lastwritetime;
 
@@ -42,6 +42,10 @@ class UpdraftPlus_Backup {
 
 	private $dbhandle_isgz;
 
+	private $whichdb;
+
+	private $whichdb_suffix;
+
 	// Array of entities => times
 	private $altered_since = -1;
 
@@ -49,6 +53,10 @@ class UpdraftPlus_Backup {
 	private $makezip_if_altered_since = -1;
 
 	private $excluded_extensions = false;
+
+	private $excluded_wildcards = false;
+
+	private $excluded_prefixes = false;
 
 	private $use_zip_object = 'UpdraftPlus_ZipArchive';
 
@@ -94,7 +102,25 @@ class UpdraftPlus_Backup {
 	
 	// @var Boolean
 	private $try_split = false;
+
+	private $zip_microtime_start;
+
+	public $current_service;
 	
+	private $existing_files;
+
+	private $existing_files_rawsize;
+	
+	private $existing_zipfiles_size;
+	
+	private $dbinfo;
+
+	private $duplicate_tables_exist = false;
+
+	private $first_linked_index;
+	
+	// private $source;
+
 	/**
 	 * Class constructor
 	 *
@@ -110,7 +136,7 @@ class UpdraftPlus_Backup {
 		// Decide which zip engine to begin with
 		$this->debug = UpdraftPlus_Options::get_updraft_option('updraft_debug_mode');
 		$this->updraft_dir = $updraftplus->backups_dir_location();
-		$this->updraft_dir_realpath = realpath($this->updraft_dir);
+		
 
 		require_once(UPDRAFTPLUS_DIR.'/includes/class-database-utility.php');
 
@@ -276,7 +302,7 @@ class UpdraftPlus_Backup {
 		}
 
 		if (file_exists($zip_name)) {
-			$updraftplus->log("File exists ($zip_name), but was apparently not modified within the last 30 seconds, so we assume that any previous run has now terminated (time_mod=$time_mod, time_now=$time_now, diff=".($time_now-$time_mod).")");
+			$updraftplus->log("File exists ($zip_name), but was not modified within the last 30 seconds, so we assume that any previous run has now terminated (time_mod=$time_mod, time_now=$time_now, diff=".($time_now-$time_mod).")");
 		}
 
 		// Now, check for other forms of temporary file, which would indicate that some activity is going on (even if it hasn't made it into the main zip file yet)
@@ -411,11 +437,11 @@ class UpdraftPlus_Backup {
 
 		global $updraftplus;
 
-		// Return unless this feature is turned on or a 5% chance to try it
-		if ((defined('UPDRAFTPLUS_UPLOAD_AFTER_CREATE') && UPDRAFTPLUS_UPLOAD_AFTER_CREATE) || rand(0, 99) < 5) {
+		// Check if the feature is enabled
+		if (defined('UPDRAFTPLUS_UPLOAD_AFTER_CREATE') && UPDRAFTPLUS_UPLOAD_AFTER_CREATE) {
 
 			if ($updraftplus->is_uploaded($file) || !is_file($this->updraft_dir.'/'.$file)) return;
-
+			
 			$backupable_entities = $updraftplus->get_backupable_file_entities(true);
 			$undone_files = array();
 
@@ -1199,8 +1225,6 @@ class UpdraftPlus_Backup {
 	 * Log the amount account space free/used, if possible
 	 */
 	private function log_account_space() {
-		// Don't waste time if space is huge
-		if (!empty($this->account_space_oodles)) return;
 		global $updraftplus;
 		$hosting_bytes_free = $updraftplus->get_hosting_disk_quota_free();
 		if (is_array($hosting_bytes_free)) {
@@ -1791,6 +1815,10 @@ class UpdraftPlus_Backup {
 								
 								rename($db_temp_file, $this->updraft_dir.'/'.$rename_base);
 								$stitch_files[$table][$use_record] = $rename_base;
+							} elseif (is_array($start_record) && 'view' == strtolower($table_type)) {
+								$rename_base = $table_file_prefix.'-view.tmp.gz';
+								rename($db_temp_file, $this->updraft_dir.'/'.$rename_base);
+								$stitch_files[$table][] = $rename_base;
 							}
 							
 							UpdraftPlus_Job_Scheduler::something_useful_happened();
@@ -1887,7 +1915,7 @@ class UpdraftPlus_Backup {
 		}
 		
 		if (file_exists($backup_final_file_name)) {
-			$updraftplus->log("The final database file ($backup_final_file_name) exists, but was apparently not modified within the last 30 seconds (time_mod=$time_mod, time_now=$time_now, diff=".($time_now-$time_mod)."). Thus we assume that another UpdraftPlus terminated; thus we will continue.");
+			$updraftplus->log("The final database file ($backup_final_file_name) exists, but was not modified within the last 30 seconds (time_mod=$time_mod, time_now=$time_now, diff=".($time_now-$time_mod)."). Thus we assume that another UpdraftPlus terminated; thus we will continue.");
 		}
 
 		// Finally, stitch the files together
@@ -1985,18 +2013,31 @@ class UpdraftPlus_Backup {
 		// DB Stored Routines
 		$stored_routines = UpdraftPlus_Database_Utility::get_stored_routines();
 		if (is_array($stored_routines) && !empty($stored_routines)) {
+			$stored_routines_log = $inaccessible_routines = '';
+			$stored_routines_delimiter_printed = false;
 			$updraftplus->log("Dumping routines for database {$this->dbinfo['name']}");
-			$this->stow("\n\n# Dumping routines for database ".UpdraftPlus_Manipulation_Functions::backquote($this->dbinfo['name'])."\n\n");
-			$this->stow("DELIMITER ;;\n\n");
 			foreach ($stored_routines as $routine) {
+				if (empty($routine['Create '.ucfirst(strtolower($routine['Type']))])) { // The value displayed for the Create Procedure or Create Function field is NULL if the WP database user has only CREATE ROUTINE, ALTER ROUTINE, and/or EXECUTE privileges. @see https://dev.mysql.com/doc/refman/8.0/en/show-create-procedure.html
+					$inaccessible_routines = $inaccessible_routines ? $inaccessible_routines.', '.$routine['Name'] : $routine['Name'];
+					continue;
+				}
+				$stored_routines_log = "Dumping routine: {$routine['Name']}";
+				if (!$stored_routines_delimiter_printed) {
+					$this->stow("\n\n# Dumping routines for database ".UpdraftPlus_Manipulation_Functions::backquote($this->dbinfo['name'])."\n\n");
+					$this->stow("DELIMITER ;;\n\n");
+					$stored_routines_delimiter_printed = true;
+				}
 				$routine_name = $routine['Name'];
 				// Since routine name can include backquotes and routine name is typically enclosed with backquotes as well, the backquote escaping for the routine name can be done by adding a leading backquote
 				$quoted_escaped_routine_name = UpdraftPlus_Manipulation_Functions::backquote(str_replace('`', '``', $routine_name));
 				$this->stow("DROP {$routine['Type']} IF EXISTS $quoted_escaped_routine_name;;\n\n");
 				$this->stow($routine['Create '.ucfirst(strtolower($routine['Type']))]."\n\n;;\n\n");
-				$updraftplus->log("Dumping routine: {$routine['Name']}");
+				$updraftplus->log($stored_routines_log." - (Successful)");
 			}
-			$this->stow("DELIMITER ;\n\n");
+			if ($inaccessible_routines) {
+				$updraftplus->log(__('Dumping routines: ', 'updraftplus') . "({$inaccessible_routines})" . " - (". __('Failed', 'updraftplus') . " - " . __("Your WordPress database user doesn't have sufficient privileges to read these stored routines.", 'updraftplus') . " " .__('To be able to backup the routines, you must be the user named as the routine DEFINER(s), have the SHOW_ROUTINE privilege (for MySQL 8.0.20+ users), have the SELECT privilege at the global level, or have the CREATE ROUTINE, ALTER ROUTINE, or EXECUTE privilege granted at a scope that includes the routines.', 'updraftplus'). ")", 'warning');
+			}
+			if ($stored_routines_delimiter_printed) $this->stow("DELIMITER ;\n\n");
 		} elseif (is_wp_error($stored_routines)) {
 			$updraftplus->log($stored_routines->get_error_message());
 		}
@@ -2967,6 +3008,10 @@ class UpdraftPlus_Backup {
 			$updraftplus->log("Directory symlink encounted in more files backup: $use_path_when_storing -> ".readlink($fullpath).": skipping");
 			return true;
 		}
+
+		static $updraft_dir_realpath;
+
+		$updraft_dir_realpath = realpath($this->updraft_dir);
 		
 		// De-reference. Important to do to both, because on Windows only doing it to one can make them non-equal, where they were previously equal - something which we later rely upon
 		$fullpath = realpath($fullpath);
@@ -3013,7 +3058,7 @@ class UpdraftPlus_Backup {
 				$updraftplus->log(sprintf(__("%s: unreadable file - could not be backed up (check the file permissions and ownership)", 'updraftplus'), $fullpath), 'warning');
 			}
 		} elseif (is_dir($fullpath)) {
-			if ($fullpath == $this->updraft_dir_realpath) {
+			if ($fullpath == $updraft_dir_realpath) {
 				$updraftplus->log("Skip directory (UpdraftPlus backup directory): $use_path_when_storing");
 				return true;
 			}
@@ -3389,7 +3434,7 @@ class UpdraftPlus_Backup {
 		$error_occurred = false;
 
 		// Store this in its original form
-		$this->source = $source;
+		// $this->source = $source;
 
 		// Reset. This counter is used only with PcLZip, to decide if it's better to do it all-in-one
 		$this->makezip_recursive_batchedbytes = 0;
@@ -4300,11 +4345,11 @@ class UpdraftPlus_Backup {
 
 		// No need to add $itext here - we can just delete any temporary files for this zip
 		UpdraftPlus_Filesystem_Functions::clean_temporary_files('_'.$updraftplus->file_nonce."-".$youwhat, 600);
-		$this->maybe_cloud_backup(basename($full_path), $this->whichone, $this->index);
 
 		$this->index++;
 		$this->job_file_entities[$youwhat]['index'] = $this->index;
 		$updraftplus->jobdata_set('job_file_entities', $this->job_file_entities);
+		$this->maybe_cloud_backup(basename($full_path), $this->whichone, $this->index);
 	}
 
 	/**

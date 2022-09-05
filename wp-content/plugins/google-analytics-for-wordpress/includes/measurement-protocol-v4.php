@@ -27,7 +27,7 @@ class MonsterInsights_Measurement_Protocol_V4 {
 
 		$this->schema = array(
 			'currency'       => 'string',
-			'value'          => 'double',
+			'value'          => 'money',
 			'coupon'         => 'string',
 			'transaction_id' => 'string',
 			'affiliation'    => 'string',
@@ -48,7 +48,7 @@ class MonsterInsights_Measurement_Protocol_V4 {
 				'item_list_name' => 'string',
 				'item_variant'   => 'string',
 				'location_id'    => 'string',
-				'price'          => 'double',
+				'price'          => 'money',
 				'quantity'       => 'integer',
 			),
 		);
@@ -116,6 +116,10 @@ class MonsterInsights_Measurement_Protocol_V4 {
 				case 'integer':
 					$sanitized_params[ $key ] = (int) $value;
 					break;
+
+				case 'money':
+					$sanitized_params[ $key ] = MonsterInsights_eCommerce_Helper::round_price( $value );
+					break;
 			}
 		}
 
@@ -138,7 +142,7 @@ class MonsterInsights_Measurement_Protocol_V4 {
 		}
 
 		foreach ( $out['events'] as $event_index => $event ) {
-			$sanitized_event = array();
+			$sanitized_event         = array();
 			$sanitized_event['name'] = (string) $event['name'];
 
 			if ( ! empty( $event['params'] ) ) {
@@ -156,6 +160,8 @@ class MonsterInsights_Measurement_Protocol_V4 {
 			return;
 		}
 
+        $session_id = monsterinsights_get_browser_session_id( $this->measurement_id );
+
 		$defaults = array(
 			'client_id' => $this->get_client_id( $args ),
 			'events'    => array(),
@@ -163,11 +169,17 @@ class MonsterInsights_Measurement_Protocol_V4 {
 
 		$body = $this->validate_args( $args, $defaults );
 
-		if ( $this->is_debug ) {
-			foreach ( $body['events'] as $index => $event ) {
-				$body['events'][ $index ]['params']['debug_mode'] = true;
-			}
-		}
+        foreach ( $body['events'] as $index => $event ) {
+
+            //  Provide a default session id if not set already.
+            if ( !empty( $session_id ) && empty( $body['events'][$index]['params']['session_id'] ) ) {
+                $body['events'][$index]['params']['session_id'] = $session_id;
+            }
+
+            if ( $this->is_debug ) {
+                $body['events'][ $index ]['params']['debug_mode'] = true;
+            }
+        }
 
 		$body = apply_filters( 'monsterinsights_mp_v4_api_call', $body );
 

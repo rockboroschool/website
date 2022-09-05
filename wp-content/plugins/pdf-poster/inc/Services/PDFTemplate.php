@@ -32,7 +32,7 @@ class PDFTemplate{
                 <?php if($t['showName']): ?>
                     <p>File name :  <?php echo esc_html(basename($t['file']));?></p>
                 <?php endif;?>
-	            <p><a href="<?php echo esc_url($final_url); ?>"><button>View Fullscreen</button></a></p>
+	            <p><a class="fullscreenBtn" target="_blank" href="<?php echo esc_url($final_url); ?>"><button>View Fullscreen</button></a></p>
             </div>
             <div class="iframe_wrapper">
                 <iframe loading="lazy" width="<?php echo esc_attr($t['width']) ;?>" height="<?php echo esc_attr($t['height']) ;?>" src="<?php echo esc_url($final_url);?>"></iframe>

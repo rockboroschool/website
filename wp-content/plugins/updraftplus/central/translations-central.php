@@ -2,7 +2,9 @@
 
 if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('Security check');
 
-// Translations for the UpdraftPlus host plugin
+// Developer note: Please avoid using the 'updraftplus' string within the actual text unless it is being used as a translation domain (e.g. __('TEXT_THAT_NEEDS_TO_BE_TRANSLATED', 'updraftplus'))
+
+// Translations for UpdraftCentral
 return array(
 	'updraftcentral_connection' => __('UpdraftCentral Connection', 'updraftplus'),
 	'updraftcentral_connection_successful' => __('An UpdraftCentral connection has been made successfully.', 'updraftplus'),
@@ -59,7 +61,11 @@ return array(
 	'back' => __('Back...', 'updraftplus'),
 	'view_log_events' => __('View recent UpdraftCentral log events', 'updraftplus'),
 	'updraftcentral_remote_control' => __('UpdraftCentral (Remote Control)', 'updraftplus'),
-	'updraftcentral_description' => __('UpdraftCentral enables control of your WordPress sites (including management of backups and updates) from a central dashboard.', 'updraftplus'),
+	'updraftcentral_description' => __('UpdraftCentral enables control of your WordPress sites %s from a central dashboard.', 'updraftplus'),
+	'including_description' => array(
+		'wp_optimize_desc' => __('(including management of WP-Optimize)', 'updraftplus'),
+		'updraftplus_desc' => __('(including management of backups and updates)', 'updraftplus'),
+	),
 	'read_more' => __('Read more about it here.', 'updraftplus'),
 	'create_another_key' => __('Create another key', 'updraftplus'),
 	'unable_to_connect' => __('Unable to connect to the filesystem', 'updraftplus'),
@@ -74,4 +80,11 @@ return array(
 	'unattached' => __('Unattached', 'updraftplus'),
 	'default_template' => __('Default template', 'updraftplus'),
 	'parameters_missing' => __('Expected parameter(s) missing.', 'updraftplus'),
+	'fetching' => __('Fetching...', 'updraftplus'),
+	'deleting' => __('Deleting...', 'updraftplus'),
+	'enter_mothership_url' => __('Please enter a valid URL', 'updraftplus'),
+	'creating_please_allow' => __('Creating...', 'updraftplus').(function_exists('openssl_encrypt') ? '' : ' ('.__('your PHP install lacks the openssl module; as a result, this can take minutes; if nothing has happened by then, then you should either try a smaller key size, or ask your web hosting company how to enable this PHP module on your setup.', 'updraftplus').')'),
+	'unexpectedresponse' => __('Unexpected response:', 'updraftplus'),
+	'updraftcentral_wizard_empty_url' => __('Please enter the URL where your UpdraftCentral dashboard is hosted.', 'updraftplus'),
+	'updraftcentral_wizard_invalid_url' => __('Please enter a valid URL e.g http://example.com', 'updraftplus'),
 );
