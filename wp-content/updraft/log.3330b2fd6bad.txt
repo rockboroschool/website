@@ -136,3 +136,66 @@
 0002.587 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_terms.table.tmpr28.gz (31/22/fopen): adding to final database dump
 0002.591 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_terms.table.gz (32/22/fopen): adding to final database dump
 0002.594 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_cache.table.tmpr711.gz (33/22/fopen): adding to final database dump
+0002.595 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_cache.table.gz (34/22/fopen): adding to final database dump
+0002.599 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_notifications.table.tmpr30.gz (35/22/fopen): adding to final database dump
+0002.604 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_notifications.table.gz (36/22/fopen): adding to final database dump
+0002.607 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_posts.table.tmpr303.gz (37/22/fopen): adding to final database dump
+0002.610 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_aioseo_posts.table.gz (38/22/fopen): adding to final database dump
+0002.611 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_gglcptch_whitelist.table.tmpr0.gz (39/22/fopen): adding to final database dump
+0002.614 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_gglcptch_whitelist.table.gz (40/22/fopen): adding to final database dump
+0002.615 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_simple_history.table.tmpr6691.gz (41/22/fopen): adding to final database dump
+0002.618 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_simple_history.table.gz (42/22/fopen): adding to final database dump
+0002.619 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_simple_history_contexts.table.tmpr48186.gz (43/22/fopen): adding to final database dump
+0002.623 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db-table-wp_simple_history_contexts.table.gz (44/22/fopen): adding to final database dump
+0002.668 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz: finished writing out complete database file (390.6 KB)
+0002.687 (0) Total database tables backed up: 22 (backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz, size: 400038, sha1: ffe0cfac28c4b81068cf4ac6f658c136a0cba626, sha256: 9af528a36eecf70f65c8f75e93af029fd9528f1b0ba7a87ecd4fdec566c046e9)
+0002.705 (0) backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz: db: This file has not yet been successfully uploaded: will queue
+0002.708 (0) Saving backup history. Total backup size: 390.7 KB
+0002.715 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0002.724 (0) Cloud backup selection (1/1): dropbox with instance (1/1) (last)
+0002.732 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
+0002.736 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
+0002.750 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0003.825 (0) Dropbox: quota usage: used=102 MB, total=2048 MB, available=1946 MB
+0003.829 (0) Dropbox: Attempt to upload: backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz to: backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz
+0005.230 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIFjNh5VvqM22oaNopE5RMH08yH1wATBLrSQD8Iazo2Zz1R, 400038, 1024 KB)
+0007.062 (0) Recording as successfully uploaded: backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz
+0007.067 (0) Deleting local file: backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz: OK
+0007.070 (0) Dropbox: File upload success (backup_2022-10-23-1906_Rockboro_Primary_School_3330b2fd6bad-db.gz): 390 KB in 3s (120 KB/s)
+0007.083 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0007.086 (0) These backup set(s) were imported from a remote location, so will not be counted or pruned. Skipping: 1629229080, 1629050880
+0007.090 (0) Number of backup sets in history: 6; groups (db): 1
+0007.092 (0) Examining (for databases) backup set with group_id=0, nonce=3330b2fd6bad, datestamp=1666548395 (Oct 23 2022 18:06:35)
+0007.095 (0) This backup set is the backup set just made, so will not be deleted.
+0007.095 (0) Examining (for databases) backup set with group_id=0, nonce=b0a989266bd7, datestamp=1665943595 (Oct 16 2022 18:06:35)
+0007.095 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0007.098 (0) Examining (for databases) backup set with group_id=0, nonce=d914ad65e754, datestamp=1665338796 (Oct 09 2022 18:06:36)
+0007.098 (0) 1665338796: db: this set includes a database (backup_2022-10-09-1906_Rockboro_Primary_School_d914ad65e754-db.gz); db count is now 2
+0007.098 (0) 1665338796: db: over retain limit (2); will delete this database
+0007.098 (0) Delete file: backup_2022-10-09-1906_Rockboro_Primary_School_d914ad65e754-db.gz, service=dropbox
+0007.099 (0) Dropbox: request deletion: backup_2022-10-09-1906_Rockboro_Primary_School_d914ad65e754-db.gz
+0007.729 (0) Dropbox: deletion succeeded
+0007.776 (0) This backup set is now empty; will remove from history
+0007.812 (0) Deleting log file (log.d914ad65e754.txt)
+0007.837 (0) Examining (for databases) backup set with group_id=0, nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0007.837 (0) This backup set (1644065207) was an 'Always Keep' backup, so it will not be pruned. Skipping.
+0007.837 (0) Number of backup sets in history: 5; groups (files): 1
+0007.878 (0) Examining (for files) backup set with nonce=3330b2fd6bad, datestamp=1666548395 (Oct 23 2022 18:06:35)
+0007.878 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0007.912 (0) Examining (for files) backup set with nonce=b0a989266bd7, datestamp=1665943595 (Oct 16 2022 18:06:35)
+0007.912 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0007.912 (0) Examining (for files) backup set with nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0007.912 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0007.912 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0007.912 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0007.912 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0007.942 (0) Retain: saving new backup history (sets now: 5) and finishing retain operation
+0008.020 (0) Resume backup (3330b2fd6bad, 0): finish run
+0008.124 (0) Decremented the semaphore (fd) by 1
+0008.154 (0) Semaphore (fd) unlocked
+0008.158 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0008.175 (0) An email has been scheduled for this job, because we are in debug mode
+0008.183 (0) Fetching RSS news feed
+0008.791 (0) Fetched RSS news feed; result is a: SimplePie
+0008.826 (0) Sending email ('Files and database (Full backup)') report (attachments: 1, size: 22.2 KB) to: user@...
+0009.112 (0) The backup apparently succeeded and is now complete
