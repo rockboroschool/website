@@ -1,0 +1,10 @@
+0000.001 (0) Opened log file at time: Sun, 25 Dec 2022 18:05:30 +0000 on https://rockboroschool.ie
+0000.024 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.22.19 WP: 6.0.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 14.8M | 10M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.028 (0) Free space on disk containing Updraft's temporary directory: 2670.7 MB
+0000.038 (0) Tasks: Backup files:  (schedule: weekly) Backup DB: 1 (schedule: weekly)
+0000.043 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files:  Backup DB: 
+0000.049 (0) Decremented the semaphore (fd) by 1
+0000.062 (0) Semaphore (fd, wp_options) still locked (0)
+0000.067 (0) An email has been scheduled for this job, because we are in debug mode
+0000.093 (0) No email will be sent - this backup set was empty.
+0000.124 (0) The backup apparently succeeded and is now complete
