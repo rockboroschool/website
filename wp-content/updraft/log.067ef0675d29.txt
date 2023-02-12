@@ -157,3 +157,46 @@
 0002.525 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
 0002.530 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
 0002.544 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0002.986 (0) Dropbox: quota usage: used=101.9 MB, total=2048 MB, available=1946.1 MB
+0002.990 (0) Dropbox: Attempt to upload: backup_2023-02-12-1804_Rockboro_Primary_School_067ef0675d29-db.gz to: backup_2023-02-12-1804_Rockboro_Primary_School_067ef0675d29-db.gz
+0003.806 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIF-6hkOGhZeqg288NGJ0LN-y49LcBP1bA7nOlQChrwJq7IRA, 382101, 1024 KB)
+0005.244 (0) Recording as successfully uploaded: backup_2023-02-12-1804_Rockboro_Primary_School_067ef0675d29-db.gz
+0005.249 (0) Deleting local file: backup_2023-02-12-1804_Rockboro_Primary_School_067ef0675d29-db.gz: OK
+0005.252 (0) Dropbox: File upload success (backup_2023-02-12-1804_Rockboro_Primary_School_067ef0675d29-db.gz): 373 KB in 2s (164 KB/s)
+0005.268 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0005.270 (0) These backup set(s) were imported from a remote location, so will not be counted or pruned. Skipping: 1629229080, 1629050880
+0005.273 (0) Number of backup sets in history: 6; groups (db): 1
+0005.276 (0) Examining (for databases) backup set with group_id=0, nonce=067ef0675d29, datestamp=1676225082 (Feb 12 2023 18:04:42)
+0005.278 (0) This backup set is the backup set just made, so will not be deleted.
+0005.278 (0) Examining (for databases) backup set with group_id=0, nonce=7c9ebdd72955, datestamp=1675620387 (Feb 05 2023 18:06:27)
+0005.278 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.281 (0) Examining (for databases) backup set with group_id=0, nonce=6129d9ab92ad, datestamp=1675015488 (Jan 29 2023 18:04:48)
+0005.281 (0) 1675015488: db: this set includes a database (backup_2023-01-29-1804_Rockboro_Primary_School_6129d9ab92ad-db.gz); db count is now 2
+0005.281 (0) 1675015488: db: over retain limit (2); will delete this database
+0005.281 (0) Delete file: backup_2023-01-29-1804_Rockboro_Primary_School_6129d9ab92ad-db.gz, service=dropbox
+0005.284 (0) Dropbox: request deletion: backup_2023-01-29-1804_Rockboro_Primary_School_6129d9ab92ad-db.gz
+0005.957 (0) Dropbox: deletion succeeded
+0005.964 (0) This backup set is now empty; will remove from history
+0005.965 (0) Deleting log file (log.6129d9ab92ad.txt)
+0005.969 (0) Examining (for databases) backup set with group_id=0, nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0005.969 (0) This backup set (1644065207) was an 'Always Keep' backup, so it will not be pruned. Skipping.
+0005.969 (0) Number of backup sets in history: 5; groups (files): 1
+0005.972 (0) Examining (for files) backup set with nonce=067ef0675d29, datestamp=1676225082 (Feb 12 2023 18:04:42)
+0005.972 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.973 (0) Examining (for files) backup set with nonce=7c9ebdd72955, datestamp=1675620387 (Feb 05 2023 18:06:27)
+0005.973 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.974 (0) Examining (for files) backup set with nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0005.974 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0005.974 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0005.974 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0005.974 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0005.976 (0) Retain: saving new backup history (sets now: 5) and finishing retain operation
+0005.984 (0) Resume backup (067ef0675d29, 0): finish run
+0005.994 (0) Decremented the semaphore (fd) by 1
+0006.000 (0) Semaphore (fd) unlocked
+0006.003 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0006.021 (0) An email has been scheduled for this job, because we are in debug mode
+0006.025 (0) Fetching RSS news feed
+0006.434 (0) Fetched RSS news feed; result is a: SimplePie
+0006.547 (0) Sending email ('Files and database (Full backup)') report (attachments: 1, size: 22.3 KB) to: user@...
+0006.863 (0) The backup apparently succeeded and is now complete
