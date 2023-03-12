@@ -1,0 +1,202 @@
+0000.004 (0) Opened log file at time: Sun, 12 Mar 2023 18:05:52 +0000 on https://rockboroschool.ie
+0000.014 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.22.19 WP: 6.0.1 PHP: 7.0.27 (fpm-fcgi, Linux ip-172-31-21-27 4.4.0-1128-aws #142-Ubuntu SMP Fri Apr 16 12:42:33 UTC 2021 x86_64) MySQL: 5.7.21 (max packet size=33554432) WPLANG: en_US Server: Apache safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 13.8M | 2M) multisite: N openssl: OpenSSL 1.0.2n  7 Dec 2017 mcrypt: Y LANG:  ZipArchive::addFile: Y
+0000.019 (0) Free space on disk containing Updraft's temporary directory: 2675.8 MB
+0000.024 (0) Tasks: Backup files: 1 (schedule: weekly) Backup DB:  (schedule: weekly)
+0000.029 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.061 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1678039533, seconds_ago=604819)
+0000.076 (0) Set semaphore last lock (fd) time to 2023-03-12 18:05:52
+0000.080 (0) Semaphore lock (fd) complete
+0000.097 (0) Backup run: resumption=0, nonce=d9915161f022, file_nonce=d9915161f022 begun at=1678644352 (0s ago), job type=backup
+0000.103 (0) Scheduling a resumption (1) after 300 seconds (1678644652) in case this run gets aborted
+0000.124 (0) Checking if we have a zip executable available
+0000.129 (0) Testing: /usr/bin/zip
+0000.145 (0) Output: zip warning: binziptest/test.zip not found or empty
+0000.148 (0) Output: adding: binziptest/subdir1/	(in=0) (out=0) (stored 0%)
+0000.151 (0) Output: adding: binziptest/subdir1/subdir2/	(in=0) (out=0) (stored 0%)
+0000.154 (0) Output: adding: binziptest/subdir1/subdir2/test.html	(in=131) (out=107) (deflated 18%)
+0000.158 (0) Output: total bytes=131, compressed=107 -> 18% savings
+0000.164 (0) Output: adding: binziptest/subdir1/subdir2/test2.html	(in=138) (out=113) (deflated 18%)
+0000.168 (0) Output: total bytes=269, compressed=220 -> 18% savings
+0000.186 (0) Working binary zip found: /usr/bin/zip
+0000.193 (0) Zip engine: found/will use a binary zip: /usr/bin/zip
+0000.195 (0) Creation of backups of directories: beginning
+0000.207 (0) No backup of plugins: excluded by user's options
+0000.210 (0) No backup of themes: excluded by user's options
+0000.213 (0) No backup of uploads: excluded by user's options
+0000.214 (0) No backup of others: excluded by user's options
+0000.229 (0) Saving backup status to database (elements: 0)
+0000.240 (0) Beginning creation of database dump (WordPress DB)
+0000.246 (0) SQL compatibility mode is: NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+0000.337 (0) Table wp_options: Total expected rows (via COUNT): 597
+0000.424 (0) Table wp_options: Rows added in this batch (next record: 3471710): 593 (uncompressed bytes in this segment=499367) in 0.11 seconds
+0000.445 (0) Table wp_options: finishing file(s) (2, 70.8 KB)
+0000.465 (0) Table wp_users: Total expected rows (via COUNT): 5
+0000.469 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0000.476 (0) Table wp_users: Rows added in this batch (next record: 8): 5 (uncompressed bytes in this segment=2233) in 0.02 seconds
+0000.486 (0) Table wp_users: finishing file(s) (2, 1 KB)
+0000.506 (0) Table wp_usermeta: Total expected rows (via COUNT): 132
+0000.509 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0000.518 (0) Table wp_usermeta: Rows added in this batch (next record: 216): 132 (uncompressed bytes in this segment=9821) in 0.02 seconds
+0000.529 (0) Table wp_usermeta: finishing file(s) (2, 3.1 KB)
+0000.549 (0) Table wp_actionscheduler_actions: Total expected rows (via COUNT): 104
+0000.552 (0) Table is relatively small; fetch_rows will thus be: 200 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0000.560 (0) Table wp_actionscheduler_actions: Rows added in this batch (next record: 72863): 104 (uncompressed bytes in this segment=35281) in 0.02 seconds
+0000.575 (0) Table wp_actionscheduler_actions: finishing file(s) (2, 3.1 KB)
+0000.582 (0) Table wp_actionscheduler_claims: Total expected rows (via COUNT): 0
+0000.589 (0) Table wp_actionscheduler_claims: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=635) in 0.01 seconds
+0000.602 (0) Table wp_actionscheduler_claims: finishing file(s) (2, 0.4 KB)
+0000.626 (0) Table wp_actionscheduler_groups: Total expected rows (via COUNT): 2
+0000.628 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0000.636 (0) Table wp_actionscheduler_groups: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=705) in 0.02 seconds
+0000.646 (0) Table wp_actionscheduler_groups: finishing file(s) (2, 0.4 KB)
+0000.660 (0) Table wp_actionscheduler_logs: Total expected rows (via COUNT): 306
+0000.663 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0000.677 (0) Table wp_actionscheduler_logs: Rows added in this batch (next record: 215706): 306 (uncompressed bytes in this segment=28470) in 0.02 seconds
+0000.687 (0) Table wp_actionscheduler_logs: finishing file(s) (2, 2.9 KB)
+0000.712 (0) Table wp_commentmeta: Total expected rows (via COUNT): 0
+0000.718 (0) Table wp_commentmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=685) in 0.02 seconds
+0000.730 (0) Table wp_commentmeta: finishing file(s) (2, 0.4 KB)
+0000.749 (0) Table wp_comments: Total expected rows (via COUNT): 0
+0000.756 (0) Table wp_comments: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1705) in 0.01 seconds
+0000.766 (0) Table wp_comments: finishing file(s) (2, 0.5 KB)
+0000.784 (0) Table wp_links: Total expected rows (via COUNT): 0
+0000.788 (0) Table wp_links: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1310) in 0.01 seconds
+0000.799 (0) Table wp_links: finishing file(s) (2, 0.5 KB)
+0000.822 (0) Table wp_postmeta: Total expected rows (approximate): 2196
+0000.876 (0) Table wp_postmeta: Rows added in this batch (next record: 10084): 2179 (uncompressed bytes in this segment=458484) in 0.07 seconds
+0000.891 (0) Table wp_postmeta: finishing file(s) (2, 44.5 KB)
+0000.951 (0) Table wp_posts: Total expected rows (via COUNT): 728
+0001.149 (0) Table wp_posts: Rows added in this batch (next record: 1050): 728 (uncompressed bytes in this segment=1074910) in 0.25 seconds
+0001.162 (0) Table wp_posts: finishing file(s) (2, 148.2 KB)
+0001.169 (0) Table wp_term_relationships: Total expected rows (approximate): 110
+0001.184 (0) Table wp_term_relationships: Rows added in this batch (next record: 100000): 112 (uncompressed bytes in this segment=2293) in 0.02 seconds
+0001.196 (0) Table wp_term_relationships: finishing file(s) (2, 0.7 KB)
+0001.216 (0) Table wp_term_taxonomy: Total expected rows (via COUNT): 27
+0001.219 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.226 (0) Table wp_term_taxonomy: Rows added in this batch (next record: 27): 27 (uncompressed bytes in this segment=1862) in 0.02 seconds
+0001.238 (0) Table wp_term_taxonomy: finishing file(s) (2, 0.7 KB)
+0001.262 (0) Table wp_termmeta: Total expected rows (via COUNT): 0
+0001.266 (0) Table wp_termmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=658) in 0.02 seconds
+0001.277 (0) Table wp_termmeta: finishing file(s) (2, 0.4 KB)
+0001.291 (0) Table wp_terms: Total expected rows (via COUNT): 27
+0001.295 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.305 (0) Table wp_terms: Rows added in this batch (next record: 27): 27 (uncompressed bytes in this segment=1630) in 0.02 seconds
+0001.316 (0) Table wp_terms: finishing file(s) (2, 0.8 KB)
+0001.345 (0) Table wp_aioseo_cache: Total expected rows (via COUNT): 11
+0001.346 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.358 (0) Table wp_aioseo_cache: Rows added in this batch (next record: 2894): 11 (uncompressed bytes in this segment=47078) in 0.03 seconds
+0001.369 (0) Table wp_aioseo_cache: finishing file(s) (2, 6 KB)
+0001.419 (0) Table wp_aioseo_notifications: Total expected rows (via COUNT): 34
+0001.422 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.444 (0) Table wp_aioseo_notifications: Rows added in this batch (next record: 34): 34 (uncompressed bytes in this segment=90471) in 0.06 seconds
+0001.459 (0) Table wp_aioseo_notifications: finishing file(s) (2, 52.3 KB)
+0001.486 (0) Table wp_aioseo_posts: Total expected rows (via COUNT): 295
+0001.489 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.516 (0) Table wp_aioseo_posts: Rows added in this batch (next record: 302): 295 (uncompressed bytes in this segment=142766) in 0.05 seconds
+0001.531 (0) Table wp_aioseo_posts: finishing file(s) (2, 9.5 KB)
+0001.545 (0) Table wp_gglcptch_whitelist: Total expected rows (via COUNT): 0
+0001.554 (0) Table wp_gglcptch_whitelist: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=593) in 0.01 seconds
+0001.565 (0) Table wp_gglcptch_whitelist: finishing file(s) (2, 0.4 KB)
+0001.583 (0) Table wp_simple_history: Total expected rows (via COUNT): 131
+0001.588 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0001.599 (0) Table wp_simple_history: Rows added in this batch (next record: 7848): 131 (uncompressed bytes in this segment=24304) in 0.03 seconds
+0001.609 (0) Table wp_simple_history: finishing file(s) (2, 2.7 KB)
+0001.663 (0) Table wp_simple_history_contexts: Total expected rows (via COUNT): 787
+0001.680 (0) Table wp_simple_history_contexts: Rows added in this batch (next record: 55259): 787 (uncompressed bytes in this segment=51135) in 0.04 seconds
+0001.695 (0) Table wp_simple_history_contexts: finishing file(s) (2, 7.9 KB)
+0001.702 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_options.table.tmpr3471711.gz (1/22/fopen): adding to final database dump
+0001.706 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_options.table.gz (2/22/fopen): adding to final database dump
+0001.709 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_users.table.tmpr9.gz (3/22/fopen): adding to final database dump
+0001.712 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_users.table.gz (4/22/fopen): adding to final database dump
+0001.714 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_usermeta.table.tmpr217.gz (5/22/fopen): adding to final database dump
+0001.717 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_usermeta.table.gz (6/22/fopen): adding to final database dump
+0001.720 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_actions.table.tmpr72864.gz (7/22/fopen): adding to final database dump
+0001.722 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_actions.table.gz (8/22/fopen): adding to final database dump
+0001.725 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_claims.table.tmpr0.gz (9/22/fopen): adding to final database dump
+0001.726 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_claims.table.gz (10/22/fopen): adding to final database dump
+0001.729 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_groups.table.tmpr3.gz (11/22/fopen): adding to final database dump
+0001.733 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_groups.table.gz (12/22/fopen): adding to final database dump
+0001.734 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_logs.table.tmpr215707.gz (13/22/fopen): adding to final database dump
+0001.738 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_actionscheduler_logs.table.gz (14/22/fopen): adding to final database dump
+0001.741 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_commentmeta.table.tmpr0.gz (15/22/fopen): adding to final database dump
+0001.742 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_commentmeta.table.gz (16/22/fopen): adding to final database dump
+0001.745 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_comments.table.tmpr0.gz (17/22/fopen): adding to final database dump
+0001.747 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_comments.table.gz (18/22/fopen): adding to final database dump
+0001.753 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_links.table.tmpr0.gz (19/22/fopen): adding to final database dump
+0001.756 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_links.table.gz (20/22/fopen): adding to final database dump
+0001.761 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_postmeta.table.tmpr10085.gz (21/22/fopen): adding to final database dump
+0001.765 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_postmeta.table.gz (22/22/fopen): adding to final database dump
+0001.768 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_posts.table.tmpr1051.gz (23/22/fopen): adding to final database dump
+0001.773 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_posts.table.gz (24/22/fopen): adding to final database dump
+0001.777 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_term_relationships.table.tmpr100001.gz (25/22/fopen): adding to final database dump
+0001.779 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_term_relationships.table.gz (26/22/fopen): adding to final database dump
+0001.782 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_term_taxonomy.table.tmpr28.gz (27/22/fopen): adding to final database dump
+0001.785 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_term_taxonomy.table.gz (28/22/fopen): adding to final database dump
+0001.786 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_termmeta.table.tmpr0.gz (29/22/fopen): adding to final database dump
+0001.789 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_termmeta.table.gz (30/22/fopen): adding to final database dump
+0001.792 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_terms.table.tmpr28.gz (31/22/fopen): adding to final database dump
+0001.794 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_terms.table.gz (32/22/fopen): adding to final database dump
+0001.797 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_cache.table.tmpr2895.gz (33/22/fopen): adding to final database dump
+0001.798 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_cache.table.gz (34/22/fopen): adding to final database dump
+0001.801 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_notifications.table.tmpr35.gz (35/22/fopen): adding to final database dump
+0001.803 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_notifications.table.gz (36/22/fopen): adding to final database dump
+0001.806 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_posts.table.tmpr303.gz (37/22/fopen): adding to final database dump
+0001.808 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_aioseo_posts.table.gz (38/22/fopen): adding to final database dump
+0001.810 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_gglcptch_whitelist.table.tmpr0.gz (39/22/fopen): adding to final database dump
+0001.813 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_gglcptch_whitelist.table.gz (40/22/fopen): adding to final database dump
+0001.816 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_simple_history.table.tmpr7849.gz (41/22/fopen): adding to final database dump
+0001.817 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_simple_history.table.gz (42/22/fopen): adding to final database dump
+0001.820 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_simple_history_contexts.table.tmpr55260.gz (43/22/fopen): adding to final database dump
+0001.822 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db-table-wp_simple_history_contexts.table.gz (44/22/fopen): adding to final database dump
+0001.852 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz: finished writing out complete database file (357.2 KB)
+0001.871 (0) Total database tables backed up: 22 (backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz, size: 365881, sha1: cdbac3c0371d53a6a8414d10b50c11eb65bbfc82, sha256: 94d06ebcd4a95c0ce63c7b9c8153689392163d03be800bcd25d40029c5a4498b)
+0001.887 (0) backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz: db: This file has not yet been successfully uploaded: will queue
+0001.890 (0) Saving backup history. Total backup size: 357.3 KB
+0001.897 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0001.905 (0) Cloud backup selection (1/1): dropbox with instance (1/1) (last)
+0001.910 (0) Beginning dispatch of backup to remote (dropbox) (instance identifier s-7b2c11a73a54a81ee37c6161da59245b)
+0001.915 (0) Dropbox: begin cloud upload (using API version 2 with OAuth v2 token)
+0001.932 (0) Dropbox: access gained; setting chunk size to: 1024 KB
+0002.389 (0) Dropbox: quota usage: used=101.9 MB, total=2048 MB, available=1946.1 MB
+0002.393 (0) Dropbox: Attempt to upload: backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz to: backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz
+0004.234 (0) Dropbox chunked upload: 100 % uploaded (pid_upload_session:ABIGF0V95J-Qmhl5l-g4BBgOV6ZomTNAAx-rJUBMgaB5zW1CeA, 365881, 1024 KB)
+0005.172 (0) Recording as successfully uploaded: backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz
+0005.181 (0) Deleting local file: backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz: OK
+0005.184 (0) Dropbox: File upload success (backup_2023-03-12-1805_Rockboro_Primary_School_d9915161f022-db.gz): 357 KB in 2s (128 KB/s)
+0005.201 (0) Retain: beginning examination of existing backup sets; user setting: retain_files=2, retain_db=2
+0005.203 (0) These backup set(s) were imported from a remote location, so will not be counted or pruned. Skipping: 1629229080, 1629050880
+0005.206 (0) Number of backup sets in history: 6; groups (db): 1
+0005.209 (0) Examining (for databases) backup set with group_id=0, nonce=d9915161f022, datestamp=1678644352 (Mar 12 2023 18:05:52)
+0005.210 (0) This backup set is the backup set just made, so will not be deleted.
+0005.211 (0) Examining (for databases) backup set with group_id=0, nonce=d713b0eabf96, datestamp=1678039532 (Mar 05 2023 18:05:32)
+0005.211 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0005.214 (0) Examining (for databases) backup set with group_id=0, nonce=4f9e28b7d97e, datestamp=1677434889 (Feb 26 2023 18:08:09)
+0005.214 (0) 1677434889: db: this set includes a database (backup_2023-02-26-1808_Rockboro_Primary_School_4f9e28b7d97e-db.gz); db count is now 2
+0005.214 (0) 1677434889: db: over retain limit (2); will delete this database
+0005.214 (0) Delete file: backup_2023-02-26-1808_Rockboro_Primary_School_4f9e28b7d97e-db.gz, service=dropbox
+0005.218 (0) Dropbox: request deletion: backup_2023-02-26-1808_Rockboro_Primary_School_4f9e28b7d97e-db.gz
+0006.414 (0) Dropbox: deletion succeeded
+0006.421 (0) This backup set is now empty; will remove from history
+0006.422 (0) Deleting log file (log.4f9e28b7d97e.txt)
+0006.425 (0) Examining (for databases) backup set with group_id=0, nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0006.425 (0) This backup set (1644065207) was an 'Always Keep' backup, so it will not be pruned. Skipping.
+0006.425 (0) Number of backup sets in history: 5; groups (files): 1
+0006.426 (0) Examining (for files) backup set with nonce=d9915161f022, datestamp=1678644352 (Mar 12 2023 18:05:52)
+0006.426 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0006.429 (0) Examining (for files) backup set with nonce=d713b0eabf96, datestamp=1678039532 (Mar 05 2023 18:05:32)
+0006.429 (0) This backup set remains non-empty (f=0/d=1); will retain in history
+0006.429 (0) Examining (for files) backup set with nonce=646084d800cf, datestamp=1644065207 (Feb 05 2022 12:46:47)
+0006.429 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0006.429 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0006.429 (0) This backup set (1644065207) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.
+0006.429 (0) This backup set remains non-empty (f=1/d=1); will retain in history
+0006.432 (0) Retain: saving new backup history (sets now: 5) and finishing retain operation
+0006.441 (0) Resume backup (d9915161f022, 0): finish run
+0006.450 (0) Decremented the semaphore (fd) by 1
+0006.454 (0) Semaphore (fd) unlocked
+0006.458 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0006.466 (0) An email has been scheduled for this job, because we are in debug mode
+0006.471 (0) Fetching RSS news feed
+0006.925 (0) Fetched RSS news feed; result is a: SimplePie
+0006.972 (0) Sending email ('Files and database (Full backup)') report (attachments: 1, size: 22.3 KB) to: user@...
+0007.371 (0) The backup apparently succeeded and is now complete
